@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 2.6)
+PROJECT(stad C)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
+set(APPLICATION_NAME "smbtatools")
+set(APPLICATION_VERSION "0.0.1")
+
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "1")
+set(CPACK_SOURCE_GENERATOR "TBZ2")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME 
+ "${APPLICATION_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_SOURCE_IGNORE_FILES ".git/;CMakeFiles/")
+include(CPack)
+#include(CPackConfig.cmake)
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_C_FLAGS_DEBUG "-g")
+#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_INSTALL_PREFIX /usr)
+
+SET(PLATFORM_LINKFLAGS "-pthread")
+
+SET(CurrentExe "smbtatool")
+ADD_EXECUTABLE(${CurrentExe} 
+	src/tool/main.c
+	)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+
+SET(CurrentExe "smbtamonitor")
+ADD_EXECUTABLE(${CurrentExe}
+	src/monitor/main.c
+	)
+TARGET_LINK_LIBRARIES($(CurrentExe) ${Libraries})
+
+
+
+INSTALL(TARGETS smbtatool smbtamonitor DESTINATION bin)
+
