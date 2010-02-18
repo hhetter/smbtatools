@@ -20,9 +20,9 @@ SET(CMAKE_INSTALL_PREFIX /usr)
 
 SET(PLATFORM_LINKFLAGS "-pthread")
 
-SET(CurrentExe "smbtatool")
+SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
-	src/tool/main.c
+	src/query/main.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
@@ -34,5 +34,5 @@ TARGET_LINK_LIBRARIES($(CurrentExe) ${Libraries})
 
 
 
-INSTALL(TARGETS smbtatool smbtamonitor DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor DESTINATION bin)
 
