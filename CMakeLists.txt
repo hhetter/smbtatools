@@ -32,6 +32,13 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES($(CurrentExe) ${Libraries})
 
+# install documentation
+INSTALL(FILES doc/smbtaquery.1
+        DESTINATION "share/man/man1"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME stad.1)
+INSTALL(FILES doc/smbtamonitor.1
+        DESTINATION "share/man/man1"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME stad.conf.1)
 
 
 INSTALL(TARGETS smbtaquery smbtamonitor DESTINATION bin)
