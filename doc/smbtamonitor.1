@@ -1,0 +1,32 @@
+.TH smbtamonitor 1  "Februar 19, 2010" "version 0.0.1" "SYSTEM COMMANDS"
+.SH SYNOPSIS
+.B smbtamonitor
+[\-h --help] [-p password] [\-hn --host] [\-p --port] [\-w --workgroup] [\-u --user] [\-v --verbose] 
+.SH DESCRIPTION
+The smbtamonitor program is part of the Samba Traffic Analyzer Tools, which consists of smbtaquery(1) and smbtamonitor. 
+.PP
+The goal of smbtamonitor is to monitor the data of the Samba Traffic Analyzer Daemon in real-time.
+.PP
+It is work in progress.
+.PP
+.SH OPTIONS
+.TP
+\-h \--help 
+Display a short help text on the command line.
+.TP
+\-w \--workgroup
+Specify the workgroup stadtorture should work on.
+.TP
+\-u \--user
+Specify the username for stadtorture to operate on the samba server.
+.TP
+\-p \--password
+Specify the SMB password for the user given in -u.
+.TP
+\-v \--verbose
+Be verbose and print all steps to the screen.
+.SH EXAMPLES
+.TP
+smbtamonitor -u user -p password -hn stad.testdomain.com -p 31337
+
+
