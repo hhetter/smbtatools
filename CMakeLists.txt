@@ -17,8 +17,19 @@ SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_INSTALL_PREFIX /usr)
-
+SET(Libraries
+iniparser
+)
 SET(PLATFORM_LINKFLAGS "-pthread")
+
+add_custom_target(
+	buildiniparser ALL
+	COMMAND "make"
+	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/iniparser3.0b"
+	COMMENT "Building iniparser."
+	VERBATIM )
+ADD_LIBRARY(iniparser STATIC IMPORTED)
+set_target_properties(iniparser PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/iniparser3.0b/libiniparser.a)
 
 SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
@@ -26,11 +37,12 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
+SET(CMAKE_C_FLAGS "-lncurses")
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	)
-TARGET_LINK_LIBRARIES($(CurrentExe) ${Libraries})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
