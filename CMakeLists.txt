@@ -1,3 +1,10 @@
+#
+# This is nothing but a disaster. It needs to be cleaned up and documented.
+#
+#
+
+
+
 cmake_minimum_required(VERSION 2.6)
 PROJECT(stad C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
@@ -19,9 +26,10 @@ SET(CMAKE_C_FLAGS_DEBUG "-g")
 SET(CMAKE_INSTALL_PREFIX /usr)
 SET(Libraries
 iniparser
+ncurses
 )
 SET(PLATFORM_LINKFLAGS "-pthread")
-
+FIND_PACKAGE(Curses)
 add_custom_target(
 	buildiniparser ALL
 	COMMAND "make"
