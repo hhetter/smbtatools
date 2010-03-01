@@ -61,16 +61,17 @@ if (NOT CURSES_INCLUDE_DIR)
 	MESSAGE( FATAL_ERROR "ERROR: you will need curses development files installed.")
 ENDIF()
 
-
 SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
 	src/query/main.c
+	src/common/common.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES})
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
+	src/common/common.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES})
 
