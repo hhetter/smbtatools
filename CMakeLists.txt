@@ -50,12 +50,11 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
-SET(CMAKE_C_FLAGS "-lncurses")
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES})
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
