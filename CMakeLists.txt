@@ -29,7 +29,12 @@ iniparser
 ncurses
 )
 SET(PLATFORM_LINKFLAGS "-pthread")
+
 FIND_PACKAGE(Curses)
+if (NOT CURSES_INCLUDE_DIR)
+	MESSAGE( FATAL_ERROR "ERROR: you will need curses development files installed.")
+ENDIF()
+
 add_custom_target(
 	buildiniparser ALL
 	COMMAND "make"
