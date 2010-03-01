@@ -25,7 +25,7 @@
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( unsigned long int z )
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 {
 char kbstring[20];
 double  kb = (unsigned long int ) z / 1024; // kb
@@ -40,7 +40,7 @@ if (kb>=1024) {
                 kb = kb/1024; // tb
                 strcpy(kbstring,"TB");}
 char *output = malloc(sizeof(char)*20);
-sprintf(output,"%2.2f %s",kb,kbstring);
+output = talloc_asprintf( ctx,"%2.2f %s",kb,kbstring);
 return output;
 }
 

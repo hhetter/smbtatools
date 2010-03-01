@@ -21,11 +21,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <talloc.h>
 
 /*
  * return a string representation of z
  * e.g. z=1024 output will be 1KB
  */
-char *common_make_human_readable( unsigned long int z );
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z );
 
