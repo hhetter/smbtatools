@@ -32,8 +32,19 @@ SET(CMAKE_INSTALL_PREFIX /usr)
 SET(Libraries
 iniparser
 ncurses
+talloc
 )
 SET(PLATFORM_LINKFLAGS "-pthread")
+
+#
+# check for talloc
+#
+include(FindTalloc.cmake)
+FIND_PACKAGE(Talloc)
+if (NOT TALLOC_INCLUDE_DIR)
+	MESSAGE( FATAL_ERROR "ERROR: you will need talloc development
+		 files installed.")
+ENDIF()
 
 #
 # include iniparser on demand
@@ -66,14 +77,14 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/main.c
 	src/common/common.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	src/common/common.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
