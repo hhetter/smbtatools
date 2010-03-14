@@ -76,6 +76,8 @@ SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
 	src/query/main.c
 	src/common/common.c
+	src/common/aes.c
+	src/common/rijndael-alg-fst.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
@@ -83,6 +85,8 @@ SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	src/common/common.c
+	src/common/aes.c
+	src/common/rijndael-alg-fst.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
