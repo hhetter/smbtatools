@@ -34,7 +34,7 @@ void monitor_shutdown(void)
 	exit(0);
 }
 
-void main(void)
+int main(void)
 {
 	short int key_pressed;
 	
@@ -69,6 +69,6 @@ void main(void)
 	{
 	}
 
-	return;
+	return 0;
 
 }	

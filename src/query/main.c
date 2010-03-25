@@ -20,7 +20,8 @@
 
 #include <stdio.h>
 
-void main(void)
+int main(void)
 {
 	printf("Just'cause you've got the power...\n");
+        return 0;
 }
