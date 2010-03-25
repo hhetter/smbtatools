@@ -24,7 +24,7 @@ include(CPack)
 
 # Build debugging enabled binaries
 SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_C_FLAGS_DEBUG "-g")
+SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Installation prefix /usr
