@@ -38,7 +38,6 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 	if (kb>=1024) {
 	                kb = kb/1024; // tb
 	                strcpy(kbstring,"TB");}
-	char *output = malloc(sizeof(char)*20);
 	output = talloc_asprintf( ctx,"%2.2f %s",kb,kbstring);
 	return output;
 }
