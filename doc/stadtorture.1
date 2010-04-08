@@ -1,0 +1,72 @@
+.TH stadtorture 1  "November 08, 2008" "version 0.0.3" "SYSTEM COMMANDS"
+.SH SYNOPSIS
+.B stadtorture
+[\-h --help] [-p password] [\-1 --share1] [\-2 --share2] [\-w --workgroup] [\-u --user] [\-c --copy] [\-r --record] [\-t --time] [\-s --size] [\-n --number] [\-v --verbose] 
+.SH DESCRIPTION
+The stadtorture program is part of the SMB traffic analyzer suite, which consists of
+vfs_smb_traffic_analyzer(1), stad(1), and stadtorture. 
+.PP
+The goal of stadtorture is to simlulate a network transfer typical to a real situation
+in smaller networks. It requires two shares on a samba server to run. On this shares,
+it creates a user given number of files, and copies them in given time intervalls.
+.PP
+Being able to record the files it has copied, and when, a stadtorture run can be re-used
+for benchmarking.
+.PP
+stadtorture is a tool developed for long time testing the stad daemon.
+.PP
+It is work in progress.
+.PP
+.SH OPTIONS
+.TP
+\-h \--help 
+Display a short help text on the command line.
+.TP
+\-1 \--share1 \-2 \--share2 
+This option tells stadtorture the full smb url of the two shares it requires.
+.TP
+\-w \--workgroup
+Specify the workgroup stadtorture should work on.
+.TP
+\-u \--user
+Specify the username for stadtorture to operate on the samba server.
+.TP
+\-p \--password
+Specify the SMB password for the user given in -u.
+.TP
+\-c \--copy
+This specifies the amount of file copies stadtorture will do. The default value is 0, which means infinite.
+.TP
+\-t \--time
+Set the maximum time delay after each copy-process. Stadtorture will generate random times with that as maximum.
+.TP
+\-s \--size
+Set the summary for all files together.
+.TP
+\-n \--number
+Set the number of files stadtorture should generate.
+.TP
+\-v \--verbose
+Be verbose and print all steps to the screen.
+.TP
+\-r \--record
+This option takes a string as argument, specifying the name of the file which will be used to record a stadtorture session. If this option is given, a text file will be created which includes all the values to re-run exactly the same session again by using the -e option. Because a recording session cannot run infinite, you must specify the -c option with a value.
+.TP
+\-e \--play
+This option takes a string as argument, specifying the name of the file which will be used to playback a stadtorture session. If this option is given, the file given in the argument will be opened, and the parameters stored in the file are used to run a stadtorture session. Currently, the fileset will not be created, and the option relies on that the files are already existing.
+.SH EXAMPLES
+.TP
+This will generate 25 files with a total size of 500 Megabyte, copy them 200 times and after each copy wait for a maximum time of 15 seconds. stadtorture will be verbose, and tries to login to the samba services as user 'user' and with password 'password'.
+
+stadtorture -u user -p password -1 smb://test.domain.com/Pool1 -2 smb://test.domain.com/Pool2 -v -c 200 -s 500M -t 15 -n 25
+.TP
+This will create a stadtorture session with 10 files, at a total size of 200MB. It will copy around those files between the shares 'smb://test.domain.com//pool1' and 'smb://test.domain.com//pool2' for 6 times, be verbose, and waits a maximum of 10 seconds between each copy. The session will be recorded to the file 'record.txt'.
+
+stadtorture -u user -p password -1 smb://test.domain.com/pool1 -2 smb://test.domain.com/pool2 -v -c 6 -s 200M -t 10 -n 10 -r record.txt
+
+.TP
+This will playback the session 'record.txt', be verbose, using the shares 'smb://test.domain.com//pool1' and 'smb://test.domain.com//pool2'.
+
+stadtorture -u user -p password -1 smb://test.domain.com/pool1 -2 smb://test.domain.com/pool2 -v -e record.txt
+
+
