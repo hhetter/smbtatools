@@ -33,6 +33,8 @@ SET(Libraries
 iniparser
 ncurses
 talloc
+# fixme! this needs a check
+smbclient
 )
 SET(PLATFORM_LINKFLAGS "-pthread")
 
@@ -90,14 +92,22 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
+SET(CurrentExe "smbtatorture")
+ADD_EXECUTABLE(${CurrentExe}
+	src/torture/smbtatorture.c
+	)
+
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
         DESTINATION "share/man/man1"
-        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME stad.1)
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtaquery.1)
 INSTALL(FILES doc/smbtamonitor.1
         DESTINATION "share/man/man1"
-        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME stad.conf.1)
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtamonitor.1)
+INSTALL(FILES doc/smbtatorture.1
+	DESTINATION "share/man/man1"
+	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtatorture.1)
 
-
-INSTALL(TARGETS smbtaquery smbtamonitor DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture DESTINATION bin)
 

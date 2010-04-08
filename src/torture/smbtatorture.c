@@ -18,7 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "version.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
@@ -204,7 +203,7 @@ void copy()
 	}
 	if (config.replay!=NULL) {
 		// when replaying, load the chosen file here
-		fprintf(config.player,"file: %i\n",&i);
+		fprintf(config.player,"file: %i\n",i);
 	}
 	rTime= (random() % 2);
 
@@ -289,9 +288,9 @@ void copy()
 void help()
 {
 
-	printf("SMB analyzer daemon (C)opyright 2009 Michael Haefner	\n");
-	printf("		    (C)opyright 2009 Holger Hetterich	\n");
-	printf("stadtorture %s - small testingsuite for stad\n", STAD_VERSION);
+	printf("SMB Traffic Analyzer	(C)opyright 2009 Michael Haefner\n");
+	printf("		    	(C)opyright 2009 Holger Hetterich\n");
+	printf("stadtorture - small testingsuite for smbta		\n");
 	printf("\n");
 	printf("-u --username 		The user stadtorture should	\n");
 	printf("			operate on.			\n");
