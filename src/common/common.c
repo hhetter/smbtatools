@@ -28,6 +28,7 @@
 char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 {
 	char kbstring[20];
+	char *output;
 	double  kb = (unsigned long int ) z / 1024; // kb
 	strcpy(kbstring,"KB");
 	if (kb>=1024) { kb = kb/1024; // mb
