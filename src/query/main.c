@@ -18,10 +18,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+#include "include/configuration.h"
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	printf("Just'cause you've got the power...\n");
+	/* main configuration structure */
+	struct configuration_data conf;
+
+	/* parse command line, and process */
+	if ( configuration_parse_cmdline( &conf, argc, argv ) <0 ) exit(1);
+
         return 0;
 }
