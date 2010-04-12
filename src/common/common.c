@@ -45,7 +45,7 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 
 /*
  * Take a hostname as string, get its IP,
- * and and connect a server socket.
+ * and connect a server socket.
  * returns the socket handle
  */
 int common_connect_socket( const char *hostname, int iport )
