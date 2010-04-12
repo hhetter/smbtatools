@@ -39,6 +39,16 @@ smbclient
 SET(PLATFORM_LINKFLAGS "-pthread")
 
 #
+# check for libsmbclient
+#
+include(FindLibsmbclient.cmake)
+FIND_PACKAGE(Libsmbclient)
+if (NOT LIBSMBCLIENT_INCLUDE_DIRS)
+        MESSAGE( FATAL_ERROR "ERROR: you will need libsmbclient
+                 development files installed.")
+ENDIF()
+
+#
 # check for talloc
 #
 include(FindTalloc.cmake)
