@@ -18,14 +18,29 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <string.h>
+#define _XOPEN_SOURCE
+#include <netdb.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/un.h>
+#include <signal.h>
+#include <pthread.h>
+#include <getopt.h>
+#include <syslog.h>
+#include <sys/select.h>
+#include <dlfcn.h>
+#include <string.h>
+#include <stdio.h>
 #include <talloc.h>
+
 
 /*
  * return a string representation of z
  * e.g. z=1024 output will be 1KB
  */
 char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z );
-
+int common_connect_socket( const char *hostname,int iport );

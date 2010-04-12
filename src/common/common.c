@@ -19,7 +19,6 @@
  */
 
 #include "../../include/common.h"
-
 /*
  * Returns a string representation of
  * unsigned long int z    bytes.
@@ -44,4 +43,43 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 }
 
 
+/*
+ * Take a hostname as string, get its IP,
+ * and and connect a server socket.
+ * returns the socket handle
+ */
+int common_connect_socket( const char *hostname, int iport )
+{
+	if ( hostname == NULL ) {
+		printf("ERROR: no hostname given.\n");
+		exit(1);
+	}
+
+        struct addrinfo *ai;
+        struct addrinfo hints;
+        memset(&hints,'\0',sizeof(hints));
+
+        hints.ai_flags=AI_ADDRCONFIG;
+        hints.ai_socktype=SOCK_STREAM;
+        char port[255];
+        sprintf(port,"%i",iport);
+        int e=getaddrinfo(hostname,port,&hints,&ai);
+        if (e!=0) {
+                printf("ERROR: error getaddrinfo\n");
+                exit(1);
+        }
+        int sockfd=socket(ai->ai_family,ai->ai_socktype,ai->ai_protocol);
+        if (sockfd==-1) {
+		printf("ERROR: error in socket operation!\n");
+		exit(1);
+	};
+        int result=connect(sockfd,ai->ai_addr,ai->ai_addrlen);
+        if (result==-1) {
+		printf("ERROR: error in connect operation!\n");
+		exit(1);
+	};
+
+        return sockfd;
+
+}
 
