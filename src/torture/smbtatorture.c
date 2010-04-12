@@ -290,12 +290,12 @@ void help()
 
 	printf("SMB Traffic Analyzer	(C)opyright 2009 Michael Haefner\n");
 	printf("		    	(C)opyright 2009 Holger Hetterich\n");
-	printf("stadtorture - small testingsuite for smbta		\n");
+	printf("smbtatorture - small testingsuite for smbta		\n");
 	printf("\n");
-	printf("-u --username 		The user stadtorture should	\n");
+	printf("-u --username 		The user smbtatorture should	\n");
 	printf("			operate on.			\n");
 	printf("			Default: john_doe		\n");
-	printf("-w --workgroup		The workgroup stadtorture should\n");
+	printf("-w --workgroup		The workgroup smbtatorture should\n");
 	printf("			operate on.			\n");
 	printf("			Default: WORKGROUP		\n");
 	printf("-p --password		Password for the user.		\n");
