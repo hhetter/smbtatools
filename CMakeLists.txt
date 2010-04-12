@@ -69,8 +69,9 @@ ENDIF()
 #
 # check for curses
 #
+SET(CURSES_NEED_NCURSES TRUE)
 FIND_PACKAGE(Curses)
-if (NOT CURSES_INCLUDE_DIR)
+if (NOT CURSES_HAVE_NCURSES_H)
 	MESSAGE( FATAL_ERROR "ERROR: you will need curses development files installed.")
 ENDIF()
 
