@@ -28,48 +28,126 @@ struct interpreter_command {
 	char *SQL_command;
 }
 
+struct interpreter_object {
+	int object;
+	char *name;
+	char *sql;
+	char *output_term;
+}
+
+void interpreter_fn_total( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct)
+{
+	char *query1, *query2 = NULL;
+	char *qdat;
+	int rows;
+	if (command_data->argument_count != 1) {
+		printf("ERROR: function total expects one argument.\n");
+		exit(1);
+	}
+
+	if (strcmp(command_data->arguments[0],"rw") == NULL) {
+		query1 = talloc_asprintf(ctx,
+			"select SUM(bytes) from read %s",
+			obj_struct->sql);
+		query2 = talloc_asprintf(ctx,
+			"select SUM(bytes) from write %s",
+			obj_struct->sql);
+
+		qdat = sql_query(ctx, query1, &rows);
+		if (rows != 1) {
+			printf("ERROR: SQL query failure!\n");
+			exit(1);
+		}
+		sum = atol(qdat);
+		qdat = sql_query(ctx, query2, &rows);
+		if (rows != 1) {
+			printf("ERROR: SQL query failure!\n");
+			exit(1);
+		}
+		sum = sum + atol(qdat);
+		printf("Total number of bytes transfered %s : %u\n",
+			obj_struct->output_term, sum);
+		
+	} else if (strcmp(command_data->arguments[0],"r") == NULL) {
+		query1 = talloc_asprintf(ctx,
+			"select SUM(bytes) from read %s",
+			obj_struct->sql);
+		qdat = sql_query(ctx, query1, &rows);
+		sum = atol(qdat);
+		printf("Total number of bytes read %s : %u\n",
+			obj_struct->sql, sum);
+	} else if (strcmp(command_data->arguments[0],"w") == NULL) {
+		query1 = talloc_asprintf(ctx,
+			"select SUM(bytes) from write %s",
+			obj_struct->sql);
+		qdat = sql_query(ctx, query1, &rows);
+		sum = atol(qdat);
+		printf("Total number of bytes written %s : %u\n",
+			obj_struct->output_term, sum);
+	} else {
+		printf("ERROR: parameter to the 'total' command can only be:\n");
+		printf("	rw, r, or w.\n");
+		exit(1);
+	}
+}
+
+
 void interpreter_run_command( TALLOC_CTX *ctx,
 	int command,
-	struct interpreter_command *command_data);
+	struct interpreter_command *command_data
+	struct interpreter_object *obj_struct);
 {
+	if (command == -1) return;
+
 	switch(command)
 	{
 
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
-		obj_struct->name = talloc_strdup(ctx,command_data->command);
+		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where file='%s'",
 					command_data->command);
+		obj_struct->output_term = talloc_strdup(ctx,
+			"on file %s", obj_struct->name);
 		break;
 	case INT_OBJ_SHARE:
 		obj_struct->object = INT_OBJ_SHARE;
-		obj_struct->name = talloc_strdup(ctx,command_data->command);
+		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where share='%s'",
 					command_data->command);
+		obj_struct->output_term = talloc_strdup(ctx,
+			"on share %s", obj_struct->name);
 		break;
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
-		obj_struct->name = talloc_strdup(ctx,command_data->command);
+		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where user='%s'",
 					command_data->command);
+		obj_struct->output_term = talloc_strdup(ctx,
+			"by user %s", obj_struct->name);
 		break;
 	case INT_OBJ_TOTAL:
-		if (command_data->argument_count != 1) {
-			printf("ERROR: Command 'total' requires one argument.\n");
-			exit(1);
-		}
-		if (strcmp(command_data->arguments[0],"rw") == NULL) {
-			
-			
+		interpreter_fn_total(command_data, obj_struct);
+		break;
+	}
+}
+
+int interpreter_step( TALLOC_CTX *ctx, char *go_through,
+		struct interpreter_command *command_data)
+{
+	char *go = go_through;
+	while(go != ' ') {
 		
 
-int interpreter_run( const char *commands )
+int interpreter_run( TALLOC_CTX *ctx, const char *commands )
 {
 	struct interpreter_command command_data;
 	char *go_through =commands+1; /* don't interpret the first ' */
 	char *cmd = NULL;
 	char **params = NULL;
-	int parsestate==0;
+	int parsestate=0;
 
         if (commands == NULL) {
                 printf("ERROR: No commands to interpret.\n");
@@ -77,8 +155,8 @@ int interpreter_run( const char *commands )
         }
 
 	while(parsestate != -1) {
-		parsestate = interpreter_step(&go_through, &command_data);
-		interpreter_run_command(parsestate, &command_data);
+		parsestate = interpreter_step(ctx, &go_through, &command_data);
+		interpreter_run_command(ctx, parsestate, &command_data);
 	}
 	return 0;
 }
