@@ -76,7 +76,7 @@ int mtime(void)
 	return (int)(tv.tv_sec*1000 + (tv.tv_usec / 1000));
 }
 
-void generate_files(/*int number, int size_low, int size_high*/)
+void generate_files()
 {
 	int list[config.number];
 	int i;
@@ -496,14 +496,14 @@ int main(int argc, char *argv[])
 		}
 	}
 	if (config.replay!=NULL) {
-		/* when playing back, get the number of copies first		*/
+		/* when playing back, get the number of copies first */
 		fscanf(config.player,"copy = %i\n",&config.copy);
-		/* when playing back, get the number of files that have been	*/
-		/* created.							*/
+		/* when playing back, get the number of files that have been
+		   created. */
 		fscanf(config.player,"number = %i\n",&config.number);
 	}
 
-	// initialize rand
+	/* initialize rand */
 	time_t rand_time;
 	time(&rand_time);
 	srandom( (unsigned int) rand_time);
@@ -514,7 +514,7 @@ int main(int argc, char *argv[])
 		{
 			copy();
 			set_rand_seed++;
-//			srand(time(NULL)+set_rand_seed);
+			//srand(time(NULL)+set_rand_seed);
 	                if (set_rand_seed==100) {
         	                //srand(time(NULL));
                 	        set_rand_seed=0;
@@ -524,10 +524,11 @@ int main(int argc, char *argv[])
 	}
 
 	if (config.record!=NULL) {
-		/* when recording, save the number of copies as the first	*/
-		/* parameter 							*/
+		// when recording, save the number of copies as the first
+		// parameter
 		fprintf(config.recorder,"copy = %i\n",config.copy);
-		/* then the number of files that have been created		*/
+
+		// then the number of files that have been created
 		fprintf(config.recorder,"number = %i\n",config.number);
 	}
 
@@ -535,7 +536,7 @@ int main(int argc, char *argv[])
 	{
 		copy();
 		set_rand_seed++;
-//		srand(time(NULL)+set_rand_seed);
+		//srand(time(NULL)+set_rand_seed);
 		if (set_rand_seed==100) {
 			//srand(time(NULL));
 			set_rand_seed=0;
