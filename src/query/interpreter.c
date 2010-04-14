@@ -35,6 +35,11 @@ struct interpreter_object {
 	char *output_term;
 }
 
+void sql_query( TALLOC_CTX *ctx, const char *query, int *rows)
+{
+	printf("SQL-QUERY: $s\n",query);
+}
+
 void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct)
@@ -138,7 +143,36 @@ int interpreter_step( TALLOC_CTX *ctx, char *go_through,
 		struct interpreter_command *command_data)
 {
 	char *go = go_through;
-	while(go != ' ') {
+	int dif;
+	char *en = strstr(go,",");
+	if (en == NULL) {
+		en = strstr(go,";");
+		if (en == NULL) {
+			printf("ERROR: Missing semikolon at end of statement.\n");
+			exit(1);
+		}
+	}
+	dif = en - go;
+	char *res = talloc_strndup( ctx, go, dif);
+	command_data->argcount=0;
+	en = strstr(res, " ");
+	if (en == NULL) {
+		command_data->command = talloc_strndup( ctx, res, dif);
+		return interpreter_translate_command( command_data->command);
+	}
+	command_data->command = talloc_strndup( ctx, res, en-res);
+	bn = res;
+	while (en != NULL) {
+		en = strstr(res, " ");
+		if (en == NULL) return argcount;
+		dif = en-bn;
+		command_data->arguments[argcount] =
+			talloc_strndup( ctx, bn, dif);
+		command_data->argcount = command_data->argcount+1;
+		bn = en;
+	}
+	return interpreter_translate_command( command->data->command);
+}
 		
 
 int interpreter_run( TALLOC_CTX *ctx, const char *commands )
