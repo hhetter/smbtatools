@@ -40,22 +40,6 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
-struct configuration_data {
-	/* Number of the port to use */
-	int port;
-	/* debug level */
-	int debug_level;
-	/* configuration file */
-	char *config_file;
-	/* AES Key */
-	unsigned char key[20];
-	/* AES Keyfile */
-	char *keyfile;
-	/* query */
-	char *query;
 
-};
-
-int configuration_check_configuration( struct configuration_data *c );
-int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );
+int interpreter_run( TALLOC_CTX *ctx, char *commands);
 

@@ -20,6 +20,7 @@
  */
 
 #include "include/configuration.h"
+#include "include/interpreter.h"
 /* Initialize default values of the configuration.			*/
 void configuration_define_defaults( struct configuration_data *c )
 {
@@ -27,6 +28,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->config_file = NULL;
 	c->debug_level = 0;
 	c->keyfile =NULL;
+	c->query = NULL;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -109,11 +111,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "debug-level",1, NULL, 'd' },
 			{ "config-file",1,NULL,'c'},
 			{ "key-file",1,NULL,'k'},
+			{ "query",1,NULL,'q'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:i:c:k:", long_options, &option_index );
+			"d:i:c:k:q:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -132,12 +135,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				c->keyfile = strdup( optarg);
 				configuration_load_key_from_file(c);
 				break;
+			case 'q':
+				c->query = strdup( optarg );
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
 				return -1;
 		}
 	}
+
+/* through all options, now run the query command */
+if (c->query != NULL) interpreter_run( NULL, c->query);
+
 
 return 0;
 }
