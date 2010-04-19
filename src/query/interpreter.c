@@ -25,6 +25,7 @@
 struct interpreter_command {
 	int argument_count;
 	char *command;
+	int command_id;
 	char *arguments[100];
 	char *SQL_command;
 };
@@ -47,6 +48,7 @@ char *sql_query(TALLOC_CTX *ctx, const char *query, int *rows)
 {
 	printf("SQL-QUERY: %s\n",query);
 	char *erg = strdup("test01");
+	*rows =1;
 	return erg;
 }
 
@@ -111,20 +113,19 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 
 
 void interpreter_run_command( TALLOC_CTX *ctx,
-	int command,
 	struct interpreter_command *command_data,
 	struct interpreter_object *obj_struct)
 {
-	if (command == -1) return;
+	if (command_data->command_id == -1) return;
 
-	switch(command)
+	switch(command_data->command_id)
 	{
 
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where file='%s'",
-					command_data->command);
+					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
 		break;
@@ -132,7 +133,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_SHARE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where share='%s'",
-					command_data->command);
+					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
 		break;
@@ -140,7 +141,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," where user='%s'",
-					command_data->command);
+					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
 		break;
@@ -160,50 +161,40 @@ int interpreter_translate_command(const char *cmd)
 }
 
 
-int interpreter_step( TALLOC_CTX *ctx, char *go_through,
+char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 		struct interpreter_command *command_data)
 {
 	char *go = go_through;
-	char *bn;
+	char *bn, *backup;
 	int dif;
 	char *en = strstr(go,",");
-	if (en == NULL) {
-		en = strstr(go,";");
-		if (en == NULL) {
-			printf("ERROR: Missing semikolon at end of statement.\n");
-			exit(1);
-		}
-	}
+	if (strlen(go_through) == 0) return NULL;
+
+	backup = en+1;
 	dif = 1+(en - go);
 	char *res = talloc_strndup( ctx, go, dif);
-	printf("RES: %s\n",res);
 	command_data->argument_count=0;
 	en = strstr(res, " ");
-	if (en == NULL) {
-		command_data->command = talloc_strndup( ctx, res, dif);
-		printf("CMD1: >%s<\n",command_data->command);
-		return interpreter_translate_command( command_data->command);
-	}
 	command_data->command = talloc_strndup( ctx, res, en-res);
-	printf("CMD: >%s<\n",command_data->command);
 	en = en + 1;
 	bn = en;
 	while (en != NULL) {
 		en = strstr(bn, " ");
 		if (en == NULL) {
 			en = strstr(bn,",");
-			if (en == NULL) return -1;
+			if (en == NULL) {
+                        	command_data->command_id = interpreter_translate_command(command_data->command);
+				return backup;
+			}
 		}
 		dif = en-bn;
-		printf("DIF: %i\n",dif);
 		command_data->arguments[command_data->argument_count] =
 			talloc_strndup( ctx, bn, dif);
 		command_data->argument_count = command_data->argument_count+1;
-		printf("ARG: >%s<\n",command_data->arguments[command_data->argument_count-1]);
 		en = en + 1;
 		bn = en;
 	}
-	return interpreter_translate_command( command_data->command);
+	return backup;
 }
 		
 
@@ -212,17 +203,23 @@ int interpreter_run( TALLOC_CTX *ctx,char *commands )
 	struct interpreter_command command_data;
 	struct interpreter_object command_obj;
 	char *go_through =commands; /* don't interpret the first ' */
-	int parsestate=0;
-
+	int end = strlen(commands);
+	if ( *(commands + end-1) == ';') *(commands+end-1)=',';
+		else {
+			printf("ERROR: missing semicolon at end of line.\n");
+			exit(1);
+		}
         if (commands == NULL) {
                 printf("ERROR: No commands to interpret.\n");
                 exit(1);
         }
 
-	while(parsestate != -1) {
-		parsestate = interpreter_step(ctx, go_through, &command_data);
-		printf("parsestate %i\n",parsestate);
-		interpreter_run_command(ctx, parsestate, &command_data, &command_obj);
+	
+
+	while(go_through != NULL) {
+		go_through = interpreter_step(ctx, go_through, &command_data);
+		if (go_through == NULL) break;
+		interpreter_run_command(ctx, &command_data, &command_obj);
 	}
 	return 0;
 }
