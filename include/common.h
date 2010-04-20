@@ -44,3 +44,9 @@
  */
 char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z );
 int common_connect_socket( const char *hostname,int iport );
+char *common_create_header( TALLOC_CTX *ctx, const char *state_flags, size_t data_len);
+void common_write_data( char *header, char *data, int dlength, int _socket);
+void common_receive_data( char *buf, int sock, int length, int *rlen);
+int common_get_data_block_length( char *header );
+
+
