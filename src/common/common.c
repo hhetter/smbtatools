@@ -83,3 +83,71 @@ int common_connect_socket( const char *hostname, int iport )
 
 }
 
+/**
+ * Create a SMBTAv2 header.
+ * TALLLOC_CTX *ctx             Talloc context to work on
+ * const char *state_flags      State flag string
+ * int len                      length of the data block
+ */
+char *common_create_header( TALLOC_CTX *ctx,
+        const char *state_flags, size_t data_len)
+{
+        char *header = talloc_asprintf( ctx, "V2.%s%017u",
+                                        state_flags, (unsigned int) data_len);
+        return header;
+}
+
+
+/**
+ * Actually send header and data over the network
+ * char *header         Header data
+ * char *data           Data Block
+ * int dlength          Length of data block
+ * int socket
+ */
+void common_write_data( char *header, char *data,
+                        int dlength, int _socket)
+{
+                int len = strlen(header);
+		send(_socket,header,len,0);
+		send(_socket,data,dlength,0);
+}
+
+/**
+ * receive a data block. return 0 if the connection
+ * was closed, or return the received buffer
+ * int sock             The handle
+ * int length           The number of bytes to
+ *                      receive
+ * char *buf		The databuffer in which to
+ *			write the received data.
+ * int *rlen		length of the received
+ * 			data block, modified by
+ * 			the function
+ */
+void common_receive_data( char *buf, int sock, int length, int *rlen)
+{
+        size_t t;
+        t = recv( sock, buf, length, 0);
+
+        if (t == 0) {
+                /* connection closed */
+                *rlen = 0;
+                return;
+        }
+        *(buf + t) = '\0';
+        *rlen = *rlen + t;
+}
+
+/**
+ * Return the length of the data block to come given a header
+ * as input.
+ */
+int common_get_data_block_length( char *header )
+{
+        int retval;
+        retval = atoi( header+11 );
+        return retval;
+}
+
+
