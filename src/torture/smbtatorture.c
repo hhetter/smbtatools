@@ -122,6 +122,8 @@ void generate_files()
 		strcpy(Dateiname2,config.share2);
 		char Zahl[50];
 		sprintf(Zahl,"%i",i);
+		strcat(Dateiname1, config.user);
+		strcat(Dateiname2, config.user);
 		strcat(Dateiname1, Zahl);
 		strcat(Dateiname2, Zahl);
 		time1=mtime();
