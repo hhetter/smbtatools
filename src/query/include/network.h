@@ -39,6 +39,6 @@
 #include <dlfcn.h>
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
-#include "../../include/configuration.h"
+#include "configuration.h"
 
 char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
