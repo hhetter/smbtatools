@@ -156,7 +156,7 @@ if (c->host == NULL) {
 	printf("ERROR: please specify a host running smbtad!\n");
 	exit(1);
 }
-common_connect_socket( c->host, c->port );
+c->socket = common_connect_socket( c->host, c->port );
 
 /* through all options, now run the query command */
 if (c->query != NULL) interpreter_run( NULL, c->query, c);
