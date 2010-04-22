@@ -42,3 +42,4 @@
 #include "configuration.h"
 
 char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
+

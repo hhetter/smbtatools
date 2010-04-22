@@ -43,6 +43,8 @@
 struct configuration_data {
 	/* Number of the port to use */
 	int port;
+	/* hostname of server to connect to */
+	char *host;
 	/* debug level */
 	int debug_level;
 	/* configuration file */

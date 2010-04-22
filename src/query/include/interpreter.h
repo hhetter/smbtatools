@@ -40,6 +40,5 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
-
-int interpreter_run( TALLOC_CTX *ctx, char *commands);
+int interpreter_run( TALLOC_CTX *ctx, char *commands,struct configuration_data *config);
 

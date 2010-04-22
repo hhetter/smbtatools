@@ -54,6 +54,11 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
         fd_set_w=active_fd_set;
 
 	while (state != DATA_RECEIVED) {
+		        /* Initialize the set of active input sockets. */
+	        FD_ZERO (&active_fd_set);
+	        FD_SET(config->socket,&active_fd_set);
+	        fd_set_r=active_fd_set;
+	        fd_set_w=active_fd_set;
 
 	        z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
         	if (FD_ISSET( sockfd,&fd_set_w) && state == UNSENT) { /* ready to write to the socket */
@@ -67,6 +72,7 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
         		char state_flags[9] = "000000\0";
 			header = common_create_header(ctx, state_flags, strlen(query));
 			common_write_data( header, query, strlen(query), sockfd);
+			printf("WRITTEN!\n");
 			state = SENT;
 			continue;
 		} else

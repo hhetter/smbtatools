@@ -21,10 +21,12 @@
 
 #include "include/configuration.h"
 #include "include/interpreter.h"
+#include "../../include/common.h"
 /* Initialize default values of the configuration.			*/
 void configuration_define_defaults( struct configuration_data *c )
 {
 	c->port = 3390;
+	c->host = NULL;
 	c->config_file = NULL;
 	c->debug_level = 0;
 	c->keyfile =NULL;
@@ -112,17 +114,21 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "config-file",1,NULL,'c'},
 			{ "key-file",1,NULL,'k'},
 			{ "query",1,NULL,'q'},
+			{ "host",1,NULL,'h'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:i:c:k:q:", long_options, &option_index );
+			"d:i:c:k:q:h:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
 		switch (i) {
 			case 'i':
 				c->port = atoi( optarg );
+				break;
+			case 'h':
+				c->host = strdup(optarg);
 				break;
 			case 'd':
 				c->debug_level = atoi( optarg );
@@ -145,8 +151,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		}
 	}
 
+/* connect to the server */
+if (c->host == NULL) {
+	printf("ERROR: please specify a host running smbtad!\n");
+	exit(1);
+}
+common_connect_socket( c->host, c->port );
+
 /* through all options, now run the query command */
-if (c->query != NULL) interpreter_run( NULL, c->query);
+if (c->query != NULL) interpreter_run( NULL, c->query, c);
 
 
 return 0;

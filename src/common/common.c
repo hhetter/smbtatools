@@ -110,6 +110,7 @@ void common_write_data( char *header, char *data,
 {
                 int len = strlen(header);
 		send(_socket,header,len,0);
+		printf("send %s\n",header);
 		send(_socket,data,dlength,0);
 }
 

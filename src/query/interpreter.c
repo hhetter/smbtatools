@@ -19,7 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/interpreter.h"
 #include "include/network.h"
 
 #include <talloc.h>
@@ -46,17 +45,10 @@ enum IntCommands {
 	INT_OBJ_TOTAL };
 
 
-char *sql_query(TALLOC_CTX *ctx, const char *query, int *rows)
-{
-	printf("SQL-QUERY: %s\n",query);
-	char *erg = strdup("test01");
-	*rows =1;
-	return erg;
-}
-
 void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
-		struct interpreter_object *obj_struct)
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
 {
 	char *query1, *query2 = NULL;
 	char *qdat;
@@ -75,17 +67,18 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(bytes) from write %s",
 			obj_struct->sql);
 
-		qdat = sql_query(ctx, query1, &rows);
-		if (rows != 1) {
+		qdat = sql_query(ctx, config,query1);
+		/* if (rows != 1) {
 			printf("ERROR: SQL query failure!\n");
 			exit(1);
 		}
+		*/
 		sum = atol(qdat);
-		qdat = sql_query(ctx, query2, &rows);
-		if (rows != 1) {
+		qdat = sql_query(ctx, config, query2);
+		/*if (rows != 1) {
 			printf("ERROR: SQL query failure!\n");
 			exit(1);
-		}
+		}*/
 		sum = sum + atol(qdat);
 		printf("Total number of bytes transfered %s : %u\n",
 			obj_struct->output_term, sum);
@@ -94,7 +87,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		query1 = talloc_asprintf(ctx,
 			"select SUM(bytes) from read %s",
 			obj_struct->sql);
-		qdat = sql_query(ctx, query1, &rows);
+		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
 		printf("Total number of bytes read %s : %u\n",
 			obj_struct->sql, sum);
@@ -102,7 +95,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		query1 = talloc_asprintf(ctx,
 			"select SUM(bytes) from write %s",
 			obj_struct->sql);
-		qdat = sql_query(ctx, query1, &rows);
+		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
 		printf("Total number of bytes written %s : %u\n",
 			obj_struct->output_term, sum);
@@ -116,7 +109,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 
 void interpreter_run_command( TALLOC_CTX *ctx,
 	struct interpreter_command *command_data,
-	struct interpreter_object *obj_struct)
+	struct interpreter_object *obj_struct,
+	struct configuration_data *config)
 {
 	if (command_data->command_id == -1) return;
 
@@ -126,7 +120,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," where file='%s'",
+		obj_struct->sql = talloc_asprintf(ctx," where file='%s';",
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
@@ -134,7 +128,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_SHARE:
 		obj_struct->object = INT_OBJ_SHARE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," where share='%s'",
+		obj_struct->sql = talloc_asprintf(ctx," where share='%s';",
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
@@ -142,13 +136,13 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," where user='%s'",
+		obj_struct->sql = talloc_asprintf(ctx," where user='%s';",
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
 		break;
 	case INT_OBJ_TOTAL:
-		interpreter_fn_total(ctx, command_data, obj_struct);
+		interpreter_fn_total(ctx, command_data, obj_struct,config);
 		break;
 	}
 }
@@ -164,7 +158,8 @@ int interpreter_translate_command(const char *cmd)
 
 
 char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
-		struct interpreter_command *command_data)
+		struct interpreter_command *command_data,
+		struct configuration_data *config)
 {
 	char *go = go_through;
 	char *bn, *backup;
@@ -200,7 +195,7 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 }
 		
 
-int interpreter_run( TALLOC_CTX *ctx,char *commands )
+int interpreter_run( TALLOC_CTX *ctx,char *commands, struct configuration_data *config )
 {
 	struct interpreter_command command_data;
 	struct interpreter_object command_obj;
@@ -219,9 +214,9 @@ int interpreter_run( TALLOC_CTX *ctx,char *commands )
 	
 
 	while(go_through != NULL) {
-		go_through = interpreter_step(ctx, go_through, &command_data);
+		go_through = interpreter_step(ctx, go_through, &command_data, config);
 		if (go_through == NULL) break;
-		interpreter_run_command(ctx, &command_data, &command_obj);
+		interpreter_run_command(ctx, &command_data, &command_obj, config);
 	}
 	return 0;
 }
