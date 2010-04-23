@@ -61,10 +61,10 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 
 	if (strcmp(command_data->arguments[0],"rw") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select SUM(bytes) from read %s",
+			"select SUM(length) from read %s",
 			obj_struct->sql);
 		query2 = talloc_asprintf(ctx,
-			"select SUM(bytes) from write %s",
+			"select SUM(lentgh) from write %s",
 			obj_struct->sql);
 
 		qdat = sql_query(ctx, config,query1);
