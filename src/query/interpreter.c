@@ -52,7 +52,6 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 {
 	char *query1, *query2 = NULL;
 	char *qdat;
-	int rows;
 	unsigned int sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
@@ -101,7 +100,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->output_term, sum);
 	} else {
 		printf("ERROR: parameter to the 'total' command can only be:\n");
-		printf("	rw, r, or w.\n");
+		printf("rw, r, or w.\n");
 		exit(1);
 	}
 }
@@ -149,7 +148,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 
 int interpreter_translate_command(const char *cmd)
 {
+	/* commands */
 	if (strcmp(cmd, "total") == 0) return INT_OBJ_TOTAL;
+	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
@@ -180,14 +181,16 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 		if (en == NULL) {
 			en = strstr(bn,",");
 			if (en == NULL) {
-                        	command_data->command_id = interpreter_translate_command(command_data->command);
+                        	command_data->command_id =
+					interpreter_translate_command(command_data->command);
 				return backup;
 			}
 		}
 		dif = en-bn;
 		command_data->arguments[command_data->argument_count] =
 			talloc_strndup( ctx, bn, dif);
-		command_data->argument_count = command_data->argument_count+1;
+		command_data->argument_count =
+			command_data->argument_count+1;
 		en = en + 1;
 		bn = en;
 	}
@@ -195,7 +198,9 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 }
 		
 
-int interpreter_run( TALLOC_CTX *ctx,char *commands, struct configuration_data *config )
+int interpreter_run( TALLOC_CTX *ctx,
+	char *commands,
+	struct configuration_data *config )
 {
 	struct interpreter_command command_data;
 	struct interpreter_object command_obj;
@@ -214,9 +219,15 @@ int interpreter_run( TALLOC_CTX *ctx,char *commands, struct configuration_data *
 	
 
 	while(go_through != NULL) {
-		go_through = interpreter_step(ctx, go_through, &command_data, config);
+		go_through = interpreter_step(ctx,
+			go_through,
+			&command_data,
+			config);
 		if (go_through == NULL) break;
-		interpreter_run_command(ctx, &command_data, &command_obj, config);
+		interpreter_run_command(ctx,
+			&command_data,
+			&command_obj,
+			config);
 	}
 	return 0;
 }

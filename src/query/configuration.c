@@ -151,18 +151,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		}
 	}
 
-/* connect to the server */
-if (c->host == NULL) {
-	printf("ERROR: please specify a host running smbtad!\n");
-	exit(1);
-}
-c->socket = common_connect_socket( c->host, c->port );
+	/* connect to the server */
+	if (c->host == NULL) {
+		printf("ERROR: please specify a host running smbtad!\n");
+		exit(1);
+	}
 
-/* through all options, now run the query command */
-if (c->query != NULL) interpreter_run( NULL, c->query, c);
+	c->socket = common_connect_socket( c->host, c->port );
+
+	/* through all options, now run the query command */
+	if (c->query != NULL) interpreter_run( NULL, c->query, c);
 
 
-return 0;
+	return 0;
 }
 
 
@@ -170,6 +171,10 @@ int configuration_check_configuration( struct configuration_data *c )
 {
 	if ( c->debug_level <0 || c->debug_level>10 ) {
 		printf("ERROR: debug level has to be between 0 and 10.\n");
+		return -1;
+	}
+	if (c->host == NULL) {
+		printf("ERROR: please specify a hostname to connect to.\n");
 		return -1;
 	}
 	return 0;

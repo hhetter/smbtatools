@@ -54,7 +54,7 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
         fd_set_w=active_fd_set;
 
 	while (state != DATA_RECEIVED) {
-		        /* Initialize the set of active input sockets. */
+		/* Initialize the set of active input sockets. */
 	        FD_ZERO (&active_fd_set);
 	        FD_SET(config->socket,&active_fd_set);
 	        fd_set_r=active_fd_set;
@@ -75,15 +75,17 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
 			printf("WRITTEN!\n");
 			state = SENT;
 			continue;
-		} else
+		} 
 		if (FD_ISSET( sockfd,&fd_set_r) && state == SENT) { /* ready to read */
 			state = RECEIVING_HEADER;
 			header = talloc_array(ctx, char, 29);
+			printf("BEVOR RECEIVE\n");
 			common_receive_data(header, sockfd, 26, &header_position);
 			if (header_position == 0) {
 				network_close_connection(sockfd);
 				continue;
 			}
+			printf("RECEIVED HEADER\n");
 			if (header_position != 26) {
 				state = RECEIVING_HEADER_ONGOING;
 				continue;
@@ -100,6 +102,7 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
                         /* full header */
                         state = HEADER_RECEIVED;
                         data_length= common_get_data_block_length(header);
+			printf("ONGOING HEADER!\n");
 			continue;
 		} else
 		if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
@@ -110,6 +113,7 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
                                         sockfd,
                                         data_length,
                                         &body_position);
+			printf("RECEVIED DATA!\n");
 			if (body_position==0) {
 				network_close_connection(sockfd);
 				continue;
