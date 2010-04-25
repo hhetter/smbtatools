@@ -162,7 +162,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* through all options, now run the query command */
 	if (c->query != NULL) interpreter_run( NULL, c->query, c);
 
-
+	close(c->socket);
 	return 0;
 }
 

@@ -72,20 +72,17 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
         		char state_flags[9] = "000000\0";
 			header = common_create_header(ctx, state_flags, strlen(query));
 			common_write_data( header, query, strlen(query), sockfd);
-			printf("WRITTEN!\n");
 			state = SENT;
 			continue;
 		} 
 		if (FD_ISSET( sockfd,&fd_set_r) && state == SENT) { /* ready to read */
 			state = RECEIVING_HEADER;
 			header = talloc_array(ctx, char, 29);
-			printf("BEVOR RECEIVE\n");
 			common_receive_data(header, sockfd, 26, &header_position);
 			if (header_position == 0) {
 				network_close_connection(sockfd);
 				continue;
 			}
-			printf("RECEIVED HEADER\n");
 			if (header_position != 26) {
 				state = RECEIVING_HEADER_ONGOING;
 				continue;
@@ -97,12 +94,11 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
 		if (FD_ISSET( sockfd,&fd_set_r) && state == RECEIVING_HEADER_ONGOING) {
 			common_receive_data(header + header_position, sockfd,
 				26-header_position, &header_position);
-
+			
                         if (header_position != 26) continue;
                         /* full header */
                         state = HEADER_RECEIVED;
                         data_length= common_get_data_block_length(header);
-			printf("ONGOING HEADER!\n");
 			continue;
 		} else
 		if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
@@ -113,7 +109,6 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
                                         sockfd,
                                         data_length,
                                         &body_position);
-			printf("RECEVIED DATA!\n");
 			if (body_position==0) {
 				network_close_connection(sockfd);
 				continue;
@@ -124,14 +119,14 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
                         }
 			/* full data set received */
 			state = DATA_RECEIVED;
-			continue;
+			break;
 		} else 
 		if (FD_ISSET( sockfd,&fd_set_r) && state == RECEIVING_DATA_ONGOING) {
 			common_receive_data(body + body_position,sockfd,
 				data_length - body_position, &body_position);
                         if (body_position != data_length) continue;
 			state = DATA_RECEIVED;
-			continue;
+			break;
 		}
 	}
 	return body;

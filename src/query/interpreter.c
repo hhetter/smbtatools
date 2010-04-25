@@ -20,7 +20,7 @@
  */
 
 #include "include/network.h"
-
+#include "../../include/common.h"
 #include <talloc.h>
 
 struct interpreter_command {
@@ -52,7 +52,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 {
 	char *query1, *query2 = NULL;
 	char *qdat;
-	unsigned int sum;
+	unsigned long int sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
@@ -63,7 +63,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(length) from read %s",
 			obj_struct->sql);
 		query2 = talloc_asprintf(ctx,
-			"select SUM(lentgh) from write %s",
+			"select SUM(length) from write %s",
 			obj_struct->sql);
 
 		qdat = sql_query(ctx, config,query1);
@@ -79,25 +79,28 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			exit(1);
 		}*/
 		sum = sum + atol(qdat);
-		printf("Total number of bytes transfered %s : %u\n",
-			obj_struct->output_term, sum);
+		printf("Total number of bytes transfered %s : %s\n",
+			obj_struct->output_term,
+			common_make_human_readable(ctx,sum));
 		
 	} else if (strcmp(command_data->arguments[0],"r") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select SUM(bytes) from read %s",
+			"select SUM(length) from read %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
-		printf("Total number of bytes read %s : %u\n",
-			obj_struct->sql, sum);
+		printf("Total number of bytes read %s : %s\n",
+			obj_struct->sql,
+			common_make_human_readable(ctx,sum));
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select SUM(bytes) from write %s",
+			"select SUM(length) from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
-		printf("Total number of bytes written %s : %u\n",
-			obj_struct->output_term, sum);
+		printf("Total number of bytes written %s : %s\n",
+			obj_struct->output_term,
+			common_make_human_readable(ctx,sum));
 	} else {
 		printf("ERROR: parameter to the 'total' command can only be:\n");
 		printf("rw, r, or w.\n");
