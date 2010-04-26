@@ -201,11 +201,11 @@ void copy()
 	sprintf(Zahl,"%i",i);
 	if (config.record!=NULL) {
 		// when recording, save the chosen file here
-		fprintf(config.recorder,"file: %i\n",i);
+		fprintf(config.recorder,"file: %s%i\n",config.user,i);
 	}
 	if (config.replay!=NULL) {
 		// when replaying, load the chosen file here
-		fprintf(config.player,"file: %i\n",i);
+		fprintf(config.player,"file: %s%i\n",config.user,i);
 	}
 	rTime= (random() % 2);
 
@@ -234,6 +234,8 @@ void copy()
 		break;
 	}
 
+	strcat(Dateiname1, config.user);
+	strcat(Dateiname2, config.user);
 	strcat(Dateiname1, Zahl);
 	strcat(Dateiname2, Zahl);
 
