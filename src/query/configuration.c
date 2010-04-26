@@ -22,6 +22,7 @@
 #include "include/configuration.h"
 #include "include/interpreter.h"
 #include "../../include/common.h"
+#include <talloc.h>
 /* Initialize default values of the configuration.			*/
 void configuration_define_defaults( struct configuration_data *c )
 {
@@ -95,7 +96,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	int argc, char *argv[] )
 {
 	int i;
-
+	TALLOC_CTX *runtime_mem = NULL;
 	configuration_define_defaults( c );
 
 
@@ -160,9 +161,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	c->socket = common_connect_socket( c->host, c->port );
 
 	/* through all options, now run the query command */
-	if (c->query != NULL) interpreter_run( NULL, c->query, c);
+	if (c->query != NULL) interpreter_run( runtime_mem, c->query, c);
 
 	close(c->socket);
+	TALLOC_FREE(runtime_mem);
 	return 0;
 }
 
