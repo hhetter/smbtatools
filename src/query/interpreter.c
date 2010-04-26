@@ -43,17 +43,7 @@ enum IntCommands {
 	INT_OBJ_USER,
 	INT_OBJ_FILE,
 	INT_OBJ_TOTAL,
-	INT_OBJ_SQL,
 	INT_OBJ_GLOBAL };
-
-void interpreter_fn_sql( TALLOC_CTX *ctx,
-		struct interpreter_command *command_data,
-		struct interpreter_object *obj_struct,
-		struct configuration_data *config)
-{
-	char *ret = sql_query(ctx, config, command_data->arguments[0]);
-	printf("%s", ret);
-}
 
 
 void interpreter_fn_total( TALLOC_CTX *ctx,
@@ -166,9 +156,6 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
 		break;
-	case INT_OBJ_SQL:
-		interpreter_fn_sql(ctx, command_data, obj_struct,config);
-		break;
 	}
 }
 
@@ -242,6 +229,15 @@ int interpreter_run( TALLOC_CTX *ctx,
                 printf("ERROR: No commands to interpret.\n");
                 exit(1);
         }
+
+	/* only SELECT commands are allowed as raw sql commands */
+	if (strncmp(commands,"select",strlen("select"))==0 || strncmp(commands,"SELECT",strlen("select"))== 0) {
+		*(commands+end-1)=';';
+		char *erg =sql_query(ctx,config,commands);
+		printf("%s\n",erg);
+		exit(0);
+	}
+
 
 	
 
