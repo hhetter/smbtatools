@@ -79,7 +79,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			exit(1);
 		}*/
 		sum = sum + atol(qdat);
-		printf("Total number of bytes transfered %s : %s\n",
+		printf(
+"Total number of bytes transfered %s :		%s\n",
 			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
 		
@@ -89,8 +90,9 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
-		printf("Total number of bytes read %s : %s\n",
-			obj_struct->sql,
+		printf(
+"Total number of bytes read %s :		%s\n",
+			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
 		query1 = talloc_asprintf(ctx,
@@ -98,7 +100,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		sum = atol(qdat);
-		printf("Total number of bytes written %s : %s\n",
+		printf(
+"Total number of bytes written %s :		%s\n",
 			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
 	} else {
@@ -122,7 +125,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," where file='%s';",
+		obj_struct->sql = talloc_asprintf(ctx," where filename='%s';",
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
