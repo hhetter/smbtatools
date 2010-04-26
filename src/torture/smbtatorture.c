@@ -199,29 +199,8 @@ void copy()
 	char Dateiname2[strlen(config.share2)+50];
 	i=( random() % config.number);
 	sprintf(Zahl,"%i",i);
-	if (config.record!=NULL) {
-		// when recording, save the chosen file here
-		fprintf(config.recorder,"file: %s%i\n",config.user,i);
-	}
-	if (config.replay!=NULL) {
-		// when replaying, load the chosen file here
-		fprintf(config.player,"file: %s%i\n",config.user,i);
-	}
 	rTime= (random() % 2);
-
 	justread= (random() %2); // wether to write to the target share or not
-	if (config.record!=NULL) {
-		// when recording, save the rTime decision here
-		fprintf(config.recorder,"random factor: %i\n",rTime);
-		// when recording, save the justread decision here
-		fprintf(config.recorder,"just read: %i\n",justread);
-	}
-	if (config.replay!=NULL) {
-		// when replaying, load the rTime decision here
-		fscanf(config.player,"random factor: %i\n",&rTime);
-		// when replaying, load the justread decision here
-		fscanf(config.player,"just read: %i\n",&justread);
-	}
 	switch (rTime)
 	{
 		case 0:
@@ -238,6 +217,20 @@ void copy()
 	strcat(Dateiname2, config.user);
 	strcat(Dateiname1, Zahl);
 	strcat(Dateiname2, Zahl);
+	/* at this point we have the full filenames. In case of 
+	 * recording, we save them here. In case of replay, we	
+	 * replace them with the strings from the file.
+	 */
+	if (config.record!=NULL) {
+		fprintf(config.recorder,"file1: %s\n",Dateiname1);
+		fprintf(config.recorder,"file2: %s\n",Dateiname2);
+		fprintf(config.recorder,"just read: %i\n",justread);
+	}
+	if (config.replay!=NULL) {
+		fscanf(config.player,"file1: %s\n",Dateiname1);
+		fscanf(config.player,"file2: %s\n",Dateiname2);
+		fscanf(config.player,"just read: %i\n",&justread);
+	}
 
 	smbc_init(get_auth_data_fn, debug);
 
@@ -278,9 +271,7 @@ void copy()
 	}
         if(config.verbose == 1)
         {	if (justread!=1) printf("File %s copied to %s\n", Dateiname1, Dateiname2);
-		else
-			printf("Just read File %s into memory.\n",Dateiname1);
-
+			else printf("Just read File %s into memory.\n",Dateiname1);
 		
 		printf("sleeping now for %i seconds\n", rTime);
         }
