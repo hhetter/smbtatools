@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "../../include/version.h"
 #include "include/configuration.h"
 #include "include/interpreter.h"
 #include "../../include/common.h"
@@ -81,7 +81,8 @@ int configuration_load_config_file( struct configuration_data *c)
 
 void configuration_show_help()
 {
-	printf("smbtaquery (C)2010 by Benjamin Brunner\n");
+	printf("smbtaquery version %s (C)2010 by Benjamin Brunner\n", SMBTAQUERY_VERSION);
+	printf("%s\n", SMBTA_LICENSE);
 	printf("\n");
 	printf("-i	--inet-port <num>	Set the port-number to	\n");
 	printf("				use to <num>.\n");

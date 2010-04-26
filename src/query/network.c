@@ -66,7 +66,8 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
 	        	/*
          		* The state flags are part of the header
          		* and are descripted in the protocol description
-         		* in vfs_smb_traffic_analyzer.h. They begin at byte
+         		* in vfs_smb_traffic_analyzer.h
+			* in the Samba sources. They begin at byte
         		* 03 of the header.
          		*/
         		char state_flags[9] = "000000\0";
