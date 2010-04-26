@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "../../include/version.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
@@ -292,10 +292,11 @@ void copy()
 void help()
 {
 
-	printf("SMB Traffic Analyzer	(C)opyright 2009 Michael Haefner\n");
-	printf("		    	(C)opyright 2009 Holger Hetterich\n");
-	printf("smbtatorture - small testingsuite for smbta		\n");
+	printf("smbtatorture version %s - small testingsuite for smbta	\n", SMBTATORTURE_VERSION);
 	printf("\n");
+	printf("(C) 2009-2010 Michael Haefner\n");
+	printf("(C) 2009-2010 Holger Hetterich\n");
+	printf("%s\n",SMBTA_LICENSE);
 	printf("-u --username 		The user smbtatorture should	\n");
 	printf("			operate on.			\n");
 	printf("			Default: john_doe		\n");
