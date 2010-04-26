@@ -141,7 +141,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," where user='%s';",
+		obj_struct->sql = talloc_asprintf(ctx," where username='%s';",
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
