@@ -42,7 +42,18 @@ enum IntCommands {
 	INT_OBJ_SHARE = 0,
 	INT_OBJ_USER,
 	INT_OBJ_FILE,
-	INT_OBJ_TOTAL };
+	INT_OBJ_TOTAL,
+	INT_OBJ_SQL,
+	INT_OBJ_GLOBAL };
+
+void interpreter_fn_sql( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *ret = sql_query(ctx, config, command_data->arguments[0]);
+	printf("%s", ret);
+}
 
 
 void interpreter_fn_total( TALLOC_CTX *ctx,
@@ -146,8 +157,17 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
 		break;
+	case INT_OBJ_GLOBAL:
+		obj_struct->object = INT_OBJ_GLOBAL;
+		obj_struct->name= talloc_strdup(ctx, "global");
+		obj_struct->sql = talloc_strdup(ctx, ";");
+		obj_struct->output_term = talloc_asprintf(ctx, "globally");
+		break;
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
+		break;
+	case INT_OBJ_SQL:
+		interpreter_fn_sql(ctx, command_data, obj_struct,config);
 		break;
 	}
 }
@@ -160,6 +180,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
+	if (strcmp(cmd, "global") == 0) return INT_OBJ_GLOBAL;
 	return -1;
 }
 
