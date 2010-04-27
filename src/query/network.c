@@ -58,9 +58,9 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
 				result[t-datcount] = data[t];
 			}
 			result[blocksize]='\0';
-			datcount = datcount + blocksize;
+			datcount = datcount + blocksize +1;
 			break;
-		} else datcount = datcount + 4 + blocksize;
+		} else datcount = datcount + 4 + blocksize+1;
 	}
 	return result;
 }

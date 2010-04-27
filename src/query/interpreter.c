@@ -43,8 +43,39 @@ enum IntCommands {
 	INT_OBJ_USER,
 	INT_OBJ_FILE,
 	INT_OBJ_TOTAL,
+	INT_OBJ_LIST,
 	INT_OBJ_GLOBAL };
 
+void interpreter_fn_list( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query1;
+	char *qdat = NULL;
+
+	if (command_data->argument_count != 1) {
+		printf("ERROR: function list expects one argument.\n");
+		exit(1);
+	}
+	if (strcmp(command_data->arguments[0],"users") == 0) {
+		query1 = talloc_asprintf(ctx, "select username,usersid from read union select username,usersid from write %s",
+			obj_struct->sql);
+		qdat = sql_query(ctx, config, query1);
+		/* at this point we would need to know how many item are coming */
+		printf("%s\n%s\n",result_get_element(ctx,0,qdat),result_get_element(ctx,1,qdat));
+	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
+		query1 = talloc_asprintf(ctx, "select share from read union select share from write %s",
+			obj_struct->sql);
+		qdat = sql_query(ctx, config, query1);
+		/* at this point we would need to know how many items are coming */
+		printf("%s\n",qdat);
+	} else if (strcmp(command_data->arguments[0],"files") == 0) {
+		query1 = talloc_asprintf(ctx, "select filename from read union select filename from write %s",
+			obj_struct->sql);
+		printf("%s\n",qdat);
+	}
+}
 
 void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -157,6 +188,10 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_LIST:
+		interpreter_fn_list(ctx, command_data, obj_struct,config);
+		break;
+
 	}
 }
 
@@ -164,6 +199,7 @@ int interpreter_translate_command(const char *cmd)
 {
 	/* commands */
 	if (strcmp(cmd, "total") == 0) return INT_OBJ_TOTAL;
+	if (strcmp(cmd, "list") == 0) return INT_OBJ_LIST;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
