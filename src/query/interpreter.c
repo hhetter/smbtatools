@@ -68,18 +68,18 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 
 		qdat = sql_query(ctx, config,query1);
+		sum = atol( result_get_element(ctx,0,qdat));
 		/* if (rows != 1) {
 			printf("ERROR: SQL query failure!\n");
 			exit(1);
 		}
 		*/
-		sum = atol(qdat);
 		qdat = sql_query(ctx, config, query2);
 		/*if (rows != 1) {
 			printf("ERROR: SQL query failure!\n");
 			exit(1);
 		}*/
-		sum = sum + atol(qdat);
+		sum = sum + atol( result_get_element(ctx,0,qdat));
 		printf(
 "Total number of bytes transfered %s :		%s\n",
 			obj_struct->output_term,
@@ -90,7 +90,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(length) from read %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
-		sum = atol(qdat);
+		
+		sum = atol( result_get_element(ctx,0,qdat));
 		printf(
 "Total number of bytes read %s :		%s\n",
 			obj_struct->output_term,
@@ -100,7 +101,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(length) from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
-		sum = atol(qdat);
+		sum = atol( result_get_element(ctx,0,qdat));
 		printf(
 "Total number of bytes written %s :		%s\n",
 			obj_struct->output_term,
