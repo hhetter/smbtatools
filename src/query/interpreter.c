@@ -74,6 +74,10 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		query1 = talloc_asprintf(ctx, "select filename from read union select filename from write %s",
 			obj_struct->sql);
 		printf("%s\n",qdat);
+	} else {
+		printf("ERROR: 	Arguments for the 'list' command can only be:\n");
+		printf("	users, shares, or files.\n");
+		exit(1);
 	}
 }
 
