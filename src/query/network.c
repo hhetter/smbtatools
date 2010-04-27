@@ -51,6 +51,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
 		}
 		bytecount[4]='\0';
 		blocksize = atoi(bytecount);
+		if (blocksize == 0) return NULL;
 		if ( c == number) {
 			result = talloc_array(ctx,char, blocksize +1);
 			datcount = datcount + 4;
