@@ -271,7 +271,7 @@ void copy()
 	}
         if(config.verbose == 1)
         {	if (justread!=1) printf("File %s copied to %s\n", Dateiname1, Dateiname2);
-			else printf("Just read File %s into memory.\n",Dateiname1);
+			else printf("Read file %s into memory.\n",Dateiname1);
 		
 		printf("sleeping now for %i seconds\n", rTime);
         }

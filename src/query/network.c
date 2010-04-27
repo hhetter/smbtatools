@@ -35,6 +35,36 @@ void network_close_connection( int sockfd ) {
 // fixme , do something.
 }
 
+
+char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
+{
+	char bytecount[10];
+	int datcount = 0;
+	int t;
+	int c = 0;
+	int blocksize = 0;
+	char *result = NULL;
+
+	for (c = 0; c <= number; c++) {
+		for (t = datcount; t<datcount+4 ; t++) {
+			bytecount[t-datcount]=data[t];
+		}
+		bytecount[4]='\0';
+		blocksize = atoi(bytecount);
+		if ( c == number) {
+			result = talloc_array(ctx,char, blocksize +1);
+			datcount = datcount + 4;
+			for (t = datcount; t<datcount + blocksize; t++) {
+				result[t-datcount] = data[t];
+			}
+			result[blocksize]='\0';
+			datcount = datcount + blocksize;
+			break;
+		} else datcount = datcount + 4 + blocksize;
+	}
+	return result;
+}
+
 /* blocking select call */
 char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query )
 {
