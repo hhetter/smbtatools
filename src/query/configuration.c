@@ -90,6 +90,8 @@ void configuration_show_help()
 	printf("				with to <num>. Default: 0\n");
 	printf("-c	--config-file <file>	Load the configuration from\n");
 	printf("				a file given as <file>.\n");
+	printf("-q      --query			Run an interpreter command,\n");
+	printf("				or run a SQL select command.\n");
 	printf("\n");
 }
 
