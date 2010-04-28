@@ -83,7 +83,6 @@ char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query
         FD_SET(config->socket,&active_fd_set);
         fd_set_r=active_fd_set;
         fd_set_w=active_fd_set;
-
 	while (state != DATA_RECEIVED) {
 		/* Initialize the set of active input sockets. */
 	        FD_ZERO (&active_fd_set);

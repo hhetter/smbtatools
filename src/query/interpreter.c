@@ -85,6 +85,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx, "select filename from read union select filename from write %s",
 			obj_struct->sql);
+		qdat = sql_query(ctx,config,query1);
 		interpreter_print_table( ctx, 1, qdat);
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command can only be:\n");
