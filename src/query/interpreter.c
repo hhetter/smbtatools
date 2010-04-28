@@ -76,6 +76,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 		col++; element++;
 	}
 }
+
 void interpreter_fn_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -89,17 +90,20 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		exit(1);
 	}
 	if (strcmp(command_data->arguments[0],"users") == 0) {
-		query1 = talloc_asprintf(ctx, "select username,usersid from read union select username,usersid from write %s",
+		query1 = talloc_asprintf(ctx,
+			"select username,usersid from read union select username,usersid from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_print_table( ctx, 2, qdat);
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
-		query1 = talloc_asprintf(ctx, "select share from read union select share from write %s",
+		query1 = talloc_asprintf(ctx,
+			"select share from read union select share from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_print_table( ctx, 1, qdat);
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
-		query1 = talloc_asprintf(ctx, "select filename from read union select filename from write %s",
+		query1 = talloc_asprintf(ctx,
+			"select filename from read union select filename from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx,config,query1);
 		interpreter_print_table( ctx, 1, qdat);
@@ -237,7 +241,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
-	if (strcmp(cmd, "global") == 0) return INT_OBJ_GLOBAL;
+	if (strncmp(cmd, "global",5) == 0) return INT_OBJ_GLOBAL;
 	return -1;
 }
 
@@ -303,7 +307,8 @@ int interpreter_run( TALLOC_CTX *ctx,
         }
 
 	/* only SELECT commands are allowed as raw sql commands */
-	if (strncmp(commands,"select",strlen("select"))==0 || strncmp(commands,"SELECT",strlen("select"))== 0) {
+	if (strncmp(commands,"select",strlen("select"))==0 ||
+		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
 		printf("%s\n",erg);
