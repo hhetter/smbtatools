@@ -46,6 +46,23 @@ enum IntCommands {
 	INT_OBJ_LIST,
 	INT_OBJ_GLOBAL };
 
+
+char *interpreter_prepare_statement(TALLOC_CTX *ctx,
+		char *data)
+{
+	int t = strlen(data);
+	char *output=talloc_array(ctx,char,t+2);
+	int x = 0;int y = 0;
+	while (x <= strlen(data)) {
+		output[y] = data[x];
+                if ( data[x]==',' && data[x+1]==' ') x++;
+		y++;x++;
+	}
+	printf("%s\n",output);
+	return output;
+}
+
+
 void interpreter_print_table( TALLOC_CTX *ctx,
 		int columns,char *data)
 {
@@ -270,6 +287,8 @@ int interpreter_run( TALLOC_CTX *ctx,
 	char *commands,
 	struct configuration_data *config )
 {
+
+	commands = interpreter_prepare_statement(ctx,commands);
 	struct interpreter_command command_data;
 	struct interpreter_object command_obj;
 	char *go_through =commands; /* don't interpret the first ' */
