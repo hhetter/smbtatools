@@ -58,7 +58,6 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
                 if ( data[x]==',' && data[x+1]==' ') x++;
 		y++;x++;
 	}
-	printf("%s\n",output);
 	return output;
 }
 
