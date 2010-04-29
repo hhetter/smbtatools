@@ -98,8 +98,15 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	char *query1;
 	char *qdat = NULL;
 	char *qdat2 = NULL;
+	if (command_data->argument_count != 3) {
+		printf("ERROR: the top function expects 3 arguments.\n");
+		exit(1);
+	}
 	int limit = atoi(command_data->arguments[0]);
-	if (limit == 0 ) { printf("ERROR: top command syntax error.\n"); }
+	if (limit == 0 ) {
+		printf("ERROR: top command syntax error.\n");
+		exit(1);
+	}
 	unsigned long int length[limit + 1];
 	if (strcmp(command_data->arguments[1],"users")==0) {
 		if (strcmp(command_data->arguments[2],"r")==0) {
