@@ -63,11 +63,23 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
-		int columns,char *data)
+		int columns,char *data, ...)
 {
 	int col=1;
 	int element=0;
 	char *res = " ";
+	char *arg = NULL;
+	va_list ap;
+	int count = columns;
+	va_start( ap, count);
+	while (count --) {
+		arg = va_arg( ap,char * );
+		printf("%s\t",arg);
+	}
+	va_end( ap );
+	printf("\n");
+	printf(
+	"------------------------------------------------------------------------------\n");
 
 	while (res != NULL) {
 		res = result_get_element(ctx,element,data);
@@ -94,19 +106,19 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			"select username,usersid from read union select username,usersid from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat);
+		interpreter_print_table( ctx, 2, qdat, "Name","SID");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select share from read union select share from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 1, qdat);
+		interpreter_print_table( ctx, 1, qdat, "Name");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select filename from read union select filename from write %s",
 			obj_struct->sql);
 		qdat = sql_query(ctx,config,query1);
-		interpreter_print_table( ctx, 1, qdat);
+		interpreter_print_table( ctx, 1, qdat,"Name");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command can only be:\n");
 		printf("	users, shares, or files.\n");
