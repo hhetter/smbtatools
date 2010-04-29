@@ -132,6 +132,18 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
+	} else if (strcmp(command_data->arguments[1],"files")==0) {
+		if (strcmp(command_data->arguments[2],"r")==0) {
+			query1 = talloc_asprintf(ctx,
+				"select distinct filename from read where %s order by sum(length) desc limit %i;",
+				obj_struct->sql,limit);
+			qdat = sql_query(ctx,config,query1);
+		} else if (strcmp(command_data->arguments[2],"w")==0) {
+			query1 = talloc_asprintf(ctx,
+				"select distinct filename from write where %s order by sum(length) desc limit %i;",
+				obj_struct->sql,limit);
+			qdat = sql_query(ctx,config,query1);
+		}
 	}
 	int i = 0;
 	char *el = "0";
@@ -159,6 +171,18 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where share=\"%s\" and %s;",el,obj_struct->sql);
+				qdat2 = sql_query(ctx,config,query1);
+				length[i]=atol(result_get_element(ctx,0,qdat2));
+			}
+		} else if (strcmp(command_data->arguments[1],"files")==0) {
+			if (strcmp(command_data->arguments[2],"r")==0) {
+				query1 = talloc_asprintf(ctx,
+					"select sum(length) from read where filename=\"%s\" and %s;",el,obj_struct->sql);
+				qdat2 = sql_query(ctx,config,query1);
+				length[i]=atol(result_get_element(ctx,0,qdat2));
+			} else if (strcmp(command_data->arguments[2],"w")==0) {
+				query1 = talloc_asprintf(ctx,
+					"select sum(length) from write where filename=\"%s\" and %s;",el,obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
 			}
