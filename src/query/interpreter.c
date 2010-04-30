@@ -75,7 +75,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	va_start( ap, NULL);
 	while (count --) {
 		arg = va_arg( ap, char *);
-		printf("%s\t",arg);
+		printf("%-30s\t",arg);
 	}
 	va_end( ap );
 	printf("\n");
@@ -84,7 +84,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 
 	while (res != NULL) {
 		res = result_get_element(ctx,element,data);
-		if (res != NULL) printf("%s\t",res);
+		if (res != NULL) printf("%-30s\t",res);
 		if ( col==columns ) { col = 0; printf("\n"); }
 		col++; element++;
 	}
@@ -195,10 +195,14 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 
 	i = 0;
 	el = "0";
+	printf("%-30s%-30s\n","Name","Size");
+        printf(
+        "------------------------------------------------------------------------------\n");
+
 	while (el != NULL) {
 		el = result_get_element(ctx,i,qdat);
 		if (el == NULL) break;
-		printf("%s\t%s\n",el,common_make_human_readable(ctx,length[i]));
+		printf("%-30s%-30s\n",el,common_make_human_readable(ctx,length[i]));
 		i++;
 	}
 }
