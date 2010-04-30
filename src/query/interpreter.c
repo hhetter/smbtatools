@@ -461,4 +461,25 @@ int interpreter_run( TALLOC_CTX *ctx,
 	return 0;
 }
 
-
+void interpreter_command_help()
+{
+	printf("Interpreter commands\n");
+	printf("-----------------------------------------------------\n");
+	printf("smbtaquery -q 'OBJECT,COMMAND;'\n");
+	printf("OBJECT can be:\n");
+	printf("global  		Run a query over the whole dataset.\n");
+	printf("share SHARE   		Run a query over the share specified by\n");
+	printf("			SHARE.\n");
+	printf("user USER 		Run a query over the user USER.\n");
+	printf("file FILE		Run a query over the file FILE.\n");
+	printf("COMMAND can be:\n");
+	printf("total [rw][r][w]	Get the total read(r), write(w)\n");
+	printf("			or read-write values of the\n");
+	printf("			object.\n");
+	printf("list [shares][users]\n");
+	printf("     [files]		Lists all shares, all users, all\n");
+	printf("			files on an object.\n");
+	printf("top [num] [shares]\n");
+	printf("    [users] [rw][r][w]	List the top NUM shares, users or\n");
+	printf("			files on the object.\n");
+};

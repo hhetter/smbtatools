@@ -94,6 +94,7 @@ void configuration_show_help()
 	printf("				a file given as <file>.\n");
 	printf("-q      --query			Run an interpreter command,\n");
 	printf("				or run a SQL select command.\n");
+	printf("-p      --command-help		Interpreter command description.\n");
 	printf("\n");
 }
 
@@ -121,11 +122,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "key-file",1,NULL,'k'},
 			{ "query",1,NULL,'q'},
 			{ "host",1,NULL,'h'},
+			{ "command-help",0,NULL,'p'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:i:c:k:q:h:", long_options, &option_index );
+			"d:i:c:k:q:h:p", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -149,6 +151,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				break;
 			case 'q':
 				c->query = strdup( optarg );
+				break;
+			case 'p':
+				interpreter_command_help();
+				exit(0);
 				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
