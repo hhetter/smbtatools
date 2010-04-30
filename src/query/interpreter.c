@@ -72,9 +72,9 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	char *arg = NULL;
 	va_list ap;
 	int count = columns;
-	va_start( ap, count);
+	va_start( ap, NULL);
 	while (count --) {
-		arg = va_arg( ap,char * );
+		arg = va_arg( ap, char *);
 		printf("%s\t",arg);
 	}
 	va_end( ap );
