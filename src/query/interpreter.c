@@ -144,6 +144,9 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
+	} else {
+		printf("ERROR: top function syntax error.\n");
+		exit(1);
 	}
 	int i = 0;
 	char *el = "0";
