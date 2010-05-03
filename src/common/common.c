@@ -29,7 +29,7 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 	char kbstring[20];
 	char *output;
 	strcpy(kbstring,"Bytes");
-	long double kb = z;
+	long double kb = (long double) z;
 	if (kb>=1024) { kb = kb/1024; // kb
 			strcpy(kbstring,"KB");}
 	if (kb>=1024) { kb = kb/1024; // mb
@@ -40,7 +40,7 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 	if (kb>=1024) {
 	                kb = kb/1024; // tb
 	                strcpy(kbstring,"TB");}
-	output = talloc_asprintf( ctx,"%2.2Lf %s",kb,kbstring);
+	output = talloc_asprintf( ctx,"%4.02LF %s",kb,kbstring);
 	return output;
 }
 
