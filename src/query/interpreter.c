@@ -55,6 +55,7 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 	char *output=talloc_array(ctx,char,t+2);
 	int x = 0;int y = 0;
 	while (x <= strlen(data)) {
+		if (data[x]==',') { output[y]=' '; y++; } 
 		output[y] = data[x];
                 if ( data[x]==',' && data[x+1]==' ') x++;
 		y++;x++;
@@ -62,6 +63,117 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 	return output;
 }
 
+int interpreter_get_result_rows( char *qdat, int columns)
+{
+	
+	char *res = talloc( NULL, char);
+	int element,row,col =0;
+        while (res != NULL) {
+                res = result_get_element(res,element,qdat);
+                if ( col==columns ) { row++;col = 0;}
+                col++; element++;
+        }
+	TALLOC_FREE(res);
+	return row;
+}
+
+char *interpreter_identify( TALLOC_CTX *ctx,
+	enum IntCommands Type,
+	char *data,
+	struct configuration_data *config)
+{
+	char *query;
+	char *qdat;
+	int cols = 0;
+	if (Type==INT_OBJ_USER) {
+		/* identify users by SID */
+		query = talloc_asprintf(ctx,
+			"select distinct(usersid), username, "
+			"domain from read where username = '%s' "
+			"UNION select distinct(usersid), username,"
+			"domain from write where username = '%s';",
+			data,data);
+		qdat = sql_query(
+			ctx,
+			config,
+			query);
+		cols = 3;
+	} else if (Type==INT_OBJ_SHARE) {
+		/* identify shares by domain */
+		query = talloc_asprintf(ctx,
+			"select distinct(domain), share from read "
+			"where share = '%s' UNION select "
+			"distinct(domain), share from write where "
+			"share = '%s';", data,data);
+		qdat = sql_query(
+			ctx,
+			config,
+			query);
+		cols = 2;
+	} else if (Type==INT_OBJ_FILE) {
+		/* identify files by share */
+		query = talloc_asprintf(ctx,
+			"select distinct(share), filename, "
+			"from read where filename = '%s' "
+			"UNION select distinct(share), filenname "
+			"from write where filename = '%s';",data,data);
+		qdat = sql_query(
+			ctx,
+			config,
+			query);
+		cols = 2;
+	} else {
+		printf("ERROR: Identification of an unkown object type!\n");
+		exit(1);
+	}
+	/* if only one row has been returned, the query is unique
+	 * or failed
+	 */
+	if (interpreter_get_result_rows(qdat,cols) == 1) {
+		/* check if the query does query for an existing */
+		/* object at all.				 */
+		char *cmp = NULL;
+		cmp = result_get_element(ctx,1,qdat);
+		if (strcmp(cmp,"No Results.") == 0) {
+			switch(Type) {
+			case INT_OBJ_USER:
+				printf("User %s doesn't exist ", data);
+				break;
+			case INT_OBJ_SHARE:
+				printf("Share %s doesn't exist ",data);
+				break;
+			case INT_OBJ_FILE:
+				printf("File %s doesn't exist ",data);
+				break;
+			default:
+				printf("ERROR: Unsupported type of object!\n");
+				exit(1);
+			}
+			printf("in the database.\n");
+			exit(1);
+		}
+				
+		printf("Identified ");
+		switch(Type) {
+		case INT_OBJ_USER:
+			printf("user %s ",data);
+			break;
+		case INT_OBJ_SHARE:
+			printf("share %s ",data);
+			break;
+		case INT_OBJ_FILE:
+			printf("file %s ",data);
+			break;
+		default:
+			printf("ERROR: Unsupported type of object!\n");
+			exit(1);
+		}
+		printf("as a unique item in the database.\n");
+		return NULL;
+	}
+
+return NULL;
+}		
 
 void interpreter_print_table( TALLOC_CTX *ctx,
 		int columns,char *data, ...)
@@ -223,20 +335,20 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 	if (strcmp(command_data->arguments[0],"users") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select username,usersid from read union select username,usersid from write where %s;",
-			obj_struct->sql);
+			"select username,usersid from read where %s union select username,usersid from write where %s;",
+			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_print_table( ctx, 2, qdat, "Name","SID");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select share from read union select share from write where %s;",
-			obj_struct->sql);
+			"select share,domain from read where %s union select share,domain from write where %s;",
+			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 1, qdat, "Name");
+		interpreter_print_table( ctx, 2, qdat, "Name");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select filename from read union select filename from write where %s;",
-			obj_struct->sql);
+			"select filename from read where %s union select filename from write where %s;",
+			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx,config,query1);
 		interpreter_print_table( ctx, 1, qdat,"Name");
 	} else {
@@ -269,16 +381,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 
 		qdat = sql_query(ctx, config,query1);
 		sum = atol( result_get_element(ctx,0,qdat));
-		/* if (rows != 1) {
-			printf("ERROR: SQL query failure!\n");
-			exit(1);
-		}
-		*/
 		qdat = sql_query(ctx, config, query2);
-		/*if (rows != 1) {
-			printf("ERROR: SQL query failure!\n");
-			exit(1);
-		}*/
 		sum = sum + atol( result_get_element(ctx,0,qdat));
 		printf(
 "Total number of bytes transfered %s :		%s\n",
