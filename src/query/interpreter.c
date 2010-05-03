@@ -67,14 +67,14 @@ int interpreter_get_result_rows( char *qdat, int columns)
 {
 	
 	char *res = talloc( NULL, char);
-	int element,row,col =0;
+	int element=0,row=0,col =0;
         while (res != NULL) {
                 res = result_get_element(res,element,qdat);
                 if ( col==columns ) { row++;col = 0;}
                 col++; element++;
+		TALLOC_FREE(res);
         }
-	TALLOC_FREE(res);
-	return row;
+	return row+1;
 }
 
 char *interpreter_identify( TALLOC_CTX *ctx,
@@ -85,6 +85,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 	char *query;
 	char *qdat;
 	int cols = 0;
+	printf("Identifying %s ... ",data);
 	if (Type==INT_OBJ_USER) {
 		/* identify users by SID */
 		query = talloc_asprintf(ctx,
@@ -113,9 +114,9 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 	} else if (Type==INT_OBJ_FILE) {
 		/* identify files by share */
 		query = talloc_asprintf(ctx,
-			"select distinct(share), filename, "
+			"select distinct(share), filename "
 			"from read where filename = '%s' "
-			"UNION select distinct(share), filenname "
+			"UNION select distinct(share), filename "
 			"from write where filename = '%s';",data,data);
 		qdat = sql_query(
 			ctx,
@@ -171,7 +172,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return NULL;
 	}
-
+printf("RESULT: %i",interpreter_get_result_rows(qdat,cols));
 return NULL;
 }		
 
@@ -373,7 +374,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			"union select share,domain from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat, "Name");
+		interpreter_print_table( ctx, 2, qdat, "Name","Domain");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select filename from read where %s union"
@@ -465,6 +466,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
+		interpreter_identify(ctx, INT_OBJ_FILE, obj_struct->name,config);
 		break;
 	case INT_OBJ_SHARE:
 		obj_struct->object = INT_OBJ_SHARE;
@@ -473,6 +475,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
+		interpreter_identify(ctx, INT_OBJ_SHARE,obj_struct->name,config);
 		break;
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
@@ -481,6 +484,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 					command_data->arguments[0]);
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
+		interpreter_identify(ctx, INT_OBJ_USER,obj_struct->name,config);
 		break;
 	case INT_OBJ_GLOBAL:
 		obj_struct->object = INT_OBJ_GLOBAL;
