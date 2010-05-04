@@ -134,7 +134,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		/* check if the query does query for an existing */
 		/* object at all.				 */
 		char *cmp = NULL;
-		cmp = result_get_element(ctx,1,qdat);
+		cmp = result_get_element(ctx,0,qdat);
 		if (strcmp(cmp,"No Results.") == 0) {
 			switch(Type) {
 			case INT_OBJ_USER:
@@ -455,7 +455,6 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	struct configuration_data *config)
 {
 	if (command_data->command_id == -1) return;
-
 	switch(command_data->command_id)
 	{
 
