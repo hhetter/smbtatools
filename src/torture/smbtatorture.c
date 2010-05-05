@@ -545,9 +545,9 @@ int main(int argc, char *argv[])
 		}
 	}
 	end_time=times(&end_cpu);
-	
+	long double timet = (long double) (end_time - start_time) / clockticks;	
 	printf("Time required for the copying: %lu seconds\n",
-		(unsigned long int) end_time - start_time);
+		(unsigned long int) timet);
 	// free allocated memory
 	free(config.user);
 	free(config.workgroup);
