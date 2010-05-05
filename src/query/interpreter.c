@@ -584,7 +584,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
-		printf("%s\n",erg);
+		interpreter_print_table(ctx,1,erg,"SQL Result");
 		exit(0);
 	}
 

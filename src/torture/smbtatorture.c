@@ -28,7 +28,7 @@
 #include <libsmbclient.h>
 #include <getopt.h>
 #include <syslog.h>
-
+#include <sys/times.h>
 struct configuration_data {
 	char *user;
 	char *password;
@@ -504,6 +504,7 @@ int main(int argc, char *argv[])
 	time(&rand_time);
 	srandom( (unsigned int) rand_time);
 
+	/* endless copying until we are stopped */
 	if(config.copy==0)
 	{
 		for(;;)
@@ -527,7 +528,12 @@ int main(int argc, char *argv[])
 		// then the number of files that have been created
 		fprintf(config.recorder,"number = %i\n",config.number);
 	}
-
+	static clock_t start_time;
+	static clock_t end_time;
+	static struct tms start_cpu;
+	static struct tms end_cpu;
+	unsigned long int clockticks = sysconf(_SC_CLK_TCK);
+	start_time=times(&start_cpu);
 	for(i=0;i<config.copy;i++)
 	{
 		copy();
@@ -538,7 +544,10 @@ int main(int argc, char *argv[])
 			set_rand_seed=0;
 		}
 	}
-
+	end_time=times(&end_cpu);
+	
+	printf("Time required for the copying: %lu seconds\n",
+		(unsigned long int) end_time - start_time);
 	// free allocated memory
 	free(config.user);
 	free(config.workgroup);
