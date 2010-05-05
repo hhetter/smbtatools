@@ -83,7 +83,6 @@ void generate_files()
 	int fd, fd2;
 	int bytecount;
 	int debug=0;
-	int time1=0, time2=0;
 	char buffer[40000];
 	for(i=0;i<config.number;i++)
 	{
@@ -126,7 +125,6 @@ void generate_files()
 		strcat(Dateiname2, config.user);
 		strcat(Dateiname1, Zahl);
 		strcat(Dateiname2, Zahl);
-		time1=mtime();
 		smbc_init(get_auth_data_fn, debug);
 	
 		if ((fd = smbc_open(Dateiname1,
@@ -166,12 +164,9 @@ void generate_files()
 			bytecount=0;
 		}
 
-		time2=mtime();
-
 		if(config.verbose==1)
 		{
 			printf("File %s written with %i Bytes\n", Dateiname1, list[i]);
-			printf("in about %i milliseconds\n", (time2-time1));
 		}
 
 		if(i==config.number-1)
@@ -273,11 +268,11 @@ void copy()
         {	if (justread!=1) printf("File %s copied to %s\n", Dateiname1, Dateiname2);
 			else printf("Read file %s into memory.\n",Dateiname1);
 		
-		printf("sleeping now for %i seconds\n", rTime);
+		printf("Sleeping %i seconds...\n", rTime);
         }
 
 	sleep(rTime);
-
+	if (config.verbose ==1) printf("Transferring data...\n");
 }
 
 void help()
@@ -546,7 +541,7 @@ int main(int argc, char *argv[])
 	}
 	end_time=times(&end_cpu);
 	double timet = (double) (end_time - start_time) / (double) clockticks;	
-	printf("Time required for the copying: %f seconds\n", timet);
+	printf("Time required : %f seconds.\n", timet);
 	// free allocated memory
 	free(config.user);
 	free(config.workgroup);
