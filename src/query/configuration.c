@@ -23,6 +23,10 @@
 #include "include/interpreter.h"
 #include "../../include/common.h"
 #include <talloc.h>
+
+int configuration_check_configuration( struct configuration_data *c );
+
+
 /* Initialize default values of the configuration.			*/
 void configuration_define_defaults( struct configuration_data *c )
 {
@@ -54,6 +58,18 @@ int configuration_load_key_from_file( struct configuration_data *c)
 	return 0;
 }
 
+/* load $HOME/.smbtaquery/config */
+void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
+{
+        char *a=getenv("HOME");
+        char *f = talloc_asprintf(ctx,"%s/.smbtaquery/config",a);
+	FILE * fi = fopen(f,"r");
+        if (fi != NULL) {
+                fclose(fi);
+                if (c->config_file != NULL) return;
+		c->config_file = f;
+        }
+}
 
 
 int configuration_load_config_file( struct configuration_data *c)
@@ -67,7 +83,9 @@ int configuration_load_config_file( struct configuration_data *c)
 	cc = iniparser_getstring( Mydict, "network:port_number",NULL);
 	if (cc != NULL) c->port = atoi(cc);
 
-
+	cc = iniparser_getstring( Mydict, "network:host_name",NULL);
+	if (cc != NULL) c->host = strdup(cc);
+	printf("%s",c->host);
 	cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
 	if (cc != NULL) {
 		c->debug_level = atoi(cc);
@@ -143,7 +161,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				break;
 			case 'c':
 				c->config_file = strdup( optarg );
-				configuration_load_config_file(c);
 				break;
 			case 'k':
 				c->keyfile = strdup( optarg);
@@ -163,12 +180,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		}
 	}
 
-	/* connect to the server */
-	if (c->host == NULL) {
-		printf("ERROR: please specify a host running smbtad!\n");
-		exit(1);
-	}
-
+	configuration_default_config( runtime_mem, c);
+	if (c->config_file != NULL)
+		configuration_load_config_file(c);
+	if (configuration_check_configuration(c)==-1) exit(1);
 	c->socket = common_connect_socket( c->host, c->port );
 
 	/* through all options, now run the query command */
