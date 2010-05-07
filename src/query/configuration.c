@@ -85,7 +85,6 @@ int configuration_load_config_file( struct configuration_data *c)
 
 	cc = iniparser_getstring( Mydict, "network:host_name",NULL);
 	if (cc != NULL) c->host = strdup(cc);
-	printf("%s",c->host);
 	cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
 	if (cc != NULL) {
 		c->debug_level = atoi(cc);
