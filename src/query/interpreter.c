@@ -58,10 +58,12 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		if (data[x]==',') { output[y]=' '; y++; } 
 		output[y] = data[x];
                 if ( data[x]==',' && data[x+1]==' ') x++;
+		if ( data[x]==' ' && data[x+1]==' ') x++;
 		y++;x++;
 	}
 	return output;
 }
+
 
 int interpreter_get_result_rows( char *qdat, int columns)
 {
