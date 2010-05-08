@@ -27,7 +27,9 @@
 int configuration_check_configuration( struct configuration_data *c );
 
 
-/* Initialize default values of the configuration.			*/
+/**
+ * Initialize default values of the configuration.
+ */
 void configuration_define_defaults( struct configuration_data *c )
 {
 	c->port = 3390;
