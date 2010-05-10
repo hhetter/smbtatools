@@ -63,7 +63,6 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		if ( data[x]==' ' && data[x+1]==' ') x++;
 		y++;x++;
 	}
-	printf("output: %s\n",output);
 	return output;
 }
 
@@ -72,10 +71,10 @@ int interpreter_get_result_rows( char *qdat, int columns)
 {
 	
 	char *res = talloc( NULL, char);
-	int element=0,row=0,col =0;
+	int element=0,row=1,col =1;
         while (res != NULL) {
                 res = result_get_element(res,element,qdat);
-                if ( col==columns ) { row++;col = 0;}
+                if ( col==columns ) { row++;col = 1;}
                 col++; element++;
 		TALLOC_FREE(res);
         }
@@ -177,7 +176,8 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return NULL;
 	}
-printf("RESULT: %i",interpreter_get_result_rows(qdat,cols));
+printf("UNABLE TO IDENTIFY !!!! RESULT: %i",interpreter_get_result_rows(qdat,cols));
+exit(1);
 return NULL;
 }		
 
