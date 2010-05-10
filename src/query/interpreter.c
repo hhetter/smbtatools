@@ -45,7 +45,8 @@ enum IntCommands {
 	INT_OBJ_TOTAL,
 	INT_OBJ_LIST,
 	INT_OBJ_TOP,
-	INT_OBJ_GLOBAL };
+	INT_OBJ_GLOBAL,
+        INT_OBJ_LAST};
 
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
@@ -204,6 +205,110 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 		col++; element++;
 	}
 }
+void interpreter_fn_last_activity( TALLOC_CTX *ctx,
+                struct interpreter_command *command_data,
+                struct interpreter_object *obj_struct,
+                struct configuration_data *config)
+{
+        char *query1;
+        char *qdat = NULL;
+        char *qdat2 = NULL;
+
+        if (command_data->argument_count != 3) {
+		printf("ERROR: the last_activity function expects 3 arguments.\n");
+		exit(1);
+	}
+	int limit = atoi(command_data->arguments[0]);
+	if (limit == 0 ) {
+		printf("ERROR: last_activity command syntax error.\n");
+		exit(1);
+	}
+        unsigned long int length[limit + 1];
+        if (strcmp(command_data->arguments[1],"users")==0) {
+            if (strcmp(command_data->arguments[2],"r")==0) {
+                query1 = talloc_asprintf(ctx,
+                            "select distinct username from read "
+                            "where %s "
+                            "limit %i;",
+                        obj_struct->sql,limit);
+                qdat = sql_query(ctx,config,query1);
+
+            } else if (strcmp(command_data->arguments[2],"w")==0) {
+                query1 = talloc_asprintf(ctx,
+                            "select distinct username from write "
+                            "where %s "
+                            "limit %i",
+                            obj_struct->sql,limit);
+                qdat = sql_query(ctx,config,query1);
+            } else if (strcmp(command_data->arguments[2],"rw")==0) {
+                query1 = talloc_asprintf(ctx,
+                            "select distinct username from"
+                            "( select * from read UNION select * "
+                            "from write) where %s "
+                            "limit %i;",
+                            obj_struct->sql,limit);
+			qdat = sql_query(ctx,config,query1);
+            }
+        } else {
+		printf("ERROR: top function syntax error.\n");
+		exit(1);
+	}
+	int i = 0;
+        char *el = "0";
+        char *el2 = "0";
+	while (el != NULL) {
+		el = result_get_element(ctx,i,qdat);
+		if (el == NULL) break;
+		if (strcmp(command_data->arguments[1],"users")==0) {
+			if (strcmp(command_data->arguments[2],"r")==0) {
+				query1 = talloc_asprintf(ctx,
+					"select timestamp from read where "
+					"username=\"%s\" and %s "
+                                        "order by timestamp desc "
+                                        "limit %i;",
+					el,
+					obj_struct->sql, limit);
+				qdat2 = sql_query(ctx,config,query1);
+				length[i]=atol(result_get_element(ctx,0,qdat2));
+			} else if (strcmp(command_data->arguments[2],"w")==0) {
+				query1 = talloc_asprintf(ctx,
+					"select timestamp from write where "
+					"username=\"%s\" and %s "
+                                        "order by timestamp desc "
+                                        "limit %i;",
+					el,
+					obj_struct->sql, limit);
+				qdat2 = sql_query(ctx,config,query1);
+				length[i]=atol(result_get_element(ctx,0,qdat2));
+			} else if (strcmp(command_data->arguments[2],"rw")==0) {
+				query1 = talloc_asprintf(ctx,
+					"select timestamp from ( select * from "
+					"read UNION select * from write) where "
+					"username=\"%s\" and %s "
+                                        "order by timestamp desc "
+                                        "limit %i;",
+					el,
+					obj_struct->sql, limit);
+				qdat2 = sql_query(ctx,config,query1);
+				length[i]=atol(result_get_element(ctx,0,qdat2));
+			}
+		}
+        i = 0;
+	el = "0";
+        el2 = "0";
+	printf("%-30s%-30s\n","Name","Date");
+        printf(
+        "------------------------------------------------------------------------------\n");
+	while (el2 != NULL) {
+		el = result_get_element(ctx,0,qdat);
+                el2 = result_get_element(ctx,i,qdat2);
+		if (el2 == NULL) break;
+		printf("%-30s%-30s\n",el, el2);
+		i++;
+	}
+    }
+}
+
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -551,6 +656,10 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_TOP:
 		interpreter_fn_top_list(ctx, command_data, obj_struct,config);
 		break;
+        case INT_OBJ_LAST:
+                interpreter_fn_last_activity(ctx, command_data, obj_struct,config);
+                break;
+                
 
 	}
 }
@@ -561,6 +670,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "total") == 0) return INT_OBJ_TOTAL;
 	if (strcmp(cmd, "list") == 0) return INT_OBJ_LIST;
 	if (strcmp(cmd, "top") == 0) return INT_OBJ_TOP;
+        if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
@@ -677,4 +787,6 @@ void interpreter_command_help()
 	printf("top [num] [shares]\n");
 	printf("    [users] [rw][r][w]	List the top NUM shares, users or\n");
 	printf("			files on the object.\n");
+        printf("last_activity [num]\n");
+        printf("    [users] [rw][r][w] List the last NUM activities from the user.\n");
 };
