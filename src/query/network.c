@@ -35,7 +35,13 @@ void network_close_connection( int sockfd ) {
 // fixme , do something.
 }
 
-
+/*
+ * Get a single column of the result data from a query-result
+ *
+ * TALLOC_CTX *ctx		the talloc context to work on
+ * int number			the number of the column to get
+ * const char *data		the result data block
+ */
 char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
 {
 	char bytecount[10];
@@ -66,7 +72,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
 	return result;
 }
 
-/* blocking select call */
 char *sql_query( TALLOC_CTX *ctx,
 	struct configuration_data *config,
 	char *query )

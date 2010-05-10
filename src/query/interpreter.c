@@ -55,8 +55,10 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 	int t = strlen(data);
 	char *output=talloc_array(ctx,char,t+2);
 	int x = 0;int y = 0;
+	int flagfirst=0;
 	while (x <= strlen(data)) {
-		if (data[x]==',') { output[y]=' '; y++; } 
+		if (data[x]==',' && flagfirst==0) { output[y]=' '; y++;
+						flagfirst=1; } 
 		output[y] = data[x];
                 if ( data[x]==',' && data[x+1]==' ') x++;
 		if ( data[x]==' ' && data[x+1]==' ') x++;
@@ -70,10 +72,10 @@ int interpreter_get_result_rows( char *qdat, int columns)
 {
 	
 	char *res = talloc( NULL, char);
-	int element=0,row=0,col =0;
+	int element=0,row=1,col =1;
         while (res != NULL) {
                 res = result_get_element(res,element,qdat);
-                if ( col==columns ) { row++;col = 0;}
+                if ( col==columns ) { row++;col = 1;}
                 col++; element++;
 		TALLOC_FREE(res);
         }
@@ -175,7 +177,8 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return NULL;
 	}
-printf("RESULT: %i",interpreter_get_result_rows(qdat,cols));
+printf("UNABLE TO IDENTIFY !!!! RESULT: %i",interpreter_get_result_rows(qdat,cols));
+exit(1);
 return NULL;
 }		
 
@@ -675,7 +678,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
-	if (strncmp(cmd, "global",5) == 0) return INT_OBJ_GLOBAL;
+	if (strncmp(cmd, "global",6) == 0) return INT_OBJ_GLOBAL;
 	return -1;
 }
 
@@ -772,21 +775,22 @@ void interpreter_command_help()
 	printf("-----------------------------------------------------\n");
 	printf("smbtaquery -q 'OBJECT,COMMAND;'\n");
 	printf("OBJECT can be:\n");
-	printf("global  		Run a query over the whole dataset.\n");
-	printf("share SHARE   		Run a query over the share specified by\n");
-	printf("			SHARE.\n");
-	printf("user USER 		Run a query over the user USER.\n");
-	printf("file FILE		Run a query over the file FILE.\n");
+	printf("global  			Run a query over the whole dataset.\n");
+	printf("share	SHARE   		Run a query over the share specified by\n");
+	printf("				SHARE.\n");
+	printf("user 	USER 			Run a query over the user USER.\n");
+	printf("file FILE			Run a query over the file FILE.\n");
 	printf("COMMAND can be:\n");
-	printf("total [rw][r][w]	Get the total read(r), write(w)\n");
-	printf("			or read-write values of the\n");
-	printf("			object.\n");
-	printf("list [shares][users]\n");
-	printf("     [files]		Lists all shares, all users, all\n");
-	printf("			files on an object.\n");
-	printf("top [num] [shares]\n");
-	printf("    [users] [rw][r][w]	List the top NUM shares, users or\n");
-	printf("			files on the object.\n");
+	printf("total 	[rw][r][w]		Get the total read(r), write(w)\n");
+	printf("				or read-write values of the\n");
+	printf("				object.\n");
+	printf("list 	[shares][users]\n");
+	printf("     	[files]			Lists all shares, all users, all\n");
+	printf("				files on an object.\n");
+	printf("top 	[num] [shares]\n");
+	printf("    	[users] [rw][r][w]	List the top NUM shares, users or\n");
+	printf("				files on the object.\n");
         printf("last_activity [num]\n");
-        printf("    [users] [rw][r][w] List the last NUM activities from the user.\n");
+        printf("    [users] [rw][r][w]          List the last NUM activities\n");
+        printf("                                from the user.\n");
 };

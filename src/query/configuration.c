@@ -27,7 +27,9 @@
 int configuration_check_configuration( struct configuration_data *c );
 
 
-/* Initialize default values of the configuration.			*/
+/**
+ * Initialize default values of the configuration.
+ */
 void configuration_define_defaults( struct configuration_data *c )
 {
 	c->port = 3390;
@@ -105,7 +107,7 @@ void configuration_show_help()
 	printf("\n");
 	printf("-i	--inet-port <num>	Set the port-number to	\n");
 	printf("				use to <num>.\n");
-	printf("-d	--debug-level <num>		Set the debug level to work\n");
+	printf("-d	--debug-level <num>	Set the debug level to work\n");
 	printf("				with to <num>. Default: 0\n");
 	printf("-c	--config-file <file>	Load the configuration from\n");
 	printf("				a file given as <file>.\n");
