@@ -76,7 +76,7 @@ char *sql_query( TALLOC_CTX *ctx,
 	struct configuration_data *config,
 	char *query )
 {
-	printf("QUERY: %s\n",query);
+	if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
         fd_set fd_set_r,fd_set_w,active_fd_set;
         int z=0;
 	char *header=NULL;
