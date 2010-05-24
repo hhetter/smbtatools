@@ -79,7 +79,7 @@ int interpreter_get_result_rows( char *qdat, int columns)
                 col++; element++;
 		TALLOC_FREE(res);
         }
-	return row+1;
+	return row;
 }
 
 char *interpreter_identify( TALLOC_CTX *ctx,
@@ -135,7 +135,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 	/* if only one row has been returned, the query is unique
 	 * or failed
 	 */
-	if (interpreter_get_result_rows(qdat,cols) == cols) {
+	if (interpreter_get_result_rows(qdat,cols) == 1) {
 		/* check if the query does query for an existing */
 		/* object at all.				 */
 		char *cmp = NULL;
