@@ -135,7 +135,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 	/* if only one row has been returned, the query is unique
 	 * or failed
 	 */
-	if (interpreter_get_result_rows(qdat,cols) == 1) {
+	if (interpreter_get_result_rows(qdat,cols) == cols) {
 		/* check if the query does query for an existing */
 		/* object at all.				 */
 		char *cmp = NULL;
