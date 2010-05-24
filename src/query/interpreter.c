@@ -209,7 +209,29 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return NULL;
 	}
-	interpreter_print_numbered_table(ctx,cols,qdat,"TEST1","TEST2");
+
+	/*
+	 * The result is not unique. Present the user with a list of
+	 * items to choose.
+	 */
+	switch(Type) {
+	case INT_OBJ_USER:
+		printf("User '%s' is ambiguous. Please choose:\n",data);
+		interpreter_print_numbered_table(ctx,cols,qdat,"SID","Name","Domain");
+		break;
+	case INT_OBJ_SHARE:
+		printf("Share '%s' is ambiguous. Please choose:\n",data);
+		interpreter_print_numbered_table(ctx,cols,qdat,"Domain","Share");
+		break;
+	case INT_OBJ_FILE:
+		printf("File '%s' is ambiguous. Please choose:\n",data);
+		interpreter_print_numbered_table(ctx,cols,qdat,"Share","File");
+		break;
+	default:
+		printf("ERROR: Unsupported type of object!\n");
+		exit(1);
+
+	}
 
 	exit(1);
 	return NULL;
@@ -226,7 +248,7 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
         va_list ap;
         int count = columns;
         va_start( ap, NULL);
-	printf(" Pos ");
+	printf("     ");
         while (count --) {
                 arg = va_arg( ap, char *);
                 printf("%-30s\t",arg);
@@ -239,11 +261,10 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
         while (res != NULL) {
                 res = result_get_element(ctx,element,data);
                 if (res != NULL) printf("%-30s\t",res);
-                if ( col==columns ) { row++; col = 0; printf("\n%04i|",row); }
+                if ( col==columns ) { row++; col = 0;printf("\n%04i|",row);  }
                 col++; element++;
         }
 }
-
 
 void interpreter_print_table( TALLOC_CTX *ctx,
 		int columns,char *data, ...)
