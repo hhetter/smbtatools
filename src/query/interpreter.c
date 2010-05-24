@@ -121,6 +121,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 {
 	char *query;
 	char *qdat;
+	char *retstr = NULL;
 	int cols = 0;
 	printf("Identifying %s ... ",data);
 	if (Type==INT_OBJ_USER) {
@@ -240,9 +241,26 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("ERROR: invalid input.\n");
 		exit(1);
 	}
-	printf("%s\n",result_get_element(ctx,number*cols,qdat));
-	exit(1);
-	return NULL;
+	switch(Type) {
+	case INT_OBJ_USER:
+		retstr = talloc_asprintf(ctx,"and usersid='%s' and domain='%s' ",
+			result_get_element(ctx,number*cols,qdat),
+			result_get_element(ctx,(number*cols)+2,qdat));
+		break;
+	case INT_OBJ_SHARE:
+		retstr = talloc_asprintf(ctx,"and domain='%s' ",
+			result_get_element(ctx,number*cols,qdat));
+		break;
+	case INT_OBJ_FILE:
+		retstr = talloc_asprintf(ctx,"and share='%s' ",
+			result_get_element(ctx,number*cols,qdat));
+		break;
+	default:
+		printf("ERROR: Unsupported type of object!\n");
+		exit(1);
+	}
+
+	return retstr;
 }		
 
 void interpreter_print_numbered_table( TALLOC_CTX *ctx,
@@ -712,29 +730,32 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," filename='%s'",
-					command_data->arguments[0]);
+		obj_struct->sql = talloc_asprintf(ctx," filename='%s' %s",
+					command_data->arguments[0],
+					interpreter_identify(ctx,INT_OBJ_FILE,
+						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
-		interpreter_identify(ctx, INT_OBJ_FILE, obj_struct->name,config);
 		break;
 	case INT_OBJ_SHARE:
 		obj_struct->object = INT_OBJ_SHARE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," share='%s'",
-					command_data->arguments[0]);
+		obj_struct->sql = talloc_asprintf(ctx," share='%s' %s",
+					command_data->arguments[0],
+					interpreter_identify(ctx,INT_OBJ_SHARE,
+						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
-		interpreter_identify(ctx, INT_OBJ_SHARE,obj_struct->name,config);
 		break;
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," username='%s'",
-					command_data->arguments[0]);
+		obj_struct->sql = talloc_asprintf(ctx," username='%s' %s",
+					command_data->arguments[0],
+					interpreter_identify(ctx,INT_OBJ_USER,
+						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
-		interpreter_identify(ctx, INT_OBJ_USER,obj_struct->name,config);
 		break;
 	case INT_OBJ_GLOBAL:
 		obj_struct->object = INT_OBJ_GLOBAL;
