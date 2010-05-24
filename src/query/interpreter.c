@@ -68,19 +68,49 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 }
 
 
-int interpreter_get_result_rows( char *qdat, int columns)
+int interpreter_get_result_rows( char *data, int columns)
 {
+
+        int col=1;
+	int row = 0;
+        int element=0;
+        char *res = " ";
+	char *ctx = talloc(NULL, char);
+        while (res != NULL) {
+                res = result_get_element(ctx,element,data);
+                // if (res != NULL) printf("OO:%-30s\t",res);
+                if ( col==columns ) { col = 0; row ++;  }
+                col++; element++;
+        }
+	TALLOC_FREE(ctx);
+	return row;
+}
 	
-	char *res = talloc( NULL, char);
+/*	char *res = talloc( NULL, char);
 	int element=0,row=1,col =1;
         while (res != NULL) {
                 res = result_get_element(res,element,qdat);
-                if ( col==columns ) { row++;col = 1;}
+		printf("%s\n",res);
+                if ( col==columns ) { row++;col = 0;}
                 col++; element++;
 		TALLOC_FREE(res);
         }
 	return row;
-}
+*/
+
+/*
+        while (res != NULL) {
+                res = result_get_element(ctx,element,data);
+                if (res != NULL) printf("%-30s\t",res);
+                if ( col==columns ) { col = 0; printf("\n"); }
+                col++; element++;
+        }
+*/
+
+
+void interpreter_print_table( TALLOC_CTX *ctx,
+                int columns,char *data, ...);
+
 
 char *interpreter_identify( TALLOC_CTX *ctx,
 	enum IntCommands Type,
