@@ -111,6 +111,8 @@ int interpreter_get_result_rows( char *data, int columns)
 void interpreter_print_table( TALLOC_CTX *ctx,
                 int columns,char *data, ...);
 
+void interpreter_print_numbered_table( TALLOC_CTX *ctx,
+                int columns,char *data, ... );
 
 char *interpreter_identify( TALLOC_CTX *ctx,
 	enum IntCommands Type,
@@ -207,10 +209,41 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return NULL;
 	}
-printf("UNABLE TO IDENTIFY !!!! RESULT: %i",interpreter_get_result_rows(qdat,cols));
-exit(1);
-return NULL;
+	interpreter_print_numbered_table(ctx,cols,qdat,"TEST1","TEST2");
+
+	exit(1);
+	return NULL;
 }		
+
+void interpreter_print_numbered_table( TALLOC_CTX *ctx,
+		int columns,char *data, ... )
+{
+        int col=1;
+	int row=1;
+        int element=0;
+        char *res = " ";
+        char *arg = NULL;
+        va_list ap;
+        int count = columns;
+        va_start( ap, NULL);
+	printf(" Pos ");
+        while (count --) {
+                arg = va_arg( ap, char *);
+                printf("%-30s\t",arg);
+        }
+        va_end( ap );
+        printf("\n");
+        printf(
+        "------------------------------------------------------------------------------\n");
+	printf("%04i|",row);
+        while (res != NULL) {
+                res = result_get_element(ctx,element,data);
+                if (res != NULL) printf("%-30s\t",res);
+                if ( col==columns ) { row++; col = 0; printf("\n%04i|",row); }
+                col++; element++;
+        }
+}
+
 
 void interpreter_print_table( TALLOC_CTX *ctx,
 		int columns,char *data, ...)
