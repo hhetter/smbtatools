@@ -232,7 +232,15 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		exit(1);
 
 	}
-
+	int number;
+	printf("\nEnter number: ");
+	scanf( "%i", &number);
+	number--;
+	if (number<0) {
+		printf("ERROR: invalid input.\n");
+		exit(1);
+	}
+	printf("%s\n",result_get_element(ctx,number*cols,qdat));
 	exit(1);
 	return NULL;
 }		
