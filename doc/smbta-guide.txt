@@ -29,5 +29,7 @@ in Göttingen, Germany, in 2007. At the SNIA conference 2008, I was able to
 present a prototype of the idea to the Samba team. The code for the module
 got immediately accepted and was introduced with Samba 3.2.0 to Samba users.
 
+This document is refering to the version 2.0 of the SMB Traffic Analyzer VFS
+module.
 
 
