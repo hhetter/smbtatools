@@ -287,7 +287,12 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
         while (res != NULL) {
                 res = result_get_element(ctx,element,data);
                 if (res != NULL) printf("%-30s\t",res);
-                if ( col==columns ) { row++; col = 0;printf("\n%04i|",row);  }
+                if ( col==columns ) {
+			row++;
+			col = 0;
+			if (result_get_element(ctx,element+1,data) != NULL)
+				printf("\n%04i|",row);
+		}
                 col++; element++;
         }
 }
