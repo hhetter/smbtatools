@@ -207,8 +207,9 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 			printf("ERROR: Unsupported type of object!\n");
 			exit(1);
 		}
+		retstr = talloc_asprintf(ctx,"and 1=1 ");
 		printf("as a unique item in the database.\n");
-		return NULL;
+		return retstr;
 	}
 
 	/*
@@ -368,7 +369,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 			qdat = sql_query(ctx,config,query1);
             }
         } else {
-		printf("ERROR: top function syntax error.\n");
+		printf("ERROR: last_activity function syntax error.\n");
 		exit(1);
 	}
 	int i = 0;
