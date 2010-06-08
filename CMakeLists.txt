@@ -21,6 +21,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME
 set(CPACK_SOURCE_IGNORE_FILES ".git/;CMakeFiles/")
 include(CPack)
 #include(CPackConfig.cmake)
+FIND_PACKAGE(Sqlite3 REQUIRED)
 
 # Build debugging enabled binaries
 SET(CMAKE_BUILD_TYPE "Debug")
@@ -30,6 +31,7 @@ SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 # Installation prefix /usr
 SET(CMAKE_INSTALL_PREFIX /usr)
 SET(Libraries
+sqlite3
 iniparser
 ncurses
 talloc

@@ -23,6 +23,33 @@
 #include "include/interpreter.h"
 #include "../../include/common.h"
 #include <talloc.h>
+#include <sqlite3.h>
+
+sqlite3 *create_db()
+{
+	char *a=getenv("HOME");
+	char full_path[255];
+	strcpy(full_path,a);
+	strcat(full_path,"/.smbtatools/smbtaquery-db.sql");
+	sqlite3 *db;
+        int rc;
+        char *zErrormsg;
+        rc=sqlite3_open( full_path,&db);
+        if ( rc ) {
+                syslog(LOG_DAEMON,
+                        "plugin-sqlite3 : ERROR: Can't open Database :"
+                        " %s, exiting.\n",
+                        sqlite3_errmsg(db));
+                return NULL;
+        }
+
+	rc = sqlite3_exec( db, \
+                "CREATE TABLE last_activity_data ("
+                "timestamp DATE, message varchar )",NULL,0,&zErrormsg);
+
+
+	return db;
+}
 
 int configuration_check_configuration( struct configuration_data *c );
 
@@ -122,6 +149,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 {
 	int i;
 	TALLOC_CTX *runtime_mem = NULL;
+	c->db = create_db();
 	configuration_define_defaults( c );
 
 

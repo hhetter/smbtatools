@@ -353,12 +353,15 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	helper = result_get_element(ctx,0,qdat);
 	int row = 0;
 	while( helper != NULL ) {
-		printf("User %s read %s bytes from file %s at %s.\n",
+		char *tmp = talloc_asprintf(ctx,"INSERT INTO last_activity_data ( timestamp, message) VALUES ( '%s', 'User %s read %s bytes from file %s at %s.');",
+		result_get_element(ctx,row+1,qdat),
 		helper,
 		result_get_element(ctx,row+3,qdat),
 		result_get_element(ctx,row+2,qdat),
 		result_get_element(ctx,row+1,qdat));
-		row++;
+		printf("ERG: %s\n",tmp);
+		sqlite3_exec(config->db,tmp,NULL,0,NULL);
+		row=row+4;
 		helper=result_get_element(ctx,row,qdat);
 	}
 }

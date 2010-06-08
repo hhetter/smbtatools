@@ -38,6 +38,7 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
+#include <sqlite3.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
 struct configuration_data {
@@ -58,7 +59,7 @@ struct configuration_data {
 	
 	/* runtime data */
 	int socket;
-
+	sqlite3 *db;
 };
 
 int configuration_check_configuration( struct configuration_data *c );
