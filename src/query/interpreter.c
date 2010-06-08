@@ -332,25 +332,37 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         char *query1;
         char *qdat = NULL;
         char *qdat2 = NULL;
-
-        if (command_data->argument_count != 3) {
-		printf("ERROR: the last_activity function expects 3 arguments.\n");
+	char *helper = NULL;
+        if (command_data->argument_count != 1) {
+		printf("ERROR: the last_activity function expects 1 arguments.\n");
 		exit(1);
 	}
 	int limit = atoi(command_data->arguments[0]);
 	if (limit == 0 ) {
-		printf("ERROR: last_activity command syntax error.\n");
+		printf("ERROR: last_activity command syntax error."
+			"Limit must be > 0.\n");
 		exit(1);
 	}
         unsigned long int length[limit + 1];
-        if (strcmp(command_data->arguments[1],"users")==0) {
-            if (strcmp(command_data->arguments[2],"r")==0) {
-                query1 = talloc_asprintf(ctx,
-                            "select distinct username from read "
-                            "where %s "
-                            "limit %i;",
-                        obj_struct->sql,limit);
-                qdat = sql_query(ctx,config,query1);
+        query1 = talloc_asprintf(ctx,
+		"select username,timestamp,filename,length from read "
+		"where %s "
+		"limit %i;",
+		obj_struct->sql,limit);
+	qdat = sql_query(ctx,config,query1);
+	helper = result_get_element(ctx,0,qdat);
+	int row = 0;
+	while( helper != NULL ) {
+		printf("User %s read %s bytes from file %s at %s.\n",
+		helper,
+		result_get_element(ctx,row+3,qdat),
+		result_get_element(ctx,row+2,qdat),
+		result_get_element(ctx,row+1,qdat));
+		row++;
+		helper=result_get_element(ctx,row,qdat);
+	}
+}
+/*
 
             } else if (strcmp(command_data->arguments[2],"w")==0) {
                 query1 = talloc_asprintf(ctx,
@@ -427,7 +439,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	}
     }
 }
-
+*/
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -910,6 +922,6 @@ void interpreter_command_help()
 	printf("    	[users] [rw][r][w]	List the top NUM shares, users or\n");
 	printf("				files on the object.\n");
         printf("last_activity [num]\n");
-        printf("    [users] [rw][r][w]          List the last NUM activities\n");
-        printf("                                from the user.\n");
+        printf("            			List the last NUM activities\n");
+        printf("                                from the specified object.\n");
 };
