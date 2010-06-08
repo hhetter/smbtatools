@@ -60,11 +60,11 @@ int configuration_load_key_from_file( struct configuration_data *c)
 	return 0;
 }
 
-/* load $HOME/.smbtaquery/config */
+/* load $HOME/.smbtatools/query.config */
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
-        char *f = talloc_asprintf(ctx,"%s/.smbtaquery/config",a);
+        char *f = talloc_asprintf(ctx,"%s/.smbtatools/query.config",a);
 	FILE * fi = fopen(f,"r");
         if (fi != NULL) {
                 fclose(fi);
