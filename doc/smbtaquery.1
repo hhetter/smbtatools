@@ -1,7 +1,7 @@
-.TH smbtaquery 1  "Februar 19, 2010" "version 0.0.1" "SYSTEM COMMANDS"
+.TH smbtaquery 1  "June 09, 2010" "version 0.0.1" "SYSTEM COMMANDS"
 .SH SYNOPSIS
 .B smbtaquery
-[\-h --help] [-p password] [\-hn --host] [\-p --port] [\-w --workgroup] [\-u --user] [\-v --verbose] 
+[\-hn --host] [\-i --inet-port] [\-c --config-file] [\-q --query] [\-p --command-help] [\-d --debug-level] [\-k --key-file] 
 .SH DESCRIPTION
 The smbtaquery program is part of the Samba Traffic Analyzer Tools, which consists of smbtaquery and smbtamonitor(1). 
 .PP
@@ -11,22 +11,28 @@ It is work in progress.
 .PP
 .SH OPTIONS
 .TP
-\-h \--help 
-Display a short help text on the command line.
+\-h \--host
+Specify the host where the smbta daemon is operating on.
 .TP
-\-w \--workgroup
-Specify the workgroup stadtorture should work on.
+\-i \--inet-port
+Specify the port number where the smbta daemon is operating on.
 .TP
-\-u \--user
-Specify the username for stadtorture to operate on the samba server.
+\-c \--config-file
+Path to the smbtaquery config file. If not used, we assume it is $home/.smbtatools/query.config
 .TP
-\-p \--password
-Specify the SMB password for the user given in -u.
+\-q \--query
+The query smbtaquery should execute. It has to be terminated with a semicolon.
+.TP
+\-k \--key-file
+Specify the key file for smbtad
+.TP
+\-p \--command-help 
+Display a short help text which commands are available.
 .TP
 \-v \--verbose
 Be verbose and print all steps to the screen.
 .SH EXAMPLES
 .TP
-smbtaquery -u user -p password -hn stad.testdomain.com -p 31337
+smbtaquery -i 3491 -h test.yourdomain.com -q 'share /pool, total rw;'
 
 

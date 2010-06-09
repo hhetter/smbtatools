@@ -3,3 +3,35 @@ smbtatools
 
 tools for the samba traffic analyzer daemon
 smbtaquery and smbtamonitor
+
+Documentation
+-------------
+
+Documentation is available in the ./doc directory.
+
+How to build from Source
+------------------------
+
+smbtatools is using cmake for building. You need to
+install cmake on your system.
+
+smbtatools is usually build out-of-source. To do this,
+you create a directory where you want to build, and
+run cmake $PATH_TO_THE_SMBTATOOLS_SOURCES.
+
+Suppose smbtatools is in /home/user/smbtatools
+
+Then you may run the build like this:
+mkdir /home/user/smbtatools-run
+cd /home/user/smbtatools-run
+cmake ../smbtatools
+
+The build will now report libraries and headers you
+require to build....
+
+make
+
+(as root) : make install
+
+
+
