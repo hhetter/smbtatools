@@ -32,4 +32,63 @@ got immediately accepted and was introduced with Samba 3.2.0 to Samba users.
 This document is refering to the version 2.0 of the SMB Traffic Analyzer VFS
 module.
 
+Why using SMB Taffic Analyzer
+-----------------------------
+
+Samba services may run on special hardware, like RAID systems, or other specialized
+storage. With SMBTA, the user can create an overview of the network usage
+on the network. SMBTA can be used to answer questions like this:
+
+- Which of my services is the most used one?
+- At which time the usage of my service reaches peaks?
+- Which service almost never gets used?
+- Which users are the highest traffic generators?
+- What where the detailed last file activities on a share?
+- Which is the top used file be read and write access?
+
+Isn't SMBTA a tool to control employees?
+----------------------------------------
+
+Yes it can be used like that, but doesn't need to be. To expose user names
+to a storage is even forbidden in many countries. Therefore, SMBTA allows
+for anonymization of any data linked to a person.
+
+There are many use cases for SMBTA, like determining and planning hardware for your
+services, or analyzing the network before switching to clustered Samba.
+
+The basic concept of SMBTA
+--------------------------
+
+The Samba CIFS server features a Virtual File System Layer (VFS), that allows
+modules to be linked into the layer, replacing or enhancing the functions
+of the VFS. Modules can be linked into and behave completely transparent.
+
+SMBTA makes use of this functionality by adding a module to Samba's
+VFS. that is collecting data from prominent VFS functions like write, read,
+close etc. 
+
+The collected data will be encrypted, and send over the network to a
+receiver program. This daemon program, smbtad, is then building a
+SQL storage from the data.
+
+Besides of the generated SQL storage, client programs can be used to
+query the storage in a specialized way over the network.
+
+
+Where to get SMBTA
+------------------
+
+The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged
+with Samba version greater or equal than 3.2.0. However, the current
+SMBTA module shipping with Samba is only implementing version 1 of the
+SMBTA protocol, and this document is only refering to version 2 of the
+protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2
+can be found in the current master git source tree of Samba. It is expected
+to be shipped with Samba 3.6.0.
+
+For the openSUSE Linux distribution, SMBTAv2 has been backported to current
+Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module
+from the openSUSE BuildService.
+
+
 
