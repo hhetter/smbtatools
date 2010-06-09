@@ -324,6 +324,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 		col++; element++;
 	}
 }
+
 void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 struct interpreter_command *command_data,
                 struct interpreter_object *obj_struct,
@@ -523,6 +524,18 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 row=row+3;
                 helper=result_get_element(ctx,row,qdat);
         }
+
+	char *tmp = talloc_asprintf(ctx,
+		"select message from last_activity_data order by timestamp desc limit %i;",limit);
+	char **result;
+	char *Err;
+	int row1,col;
+	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
+	int i=0;
+	for (i = row1;i>0;i--) {
+		printf("%s\n",result[i]);
+	}
+	sqlite3_free_table(result);
 
 }
 
