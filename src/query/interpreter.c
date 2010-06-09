@@ -331,7 +331,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 {
         char *query1;
         char *qdat = NULL;
-        char *qdat2 = NULL;
 	char *helper = NULL;
 	/* delete any content from the last_activity_data table */
 	sqlite3_exec(config->db,"delete from last_activity_data;",NULL,0,NULL);
@@ -345,7 +344,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 			"Limit must be > 0.\n");
 		exit(1);
 	}
-        unsigned long int length[limit + 1];
 
 	/* VFS : read */
         query1 = talloc_asprintf(ctx,
@@ -365,7 +363,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		helper,
 		result_get_element(ctx,row+3,qdat),
 		result_get_element(ctx,row+2,qdat));
-		printf("ERG: %s\n",tmp);
 		sqlite3_exec(config->db,tmp,NULL,0,NULL);
 		row=row+4;
 		helper=result_get_element(ctx,row,qdat);
@@ -389,7 +386,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 helper,
                 result_get_element(ctx,row+3,qdat),
                 result_get_element(ctx,row+2,qdat));
-                printf("ERG: %s\n",tmp);
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+4;
                 helper=result_get_element(ctx,row,qdat);
@@ -412,7 +408,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 result_get_element(ctx,row+1,qdat),
                 helper,
                 result_get_element(ctx,row+2,qdat));
-                printf("ERG: %s\n",tmp);
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
                 helper=result_get_element(ctx,row,qdat);
@@ -435,9 +430,31 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 result_get_element(ctx,row+1,qdat),
                 helper,
                 result_get_element(ctx,row+2,qdat));
-                printf("ERG: %s\n",tmp);
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
+                helper=result_get_element(ctx,row,qdat);
+        }
+
+        /* VFS: rename */
+        query1 = talloc_asprintf(ctx,
+                "select username,timestamp,source, destination from rename "
+                "where %s order by timestamp desc "
+                "limit %i;",
+                obj_struct->sql,limit);
+        qdat = sql_query(ctx,config,query1);
+        helper = result_get_element(ctx,0,qdat);
+        row = 0;
+        while( helper != NULL ) {
+                char *tmp = talloc_asprintf(ctx,
+                "INSERT INTO last_activity_data ( timestamp, message) VALUES"
+                " ( '%s', '%s: User %s renamed file %s to %s.');",
+                result_get_element(ctx,row+1,qdat),
+                result_get_element(ctx,row+1,qdat),
+                helper,
+                result_get_element(ctx,row+2,qdat),
+                result_get_element(ctx,row+3,qdat));
+                sqlite3_exec(config->db,tmp,NULL,0,NULL);
+                row=row+4;
                 helper=result_get_element(ctx,row,qdat);
         }
 	
@@ -458,7 +475,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 result_get_element(ctx,row+1,qdat),
                 helper,
                 result_get_element(ctx,row+2,qdat));
-                printf("ERG: %s\n",tmp);
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
                 helper=result_get_element(ctx,row,qdat);
@@ -476,95 +492,39 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         while( helper != NULL ) {
                 char *tmp = talloc_asprintf(ctx,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
-                " ( '%s', '%s: User %sremoveddirectory %s.');",
+                " ( '%s', '%s: User %s removed directory %s.');",
                 result_get_element(ctx,row+1,qdat),
                 result_get_element(ctx,row+1,qdat),
                 helper,
                 result_get_element(ctx,row+2,qdat));
-                printf("ERG: %s\n",tmp);
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
                 helper=result_get_element(ctx,row,qdat);
         }
-}
-/*
 
-            } else if (strcmp(command_data->arguments[2],"w")==0) {
-                query1 = talloc_asprintf(ctx,
-                            "select distinct username from write "
-                            "where %s "
-                            "limit %i",
-                            obj_struct->sql,limit);
-                qdat = sql_query(ctx,config,query1);
-            } else if (strcmp(command_data->arguments[2],"rw")==0) {
-                query1 = talloc_asprintf(ctx,
-                            "select distinct username from"
-                            "( select * from read UNION select * "
-                            "from write) where %s "
-                            "limit %i;",
-                            obj_struct->sql,limit);
-			qdat = sql_query(ctx,config,query1);
-            }
-        } else {
-		printf("ERROR: last_activity function syntax error.\n");
-		exit(1);
-	}
-	int i = 0;
-        char *el = "0";
-        char *el2 = "0";
-	while (el != NULL) {
-		el = result_get_element(ctx,i,qdat);
-		if (el == NULL) break;
-		if (strcmp(command_data->arguments[1],"users")==0) {
-			if (strcmp(command_data->arguments[2],"r")==0) {
-				query1 = talloc_asprintf(ctx,
-					"select timestamp from read where "
-					"username=\"%s\" and %s "
-                                        "order by timestamp desc "
-                                        "limit %i;",
-					el,
-					obj_struct->sql, limit);
-				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-			} else if (strcmp(command_data->arguments[2],"w")==0) {
-				query1 = talloc_asprintf(ctx,
-					"select timestamp from write where "
-					"username=\"%s\" and %s "
-                                        "order by timestamp desc "
-                                        "limit %i;",
-					el,
-					obj_struct->sql, limit);
-				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-			} else if (strcmp(command_data->arguments[2],"rw")==0) {
-				query1 = talloc_asprintf(ctx,
-					"select timestamp from ( select * from "
-					"read UNION select * from write) where "
-					"username=\"%s\" and %s "
-                                        "order by timestamp desc "
-                                        "limit %i;",
-					el,
-					obj_struct->sql, limit);
-				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-			}
-		}
-        i = 0;
-	el = "0";
-        el2 = "0";
-	printf("%-30s%-30s\n","Name","Date");
-        printf(
-        "------------------------------------------------------------------------------\n");
-	while (el2 != NULL) {
-		el = result_get_element(ctx,0,qdat);
-                el2 = result_get_element(ctx,i,qdat2);
-		if (el2 == NULL) break;
-		printf("%-30s%-30s\n",el, el2);
-		i++;
-	}
-    }
+        /* VFS: chdir */
+        query1 = talloc_asprintf(ctx,
+                "select username,timestamp,path from chdir "
+                "where %s order by timestamp desc "
+                "limit %i;",
+                obj_struct->sql,limit);
+        qdat = sql_query(ctx,config,query1);
+        helper = result_get_element(ctx,0,qdat);
+        row = 0;
+        while( helper != NULL ) {
+                char *tmp = talloc_asprintf(ctx,
+                "INSERT INTO last_activity_data ( timestamp, message) VALUES"
+                " ( '%s', '%s: User %s changed directory %s.');",
+                result_get_element(ctx,row+1,qdat),
+                result_get_element(ctx,row+1,qdat),
+                helper,
+                result_get_element(ctx,row+2,qdat));
+                sqlite3_exec(config->db,tmp,NULL,0,NULL);
+                row=row+3;
+                helper=result_get_element(ctx,row,qdat);
+        }
+
 }
-*/
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
