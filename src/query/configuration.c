@@ -24,12 +24,15 @@
 #include "../../include/common.h"
 #include <talloc.h>
 #include <sqlite3.h>
-
 sqlite3 *create_db()
 {
 	char *a=getenv("HOME");
+	char path[255];
 	char full_path[255];
 	strcpy(full_path,a);
+	strcpy(path,a);
+	strcat(path,"/.smbtatools");	
+	mkdir(path, S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO);
 	strcat(full_path,"/.smbtatools/smbtaquery-db.sql");
 	sqlite3 *db;
         int rc;

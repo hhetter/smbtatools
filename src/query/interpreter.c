@@ -333,6 +333,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         char *query1;
         char *qdat = NULL;
 	char *helper = NULL;
+	char **result;
+        char *Err;
+        int row1,col;
+
 	/* delete any content from the last_activity_data table */
 	sqlite3_exec(config->db,"delete from last_activity_data;",NULL,0,NULL);
         if (command_data->argument_count != 1) {
@@ -527,9 +531,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
 	char *tmp = talloc_asprintf(ctx,
 		"select message from last_activity_data order by timestamp desc limit %i;",limit);
-	char **result;
-	char *Err;
-	int row1,col;
 	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
 	int i=0;
 	for (i = row1;i>0;i--) {
