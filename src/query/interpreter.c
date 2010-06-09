@@ -346,6 +346,8 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		exit(1);
 	}
         unsigned long int length[limit + 1];
+
+	/* VFS : read */
         query1 = talloc_asprintf(ctx,
 		"select username,timestamp,filename,length from read "
 		"where %s "
@@ -368,6 +370,32 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		row=row+4;
 		helper=result_get_element(ctx,row,qdat);
 	}
+
+	/* VFS: write */
+        query1 = talloc_asprintf(ctx,
+	        "select username,timestamp,filename,length from write "
+                "where %s "
+                "limit %i;",
+                obj_struct->sql,limit);
+        qdat = sql_query(ctx,config,query1);
+        helper = result_get_element(ctx,0,qdat);
+        row = 0;
+        while( helper != NULL ) {
+                char *tmp = talloc_asprintf(ctx,
+                "INSERT INTO last_activity_data ( timestamp, message) VALUES"
+                " ( '%s', '%s: User %s wrote %s bytes from file %s.');",
+                result_get_element(ctx,row+1,qdat),
+                result_get_element(ctx,row+1,qdat),
+                helper,
+                result_get_element(ctx,row+3,qdat),
+                result_get_element(ctx,row+2,qdat));
+                printf("ERG: %s\n",tmp);
+                sqlite3_exec(config->db,tmp,NULL,0,NULL);
+                row=row+4;
+                helper=result_get_element(ctx,row,qdat);
+        }
+
+
 }
 /*
 
