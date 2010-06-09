@@ -333,6 +333,8 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         char *qdat = NULL;
         char *qdat2 = NULL;
 	char *helper = NULL;
+	/* delete any content from the last_activity_data table */
+	sqlite3_exec(config->db,"delete from last_activity_data;",NULL,0,NULL);
         if (command_data->argument_count != 1) {
 		printf("ERROR: the last_activity function expects 1 arguments.\n");
 		exit(1);
@@ -353,12 +355,14 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	helper = result_get_element(ctx,0,qdat);
 	int row = 0;
 	while( helper != NULL ) {
-		char *tmp = talloc_asprintf(ctx,"INSERT INTO last_activity_data ( timestamp, message) VALUES ( '%s', 'User %s read %s bytes from file %s at %s.');",
+		char *tmp = talloc_asprintf(ctx,
+		"INSERT INTO last_activity_data ( timestamp, message) VALUES"
+		" ( '%s', '%s: User %s read %s bytes from file %s.');",
+		result_get_element(ctx,row+1,qdat),
 		result_get_element(ctx,row+1,qdat),
 		helper,
 		result_get_element(ctx,row+3,qdat),
-		result_get_element(ctx,row+2,qdat),
-		result_get_element(ctx,row+1,qdat));
+		result_get_element(ctx,row+2,qdat));
 		printf("ERG: %s\n",tmp);
 		sqlite3_exec(config->db,tmp,NULL,0,NULL);
 		row=row+4;
