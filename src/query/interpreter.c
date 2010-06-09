@@ -350,7 +350,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	/* VFS : read */
         query1 = talloc_asprintf(ctx,
 		"select username,timestamp,filename,length from read "
-		"where %s "
+		"where %s order by timestamp desc "
 		"limit %i;",
 		obj_struct->sql,limit);
 	qdat = sql_query(ctx,config,query1);
@@ -374,7 +374,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	/* VFS: write */
         query1 = talloc_asprintf(ctx,
 	        "select username,timestamp,filename,length from write "
-                "where %s "
+                "where %s order by timestamp desc "
                 "limit %i;",
                 obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
@@ -398,7 +398,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	/* VFS: open */
         query1 = talloc_asprintf(ctx,
                 "select username,timestamp,filename from open "
-                "where %s "
+                "where %s order by timestamp desc "
                 "limit %i;",
                 obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
@@ -421,7 +421,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	/* VFS: close */
         query1 = talloc_asprintf(ctx,
                 "select username,timestamp,filename from close "
-                "where %s "
+                "where %s order by timestamp desc "
                 "limit %i;",
                 obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
@@ -440,7 +440,52 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 row=row+3;
                 helper=result_get_element(ctx,row,qdat);
         }
+	
+	/* VFS: mkdir */
+        query1 = talloc_asprintf(ctx,
+                "select username,timestamp,path from mkdir "
+                "where %s order by timestamp desc "
+                "limit %i;",
+                obj_struct->sql,limit);
+        qdat = sql_query(ctx,config,query1);
+        helper = result_get_element(ctx,0,qdat);
+        row = 0;
+        while( helper != NULL ) {
+                char *tmp = talloc_asprintf(ctx,
+                "INSERT INTO last_activity_data ( timestamp, message) VALUES"
+                " ( '%s', '%s: User %s created directory %s.');",
+                result_get_element(ctx,row+1,qdat),
+                result_get_element(ctx,row+1,qdat),
+                helper,
+                result_get_element(ctx,row+2,qdat));
+                printf("ERG: %s\n",tmp);
+                sqlite3_exec(config->db,tmp,NULL,0,NULL);
+                row=row+3;
+                helper=result_get_element(ctx,row,qdat);
+        }
 
+	/* VFS: rmdir */
+        query1 = talloc_asprintf(ctx,
+                "select username,timestamp,path from rmdir "
+                "where %s order by timestamp desc "
+                "limit %i;",
+                obj_struct->sql,limit);
+        qdat = sql_query(ctx,config,query1);
+        helper = result_get_element(ctx,0,qdat);
+        row = 0;
+        while( helper != NULL ) {
+                char *tmp = talloc_asprintf(ctx,
+                "INSERT INTO last_activity_data ( timestamp, message) VALUES"
+                " ( '%s', '%s: User %sremoveddirectory %s.');",
+                result_get_element(ctx,row+1,qdat),
+                result_get_element(ctx,row+1,qdat),
+                helper,
+                result_get_element(ctx,row+2,qdat));
+                printf("ERG: %s\n",tmp);
+                sqlite3_exec(config->db,tmp,NULL,0,NULL);
+                row=row+3;
+                helper=result_get_element(ctx,row,qdat);
+        }
 }
 /*
 
