@@ -326,6 +326,17 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	}
 }
 
+void bar(unsigned long int total, int length) {
+	double percent=(double) total / 100;
+	float barpercent= 0.5;
+	int x;
+	double erg = (double) length / percent;
+	int barlength = erg *barpercent;
+	printf("%10.2f%% ", erg);
+	for (x=0;x<barlength;x++) { printf("#"); }
+	printf("\n");
+}
+
 void interpreter_fn_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -337,7 +348,30 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	char *qdat;
 	int hour,bytes,total;
 	unsigned int sum;
-	
+	if (strcmp(command_data->arguments[0],"r")==0) {
+                        query2 = talloc_asprintf(ctx,
+				"select sum(length) from read where %s;",
+                                obj_struct->sql);
+                        qtotal = sql_query(ctx,config,query2);
+                        total = atoi(result_get_element(ctx,0,qtotal));
+	} else if (strcmp(command_data->arguments[0],"w")==0) {
+                        query2 = talloc_asprintf(ctx,
+                                "select sum(length) from write where %s;",
+                                obj_struct->sql);
+                        qtotal = sql_query(ctx,config,query2);
+                        total = atoi(result_get_element(ctx,0,qtotal));
+	} else if (strcmp(command_data->arguments[0],"rw")==0) {
+			query2 = talloc_asprintf(ctx,
+                                "select sum(length) from read where %s;",
+                                obj_struct->sql);
+                        qtotal = sql_query(ctx,config,query2);
+                        total = atoi(result_get_element(ctx,0,qtotal));
+                        query2 = talloc_asprintf(ctx,
+                                "select sum(length) from write where %s;",
+                                obj_struct->sql);
+                        qtotal = sql_query(ctx,config,query2);
+                        total = total + atoi(result_get_element(ctx,0,qtotal));
+	}	
 	for (hour = 0;hour<24;hour++) {
 		if (strcmp(command_data->arguments[0],"r")==0) {
 			query = talloc_asprintf(ctx,
@@ -347,12 +381,6 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 				obj_struct->sql,hour,hour+1);
 			qdat = sql_query(ctx,config,query);
 			bytes = atoi(result_get_element(ctx,0,qdat));
-			query2 = talloc_asprintf(ctx,
-				"select sum(length) from read where %s;",
-				obj_struct->sql);
-			qtotal = sql_query(ctx,config,query2);
-			total = atoi(result_get_element(ctx,0,qtotal));
-			
 		} else if (strcmp(command_data->arguments[0],"w")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s"
@@ -361,12 +389,6 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
                                 obj_struct->sql,hour,hour+1);
                         qdat = sql_query(ctx,config,query);
                         bytes = atoi(result_get_element(ctx,0,qdat));
-                        query2 = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s;",
-                                obj_struct->sql);
-                        qtotal = sql_query(ctx,config,query2);
-                        total = atoi(result_get_element(ctx,0,qtotal));
-
 		} else if (strcmp(command_data->arguments[0],"rw")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from read where %s"
@@ -382,22 +404,13 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
                                 obj_struct->sql,hour,hour+1);
                         qdat = sql_query(ctx,config,query);
                         bytes = bytes + atoi(result_get_element(ctx,0,qdat));
-                        query2 = talloc_asprintf(ctx,
-                                "select sum(length) from read where %s;",
-                                obj_struct->sql);
-                        qtotal = sql_query(ctx,config,query2);
-                        total = atoi(result_get_element(ctx,0,qtotal));
-                        query2 = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s;",
-                                obj_struct->sql);
-                        qtotal = sql_query(ctx,config,query2);
-                        total = total + atoi(result_get_element(ctx,0,qtotal));
 
 		} else {
 			printf("ERROR: usage expects r,w, or rw.\n");
 			exit(1);
 		}
-		printf("%02i:00 - %02i:00 : %s\n",hour,hour+1,common_make_human_readable(ctx,bytes));
+		printf("%02i:00 - %02i:00 : %-10s ",hour,hour+1,common_make_human_readable(ctx,bytes));
+		bar(total,bytes);
 	}
 	printf("total: %s\n", common_make_human_readable(ctx,total));
 }
