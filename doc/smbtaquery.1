@@ -1,38 +1,77 @@
-.TH smbtaquery 1  "June 09, 2010" "version 0.0.1" "SYSTEM COMMANDS"
-.SH SYNOPSIS
-.B smbtaquery
-[\-hn --host] [\-i --inet-port] [\-c --config-file] [\-q --query] [\-p --command-help] [\-d --debug-level] [\-k --key-file] 
-.SH DESCRIPTION
-The smbtaquery program is part of the Samba Traffic Analyzer Tools, which consists of smbtaquery and smbtamonitor(1). 
+'\" t
+.\"     Title: smbtaquery
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 06/10/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
+.\"
+.TH "SMBTAQUERY" "1" "06/10/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+smbtaquery \- query the smbta daemon
+.SH "SYNOPSIS"
+.sp
+\fBsmbtaquery\fR [\fIOPTIONS\fR] \fIQUERY\fR
+.SH "DESCRIPTION"
+.sp
+The smbtaquery program is part of the SMB Traffic Analyzer Tools, which consists of smbtaquery, smbtamonitor(1) and smbtatorture(1)
+.SH "OPTIONS"
 .PP
-The goal of smbtaquery is to query the Samba Traffic Analyzer Daemon and display the data in a human readable form.
+\fB\-h, \-\-host\fR=\fIHOSTNAME\fR
+.RS 4
+Specify the
+\fIHOSTNAME\fR
+where the smbta daemon is operating on
+.RE
 .PP
-It is work in progress.
+\fB\-i, \-\-inet\-port\fR=\fIINET\-PORT\fR
+.RS 4
+Specify the
+\fIINET\-PORT\fR
+where the smbta daemon is listening on (default is 3491)
+.RE
 .PP
-.SH OPTIONS
-.TP
-\-h \--host
-Specify the host where the smbta daemon is operating on.
-.TP
-\-i \--inet-port
-Specify the port number where the smbta daemon is operating on.
-.TP
-\-c \--config-file
-Path to the smbtaquery config file. If not used, we assume it is $home/.smbtatools/query.config
-.TP
-\-q \--query
-The query smbtaquery should execute. It has to be terminated with a semicolon.
-.TP
-\-k \--key-file
+\fB\-c, \-\-config\-file\fR=\fICONFIG\-FILE\fR
+.RS 4
+Path to the smbtaquery config file\&. If not used, we assume it is in $home/\&.smbtatoolts/query\&.config\&. The directory will automatically be created if it\(cqs not there to store the query database
+.RE
+.PP
+\fB\-q, \-\-query\fR=\fIQUERY\fR
+.RS 4
+Query which smbtaquery should execute\&. Has to be terminated with a semicolon\&.
+.RE
+.PP
+\fB\-k, \-\-key\-file\fR=\fIKEYFILE\fR
+.RS 4
 Specify the key file for smbtad
-.TP
-\-p \--command-help 
-Display a short help text which commands are available.
-.TP
-\-v \--verbose
-Be verbose and print all steps to the screen.
-.SH EXAMPLES
-.TP
-smbtaquery -i 3491 -h test.yourdomain.com -q 'share /pool, total rw;'
-
-
+.RE
+.PP
+\fB\-p, \-\-command\-help\fR
+.RS 4
+Prints extra help for the available query commands
+.RE
+.PP
+\fB\-v, \-\-verbose\fR
+.RS 4
+Be verbose and print all steps to the screen
+.RE
+.SH "EXAMPLES"
+.sp
+Show the total read and write throughput on share pool: smbtaquery \-i 3491 \-h test\&.yourdomain\&.com \-q \fIshare /pool, total rw;\fR
+.SH "RESOURCES"
+.sp
+Main web site: http://holger123\&.wordpress\&.com/smb\-traffic\-analyzer/
+.SH "COPYING"
+.sp
+Copyright (C) 2010 SMBTA Team\&. Free use of this software is granted under the terms of the GNU General Public License (GPL)\&.
