@@ -126,7 +126,77 @@ VFS module, SMBTA logging for this service can be activated:
 	path = /space
 	vfs_objects = vfs_smb_traffic_analyzer
 	vfs_smb_traffic_analyzer:version = v2
+	vfs_smb_traffic_analyzer:host = example.host.ex
+	vfs_smb_traffic_analyzer:port = 3490
 
 By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
 use protocol version 2.
+
+The host and port parameters define the hostname of the system that will be
+used as the target for the VFS modules data to send. It will try to connect
+to the port number given with the parameter port.
+
+Setting up smbtad
+-----------------
+
+On the target host of the module, the program smbtad is running. It's task
+is mainly to feed a SQL storage out of the data it receives from the module,
+maintain the storage and accept requests from clients.
+
+smbtad -i 3490 -p 3491
+
+when running as superuser, this command line will listen to VFS module
+connections on port 3490, and listen to client connections on port 3491.
+
+By default, smbtad creates a database as /var/lib/staddb. If the database
+already exists, it will use the existing database.
+
+Checking the installation
+-------------------------
+
+When everything is set up, move some data on the shares you have activated
+the VFS module on. For example, if you write a file to a share,
+you can check the installation by looking into the database
+directly, involving the sqlite3 command line interface:
+
+sqlite3 /var/lib/staddb
+$ select * from write;
+
+You should now see entries of data written by the user you have done
+the transfer with. If this works, your SMBTA installation works fine
+und you can start pointing more shares to it.
+
+Setting up Encryption
+---------------------
+
+For security reasons, SMBTA can encrypt it's data flow from the module
+to the smbtad component. This is optional, data is not encrypted by
+default.
+
+The encryption method used in SMBTA is 128bit AES. For this encryption,
+the user need to generate a key and make the key known to both the
+Samba server where the VFS module is activated and the system smbtad is
+running on.
+
+To ease the installation of encryption, the Samba server includes a small
+utility called smbta-util:
+
+smbta -g keyfile
+
+will generate a key for encryption, activate encryption on the Samba server,
+and save the key to a file. The user can then use this file on the smbtad
+system and store it in a protected place owned by the superuser.
+
+smbta -u 
+
+will uninstall the key from the Samba server, and deactivate encryption.
+
+To setup the key on the smbtad-system, you run smbtad with this command option:
+
+smbtad --keyfile=/etc/smbtad/key
+
+Using the client programs
+-------------------------
+
+
