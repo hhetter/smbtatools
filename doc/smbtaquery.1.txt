@@ -1,0 +1,57 @@
+SMBTAQUERY(1)
+=============
+
+
+NAME
+----
+smbtaquery - query the smbta daemon
+
+SYNOPSIS
+--------
+*smbtaquery* ['OPTIONS'] 'QUERY'
+
+DESCRIPTION
+-----------
+The smbtaquery program is part of the SMB Traffic Analyzer Tools, which consists of smbtaquery, smbtamonitor(1) and smbtatorture(1)
+
+OPTIONS
+-------
+*-h, --host*='HOSTNAME'::
+   Specify the 'HOSTNAME' where the smbta daemon is operating on 
+
+*-i, --inet-port*='INET-PORT'::
+   Specify the 'INET-PORT' where the smbta daemon is listening on 
+   (default is 3491)
+
+*-c, --config-file*='CONFIG-FILE'::
+   Path to the smbtaquery config file. If not used, we assume it is in 
+   $home/.smbtatoolts/query.config. The directory will automatically be
+   created if it's not there to store the query database
+
+*-q, --query*='QUERY'::
+   Query which smbtaquery should execute. Has to be terminated with a
+   semicolon. 
+
+*-k, --key-file*='KEYFILE'::
+   Specify the key file for smbtad
+
+*-p, --command-help*::
+   Prints extra help for the available query commands
+
+*-v, --verbose*::
+   Be verbose and print all steps to the screen
+
+EXAMPLES
+--------
+Show the total read and write throughput on share pool:
+smbtaquery -i 3491 -h test.yourdomain.com -q 'share /pool, total rw;'
+
+RESOURCES
+---------
+Main web site: <http://holger123.wordpress.com/smb-traffic-analyzer/>
+
+COPYING
+-------
+Copyright \(C) 2010 SMBTA Team. Free use of this software is
+granted under the terms of the GNU General Public License (GPL).
+
