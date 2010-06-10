@@ -46,7 +46,8 @@ enum IntCommands {
 	INT_OBJ_LIST,
 	INT_OBJ_TOP,
 	INT_OBJ_GLOBAL,
-        INT_OBJ_LAST};
+        INT_OBJ_LAST,
+	INT_OBJ_USAGE};
 
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
@@ -324,6 +325,57 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 		col++; element++;
 	}
 }
+
+void interpreter_fn_usage( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query;
+	char *qdat;
+	int hour,bytes;
+	unsigned int sum;
+	
+	for (hour = 0;hour<24;hour++) {
+		if (strcmp(command_data->arguments[0],"r")==0) {
+			query = talloc_asprintf(ctx,
+				"select sum(length) from read where %s"
+				" and time(timestamp) > time('%0i:00') and"
+				" time(timestamp) < time('%0i:00');",
+				obj_struct->sql,hour,hour+1);
+			qdat = sql_query(ctx,config,query);
+			bytes = atoi(result_get_element(ctx,0,qdat));
+		} else if (strcmp(command_data->arguments[0],"w")==0) {
+                        query = talloc_asprintf(ctx,
+                                "select sum(length) from write where %s"
+                                " and time(timestamp) > time('%0i:00') and"
+                                " time(timestamp) < time('%0i:00');",
+                                obj_struct->sql,hour,hour+1);
+                        qdat = sql_query(ctx,config,query);
+                        bytes = atoi(result_get_element(ctx,0,qdat));
+		} else if (strcmp(command_data->arguments[0],"rw")==0) {
+                        query = talloc_asprintf(ctx,
+                                "select sum(length) from read where %s"
+                                " and time(timestamp) > time('%0i:00') and"
+                                " time(timestamp) < time('%0i:00');",
+                                obj_struct->sql,hour,hour+1);
+                        qdat = sql_query(ctx,config,query);
+                        bytes = atoi(result_get_element(ctx,0,qdat));
+                        query = talloc_asprintf(ctx,
+                                "select sum(length) from write where %s"
+                                " and time(timestamp) > time('%0i:00') and"
+                                " time(timestamp) < time('%0i:00');",
+                                obj_struct->sql,hour,hour+1);
+                        qdat = sql_query(ctx,config,query);
+                        bytes = bytes + atoi(result_get_element(ctx,0,qdat));
+		} else {
+			printf("ERROR: usage expects r,w, or rw.\n");
+			exit(1);
+		}
+		printf("%02i:00 - %02i:00 : %i Bytes\n",hour,hour+1,bytes);
+	}
+}
+
 
 void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 struct interpreter_command *command_data,
@@ -892,8 +944,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
         case INT_OBJ_LAST:
                 interpreter_fn_last_activity(ctx, command_data, obj_struct,config);
                 break;
-                
-
+	case INT_OBJ_USAGE:
+		interpreter_fn_usage(ctx, command_data, obj_struct,config);
+		break;
 	}
 }
 
@@ -904,6 +957,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "list") == 0) return INT_OBJ_LIST;
 	if (strcmp(cmd, "top") == 0) return INT_OBJ_TOP;
         if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
+	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
@@ -1023,4 +1077,6 @@ void interpreter_command_help()
         printf("last_activity [num]\n");
         printf("            			List the last NUM activities\n");
         printf("                                from the specified object.\n");
+	printf("usage	[r][w][rw]		Show usage statistics on an object\n");
+
 };
