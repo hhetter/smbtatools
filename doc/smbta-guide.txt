@@ -90,5 +90,43 @@ For the openSUSE Linux distribution, SMBTAv2 has been backported to current
 Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module
 from the openSUSE BuildService.
 
+The other parts of SMBTA, the daemon program smbtad, as well as the client
+programs smbtaquery and smbtamonitor are available in source code from
+the projects homepage ( ... ). For the openSUSE Linux distribution,
+RPM packages are available from the openSUSE Build Service.
 
 
+Building SMBTA from the sources
+-------------------------------
+
+The SMBTA tools smbtaquery and smbtamonitor are utilizing cmake as the
+primary build tool. To build the tools using cmake, please refer to the
+README file delivered with the smbtatools package.
+
+
+Setting up SMBTA
+----------------
+
+Activating the VFS module on Samba Servers
+------------------------------------------
+
+In general, the Samba CIFS server is configured via smb.conf, it's main
+configuration file. A typical service definition would look like this:
+
+[ExampleShare]
+	path = /space
+
+Defining the share "ExampleShare" as a CIFS service, refering to the
+path /space on the servers storage.
+
+By extending the share definition with the commands to load the SMBTA
+VFS module, SMBTA logging for this service can be activated:
+
+[ExampleShare]
+	path = /space
+	vfs_objects = vfs_smb_traffic_analyzer
+	vfs_smb_traffic_analyzer:version = v2
+
+By default, SMBTA will use protocol version 1, to not break any existing
+installations. Only if the version parameter is given, it will be forced to
+use protocol version 2.
