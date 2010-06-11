@@ -247,3 +247,21 @@ The format of the file is that of a ini file:
 	port = 3491
 
 
+The smbtaquery interpreter
+--------------------------
+
+To easy the usage of the database, smbtaquery implements a simplified
+language to query the database. It is specialized for SMBTA.
+
+Syntax
+------
+
+Every command is seperated by a comma, any paraeters to the command are
+seperated by space. The last command ends with a semicolon instead of
+a comma.
+
+Here is an example query:
+
+'global, usage rw;'
+
+
