@@ -346,7 +346,9 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	char *query2;
 	char *qtotal;
 	char *qdat;
->>>>>>> 738d8b1713abdb5238cd28a69cb5e1fca9841c17
+	int hour;
+       	unsigned long int total,bytes;
+
 	if (strcmp(command_data->arguments[0],"r")==0) {
                         query2 = talloc_asprintf(ctx,
 				"select sum(length) from read where %s;",
