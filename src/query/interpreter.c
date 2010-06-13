@@ -169,7 +169,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 	/* if only one row has been returned, the query is unique
 	 * or failed
 	 */
-	if (interpreter_get_result_rows(qdat,cols) == 1) {
+	if (interpreter_get_result_rows(qdat,cols) == 0) {
 		/* check if the query does query for an existing */
 		/* object at all.				 */
 		char *cmp = NULL;
@@ -192,7 +192,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 			printf("in the database.\n");
 			exit(1);
 		}
-				
+	} else if (interpreter_get_result_rows(qdat,cols) ==1) {				
 		printf("Identified ");
 		switch(Type) {
 		case INT_OBJ_USER:
@@ -212,7 +212,7 @@ char *interpreter_identify( TALLOC_CTX *ctx,
 		printf("as a unique item in the database.\n");
 		return retstr;
 	}
-
+	
 	/*
 	 * The result is not unique. Present the user with a list of
 	 * items to choose.
