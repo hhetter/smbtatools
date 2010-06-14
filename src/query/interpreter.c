@@ -1057,6 +1057,16 @@ int interpreter_run( TALLOC_CTX *ctx,
 	struct interpreter_object command_obj;
 	char *go_through =commands; /* don't interpret the first ' */
 	int end = strlen(commands);
+
+	/*
+	 * set command_obj to global, in case the user doesn't provide
+	 * an object.
+	 */
+	command_obj.object = INT_OBJ_GLOBAL;
+        command_obj.name = talloc_strdup(ctx, "global");
+	command_obj.sql = talloc_strdup(ctx," 1=1 ");
+	command_obj.output_term = talloc_asprintf(ctx, "globally");
+
 	if ( *(commands + end-1) == ';') *(commands+end-1)=',';
 		else {
 			printf("ERROR: missing semicolon at end of line.\n");
