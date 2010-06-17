@@ -611,7 +611,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         while( helper != NULL ) {
                 char *tmp = talloc_asprintf(ctx,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
-                " ( '%s', '%s: User %s changed directory %s.');",
+                " ( '%s', '%s: User %s changed to directory %s.');",
                 result_get_element(ctx,row+1,qdat),
                 result_get_element(ctx,row+1,qdat),
                 helper,
