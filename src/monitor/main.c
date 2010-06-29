@@ -20,21 +20,26 @@
 
 #include <curses.h>
 #include <stdlib.h>
+#include "../../include/version.h"
+#include "include/configuration.h"
 
-#define VERSION "0.0.1"
-
-WINDOW *win;
 
 void monitor_shutdown(void)
 {
 	endwin();
 	system("clear");
 	curs_set(1);
-	fprintf(stdout, "smbtamonitor %s by Michael Haefner\n", VERSION);
+	fprintf(stdout, "smbtamonitor %s by Michael Haefner\n", SMBTAMONITOR_VERSION);
 	exit(0);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	/* main configuration structure */
+	struct configuration_data conf;
 
+        /* parse command line, and process */
+        if ( configuration_parse_cmdline( &conf, argc, argv ) <0 ) exit(1);
+
+	return 0;
 }	

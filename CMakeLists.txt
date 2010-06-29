@@ -105,6 +105,8 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/common/common.c
 	src/common/aes.c
 	src/common/rijndael-alg-fst.c
+	src/monitor/configuration.c
+	src/monitor/network.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 

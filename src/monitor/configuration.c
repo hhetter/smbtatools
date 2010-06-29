@@ -19,9 +19,27 @@
  */
 
 #include <stdlib.h>
-
+#include "../../include/common.h"
+#include "include/configuration.h"
+#include "../../include/version.h"
 int configuration_check_configuration( struct configuration_data *c );
 
+
+void configuration_show_help()
+{
+        printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
+        printf("(C)opyright 2010 by Benjamin Brunner\n");
+        printf("(C)opyright 2010 by Holger Hetterich\n");
+        printf("%s\n", SMBTA_LICENSE);
+        printf("\n");
+        printf("-i      --inet-port <num>       Set the port-number to  \n");
+        printf("                                use to <num>.\n");
+        printf("-d      --debug-level <num>     Set the debug level to work\n");
+        printf("                                with to <num>. Default: 0\n");
+        printf("-c      --config-file <file>    Load the configuration from\n");
+        printf("                                a file given as <file>.\n");
+        printf("\n");
+}
 
 /**
  * Initialize default values of the configuration.
@@ -101,7 +119,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 {
         int i;
         TALLOC_CTX *runtime_mem = NULL;
-        c->db = create_db();
         configuration_define_defaults( c );
 
 
@@ -165,21 +182,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
         return 0;
 }
 
-void configuration_show_help()
-{
-        printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
-        printf("(C)opyright 2010 by Michael Haefner\n");
-        printf("(C)opyright 2010 by Holger Hetterich\n");
-        printf("%s\n", SMBTA_LICENSE);
-        printf("\n");
-        printf("-i      --inet-port <num>       Set the port-number to  \n");
-        printf("                                use to <num>.\n");
-        printf("-d      --debug-level <num>     Set the debug level to work\n");
-        printf("                                with to <num>. Default: 0\n");
-        printf("-c      --config-file <file>    Load the configuration from\n");
-        printf("                                a file given as <file>.\n");
-        printf("\n");
-}
 
 
 int configuration_check_configuration( struct configuration_data *c )
