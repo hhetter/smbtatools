@@ -173,12 +173,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "key-file",1,NULL,'k'},
 			{ "query",1,NULL,'q'},
 			{ "host",1,NULL,'h'},
+			{ "help",0,NULL,'?'},
 			{ "command-help",0,NULL,'p'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:i:c:k:q:h:p", long_options, &option_index );
+			"d:i:c:k:q:h:p?", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -206,6 +207,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				interpreter_command_help();
 				exit(0);
 				break;
+			case '?':
+				configuration_show_help();
+				exit(0);
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();

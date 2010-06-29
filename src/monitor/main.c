@@ -1,6 +1,6 @@
 /*
  * smbtamonitor
- * real-time monitor for samba traffic analyzer
+ * real-time monitor for SMB traffic analyzer
  *
  * Copyright (C) Michael Haefner, 2010
  *
