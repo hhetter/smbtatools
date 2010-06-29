@@ -139,11 +139,14 @@ int configuration_parse_cmdline( struct configuration_data *c,
                         { "key-file",1,NULL,'k'},
                         { "host",1,NULL,'h'},
 			{ "help",0,NULL,'?'},
+			{ "share",1,NULL,'s'},
+			{ "user",1,NULL,'u'},
+			{ "file",1,NULL,'f'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "d:i:c:k:h:?", long_options, &option_index );
+                        "s:u:f:d:i:c:k:h:?", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
