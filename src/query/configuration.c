@@ -29,11 +29,11 @@ sqlite3 *create_db()
 	char *a=getenv("HOME");
 	char path[255];
 	char full_path[255];
-	strcpy(full_path,a);
-	strcpy(path,a);
-	strcat(path,"/.smbtatools");	
+	strncpy(full_path,a,250);
+	strncpy(path,a,250);
+	strncat(path,"/.smbtatools",250);	
 	mkdir(path, S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO);
-	strcat(full_path,"/.smbtatools/smbtaquery-db.sql");
+	strncat(full_path,"/.smbtatools/smbtaquery-db.sql",250);
 	sqlite3 *db;
         int rc;
         char *zErrormsg;
@@ -132,6 +132,7 @@ void configuration_show_help()
 {
 	printf("smbtaquery version %s\n", SMBTAQUERY_VERSION);
 	printf("(C)opyright 2010 by Benjamin Brunner\n");
+	printf("(C)opyright 2010 by Michael Haefner\n");
 	printf("(C)opyright 2010 by Holger Hetterich\n");
 	printf("%s\n", SMBTA_LICENSE);
 	printf("\n");

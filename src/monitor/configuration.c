@@ -28,7 +28,8 @@ int configuration_check_configuration( struct configuration_data *c );
 void configuration_show_help()
 {
         printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
-        printf("(C)opyright 2010 by Benjamin Brunner\n");
+        printf("(C)opyright 2010 by Michael Haefner\n");
+	printf("(C)opyright 2010 by Benjamin Brunner\n");
         printf("(C)opyright 2010 by Holger Hetterich\n");
         printf("%s\n", SMBTA_LICENSE);
         printf("\n");
@@ -141,7 +142,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
                 };
 
                 i = getopt_long( argc, argv,
-                        "d:i:c:k:q:h:p", long_options, &option_index );
+                        "d:i:c:k:h:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
