@@ -168,7 +168,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 void configuration_show_help()
 {
         printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
-        printf("(C)opyright 2010 by Benjamin Brunner\n");
+        printf("(C)opyright 2010 by Michael Haefner\n");
         printf("(C)opyright 2010 by Holger Hetterich\n");
         printf("%s\n", SMBTA_LICENSE);
         printf("\n");
