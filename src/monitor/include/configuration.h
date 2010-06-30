@@ -41,6 +41,12 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
+enum smbta_monitor_object {
+	SMBTA_SHARE = 0,
+	SMBTA_USER,
+	SMBTA_FILE
+}
+
 struct configuration_data {
 	/* Number of the port to use */
 	int port;
@@ -57,6 +63,15 @@ struct configuration_data {
 	
 	/* runtime data */
 	int socket;
+
+	/* object type specifies the kind of object we are monitoring */
+	enum smbta_monitor_object object_type;
+	/* this stores the name of the object given by cmdline */
+	char *object_name;
+	/* this is the filter pattern to correctly monitor the object */
+	char *[5] pattern;
+	
+
 };
 
 int configuration_check_configuration( struct configuration_data *c );

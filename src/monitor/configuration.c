@@ -170,6 +170,18 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case '?':
 				configuration_show_help();
 				exit(0);
+			case 's':
+				c->object_type = SMBTA_SHARE;
+				c->object_name = strdup( optarg );
+				break;
+			case 'u':
+				c->object_type = SMBTA_USER;
+				c->object_name = strdup( optarg );
+				break;
+			case 'f':
+				c->object_type = SMBTA_FILE;
+				c->object_name = strdup( optarg );
+				break;
                         default :
                                 printf("ERROR: unkown option.\n\n");
                                 configuration_show_help();
