@@ -217,3 +217,21 @@ int configuration_check_configuration( struct configuration_data *c )
         return 0;
 }
 
+/* 
+ * This fills the filter pattern for the monitor by running identify,
+ * and eventually filling more required patterns
+ */
+void configuration_generate_pattern( struct configuration_data *c)
+{
+	/*
+	 * How the pattern is build:
+	 * SHARE|USER|FILE
+	 *
+	 */
+	int t;
+	for (t=0; t<5; t++) {
+		if (c->object_type != t) c->pattern[t]=strdup("*");
+	}
+
+	c->pattern[c->object_type] = strdup(c->object_name);
+}	
