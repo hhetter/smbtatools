@@ -38,6 +38,18 @@
 #include <talloc.h>
 
 
+enum network_send_flags {
+        UNSENT = 0,
+        SENT,
+        RECEIVING_HEADER,
+        RECEIVING_HEADER_ONGOING,
+        HEADER_RECEIVED,
+        RECEIVING_DATA,
+        RECEIVING_DATA_ONGOING,
+        DATA_RECEIVED };
+
+
+
 /*
  * return a string representation of z
  * e.g. z=1024 output will be 1KB
@@ -48,5 +60,6 @@ char *common_create_header( TALLOC_CTX *ctx, const char *state_flags, size_t dat
 void common_write_data( char *header, char *data, int dlength, int _socket);
 void common_receive_data( char *buf, int sock, int length, int *rlen);
 int common_get_data_block_length( char *header );
+char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
 
 

@@ -63,6 +63,7 @@ struct configuration_data {
 	sqlite3 *db;
 };
 
+
 int configuration_check_configuration( struct configuration_data *c );
 int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );
 

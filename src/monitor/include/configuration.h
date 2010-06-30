@@ -45,7 +45,7 @@ enum smbta_monitor_object {
 	SMBTA_SHARE = 0,
 	SMBTA_USER,
 	SMBTA_FILE
-}
+};
 
 struct configuration_data {
 	/* Number of the port to use */
@@ -69,7 +69,7 @@ struct configuration_data {
 	/* this stores the name of the object given by cmdline */
 	char *object_name;
 	/* this is the filter pattern to correctly monitor the object */
-	char *[5] pattern;
+	char *pattern[5];
 	
 
 };
