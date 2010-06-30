@@ -18,12 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../include/common.h"
 #include "include/configuration.h"
 
-void network_close_connection( int sockfd ) {
-// fixme , do something.
-}
 
 /*
  * Get a single column of the result data from a query-result

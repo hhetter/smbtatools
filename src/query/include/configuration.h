@@ -41,28 +41,7 @@
 #include <talloc.h>
 #include <sqlite3.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
-
-struct configuration_data {
-	/* Number of the port to use */
-	int port;
-	/* hostname of server to connect to */
-	char *host;
-	/* debug level */
-	int debug_level;
-	/* configuration file */
-	char *config_file;
-	/* AES Key */
-	unsigned char key[20];
-	/* AES Keyfile */
-	char *keyfile;
-	/* query */
-	char *query;
-	
-	/* runtime data */
-	int socket;
-	sqlite3 *db;
-};
-
+#include "../../../include/common.h"
 
 int configuration_check_configuration( struct configuration_data *c );
 int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );

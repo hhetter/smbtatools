@@ -19,6 +19,14 @@
  */
 
 #include "../../include/common.h"
+
+
+void network_close_connection( int sockfd ) {
+// fixme , do something.
+}
+
+
+
 /*
  * Returns a string representation of
  * unsigned long int z    bytes.

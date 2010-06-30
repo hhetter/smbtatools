@@ -19,7 +19,6 @@
  */
 
 #include <stdlib.h>
-#include "../../include/common.h"
 #include "include/configuration.h"
 #include "../../include/version.h"
 int configuration_check_configuration( struct configuration_data *c );

@@ -20,7 +20,6 @@
  */
 
 #include "include/network.h"
-#include "../../include/common.h"
 #include <talloc.h>
 
 struct interpreter_command {

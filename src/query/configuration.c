@@ -21,7 +21,6 @@
 #include "../../include/version.h"
 #include "include/configuration.h"
 #include "include/interpreter.h"
-#include "../../include/common.h"
 #include <talloc.h>
 #include <sqlite3.h>
 sqlite3 *create_db()
