@@ -38,6 +38,11 @@ void configuration_show_help()
         printf("                                with to <num>. Default: 0\n");
         printf("-c      --config-file <file>    Load the configuration from\n");
         printf("                                a file given as <file>.\n");
+	printf("-s      --share <string>	Specify a share to monitor.\n");
+	printf("-u	--user <string>		Specify a user to monitor.\n");
+	printf("-f	--file <string>		Specify a file to monitor.\n");
+	printf("-g	--global		Global mode, run over the full\n");
+	printf("				data set.\n");
         printf("\n");
 }
 
