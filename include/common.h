@@ -48,6 +48,16 @@ enum network_send_flags {
         RECEIVING_DATA_ONGOING,
         DATA_RECEIVED };
 
+enum IntCommands {
+        INT_OBJ_SHARE = 0,
+        INT_OBJ_USER,
+        INT_OBJ_FILE,
+        INT_OBJ_TOTAL,
+        INT_OBJ_LIST,
+        INT_OBJ_TOP,
+        INT_OBJ_GLOBAL,
+        INT_OBJ_LAST,
+        INT_OBJ_USAGE};
 
 
 /*
@@ -63,4 +73,8 @@ void common_receive_data( char *buf, int sock, int length, int *rlen);
 int common_get_data_block_length( char *header );
 char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
 void network_close_connection( int sockfd );
+char *common_identify( TALLOC_CTX *ctx,
+        enum IntCommands Type,
+        char *data,
+        struct configuration_data *config);
 

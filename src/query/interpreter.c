@@ -37,17 +37,6 @@ struct interpreter_object {
 	char *output_term;
 };
 
-enum IntCommands { 
-	INT_OBJ_SHARE = 0,
-	INT_OBJ_USER,
-	INT_OBJ_FILE,
-	INT_OBJ_TOTAL,
-	INT_OBJ_LIST,
-	INT_OBJ_TOP,
-	INT_OBJ_GLOBAL,
-        INT_OBJ_LAST,
-	INT_OBJ_USAGE};
-
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -68,44 +57,6 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 }
 
 
-int interpreter_get_result_rows( char *data, int columns)
-{
-
-        int col=1;
-	int row = 0;
-        int element=0;
-        char *res = " ";
-	char *ctx = talloc(NULL, char);
-        while (res != NULL) {
-                res = result_get_element(ctx,element,data);
-                // if (res != NULL) printf("OO:%-30s\t",res);
-                if ( col==columns ) { col = 0; row ++;  }
-                col++; element++;
-        }
-	TALLOC_FREE(ctx);
-	return row;
-}
-	
-/*	char *res = talloc( NULL, char);
-	int element=0,row=1,col =1;
-        while (res != NULL) {
-                res = result_get_element(res,element,qdat);
-		printf("%s\n",res);
-                if ( col==columns ) { row++;col = 0;}
-                col++; element++;
-		TALLOC_FREE(res);
-        }
-	return row;
-*/
-
-/*
-        while (res != NULL) {
-                res = result_get_element(ctx,element,data);
-                if (res != NULL) printf("%-30s\t",res);
-                if ( col==columns ) { col = 0; printf("\n"); }
-                col++; element++;
-        }
-*/
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
@@ -114,189 +65,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 void interpreter_print_numbered_table( TALLOC_CTX *ctx,
                 int columns,char *data, ... );
 
-char *interpreter_identify( TALLOC_CTX *ctx,
-	enum IntCommands Type,
-	char *data,
-	struct configuration_data *config)
-{
-	char *query;
-	char *qdat;
-	char *retstr = NULL;
-	int cols = 0;
-	printf("Identifying %s ... ",data);
-	if (Type==INT_OBJ_USER) {
-		/* identify users by SID */
-		query = talloc_asprintf(ctx,
-			"select distinct(usersid), username, "
-			"domain from read where username = '%s' "
-			"UNION select distinct(usersid), username,"
-			"domain from write where username = '%s';",
-			data,data);
-		qdat = sql_query(
-			ctx,
-			config,
-			query);
-		cols = 3;
-	} else if (Type==INT_OBJ_SHARE) {
-		/* identify shares by domain */
-		query = talloc_asprintf(ctx,
-			"select distinct(domain), share from read "
-			"where share = '%s' UNION select "
-			"distinct(domain), share from write where "
-			"share = '%s';", data,data);
-		qdat = sql_query(
-			ctx,
-			config,
-			query);
-		cols = 2;
-	} else if (Type==INT_OBJ_FILE) {
-		/* identify files by share */
-		query = talloc_asprintf(ctx,
-			"select distinct(share), filename "
-			"from read where filename = '%s' "
-			"UNION select distinct(share), filename "
-			"from write where filename = '%s';",data,data);
-		qdat = sql_query(
-			ctx,
-			config,
-			query);
-		cols = 2;
-	} else {
-		printf("ERROR: Identification of an unkown object type!\n");
-		exit(1);
-	}
-	/* if only one row has been returned, the query is unique
-	 * or failed
-	 */
-	if (interpreter_get_result_rows(qdat,cols) == 0) {
-		/* check if the query does query for an existing */
-		/* object at all.				 */
-		char *cmp = NULL;
-		cmp = result_get_element(ctx,0,qdat);
-		if (strcmp(cmp,"No Results.") == 0) {
-			switch(Type) {
-			case INT_OBJ_USER:
-				printf("User %s doesn't exist ", data);
-				break;
-			case INT_OBJ_SHARE:
-				printf("Share %s doesn't exist ",data);
-				break;
-			case INT_OBJ_FILE:
-				printf("File %s doesn't exist ",data);
-				break;
-			default:
-				printf("ERROR: Unsupported type of object!\n");
-				exit(1);
-			}
-			printf("in the database.\n");
-			exit(1);
-		}
-	} else if (interpreter_get_result_rows(qdat,cols) ==1) {				
-		printf("Identified ");
-		switch(Type) {
-		case INT_OBJ_USER:
-			printf("user %s ",data);
-			break;
-		case INT_OBJ_SHARE:
-			printf("share %s ",data);
-			break;
-		case INT_OBJ_FILE:
-			printf("file %s ",data);
-			break;
-		default:
-			printf("ERROR: Unsupported type of object!\n");
-			exit(1);
-		}
-		retstr = talloc_asprintf(ctx,"and 1=1 ");
-		printf("as a unique item in the database.\n");
-		return retstr;
-	}
-	
-	/*
-	 * The result is not unique. Present the user with a list of
-	 * items to choose.
-	 */
-	switch(Type) {
-	case INT_OBJ_USER:
-		printf("User '%s' is ambiguous. Please choose:\n",data);
-		interpreter_print_numbered_table(ctx,cols,qdat,"SID","Name","Domain");
-		break;
-	case INT_OBJ_SHARE:
-		printf("Share '%s' is ambiguous. Please choose:\n",data);
-		interpreter_print_numbered_table(ctx,cols,qdat,"Domain","Share");
-		break;
-	case INT_OBJ_FILE:
-		printf("File '%s' is ambiguous. Please choose:\n",data);
-		interpreter_print_numbered_table(ctx,cols,qdat,"Share","File");
-		break;
-	default:
-		printf("ERROR: Unsupported type of object!\n");
-		exit(1);
 
-	}
-	int number;
-	printf("\nEnter number: ");
-	scanf( "%i", &number);
-	number--;
-	if (number<0) {
-		printf("ERROR: invalid input.\n");
-		exit(1);
-	}
-	switch(Type) {
-	case INT_OBJ_USER:
-		retstr = talloc_asprintf(ctx,"and usersid='%s' and domain='%s' ",
-			result_get_element(ctx,number*cols,qdat),
-			result_get_element(ctx,(number*cols)+2,qdat));
-		break;
-	case INT_OBJ_SHARE:
-		retstr = talloc_asprintf(ctx,"and domain='%s' ",
-			result_get_element(ctx,number*cols,qdat));
-		break;
-	case INT_OBJ_FILE:
-		retstr = talloc_asprintf(ctx,"and share='%s' ",
-			result_get_element(ctx,number*cols,qdat));
-		break;
-	default:
-		printf("ERROR: Unsupported type of object!\n");
-		exit(1);
-	}
-
-	return retstr;
-}		
-
-void interpreter_print_numbered_table( TALLOC_CTX *ctx,
-		int columns,char *data, ... )
-{
-        int col=1;
-	int row=1;
-        int element=0;
-        char *res = " ";
-        char *arg = NULL;
-        va_list ap;
-        int count = columns;
-        va_start( ap, NULL);
-	printf("     ");
-        while (count --) {
-                arg = va_arg( ap, char *);
-                printf("%-30s\t",arg);
-        }
-        va_end( ap );
-        printf("\n");
-        printf(
-        "------------------------------------------------------------------------------\n");
-	printf("%04i|",row);
-        while (res != NULL) {
-                res = result_get_element(ctx,element,data);
-                if (res != NULL) printf("%-30s\t",res);
-                if ( col==columns ) {
-			row++;
-			col = 0;
-			if (result_get_element(ctx,element+1,data) != NULL)
-				printf("\n%04i|",row);
-		}
-                col++; element++;
-        }
-}
 
 void interpreter_print_table( TALLOC_CTX *ctx,
 		int columns,char *data, ...)
@@ -940,7 +709,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," filename='%s' %s",
 					command_data->arguments[0],
-					interpreter_identify(ctx,INT_OBJ_FILE,
+					common_identify(ctx,INT_OBJ_FILE,
 						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
@@ -950,7 +719,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," share='%s' %s",
 					command_data->arguments[0],
-					interpreter_identify(ctx,INT_OBJ_SHARE,
+					common_identify(ctx,INT_OBJ_SHARE,
 						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
@@ -960,7 +729,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		obj_struct->sql = talloc_asprintf(ctx," username='%s' %s",
 					command_data->arguments[0],
-					interpreter_identify(ctx,INT_OBJ_USER,
+					common_identify(ctx,INT_OBJ_USER,
 						obj_struct->name,config));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);

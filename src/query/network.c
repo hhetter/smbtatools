@@ -21,43 +21,6 @@
 #include "include/configuration.h"
 
 
-/*
- * Get a single column of the result data from a query-result
- *
- * TALLOC_CTX *ctx		the talloc context to work on
- * int number			the number of the column to get
- * const char *data		the result data block
- */
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
-{
-	char bytecount[10];
-	int datcount = 0;
-	int t;
-	int c = 0;
-	int blocksize = 0;
-	char *result = NULL;
-
-	for (c = 0; c <= number; c++) {
-		for (t = datcount; t<datcount+4 ; t++) {
-			bytecount[t-datcount]=data[t];
-		}
-		bytecount[4]='\0';
-		blocksize = atoi(bytecount);
-		if (blocksize == 0) return NULL;
-		if ( c == number) {
-			result = talloc_array(ctx,char, blocksize +1);
-			datcount = datcount + 4;
-			for (t = datcount; t<datcount + blocksize; t++) {
-				result[t-datcount] = data[t];
-			}
-			result[blocksize]='\0';
-			datcount = datcount + blocksize +1;
-			break;
-		} else datcount = datcount + 4 + blocksize+1;
-	}
-	return result;
-}
-
 
 
 
