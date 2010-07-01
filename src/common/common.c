@@ -373,7 +373,8 @@ int interpreter_get_result_rows( char *data, int columns)
 char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
         char *data,
-        struct configuration_data *config)
+        struct configuration_data *config,
+	int qtype)
 {
         char *query;
         char *qdat;
@@ -463,7 +464,30 @@ char *common_identify( TALLOC_CTX *ctx,
                         printf("ERROR: Unsupported type of object!\n");
                         exit(1);
                 }
-                retstr = talloc_asprintf(ctx,"and 1=1 ");
+                if (qtype == 0 ) retstr = talloc_asprintf(ctx,"and 1=1 ");
+		if (qtype == 1 ) {
+			switch(Type) {
+			case INT_OBJ_USER:
+				retstr = talloc_asprintf(ctx,
+				"%04i%s0001*0001*0001*",
+				strlen(data),data);
+				break;
+			case INT_OBJ_SHARE:
+				retstr = talloc_asprintf(ctx,
+				"0001*%04i%s0001*0001*",
+				strlen(data),data);
+				break;
+			case INT_OBJ_FILE:
+				retstr = talloc_asprintf(ctx,
+				"0001*0001*%04i%s0001*",
+				strlen(data),data);
+				break;
+			case INT_OBJ_DOMAIN:
+				retstr = talloc_asprintf(ctx,
+				"0001*0001*0001%04i%s",
+				strlen(data),data);
+				break;
+			}
                 printf("as a unique item in the database.\n");
                 return retstr;
         }
@@ -499,16 +523,31 @@ char *common_identify( TALLOC_CTX *ctx,
                 exit(1);
         }
         switch(Type) {
-        case INT_OBJ_USER:
-                retstr = talloc_asprintf(ctx,"and usersid='%s' and domain='%s' ",
+        case INT_OBJ_USER: ;
+		if (qtype == 0) {
+	                retstr = talloc_asprintf(ctx,"and usersid='%s' and domain='%s' ",
                         result_get_element(ctx,number*cols,qdat),
-                        result_get_element(ctx,(number*cols)+2,qdat));
+                        result_get_element(ctx,(number*cols)+2,qdat));}
+		else { 
+			retstr = talloc(asprintf(ctx,"%04i%s0001*0001*%04i%s",
+				strlen(result_get_element(ctx,number*cols,qdat)),
+				result_get_element(ctx,number*cols,qdat),
+				strlen(result_get_element(ctx,(number*cols)+2,qdat)),
+				result_get_element(ctx,(number*cols)+2,qdat)));
+		}
                 break;
-        case INT_OBJ_SHARE:
-                retstr = talloc_asprintf(ctx,"and domain='%s' ",
-                        result_get_element(ctx,number*cols,qdat));
+        case INT_OBJ_SHARE: ;
+		if (qtype == 0) {
+			retstr = talloc_asprintf(ctx,"and domain='%s' ",
+                        	result_get_element(ctx,number*cols,qdat));}
+			else {
+			retstr = talloc(asprintf(ctx,"0001*%04i%s0001*%04i%s",
+				strlen(result_get_element(ctx,number*cols,qdat)),
+				result_get_element(ctx,number*cols,qdat),
+				strlen(data),data));
+			}
                 break;
-        case INT_OBJ_FILE:
+        case INT_OBJ_FILE: ;
                 retstr = talloc_asprintf(ctx,"and share='%s' ",
                         result_get_element(ctx,number*cols,qdat));
                 break;
