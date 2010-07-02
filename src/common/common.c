@@ -469,25 +469,31 @@ char *common_identify( TALLOC_CTX *ctx,
 			switch(Type) {
 			case INT_OBJ_USER:
 				retstr = talloc_asprintf(ctx,
-				"%04i%s0001*0001*0001*",
-				strlen(data),data);
+				"%04i%s0001*0001*0001*0001*",
+				(int) strlen(data),data);
 				break;
 			case INT_OBJ_SHARE:
 				retstr = talloc_asprintf(ctx,
-				"0001*%04i%s0001*0001*",
-				strlen(data),data);
+				"0001*0001*%04i%s0001*0001*",
+				(int) strlen(data),data);
 				break;
 			case INT_OBJ_FILE:
 				retstr = talloc_asprintf(ctx,
-				"0001*0001*%04i%s0001*",
-				strlen(data),data);
+				"0001*0001*0001*%04i%s0001*",
+				(int) strlen(data),data);
 				break;
+			/*
 			case INT_OBJ_DOMAIN:
 				retstr = talloc_asprintf(ctx,
-				"0001*0001*0001%04i%s",
-				strlen(data),data);
+				"0001*0001*0001*0001*%04i%s",
+				(int) strlen(data),data);
 				break;
+			*/
+			default:
+				printf("ERROR: unsupported type of object\n");
+				exit(1);
 			}
+		}
                 printf("as a unique item in the database.\n");
                 return retstr;
         }
@@ -529,11 +535,13 @@ char *common_identify( TALLOC_CTX *ctx,
                         result_get_element(ctx,number*cols,qdat),
                         result_get_element(ctx,(number*cols)+2,qdat));}
 		else { 
-			retstr = talloc(asprintf(ctx,"%04i%s0001*0001*%04i%s",
-				strlen(result_get_element(ctx,number*cols,qdat)),
+			retstr = talloc_asprintf(ctx,"%04i%s%04i%s0001*0001*%04i%s",
+				(int) strlen(data),
+				data,
+				(int) strlen(result_get_element(ctx,number*cols,qdat)),
 				result_get_element(ctx,number*cols,qdat),
-				strlen(result_get_element(ctx,(number*cols)+2,qdat)),
-				result_get_element(ctx,(number*cols)+2,qdat)));
+				(int) strlen(result_get_element(ctx,(number*cols)+2,qdat)),
+				result_get_element(ctx,(number*cols)+2,qdat));
 		}
                 break;
         case INT_OBJ_SHARE: ;
@@ -541,15 +549,22 @@ char *common_identify( TALLOC_CTX *ctx,
 			retstr = talloc_asprintf(ctx,"and domain='%s' ",
                         	result_get_element(ctx,number*cols,qdat));}
 			else {
-			retstr = talloc(asprintf(ctx,"0001*%04i%s0001*%04i%s",
-				strlen(result_get_element(ctx,number*cols,qdat)),
-				result_get_element(ctx,number*cols,qdat),
-				strlen(data),data));
+			retstr = talloc_asprintf(ctx,"0001*0001*%04i%s0001*%04i%s",
+				(int) strlen(data),data,
+				(int) strlen(result_get_element(ctx,number*cols,qdat)),
+				result_get_element(ctx,number*cols,qdat));
 			}
                 break;
         case INT_OBJ_FILE: ;
-                retstr = talloc_asprintf(ctx,"and share='%s' ",
-                        result_get_element(ctx,number*cols,qdat));
+		if (qtype == 0) {
+                	retstr = talloc_asprintf(ctx,"and share='%s' ",
+                        	result_get_element(ctx,number*cols,qdat));
+		} else {
+			retstr = talloc_asprintf(ctx,"0001*0001*%04i%s%04i%s0001*",
+				(int) strlen(result_get_element(ctx,number*cols,qdat)),
+				result_get_element(ctx,number*cols,qdat),
+				(int) strlen(data),data);
+		}
                 break;
         default:
                 printf("ERROR: Unsupported type of object!\n");

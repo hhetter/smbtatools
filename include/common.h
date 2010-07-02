@@ -76,5 +76,5 @@ void network_close_connection( int sockfd );
 char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
         char *data,
-        struct configuration_data *config);
+        struct configuration_data *config, int qtype);
 

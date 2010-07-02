@@ -229,7 +229,7 @@ void configuration_generate_pattern( struct configuration_data *c)
 {
 	/*
 	 * How the pattern is build:
-	 * SHARE|USER|FILE
+	 * USER, USERSID, SHARE, FILE, DOMAIN
 	 *
 	 */
 	int t;

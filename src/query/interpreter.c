@@ -710,7 +710,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->sql = talloc_asprintf(ctx," filename='%s' %s",
 					command_data->arguments[0],
 					common_identify(ctx,INT_OBJ_FILE,
-						obj_struct->name,config));
+						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on file %s", obj_struct->name);
 		break;
@@ -720,7 +720,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->sql = talloc_asprintf(ctx," share='%s' %s",
 					command_data->arguments[0],
 					common_identify(ctx,INT_OBJ_SHARE,
-						obj_struct->name,config));
+						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"on share %s", obj_struct->name);
 		break;
@@ -730,7 +730,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->sql = talloc_asprintf(ctx," username='%s' %s",
 					command_data->arguments[0],
 					common_identify(ctx,INT_OBJ_USER,
-						obj_struct->name,config));
+						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
 		break;
