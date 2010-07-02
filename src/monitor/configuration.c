@@ -232,10 +232,6 @@ void configuration_generate_pattern( struct configuration_data *c)
 	 * USER, USERSID, SHARE, FILE, DOMAIN
 	 *
 	 */
-	int t;
-	for (t=0; t<5; t++) {
-		if (c->object_type != t) c->pattern[t]=strdup("*");
-	}
-
-	c->pattern[c->object_type] = strdup(c->object_name);
+	char *pattern;
+	pattern = common_identify(NULL,c->object_type,c->object_name,c,1);
 }	
