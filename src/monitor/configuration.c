@@ -234,4 +234,5 @@ void configuration_generate_pattern( struct configuration_data *c)
 	 */
 	char *pattern;
 	pattern = common_identify(NULL,c->object_type,c->object_name,c,1);
+	printf("pattern :%s",pattern);
 }	

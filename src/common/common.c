@@ -505,15 +505,20 @@ char *common_identify( TALLOC_CTX *ctx,
         switch(Type) {
         case INT_OBJ_USER:
                 printf("User '%s' is ambiguous. Please choose:\n",data);
-                interpreter_print_numbered_table(ctx,cols,qdat,"SID","Name","Domain");
+                interpreter_print_numbered_table(ctx,cols,qdat,"SID",
+			"Name",
+			"Domain");
                 break;
         case INT_OBJ_SHARE:
                 printf("Share '%s' is ambiguous. Please choose:\n",data);
-                interpreter_print_numbered_table(ctx,cols,qdat,"Domain","Share");
+                interpreter_print_numbered_table(ctx,cols,qdat,
+			"Domain",
+			"Share");
                 break;
         case INT_OBJ_FILE:
                 printf("File '%s' is ambiguous. Please choose:\n",data);
-                interpreter_print_numbered_table(ctx,cols,qdat,"Share","File");
+                interpreter_print_numbered_table(ctx,cols,qdat,
+			"Share","File");
                 break;
         default:
                 printf("ERROR: Unsupported type of object!\n");
