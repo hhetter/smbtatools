@@ -116,7 +116,7 @@ int configuration_load_config_file( struct configuration_data *c)
         return 0;
 }
 
-
+void configuration_generate_pattern( struct configuration_data *c);
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -200,7 +200,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
         c->socket = common_connect_socket( c->host, c->port );
 
         /* through all options, now run the query command */
-
+	configuration_generate_pattern( c);
         close(c->socket);
         TALLOC_FREE(runtime_mem);
         return 0;
@@ -234,5 +234,5 @@ void configuration_generate_pattern( struct configuration_data *c)
 	 */
 	char *pattern;
 	pattern = common_identify(NULL,c->object_type,c->object_name,c,1);
-	printf("pattern :%s",pattern);
+	printf("pattern :%s\n",pattern);
 }	

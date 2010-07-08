@@ -425,7 +425,8 @@ char *common_identify( TALLOC_CTX *ctx,
         /* if only one row has been returned, the query is unique
          * or failed
          */
-        if (interpreter_get_result_rows(qdat,cols) == 0) {
+	printf("ROWS:%i\n",interpreter_get_result_rows(qdat,cols));
+        if (interpreter_get_result_rows(qdat,cols) == 1) {
                 /* check if the query does query for an existing */
                 /* object at all.                                */
                 char *cmp = NULL;
@@ -447,41 +448,40 @@ char *common_identify( TALLOC_CTX *ctx,
                         }
                         printf("in the database.\n");
                         exit(1);
-                }
-        } else if (interpreter_get_result_rows(qdat,cols) ==1) {
-                printf("Identified ");
-                switch(Type) {
-                case INT_OBJ_USER:
-                        printf("user %s ",data);
-                        break;
-                case INT_OBJ_SHARE:
-                        printf("share %s ",data);
-                        break;
-                case INT_OBJ_FILE:
-                        printf("file %s ",data);
-                        break;
-                default:
-                        printf("ERROR: Unsupported type of object!\n");
-                        exit(1);
-                }
-                if (qtype == 0 ) retstr = talloc_asprintf(ctx,"and 1=1 ");
-		if (qtype == 1 ) {
-			switch(Type) {
-			case INT_OBJ_USER:
-				retstr = talloc_asprintf(ctx,
-				"%04i%s0001*0001*0001*0001*",
-				(int) strlen(data),data);
-				break;
-			case INT_OBJ_SHARE:
-				retstr = talloc_asprintf(ctx,
-				"0001*0001*%04i%s0001*0001*",
-				(int) strlen(data),data);
-				break;
-			case INT_OBJ_FILE:
-				retstr = talloc_asprintf(ctx,
-				"0001*0001*0001*%04i%s0001*",
-				(int) strlen(data),data);
-				break;
+                } else {
+                	printf("Identified ");
+                	switch(Type) {
+                	case INT_OBJ_USER:
+                        	printf("user %s ",data);
+                        	break;
+                	case INT_OBJ_SHARE:
+                        	printf("share %s ",data);
+                        	break;
+                	case INT_OBJ_FILE:
+                        	printf("file %s ",data);
+                        	break;
+                	default:
+                        	printf("ERROR: Unsupported type of object!\n");
+                        	exit(1);
+                	}
+                	if (qtype == 0 ) retstr = talloc_asprintf(ctx,"and 1=1 ");
+			if (qtype == 1 ) {
+				switch(Type) {
+				case INT_OBJ_USER:
+					retstr = talloc_asprintf(ctx,
+					"%04i%s0001*0001*0001*0001*",
+					(int) strlen(data),data);
+					break;
+				case INT_OBJ_SHARE:
+					retstr = talloc_asprintf(ctx,
+					"0001*0001*%04i%s0001*0001*",
+					(int) strlen(data),data);
+					break;
+				case INT_OBJ_FILE:
+					retstr = talloc_asprintf(ctx,
+					"0001*0001*0001*%04i%s0001*",
+					(int) strlen(data),data);
+					break;
 			/*
 			case INT_OBJ_DOMAIN:
 				retstr = talloc_asprintf(ctx,
@@ -489,13 +489,14 @@ char *common_identify( TALLOC_CTX *ctx,
 				(int) strlen(data),data);
 				break;
 			*/
-			default:
-				printf("ERROR: unsupported type of object\n");
-				exit(1);
+				default:
+					printf("ERROR: unsupported type of object\n");
+					exit(1);
+				}
 			}
+                	printf("as a unique item in the database.\n");
+                	return retstr;
 		}
-                printf("as a unique item in the database.\n");
-                return retstr;
         }
 
         /*
