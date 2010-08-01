@@ -23,5 +23,6 @@
 #include "../../../include/version.h"
 #include "monitor-fn-enum.h"
 #include "configuration.h"
+#include "monitor-list.h"
 #include "network.h"
 

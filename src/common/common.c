@@ -273,7 +273,6 @@ char *sql_query( TALLOC_CTX *ctx,
         return body;
 }
 
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data );
 
 void interpreter_print_numbered_table( TALLOC_CTX *ctx,
                 int columns,char *data, ... )

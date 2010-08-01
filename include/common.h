@@ -77,4 +77,4 @@ char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
         char *data,
         struct configuration_data *config, int qtype);
-
+char *result_get_element( TALLOC_CTX *ctx, int number, const char *data );

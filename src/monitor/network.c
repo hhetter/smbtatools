@@ -27,10 +27,12 @@
  */
 int network_register_monitor( enum monitor_fn func, char *pattern, struct configuration_data *c)
 {
-        char *tosend;
+        char *tosend, *data;
         int i = asprintf(&tosend, "~~0001%i%s",func,pattern);
         char *body = sql_query(NULL,c,tosend);
         printf("%s\n",body);
+	data = result_get_element(NULL,0,body);
+	monitor_list_add( atoi(data ));	
         return 1;
 }
 
