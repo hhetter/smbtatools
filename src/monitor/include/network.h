@@ -27,7 +27,6 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -41,7 +40,5 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
-
-int configuration_check_configuration( struct configuration_data *c );
-int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );
+int network_register_monitor( enum monitor_fn func, char *pattern, struct configuration_data *c);
 

@@ -19,8 +19,7 @@
  */
 
 #include <stdlib.h>
-#include "include/configuration.h"
-#include "../../include/version.h"
+#include "include/includes.h"
 int configuration_check_configuration( struct configuration_data *c );
 
 
@@ -116,13 +115,14 @@ int configuration_load_config_file( struct configuration_data *c)
         return 0;
 }
 
-void configuration_generate_pattern( struct configuration_data *c);
+char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
         int argc, char *argv[] )
 {
         int i;
+	char *pattern;
         TALLOC_CTX *runtime_mem = NULL;
         configuration_define_defaults( c );
 
@@ -200,7 +200,8 @@ int configuration_parse_cmdline( struct configuration_data *c,
         c->socket = common_connect_socket( c->host, c->port );
 
         /* through all options, now run the query command */
-	configuration_generate_pattern( c);
+	pattern = configuration_generate_pattern(runtime_mem, c);
+	network_register_monitor(MONITOR_ADD, pattern,c);
         close(c->socket);
         TALLOC_FREE(runtime_mem);
         return 0;
@@ -225,7 +226,7 @@ int configuration_check_configuration( struct configuration_data *c )
  * This fills the filter pattern for the monitor by running identify,
  * and eventually filling more required patterns
  */
-void configuration_generate_pattern( struct configuration_data *c)
+char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
 {
 	/*
 	 * How the pattern is build:
@@ -233,6 +234,6 @@ void configuration_generate_pattern( struct configuration_data *c)
 	 *
 	 */
 	char *pattern;
-	pattern = common_identify(NULL,c->object_type,c->object_name,c,1);
-	printf("pattern :%s\n",pattern);
+	pattern = common_identify( ctx,c->object_type,c->object_name,c,1);
+	return pattern;
 }	

@@ -20,9 +20,7 @@
 
 #include <curses.h>
 #include <stdlib.h>
-#include "../../include/version.h"
-#include "include/configuration.h"
-
+#include "include/includes.h"
 
 void monitor_shutdown(void)
 {

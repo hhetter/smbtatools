@@ -17,7 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-
+#define _GNU_SOURCE
 #include <stdlib.h>
-
+#include <stdio.h>
+#include "include/includes.h"
+/*
+ * transmit the monitor function and the pattern
+ * to smbtad and receive the id
+ */
+int network_register_monitor( enum monitor_fn func, char *pattern, struct configuration_data *c)
+{
+        char *tosend;
+        int i = asprintf(&tosend, "~~0001%i%s",func,pattern);
+        char *body = sql_query(NULL,c,tosend);
+        printf("%s\n",body);
+        return 1;
+}
 

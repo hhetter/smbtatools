@@ -1,0 +1,42 @@
+struct request_item *request_list_start = NULL;
+struct request_item *request_list_end = NULL;
+
+int request_list_add( enum monitor_fn func, char *data) {
+        struct request_item *entry;
+        if (request_list_start == NULL) {
+                request_list_start = (struct request_item *) malloc( sizeof( struct request_item));
+                if (request_list_start == NULL) {
+                        printf("ERROR: could not allocate memory!\n");
+                        exit(1);
+                }
+		entry = request_list_start;
+                asprintf(entry->data,"0001%i%04i%s",func,strlen(data),data);
+                entry->next = NULL;
+                request_list_end = entry->next;
+	} else {
+		entry = (struct request_item *) malloc(sizeof(struct request_item));
+		if (entry == NULL) {
+			printf("ERROR: could not allocate memory!\n");
+			exit(1);
+		}
+		request_list_end = entry;
+		entry->next = NULL;
+		asprintf(entry->data,"0001%i%04i%s",func,strlen(data),data);
+		entry->data = strdup(data);
+		request_list_end = entry->next;
+	}
+}
+
+char *request_list_check(void) {
+	char *ret = NULL;
+	struct request_item *backup;
+	if (request_list_start == NULL) return ret;
+	ret = strdup(request_list_start->data);
+	free(request_list_start->data);
+	backup = request_list_start;
+	request_list_start=request_list_start->next;
+	free(backup);
+	return ret;
+}
+
+
