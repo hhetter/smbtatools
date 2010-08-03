@@ -18,6 +18,9 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
+#include <signal.h>
+#include <pthread.h>
+
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
 #include "../../../include/version.h"
