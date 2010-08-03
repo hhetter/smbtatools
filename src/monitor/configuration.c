@@ -20,6 +20,10 @@
 
 #include <stdlib.h>
 #include "include/includes.h"
+
+pthread_t thread;
+
+
 int configuration_check_configuration( struct configuration_data *c );
 
 
@@ -203,6 +207,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
 	network_register_monitor(MONITOR_ADD, pattern,c);
+
+	/* run the networking thread */
+	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
+
+
+	/* main loop */
+	while (1 == 1) {
+		sleep(5);
+		monitor_list_print_changed();
+	}
+
+
+
         close(c->socket);
         TALLOC_FREE(runtime_mem);
         return 0;

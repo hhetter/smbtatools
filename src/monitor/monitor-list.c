@@ -6,7 +6,7 @@ pthread_mutex_t monitor_list_lock;
 
 
 /*
- * For query_list, we don't use talloc. We
+ * For monitor_list, we don't use talloc. We
  * need to remove single elements from the list,
  * making the use of malloc easier in this case
  */
@@ -88,4 +88,20 @@ void monitor_list_change_results( char *data )
 	pthread_mutex_unlock(&monitor_list_lock);
 }
 
-
+void monitor_list_print_changed() {
+	pthread_mutex_lock(&monitor_list_lock);
+	struct monitor_item *entry = monlist_start;
+	printf("-----> monitor list begin <-----\n");
+	while( entry != NULL) {
+		if (entry->changed == 1) {
+			printf("Entry id %i changed: %s\n",
+				entry->id, entry->data);
+			entry->changed = 0;
+		}
+		entry = entry->next;
+	}
+	printf("-----> monitor list end   <-----\n");
+	pthread_mutex_unlock(&monitor_list_lock);
+}
+	
+	

@@ -48,6 +48,7 @@ int network_register_monitor( enum monitor_fn func, char *pattern, struct config
  */
 void network_handle_data( struct configuration_data *c)
 {
+        pthread_detach(pthread_self());
         fd_set fd_set_r,fd_set_w,active_fd_set;
         int z=0;
         char *header=NULL;
@@ -58,7 +59,6 @@ void network_handle_data( struct configuration_data *c)
         int sockfd = c->socket;
         enum network_send_flags state = UNSENT;
 
-	pthread_detach(pthread_self());
 
 	while (1 == 1) {
 	        /* Initialize the set of active input sockets. */
