@@ -324,16 +324,13 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
         int c = 0;
         int blocksize = 0;
         char *result = NULL;
-	printf("DATA :%s\n",data);
         for (c = 0; c <= number; c++) {
                 for (t = datcount; t<datcount+4 ; t++) {
                         bytecount[t-datcount]=data[t];
                 }
                 bytecount[4]='\0';
                 blocksize = atoi(bytecount);
-		printf("BYTECOUNT: %s\n",bytecount);
                 if (blocksize == 0) {
-			printf("Blocksize 0, returning NULL!\n");
 			return NULL;
 		}
                 if ( c == number) {
@@ -347,7 +344,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
                         break;
                 } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
         }
-	printf("FERTIG. returning %s\n",result);
         return result;
 }
 
