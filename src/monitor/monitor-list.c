@@ -60,7 +60,6 @@ int monitor_list_add( int id )
 
 struct monitor_item *monitor_list_get_by_id( int id )
 {
-	pthread_mutex_lock(&monitor_list_lock);
 	struct monitor_item *entry = monlist_start;
 	while (entry != NULL) {
 		if (id == entry->id) {
@@ -69,22 +68,24 @@ struct monitor_item *monitor_list_get_by_id( int id )
 		}
 		entry=entry->next;
 	}
-	pthread_mutex_unlock(&monitor_list_lock);
 	return NULL;
 }
 
 void monitor_list_change_results( char *data )
 {
 	pthread_mutex_lock(&monitor_list_lock);
+	printf("DATA: |%s|\n",data);
 	struct monitor_item *entry;
-	char *tmp;
-	tmp = result_get_element(tmp,0,data);
+	char *ctx = talloc(NULL, char);
+	char *tmp = NULL;
+	tmp = result_get_element(ctx,0,data);
 	int id = atoi(tmp);
 	entry = monitor_list_get_by_id(id);
-	tmp = result_get_element(tmp,1,data);
+	tmp = result_get_element(ctx,1,data);
+	printf("ELEMENT DATA: |%s|\n",tmp);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
-	talloc_free(tmp);
+	talloc_free(ctx);
 	pthread_mutex_unlock(&monitor_list_lock);
 }
 

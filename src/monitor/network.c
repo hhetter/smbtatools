@@ -81,7 +81,7 @@ void network_handle_data( struct configuration_data *c)
                 	fd_set_w=active_fd_set;
 
                 	z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
-                	if (FD_ISSET( sockfd,&fd_set_r)) {
+                	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;
 				printf("recv header !");
@@ -99,10 +99,12 @@ void network_handle_data( struct configuration_data *c)
                         	state = HEADER_RECEIVED;
 				printf("HEADER RECEIVED %s\n", header);
                         	data_length = common_get_data_block_length(header);
+				printf("DATA BLOCK LENGTH: %i\n",data_length);
                         	continue;
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_HEADER_ONGOING) {
+				printf("ONGOING!\n");
                         	common_receive_data(header + header_position, sockfd,
                                 	26-header_position, &header_position);
 

@@ -324,14 +324,18 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
         int c = 0;
         int blocksize = 0;
         char *result = NULL;
-
+	printf("DATA :%s\n",data);
         for (c = 0; c <= number; c++) {
                 for (t = datcount; t<datcount+4 ; t++) {
                         bytecount[t-datcount]=data[t];
                 }
                 bytecount[4]='\0';
                 blocksize = atoi(bytecount);
-                if (blocksize == 0) return NULL;
+		printf("BYTECOUNT: %s\n",bytecount);
+                if (blocksize == 0) {
+			printf("Blocksize 0, returning NULL!\n");
+			return NULL;
+		}
                 if ( c == number) {
                         result = talloc_array(ctx,char, blocksize +1);
                         datcount = datcount + 4;
@@ -341,8 +345,9 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
                         result[blocksize]='\0';
                         datcount = datcount + blocksize +1;
                         break;
-                } else datcount = datcount + 4 + blocksize+1;
+                } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
         }
+	printf("FERTIG. returning %s\n",result);
         return result;
 }
 
@@ -364,7 +369,7 @@ int interpreter_get_result_rows( char *data, int columns)
                 col++; element++;
         }
         TALLOC_FREE(ctx);
-        return row;
+        return row + 1;
 }
 
 
