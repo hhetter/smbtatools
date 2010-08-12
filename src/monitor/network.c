@@ -27,14 +27,13 @@
  */
 int network_register_monitor( enum monitor_fn func,
 	char *param,
-	char *pattern, struct configuration_data *c)
+	char *pattern,int xpos, int ypos, struct configuration_data *c)
 {
         char *tosend, *data;
         asprintf(&tosend, "~~0001%i%04i%s%s",func,strlen(param),param,pattern);
         char *body = sql_query(NULL,c,tosend);
-        printf("%s\n",body);
 	data = result_get_element(NULL,0,body);
-	monitor_list_add( atoi(data ));	
+	monitor_list_add( atoi(data ), func, xpos,ypos);	
 	free(tosend);
 	talloc_free(data);
 	talloc_free(body);
@@ -84,7 +83,6 @@ void network_handle_data( struct configuration_data *c)
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;
-				printf("recv header !");
                         	header = talloc_array(NULL, char, 29);
                         	common_receive_data(header, sockfd, 26,
                                 	&header_position);
@@ -97,14 +95,11 @@ void network_handle_data( struct configuration_data *c)
                                 	continue;
                         	}
                         	state = HEADER_RECEIVED;
-				printf("HEADER RECEIVED %s\n", header);
                         	data_length = common_get_data_block_length(header);
-				printf("DATA BLOCK LENGTH: %i\n",data_length);
                         	continue;
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_HEADER_ONGOING) {
-				printf("ONGOING!\n");
                         	common_receive_data(header + header_position, sockfd,
                                 	26-header_position, &header_position);
 
@@ -116,7 +111,6 @@ void network_handle_data( struct configuration_data *c)
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
                         	state = RECEIVING_DATA;
-				printf("RECEIVING DATA !!!");
                         	body = talloc_array(NULL, char, data_length +2);
                         	body_position = 0;
                         	common_receive_data(body,
@@ -133,7 +127,6 @@ void network_handle_data( struct configuration_data *c)
                         	}
                         	/* full data set received */
                         	state = UNSENT;
-				printf("data redv! %s\n",body);
                         	break;
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&

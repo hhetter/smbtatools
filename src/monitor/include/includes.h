@@ -28,4 +28,4 @@
 #include "configuration.h"
 #include "monitor-list.h"
 #include "network.h"
-
+#include "visual.h"

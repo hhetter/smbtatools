@@ -108,6 +108,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/configuration.c
 	src/monitor/network.c
 	src/monitor/monitor-list.c
+	src/monitor/visual.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 

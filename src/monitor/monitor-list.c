@@ -23,7 +23,7 @@ void monitor_list_init( ) {
 
 
 
-int monitor_list_add( int id )
+int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos )
 {
 	pthread_mutex_lock(&monitor_list_lock);
 
@@ -40,6 +40,9 @@ int monitor_list_add( int id )
 		entry->changed = 0;
 		entry->data = NULL;
 		entry->next = NULL;
+		entry->type = func;
+		entry->xpos = xpos;
+		entry->ypos = ypos;
 		pthread_mutex_unlock(&monitor_list_lock);
 		return 0;
 	}
@@ -54,6 +57,9 @@ int monitor_list_add( int id )
 	entry->data = NULL;
 	entry->id = id;
 	entry->changed = 0;
+	entry->type = func;
+	entry->xpos = xpos;
+	entry->ypos = ypos;
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
@@ -74,7 +80,6 @@ struct monitor_item *monitor_list_get_by_id( int id )
 void monitor_list_change_results( char *data )
 {
 	pthread_mutex_lock(&monitor_list_lock);
-	printf("DATA: |%s|\n",data);
 	struct monitor_item *entry;
 	char *ctx = talloc(NULL, char);
 	char *tmp = NULL;
@@ -82,9 +87,15 @@ void monitor_list_change_results( char *data )
 	int id = atoi(tmp);
 	entry = monitor_list_get_by_id(id);
 	tmp = result_get_element(ctx,1,data);
-	printf("ELEMENT DATA: |%s|\n",tmp);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
+	switch(entry->type) {
+	case MONITOR_ADD: ;
+		visual_monitor_add(entry);
+		break;
+	default: ;
+	}
+		
 	talloc_free(ctx);
 	pthread_mutex_unlock(&monitor_list_lock);
 }
