@@ -93,6 +93,9 @@ void monitor_list_change_results( char *data )
 	case MONITOR_ADD: ;
 		visual_monitor_add(entry);
 		break;
+	case MONITOR_TOTAL: ;
+		visual_monitor_total(entry);
+		break;
 	default: ;
 	}
 		
@@ -116,4 +119,4 @@ void monitor_list_print_changed() {
 	pthread_mutex_unlock(&monitor_list_lock);
 }
 	
-	
+

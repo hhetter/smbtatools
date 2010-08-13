@@ -15,3 +15,9 @@ void visual_monitor_add(struct monitor_item *entry)
 
 	printf("%i\n",atoi(entry->data));
 }
+
+
+void visual_monitor_total(struct monitor_item *entry)
+{
+	printf("%i\n",atoi(entry->data));
+}
