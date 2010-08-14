@@ -181,11 +181,6 @@ char *sql_query( TALLOC_CTX *ctx,
         int data_length=0;
         int sockfd = config->socket;
         enum network_send_flags state = UNSENT;
-        /* Initialize the set of active input sockets. */
-        FD_ZERO (&active_fd_set);
-        FD_SET(config->socket,&active_fd_set);
-        fd_set_r=active_fd_set;
-        fd_set_w=active_fd_set;
         while (state != DATA_RECEIVED) {
                 /* Initialize the set of active input sockets. */
                 FD_ZERO (&active_fd_set);
@@ -425,7 +420,6 @@ char *common_identify( TALLOC_CTX *ctx,
         /* if only one row has been returned, the query is unique
          * or failed
          */
-	printf("ROWS:%i\n",interpreter_get_result_rows(qdat,cols));
         if (interpreter_get_result_rows(qdat,cols) == 1) {
                 /* check if the query does query for an existing */
                 /* object at all.                                */
