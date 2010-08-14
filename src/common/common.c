@@ -365,7 +365,7 @@ int interpreter_get_result_rows( char *data, int columns)
                 col++; element++;
         }
         TALLOC_FREE(ctx);
-        return row + 1;
+        return row ;
 }
 
 
