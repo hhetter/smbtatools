@@ -21,3 +21,8 @@ void visual_monitor_total(struct monitor_item *entry)
 {
 	printf("%i\n",atoi(entry->data));
 }
+
+void visual_monitor_throughput(struct monitor_item *entry)
+{
+	printf("%i\n",atoi(entry->data));
+}

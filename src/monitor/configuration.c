@@ -207,8 +207,8 @@ int configuration_parse_cmdline( struct configuration_data *c,
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
 	// network_register_monitor(MONITOR_ADD, "none", pattern,1,1,c);
-	network_register_monitor(MONITOR_TOTAL, "W", pattern,1,1,c);
-
+//	network_register_monitor(MONITOR_TOTAL, "W", pattern,1,1,c);
+	network_register_monitor(MONITOR_THROUGHPUT,"W",pattern,1,1,c);
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 
