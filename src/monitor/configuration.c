@@ -204,6 +204,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
         c->socket = common_connect_socket( c->host, c->port );
 
 	monitor_list_init();
+	visual_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
 	// network_register_monitor(MONITOR_ADD, "none", pattern,1,1,c);

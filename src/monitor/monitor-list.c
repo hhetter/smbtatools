@@ -69,7 +69,6 @@ struct monitor_item *monitor_list_get_by_id( int id )
 	struct monitor_item *entry = monlist_start;
 	while (entry != NULL) {
 		if (id == entry->id) {
-			pthread_mutex_unlock(&monitor_list_lock);
 			return entry;
 		}
 		entry=entry->next;

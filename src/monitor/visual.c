@@ -5,7 +5,11 @@
 #include "include/includes.h"
 
 
-
+void visual_init()
+{
+	initscr();
+	refresh();
+}
 
 /**
  * Draw function for the MONITOR_ADD monitor.
@@ -24,5 +28,7 @@ void visual_monitor_total(struct monitor_item *entry)
 
 void visual_monitor_throughput(struct monitor_item *entry)
 {
-	printf("%i\n",atoi(entry->data));
+	move(entry->ypos, entry->xpos);
+	printw("%10u",atol(entry->data));
+	refresh();
 }
