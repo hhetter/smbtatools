@@ -52,6 +52,31 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
 	return output;
 }
 
+/*
+ * Returns a string representation of
+ * unsigned long int z    bytes.
+ *
+ */
+char *common_make_human_readableFORM( TALLOC_CTX *ctx, unsigned long int z )
+{
+        char kbstring[20];
+        char *output;
+        strcpy(kbstring,"Bytes");
+        long double kb = (long double) z;
+        if (kb>=1024) { kb = kb/1024; // kb
+                        strcpy(kbstring,"KB");}
+        if (kb>=1024) { kb = kb/1024; // mb
+                        strcpy(kbstring,"MB");}
+        if (kb>=1024) {
+                        kb = kb/1024; // gb
+                        strcpy(kbstring,"GB");}
+        if (kb>=1024) {
+                        kb = kb/1024; // tb
+                        strcpy(kbstring,"TB");}
+        output = talloc_asprintf( ctx,"%04.02LF %s",kb,kbstring);
+        return output;
+}
+
 
 /*
  * Take a hostname as string, get its IP,
