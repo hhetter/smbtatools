@@ -19,8 +19,14 @@ void visual_init(char *title)
  */
 void visual_monitor_add(struct monitor_item *entry)
 {
-
-	printf("%i\n",atoi(entry->data));
+	WINDOW *win = newwin(3,25,entry->ypos,entry->xpos);
+	box(win,0,0);
+	unsigned long int nr = 0;
+	if (entry->data != NULL) nr = atol(entry->data);
+	mvwprintw(win,0,1,entry->title);
+	mvwprintw(win,1,1,"%u VFS ops",nr);
+	wrefresh(win);
+	delwin(win);
 }
 
 

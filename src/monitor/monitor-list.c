@@ -112,7 +112,6 @@ void monitor_list_change_results( char *data )
 	tmp = result_get_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
-	pthread_mutex_unlock(&monitor_list_lock);
 	switch(entry->type) {
 	case MONITOR_ADD: ;
 		visual_monitor_add(entry);
@@ -125,7 +124,7 @@ void monitor_list_change_results( char *data )
 		break;
 	default: ;
 	}
-		
+	pthread_mutex_unlock(&monitor_list_lock);	
 	talloc_free(ctx);
 }
 
