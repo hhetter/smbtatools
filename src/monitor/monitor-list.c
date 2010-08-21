@@ -22,7 +22,13 @@ void monitor_list_init( ) {
 
 
 
-
+/**
+ * add a monitor item
+ * int id 		-> id of the monitor received by smbtad
+ * enum monitor_fn	-> Function of the monitor
+ * int xpos, ypos	-> x and y position in a full curses window
+ * char *title		-> title to be printed above the monitor data
+ */
 int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *title )
 {
 	pthread_mutex_lock(&monitor_list_lock);
@@ -66,6 +72,10 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 	return 0;
 }
 
+
+/**
+ * return a struct monitor_item by a given id
+ */
 struct monitor_item *monitor_list_get_by_id( int id )
 {
 	struct monitor_item *entry = monlist_start;
@@ -78,6 +88,10 @@ struct monitor_item *monitor_list_get_by_id( int id )
 	return NULL;
 }
 
+
+/**
+ * draw the monitors initially after being initialized
+ */
 void monitor_list_initial_draw()
 {
 	pthread_mutex_lock(&monitor_list_lock);
