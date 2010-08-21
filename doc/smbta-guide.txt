@@ -22,7 +22,8 @@ system administrators.
 Having knowledge of SQL is not required. The user may also run the client programs
 to query the database. These are specialized to the organization of the database,
 and are taking away much of the work to translate often needed questions into SQL
-statements from the user.
+statements from the user. They are also running networked, and can be run on a
+complete different system where the SQL storage exists.
 
 The basic idea and main concept of SMBTA was born on the SambaXP conference
 in Göttingen, Germany, in 2007. At the SNIA conference 2008, I was able to
@@ -32,7 +33,12 @@ got immediately accepted and was introduced with Samba 3.2.0 to Samba users.
 This document is refering to the version 2.0 of the SMB Traffic Analyzer VFS
 module.
 
-Why using SMB Taffic Analyzer
+Please check SMB Traffic Analyzer's home page for newer versions of the software or
+this document:
+http://holger123.wordpress.com/smb-traffic-analyzer/
+
+
+Why using SMB Traffic Analyzer
 -----------------------------
 
 Samba services may run on special hardware, like RAID systems, or other specialized
@@ -44,7 +50,7 @@ on the network. SMBTA can be used to answer questions like this:
 - Which service almost never gets used?
 - Which users are the highest traffic generators?
 - What where the detailed last file activities on a share?
-- Which is the top used file be read and write access?
+- Which is the top used file by read and write access?
 
 Isn't SMBTA a tool to control employees?
 ----------------------------------------
@@ -92,8 +98,9 @@ from the openSUSE BuildService.
 
 The other parts of SMBTA, the daemon program smbtad, as well as the client
 programs smbtaquery and smbtamonitor are available in source code from
-the projects homepage ( ... ). For the openSUSE Linux distribution,
-RPM packages are available from the openSUSE Build Service.
+the projects homepage at http://holger123.wordpress.com/smb-traffic-analyzer/.
+For the openSUSE Linux distribution, RPM packages are available from the 
+openSUSE Build Service.
 
 
 Building SMBTA from the sources
@@ -125,7 +132,7 @@ VFS module, SMBTA logging for this service can be activated:
 [ExampleShare]
 	path = /space
 	vfs_objects = vfs_smb_traffic_analyzer
-	vfs_smb_traffic_analyzer:version = v2
+	vfs_smb_traffic_analyzer:version = V2
 	vfs_smb_traffic_analyzer:host = example.host.ex
 	vfs_smb_traffic_analyzer:port = 3490
 
@@ -175,7 +182,7 @@ to the smbtad component. This is optional, data is not encrypted by
 default.
 
 The encryption method used in SMBTA is 128bit AES. For this encryption,
-the user need to generate a key and make the key known to both the
+the user needs to generate a key and make the key known to both the
 Samba server where the VFS module is activated and the system smbtad is
 running on.
 
@@ -250,7 +257,7 @@ The format of the file is that of a ini file:
 The smbtaquery interpreter
 --------------------------
 
-To easy the usage of the database, smbtaquery implements a simplified
+To ease the usage of the database, smbtaquery implements a simplified
 language to query the database. It is specialized for SMBTA.
 
 Syntax
@@ -264,4 +271,167 @@ Here is an example query:
 
 'global, usage rw;'
 
+The smbtaquery functions and objects
+------------------------------------
 
+The objects
+-----------
+
+Any functions called by smbtaquery are in relation to an object which is
+named first. An object can be a file, a share, or a username, or global, which
+does not relate to a specific object.
+
+For example if you make a query like this:
+'share Fritzboxtest, usage rw'
+
+The calling of the function "usage rw" (as being introduced later in this chapter)
+is bound to the share "Fritzboxtest". Any results will be related to this share.
+
+The general syntax is first to name the object, and then to run the functions on.
+At any time, you can name a new object, and any function run after the new object
+definition will be run related to this object.
+
+Say "total r" is a function to get the total number of bytes read by an object.
+A query could then be:
+'user holger, total r;'
+
+This call would print the total number of bytes read by the user holger.
+
+The following query:
+'share Fritzboxtest, total rw, user holger total w;'
+
+Would first print out the total number of bytes (written and read) on share
+"Fritzboxtest", and then the total number of bytes written by user holger.
+
+The following object definitions are currently possible:
+'share $SHARE' a Samba file service (a share)
+'user $USER' a User
+'file $FILE' a specific file
+'global' Global.
+
+The "global" parameter is special in the way it treats the following functions.
+Functions running on global are not limited by anything, and always work
+on the full database. Giving the following query:
+
+'global, total rw;'
+
+Would print out the full sum of bytes ever transferred (be it read or write).
+
+Object Identification
+---------------------
+SMBTA will try to identify the objects that given by searching through it's
+database. For example, the user "holger" could exist more than once. User "holger"
+could be coming from two or more domains, each of these listing user "holger"
+with a different SID. Therefore SMBTA will look up the known SIDs of user "holger"
+and will present a dialog to choose the right user in case more than one user
+"holger" exists. As a consequence, shares are checked for domains, and files are
+checked for the share and the domain.
+
+The functions
+-------------
+
+total
+-----
+
+Syntax:
+total [RW] [R] [W]
+
+The total function prints out the sum of bytes transferred by an object.
+
+"total r" will compute the sum of bytes read.
+"total w" will compute the sum of bytes written.
+"total rw" will compute the sum of bytes transferred (read and write access).
+
+Example:
+Print out the number of bytes written on the share "Fritzboxtest":
+'share Fritzboxtest, total w;'
+
+list
+----
+
+Syntax:
+list [users] [files]
+
+The list function prints a list of objects related to the given object.
+
+"list users" will print out the list of known users working or involved
+with the object.
+"list files" will print out the list of known files involved with the object.
+
+Example:
+Prints out all users who ever touched, read or written to file "README":
+'file README, list users;'
+
+Print out the list of known files on share "Fritzboxtest":
+'share Fritzboxtest, list files;'
+
+top
+---
+
+Syntax:
+top [number] [files] [users] [shares] [rw] [r] [w]
+
+The top function prints out a number of top files, users, or shares by
+read, write or read and write access.
+
+Example:
+Print out the 10 most used files on share "Fritzboxtest" by read access:
+'share Fritzboxtest, top 10 files r;'
+
+Print out the 10 most used shares on the Samba network:
+'global, top 10 shares rw;'
+
+
+last_activity
+-------------
+
+Syntax:
+last_activity [number]
+
+The last_activity function prints out a list of actions an object has been
+involved in. 
+
+Example:
+Print out the last 10 actions of user holger:
+'user holger, last_activity 10;'
+
+Print out the last 10 actions where file "README" has been involved in:
+'file README, last_activity 10;'
+
+usage
+-----
+
+Syntax:
+usage [rw] [r] [w]
+
+The usage function sums up the usage or activity of an object by creating
+a virtual day, listing 24 hours and showing the data acitvity by percentage.
+
+Example:
+Print a graph of the total usage of the Samba network:
+'global, usage rw;'
+
+Print a graph of the usage of share "Fritzboxtest" by read-access:
+'share Fritzboxtest, usage r;'
+
+
+smbtamonitor
+------------
+
+smbtamonitor allows to view Samba traffic in real-time. The program connects
+directly to smbtad via the network. To allow real-time, a special feature in
+smbtad has been implemented. Instead of receiving data from the SQL storage,
+smbtad filters and sends directly to smbtamonitor when receiving a data package
+from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening
+on the smbtad socket for news, and visualizes them in an curses window.
+
+This concept allows for interesting options, such as computing the throughput
+of an object within smbtad. The queries smbtamonitor is doing are called "monitors"
+by the authors. A "monitor" is like a dynamically loaded module in smbtad,
+requested by smbtamonitor, and doing some computing on the numbers.
+
+For example you can watch the total number of transferred bytes and the throughput
+per second of an object by running smbtamonitor.
+
+Any smbtamonitor instance is bound to an object ( a user, a file, or a share).
+You can run as many smbtamonitor instances as you want against smbtad.

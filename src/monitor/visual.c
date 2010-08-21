@@ -5,6 +5,7 @@
 #include "include/includes.h"
 #include <curses.h>
 #include "include/vfs_smb_traffic_analyzer.h"
+
 void visual_init(char *title)
 {
 	initscr();
