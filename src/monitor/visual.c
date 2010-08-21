@@ -64,7 +64,7 @@ void visual_monitor_throughput(struct monitor_item *entry)
 
 void visual_monitor_log(struct monitor_item *entry)
 {
-	WINDOW *win = newwin(5,75,entry->ypos,entry->xpos);
+	WINDOW *win = newwin(14,75,entry->ypos,entry->xpos);
 	box(win,0,0);
 	if (entry->data == NULL) {
 		mvwprintw(win,1,1,"Empty Log.");
