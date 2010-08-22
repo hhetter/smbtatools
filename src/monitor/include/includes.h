@@ -27,5 +27,6 @@
 #include "monitor-fn-enum.h"
 #include "configuration.h"
 #include "monitor-list.h"
+#include "backlog.h"
 #include "network.h"
 #include "visual.h"

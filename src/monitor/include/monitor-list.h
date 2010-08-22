@@ -7,6 +7,7 @@ struct monitor_item {
 	struct monitor_item *next;
 	int changed;
 	char *title;
+	struct backlog_list *backlog;
 };
 
 void monitor_list_initial_draw();

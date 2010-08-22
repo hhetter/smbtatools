@@ -50,6 +50,11 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 		entry->xpos = xpos;
 		entry->ypos = ypos;
 		entry->title = strdup(title);
+		entry->backlog = (struct backlog_list *) malloc(sizeof(struct backlog_list));
+		entry->backlog->begin = NULL;
+		entry->backlog->end = NULL;
+		entry->backlog->backlog_limit = 20;
+		entry->backlog->backlog_count = 0;
 		pthread_mutex_unlock(&monitor_list_lock);
 		return 0;
 	}
@@ -68,6 +73,11 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 	entry->xpos = xpos;
 	entry->ypos = ypos;
 	entry->title = strdup(title);
+	entry->backlog = (struct backlog_list *) malloc(sizeof(struct backlog_list));
+	entry->backlog->begin = NULL;
+	entry->backlog->end = NULL;
+	entry->backlog->backlog_limit = 20;
+	entry->backlog->backlog_count = 0;
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
