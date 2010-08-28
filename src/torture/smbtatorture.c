@@ -84,12 +84,12 @@ void generate_files()
 	int bytecount;
 	int debug=0;
 	char buffer[40000];
+	srand(time(NULL) + getpid());
 	for(i=0;i<config.number;i++)
 	{
-		list[i]=(random() % (config.size-(config.number-i)));
+		list[i]=(rand() % (config.size-(config.number-i)));
 		config.size=config.size-list[i];
 	}
-
 	//check here if there are sizes under 2000 bytes
 	for (i=0;i<config.number;i++) {
 		if (list[i]<config.number) {
@@ -97,7 +97,7 @@ void generate_files()
 			for (z=0;z<config.number;z++) {
 				if (list[z]>2000) {
 					//srand( time(NULL) );
-					int a=random() % (list[z]);
+					int a=rand() % (list[z]);
 					list[z]=list[z]-a;
 					list[i]=list[i]+a;
 					break;
@@ -166,7 +166,7 @@ void generate_files()
 
 		if(config.verbose==1)
 		{
-			printf("File %s written with %i Bytes\n", Dateiname1, list[i]);
+			printf("File %s written with %u Bytes\n", Dateiname1, list[i]);
 		}
 
 		if(i==config.number-1)
