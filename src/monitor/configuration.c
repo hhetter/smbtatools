@@ -210,10 +210,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	pattern = configuration_generate_pattern(runtime_mem, c);
         network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
 	network_register_monitor(MONITOR_THROUGHPUT,"RW",pattern,"Throughput (Read/Write)",1,4,c);
-	network_register_monitor(MONITOR_TOTAL,"R",pattern,"Total (Reading)",26,1,c);
-	network_register_monitor(MONITOR_THROUGHPUT,"R",pattern,"Throughput (Read)",26,4,c);
-	network_register_monitor(MONITOR_TOTAL,"W",pattern,"Total (Writing)",25 + 26,1,c);
-	network_register_monitor(MONITOR_THROUGHPUT,"W",pattern,"Throughput (Write)",25+26,4,c);
+	network_register_monitor(MONITOR_TOTAL,"R",pattern,"Total (Reading)",27,1,c);
+	network_register_monitor(MONITOR_THROUGHPUT,"R",pattern,"Throughput (Read)",27,4,c);
+	network_register_monitor(MONITOR_TOTAL,"W",pattern,"Total (Writing)",26 + 27,1,c);
+	network_register_monitor(MONITOR_THROUGHPUT,"W",pattern,"Throughput (Write)",26+27,4,c);
 	network_register_monitor(MONITOR_LOG,"none",pattern,"Activity log",1,7,c);
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);

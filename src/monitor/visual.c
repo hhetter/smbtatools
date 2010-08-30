@@ -78,7 +78,7 @@ void visual_list_initial_draw()
  */
 void visual_monitor_add(struct monitor_item *entry)
 {
-	WINDOW *win = newwin(3,25,entry->ypos,entry->xpos);
+	WINDOW *win = newwin(3,26,entry->ypos,entry->xpos);
 	box(win,0,0);
 	unsigned long int nr = 0;
 	if (entry->data != NULL) nr = atol(entry->data);
@@ -91,7 +91,7 @@ void visual_monitor_add(struct monitor_item *entry)
 
 void visual_monitor_total(struct monitor_item *entry)
 {
-	WINDOW *win = newwin(3,25,entry->ypos,entry->xpos);
+	WINDOW *win = newwin(3,26,entry->ypos,entry->xpos);
 	box(win,0,0);
 	unsigned long int nr = 0;
 	if (entry->data != NULL) nr = atol(entry->data);
@@ -107,7 +107,7 @@ void visual_monitor_total(struct monitor_item *entry)
 
 void visual_monitor_throughput(struct monitor_item *entry)
 {
-	WINDOW *win = newwin(3,25,entry->ypos,entry->xpos);
+	WINDOW *win = newwin(3,26,entry->ypos,entry->xpos);
 	box(win,0,0);
 	unsigned long int nr = 0;
 	if (entry->data != NULL) nr = atol(entry->data);
@@ -155,12 +155,13 @@ void visual_monitor_log_calc(struct monitor_item *entry)
         default: ;
         }
         if (to_add != NULL) free(to_add);
+	TALLOC_FREE(ctx);
 }
 
 
 void visual_monitor_log(struct monitor_item *entry)
 {
-	WINDOW *main = newwin(14,75,entry->ypos,entry->xpos);
+	WINDOW *main = newwin(14,78,entry->ypos,entry->xpos);
 	WINDOW *win = subwin(main,11, 70,entry->ypos+1,entry->xpos+1);
 	box(main,0,0);
 	wrefresh(main);
@@ -172,7 +173,7 @@ void visual_monitor_log(struct monitor_item *entry)
 	}
 
 	int count = 0;
-	wmove(win,1,1);
+	wmove(win,1,0);
 	struct backlog_item *item = entry->backlog->end;
 	while (item != NULL && count < 5) {
 		count = count + 1;
