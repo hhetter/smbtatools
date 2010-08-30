@@ -9,14 +9,69 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 
+int monitor_timer_flag = 0;
+pthread_mutex_t monitor_timer_lock;
+pthread_t thread2;
+
+void monitor_timer( void *var);
+
+void visual_list_initial_draw();
+
 void visual_init(char *title)
 {
-	initscr();
-	clear();
-	box(stdscr,0,0);
-	mvwprintw(stdscr,0,1,title);
-	refresh();
+        pthread_mutex_init(&monitor_timer_lock, NULL);
+        pthread_create(&thread2,NULL,(void *)&monitor_timer,NULL);
+        initscr();
+        clear();
+        box(stdscr,0,0);
+        mvwprintw(stdscr,0,1,title);
+        refresh();
 }
+
+
+void monitor_timer( void *var)
+{
+        pthread_detach(pthread_self());
+        unsigned long int micro = 1000*1000; /* microseconds */
+        unsigned long int div = micro / 5;
+        while ( 1 == 1) {
+                usleep(div);
+                pthread_mutex_lock(&monitor_timer_lock);
+                monitor_timer_flag = 1;
+                pthread_mutex_unlock(&monitor_timer_lock);
+                visual_list_initial_draw();
+        }
+}
+
+/**
+ * draw the monitors initially after being initialized
+ */
+void visual_list_initial_draw()
+{
+        struct monitor_item *entry = monlist_start;
+        while (entry != NULL) {
+                switch(entry->type) {
+                case MONITOR_ADD: ;
+                        visual_monitor_add(entry);
+                        break;
+                case MONITOR_TOTAL: ;
+                        visual_monitor_total(entry);
+                        break;
+                case MONITOR_THROUGHPUT: ;
+                        visual_monitor_throughput(entry);
+                        break;
+                case MONITOR_LOG:
+                        visual_monitor_log(entry);
+                        break;
+                default: ;
+                }
+        entry = entry -> next;
+        }
+}
+
+
+
+
 
 /**
  * Draw function for the MONITOR_ADD monitor.
@@ -66,6 +121,43 @@ void visual_monitor_throughput(struct monitor_item *entry)
 	talloc_free(mem);
 }
 
+void visual_monitor_log_calc(struct monitor_item *entry)
+{
+        char *ctx = talloc(NULL,char);
+        char *tmp = result_get_element(ctx,0,entry->data);
+        int id = atoi(tmp);
+        char *username = result_get_element(ctx,1,entry->data);
+        char *share = result_get_element(ctx,2,entry->data);
+        char *filename = result_get_element(ctx,3,entry->data);
+        char *domain = result_get_element(ctx,4,entry->data);
+        char *timestamp = result_get_element(ctx,5,entry->data);
+
+        char *to_add = NULL;
+        switch(id) {
+        case vfs_id_write:
+        case vfs_id_pwrite:
+                asprintf(&to_add,"%s: User %s wrote to file %s on share %s",timestamp,username,filename,share);
+                backlog_add_str(to_add,entry);
+                break;
+        case vfs_id_close:
+                asprintf(&to_add,"%s: User %s closed file %s on share %s.",timestamp,username,filename,share);
+                backlog_add_str(to_add,entry);
+                break;
+        case vfs_id_open:
+                asprintf(&to_add,"%s: User %s opened file %s on share %s",timestamp,username,filename,share);
+                backlog_add_str(to_add,entry);
+                break;
+        case vfs_id_read:
+        case vfs_id_pread:
+                asprintf(&to_add,"%s: User %s read from file %s on share %s",timestamp,username,filename,share);
+                backlog_add_str(to_add,entry);
+                break;
+        default: ;
+        }
+        if (to_add != NULL) free(to_add);
+}
+
+
 void visual_monitor_log(struct monitor_item *entry)
 {
 	WINDOW *main = newwin(14,75,entry->ypos,entry->xpos);
@@ -77,37 +169,6 @@ void visual_monitor_log(struct monitor_item *entry)
 		wrefresh(win);
 		delwin(win);
 		return;
-	}
-	char *ctx = talloc(NULL,char);
-	char *tmp = result_get_element(ctx,0,entry->data);
-	int id = atoi(tmp);
-	char *username = result_get_element(ctx,1,entry->data);
-	char *share = result_get_element(ctx,2,entry->data);
-	char *filename = result_get_element(ctx,3,entry->data);
-	char *domain = result_get_element(ctx,4,entry->data);
-	char *timestamp = result_get_element(ctx,5,entry->data);
-
-	char *to_add = NULL;
-	switch(id) {
-	case vfs_id_write:
-	case vfs_id_pwrite:
-		asprintf(&to_add,"%s: User %s wrote to file %s on share %s",timestamp,username,filename,share);
-		backlog_add_str(to_add,entry);
-		break;
-	case vfs_id_close:
-		asprintf(&to_add,"%s: User %s closed file %s on share %s.",timestamp,username,filename,share);
-		backlog_add_str(to_add,entry);
-		break;
-	case vfs_id_open:
-		asprintf(&to_add,"%s: User %s opened file %s on share %s",timestamp,username,filename,share);
-		backlog_add_str(to_add,entry);
-		break;
-	case vfs_id_read:
-	case vfs_id_pread:
-		asprintf(&to_add,"%s: User %s read from file %s on share %s",timestamp,username,filename,share);
-		backlog_add_str(to_add,entry);
-		break;
-	default: ;
 	}
 
 	int count = 0;
@@ -121,7 +182,6 @@ void visual_monitor_log(struct monitor_item *entry)
 	wrefresh(win);	
 		
 
-	if (to_add != NULL) free(to_add);	
 	delwin(win);
 	delwin(main);
 }

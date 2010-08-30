@@ -140,7 +140,7 @@ void monitor_list_change_results( char *data )
 	entry->data = strdup(tmp);
 	entry->changed = 1;
 	switch(entry->type) {
-	case MONITOR_ADD: ;
+/*	case MONITOR_ADD: ;
 		visual_monitor_add(entry);
 		break;
 	case MONITOR_TOTAL: ;
@@ -149,8 +149,9 @@ void monitor_list_change_results( char *data )
 	case MONITOR_THROUGHPUT: ;
 		visual_monitor_throughput(entry);
 		break;
+*/
 	case MONITOR_LOG: ;
-		visual_monitor_log(entry);
+		visual_monitor_log_calc(entry);
 		break;
 	default: ;
 	}
