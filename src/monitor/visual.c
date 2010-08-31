@@ -33,7 +33,7 @@ void monitor_timer( void *var)
 {
         pthread_detach(pthread_self());
         unsigned long int micro = 1000*1000; /* microseconds */
-        unsigned long int div = micro / 10;
+        unsigned long int div = micro / 20;
         while ( 1 == 1) {
                 usleep(div);
                 pthread_mutex_lock(&monitor_timer_lock);
