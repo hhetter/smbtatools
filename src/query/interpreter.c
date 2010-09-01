@@ -35,6 +35,9 @@ struct interpreter_object {
 	char *name;
 	char *sql;
 	char *output_term;
+	char *from;
+	char *to;
+
 };
 
 
@@ -694,6 +697,113 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 	}
 }
 
+char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
+{
+	struct tm *tmp;
+	time_t now;
+	char *outstr = talloc_array(ctx,char,200);
+	now = time(NULL);
+	tmp = localtime(&now);
+	strftime(outstr,199,"%Y-%m-%d %T",tmp);
+	return outstr;
+}
+
+char *interpreter_return_timestamp(TALLOC_CTX *ctx,
+	char *timestr)
+{
+	char *ret;
+	struct tm *tmp;
+	time_t now;
+	char *outstr = talloc_array(ctx,char,200);
+	char *tmpoutstr = talloc_array(ctx,char,200);
+	/* "now" */
+	if (strcmp(timestr,"now")==0) {
+		ret = interpreter_return_timestamp_now(ctx);
+		return ret;
+	}
+	/* "today" */
+	/* current date + 00:00:00 */
+	if (strcmp(timestr,"today")==0) {
+		now = time(NULL);
+		tmp = localtime(&now);
+		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
+		return outstr;
+	}
+	/* "yesterday" */
+	/* current time - 24 hours */
+	if (strcmp(timestr,"yesterday")==0) {
+		now = time(NULL);
+		now = now - (60*60*24);
+		tmp = localtime(&now);
+		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
+		return outstr;
+	}
+	/* exact time string */
+	/* first try the full format */
+	if (strptime( timestr, "%Y-%m-%d %T",tmp) != NULL) {
+		return timestr;
+	/* only a date */
+	} else if (strptime(timestr,"%Y-%m-%d",tmp) != NULL) {
+		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
+		return outstr;
+	/* only a time, assume the todays date */
+	} else if (strptime(timestr,"%T",tmp) != NULL) {
+		now = time(NULL);
+		tmp = localtime(&now);
+		strftime(tmpoutstr,199,"%Y-%m-%d ",tmp);
+		outstr= talloc_asprintf(ctx,"%s%s",tmpoutstr,timestr);
+		return outstr;
+	}
+	printf("ERROR: did not understood the times you have given.\n");
+	exit(1);
+}	
+
+void interpreter_make_times( TALLOC_CTX *ctx,
+	struct interpreter_object *obj_struct,
+	struct interpreter_command *command_data)
+{
+	int arg_flag=0;
+	if (command_data->argument_count < 2) {
+		obj_struct->from = talloc_asprintf(ctx,"1=1");
+		obj_struct->to = talloc_asprintf(ctx,"1=1");
+		return;
+	}
+	switch(obj_struct->object) {
+	case INT_OBJ_FILE:
+	case INT_OBJ_SHARE:
+	case INT_OBJ_USER:
+		arg_flag=1;
+		break;
+	default:
+		arg_flag=0;
+	}
+	
+	if (strcmp(command_data->arguments[0+arg_flag],"from")==0) {
+		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
+			interpreter_return_timestamp(
+			ctx,
+			command_data->arguments[2+arg_flag]));
+	} else
+	if (command_data->argument_count > 2 &&
+		strcmp(command_data->arguments[2+arg_flag],"to")==0) {
+		obj_struct->to = talloc_asprintf(ctx, "timestamp < '%s'",
+			interpreter_return_timestamp(
+			ctx,
+			command_data->arguments[4+arg_flag]));
+	} else
+	if (strcmp(command_data->arguments[0+arg_flag],"since")==0) {
+		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
+			interpreter_return_timestamp(
+			ctx,
+			command_data->arguments[1+arg_flag]));
+		obj_struct->to = talloc_asprintf(ctx,"timestamp < '%s'",
+			interpreter_return_timestamp_now(ctx));
+	} else {
+		obj_struct->from = talloc_asprintf(ctx,"1=1");
+		obj_struct->to = talloc_asprintf(ctx,"1=1");
+	}
+}
+
 
 void interpreter_run_command( TALLOC_CTX *ctx,
 	struct interpreter_command *command_data,
@@ -707,8 +817,12 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_FILE:
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," filename='%s' %s",
+		interpreter_make_times(ctx,obj_struct, command_data);
+		obj_struct->sql = talloc_asprintf(ctx," filename='%s' and "
+			"%s and %s %s",
 					command_data->arguments[0],
+					obj_struct->from,
+					obj_struct->to,
 					common_identify(ctx,INT_OBJ_FILE,
 						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
@@ -717,8 +831,11 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_SHARE:
 		obj_struct->object = INT_OBJ_SHARE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," share='%s' %s",
+		interpreter_make_times(ctx,obj_struct, command_data);
+		obj_struct->sql = talloc_asprintf(ctx," share='%s' and %s and %s %s",
 					command_data->arguments[0],
+					obj_struct->from,
+					obj_struct->to,
 					common_identify(ctx,INT_OBJ_SHARE,
 						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
@@ -727,8 +844,11 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_USER:
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
-		obj_struct->sql = talloc_asprintf(ctx," username='%s' %s",
+		interpreter_make_times(ctx,obj_struct, command_data);
+		obj_struct->sql = talloc_asprintf(ctx," username='%s' and %s and %s %s",
 					command_data->arguments[0],
+					obj_struct->from,
+					obj_struct->to,
 					common_identify(ctx,INT_OBJ_USER,
 						obj_struct->name,config,0));
 		obj_struct->output_term = talloc_asprintf(ctx,
@@ -737,8 +857,12 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_GLOBAL:
 		obj_struct->object = INT_OBJ_GLOBAL;
 		obj_struct->name= talloc_strdup(ctx, "global");
-		obj_struct->sql = talloc_strdup(ctx," 1=1 ");
+		interpreter_make_times(ctx,obj_struct, command_data);
+		obj_struct->sql = talloc_asprintf(ctx," 1=1 and %s and %s",
+			obj_struct->from,
+			obj_struct->to);
 		obj_struct->output_term = talloc_asprintf(ctx, "globally");
+		interpreter_make_times(ctx,obj_struct, command_data);
 		break;
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
