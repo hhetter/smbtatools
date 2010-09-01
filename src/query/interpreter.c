@@ -876,25 +876,35 @@ void interpreter_command_help()
 	printf("Interpreter commands\n");
 	printf("-----------------------------------------------------\n");
 	printf("smbtaquery -q 'OBJECT,COMMAND;'\n");
+	printf("-----------------------------------------------------\n");
 	printf("OBJECT can be:\n");
-	printf("global  			Run a query over the whole dataset.\n");
-	printf("share	SHARE   		Run a query over the share specified by\n");
-	printf("				SHARE.\n");
-	printf("user 	USER 			Run a query over the user USER.\n");
-	printf("file FILE			Run a query over the file FILE.\n");
+	printf("global  			Run a query over the\n"
+		"				whole dataset.\n");
+	printf("share	SHARE   		Run a query over the\n "
+		"				share specified by SHARE\n");
+	printf("user 	USER 			Run a query over the \n"
+		"				user USER.\n");
+	printf("file	FILE			Run a query over the\n"
+		"				file FILE.\n");
+	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
-	printf("total 	[rw][r][w]		Get the total read(r), write(w)\n");
-	printf("				or read-write values of the\n");
-	printf("				object.\n");
+	printf("total 	[rw][r][w]		Get the total read(r),\n"
+		"				write(w)\n");
+	printf("				or read-write values of\n"
+		"				the object.\n");
 	printf("list 	[shares][users]\n");
-	printf("     	[files]			Lists all shares, all users, all\n");
-	printf("				files on an object.\n");
+	printf("     	[files]			Lists all shares, all\n"
+		"				users, all files on an\n");
+	printf("				object.\n");
 	printf("top 	[num] [shares]\n");
-	printf("    	[users] [rw][r][w]	List the top NUM shares, users or\n");
-	printf("				files on the object.\n");
+	printf("    	[users] [rw][r][w]	List the top NUM shares,\n"
+		"				users or files on the\n");
+	printf("				object.\n");
         printf("last_activity [num]\n");
-        printf("            			List the last NUM activities\n");
-        printf("                                from the specified object.\n");
-	printf("usage	[r][w][rw]		Show usage statistics on an object\n");
+        printf("            			List the last NUM \n"
+		"				activities from the \n");
+        printf("                                specified object.\n");
+	printf("usage	[r][w][rw]		Show usage statistics\n"
+		"				on an object\n");
 
 };
