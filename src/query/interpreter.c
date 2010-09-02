@@ -781,11 +781,6 @@ void interpreter_make_times( TALLOC_CTX *ctx,
 		break;
 	}
 	
-	int x =0;
-	while (x < command_data->argument_count) {
-		printf("%i %s\n",x,command_data->arguments[x]);
-		x++;
-	}
 
 
 	if (strcmp(command_data->arguments[0+arg_flag],"from")==0) {
