@@ -713,6 +713,7 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 {
 	char *ret;
 	struct tm *tmp;
+	struct tm tmp2;
 	time_t now;
 	char *outstr = talloc_array(ctx,char,200);
 	char *tmpoutstr = talloc_array(ctx,char,200);
@@ -740,20 +741,21 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	}
 	/* exact time string */
 	/* first try the full format */
-	if (strptime( timestr, "%Y-%m-%d %T",tmp) != NULL) {
+	if (strptime( timestr, "%Y-%m-%d %T",&tmp2) != NULL) {
 		return timestr;
 	/* only a date */
-	} else if (strptime(timestr,"%Y-%m-%d",tmp) != NULL) {
+	} else if (strptime(timestr,"%Y-%m-%d",&tmp2) != NULL) {
 		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
 		return outstr;
 	/* only a time, assume the todays date */
-	} else if (strptime(timestr,"%T",tmp) != NULL) {
+	} else if (strptime(timestr,"%T",&tmp2) != NULL ||
+			strptime(timestr,"%R",&tmp2) != NULL) {
 		now = time(NULL);
 		tmp = localtime(&now);
 		strftime(tmpoutstr,199,"%Y-%m-%d ",tmp);
 		outstr= talloc_asprintf(ctx,"%s%s",tmpoutstr,timestr);
 		return outstr;
-	}
+	} 
 	printf("ERROR: did not understood the times you have given.\n");
 	exit(1);
 }	
@@ -774,22 +776,27 @@ void interpreter_make_times( TALLOC_CTX *ctx,
 	case INT_OBJ_USER:
 		arg_flag=1;
 		break;
-	default:
+	case INT_OBJ_GLOBAL:
 		arg_flag=0;
+		break;
 	}
 	
+	int x =0;
+	while (x < command_data->argument_count) {
+		printf("%i %s\n",x,command_data->arguments[x]);
+		x++;
+	}
+
+
 	if (strcmp(command_data->arguments[0+arg_flag],"from")==0) {
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
 			interpreter_return_timestamp(
 			ctx,
-			command_data->arguments[2+arg_flag]));
-	} else
-	if (command_data->argument_count > 2 &&
-		strcmp(command_data->arguments[2+arg_flag],"to")==0) {
+			command_data->arguments[1+arg_flag]));
 		obj_struct->to = talloc_asprintf(ctx, "timestamp < '%s'",
 			interpreter_return_timestamp(
 			ctx,
-			command_data->arguments[4+arg_flag]));
+			command_data->arguments[3+arg_flag]));
 	} else
 	if (strcmp(command_data->arguments[0+arg_flag],"since")==0) {
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
