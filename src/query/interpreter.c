@@ -148,31 +148,31 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 		if (strcmp(command_data->arguments[0],"r")==0) {
 			query = talloc_asprintf(ctx,
 				"select sum(length) from read where %s"
-				" and time(timestamp) > time('%0i:00') and"
-				" time(timestamp) < time('%0i:00');",
+				" and time(timestamp) > time('%02i:00') and"
+				" time(timestamp) < time('%02i:00');",
 				obj_struct->sql,hour,hour+1);
 			qdat = sql_query(ctx,config,query);
 			bytes = atol(result_get_element(ctx,0,qdat));
 		} else if (strcmp(command_data->arguments[0],"w")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s"
-                                " and time(timestamp) > time('%0i:00') and"
-                                " time(timestamp) < time('%0i:00');",
+                                " and time(timestamp) > time('%02i:00') and"
+                                " time(timestamp) < time('%02i:00');",
                                 obj_struct->sql,hour,hour+1);
                         qdat = sql_query(ctx,config,query);
                         bytes = atol(result_get_element(ctx,0,qdat));
 		} else if (strcmp(command_data->arguments[0],"rw")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from read where %s"
-                                " and time(timestamp) > time('%0i:00') and"
-                                " time(timestamp) < time('%0i:00');",
+                                " and time(timestamp) > time('%02i:00') and"
+                                " time(timestamp) < time('%02i:00');",
                                 obj_struct->sql,hour,hour+1);
                         qdat = sql_query(ctx,config,query);
                         bytes = atol(result_get_element(ctx,0,qdat));
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s"
-                                " and time(timestamp) > time('%0i:00') and"
-                                " time(timestamp) < time('%0i:00');",
+                                " and time(timestamp) > time('%02i:00') and"
+                                " time(timestamp) < time('%02i:00');",
                                 obj_struct->sql,hour,hour+1);
                         qdat = sql_query(ctx,config,query);
                         bytes = bytes + atol(result_get_element(ctx,0,qdat));
