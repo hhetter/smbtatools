@@ -1,6 +1,6 @@
 #define _XOPEN_SOURCE
 #define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -20,7 +20,7 @@
 #include <talloc.h>
 #include <signal.h>
 #include <pthread.h>
-
+#include <curses.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
 #include "../../../include/version.h"

@@ -18,7 +18,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _XOPEN_SOURCE
 #include <netdb.h>
 #include <stdlib.h>
 #include <sys/time.h>

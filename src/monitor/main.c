@@ -18,10 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <curses.h>
-#include <stdlib.h>
 #include "include/includes.h"
-
 void monitor_shutdown(void)
 {
 	endwin();

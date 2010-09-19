@@ -19,9 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _XOPEN_SOURCE
-#define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
