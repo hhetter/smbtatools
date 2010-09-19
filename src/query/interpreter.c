@@ -626,11 +626,11 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		interpreter_print_table( ctx, 2, qdat, "Name","Domain");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
-			"select filename from read where %s union"
-			" select filename from write where %s;",
+			"select filename,share from read where %s union"
+			" select filename,share from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx,config,query1);
-		interpreter_print_table( ctx, 1, qdat,"Name");
+		interpreter_print_table( ctx, 2, qdat,"Name","Share");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command"
 			" can only be:\n");

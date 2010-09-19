@@ -3,6 +3,7 @@ The SMB Traffic Analyzer Guide
 Holger Hetterich <ozzy@metal-district.de>
 v0.1, May 2010
 
+[index]
 
 What is SMB Traffic Analyzer
 ----------------------------
@@ -120,8 +121,10 @@ Activating the VFS module on Samba Servers
 In general, the Samba CIFS server is configured via smb.conf, it's main
 configuration file. A typical service definition would look like this:
 
+---------------------------------------
 [ExampleShare]
 	path = /space
+---------------------------------------
 
 Defining the share "ExampleShare" as a CIFS service, refering to the
 path /space on the servers storage.
@@ -129,12 +132,14 @@ path /space on the servers storage.
 By extending the share definition with the commands to load the SMBTA
 VFS module, SMBTA logging for this service can be activated:
 
+---------------------------------------
 [ExampleShare]
 	path = /space
 	vfs_objects = vfs_smb_traffic_analyzer
 	vfs_smb_traffic_analyzer:version = V2
 	vfs_smb_traffic_analyzer:host = example.host.ex
 	vfs_smb_traffic_analyzer:port = 3490
+----------------------------------------
 
 By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
@@ -151,7 +156,9 @@ On the target host of the module, the program smbtad is running. It's task
 is mainly to feed a SQL storage out of the data it receives from the module,
 maintain the storage and accept requests from clients.
 
+---------------------------------
 smbtad -i 3490 -p 3491
+---------------------------------
 
 when running as superuser, this command line will listen to VFS module
 connections on port 3490, and listen to client connections on port 3491.
@@ -167,8 +174,10 @@ the VFS module on. For example, if you write a file to a share,
 you can check the installation by looking into the database
 directly, involving the sqlite3 command line interface:
 
+---------------------------------
 sqlite3 /var/lib/staddb
 $ select * from write;
+---------------------------------
 
 You should now see entries of data written by the user you have done
 the transfer with. If this works, your SMBTA installation works fine
@@ -189,20 +198,25 @@ running on.
 To ease the installation of encryption, the Samba server includes a small
 utility called smbta-util:
 
+--------------------------
 smbta -g keyfile
+--------------------------
 
 will generate a key for encryption, activate encryption on the Samba server,
 and save the key to a file. The user can then use this file on the smbtad
 system and store it in a protected place owned by the superuser.
 
+--------------------------
 smbta -u 
+--------------------------
 
 will uninstall the key from the Samba server, and deactivate encryption.
 
 To setup the key on the smbtad-system, you run smbtad with this command option:
 
+------------------------------------
 smbtad --keyfile=/etc/smbtad/key
-
+------------------------------------
 
 Using the client programs
 -------------------------
@@ -225,7 +239,9 @@ General usage
 
 Following is an example of a smbtaquery run:
 
+---------------------------------
 smbtaquery -h smbtahost.example.ex -i 3491 -q 'global, usage rw;'
+---------------------------------
 
 The command line option -h (or --host) is telling smbtaquery to use
 the given host as the system, where smbtad is running on. When running
@@ -245,16 +261,18 @@ parameters can be stored into a configuration file, which will
 automatically be loaded and parsed if it is found. The location of
 this file is:
 
+---------------------------------
 $HOME/.smbtatools/query-config
-
+---------------------------------
 whereas $HOME is the users home directory.
 
 The format of the file is that of a ini file:
 
+-------------------------------
 [network]
 	hostname = smbtahost.example.ex
 	port = 3491
-
+-------------------------------
 
 The smbtaquery interpreter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -271,7 +289,9 @@ a comma.
 
 Here is an example query:
 
+--------------------------
 'global, usage rw;'
+--------------------------
 
 The objects
 +++++++++++
@@ -281,7 +301,9 @@ named first. An object can be a file, a share, or a username, or global, which
 does not relate to a specific object.
 
 For example if you make a query like this:
+------------------------------------
 'share Fritzboxtest, usage rw'
+------------------------------------
 
 The calling of the function "usage rw" (as being introduced later in this chapter)
 is bound to the share "Fritzboxtest". Any results will be related to this share.
@@ -292,27 +314,35 @@ definition will be run related to this object.
 
 Say "total r" is a function to get the total number of bytes read by an object.
 A query could then be:
+-----------------------------------
 'user holger, total r;'
+-----------------------------------
 
 This call would print the total number of bytes read by the user holger.
 
 The following query:
+------------------------------------
 'share Fritzboxtest, total rw, user holger total w;'
+------------------------------------
 
 Would first print out the total number of bytes (written and read) on share
 "Fritzboxtest", and then the total number of bytes written by user holger.
 
 The following object definitions are currently possible:
+--------------------------------------------
 'share $SHARE' a Samba file service (a share)
 'user $USER' a User
 'file $FILE' a specific file
 'global' Global.
+--------------------------------------------
 
 The "global" parameter is special in the way it treats the following functions.
 Functions running on global are not limited by anything, and always work
 on the full database. Giving the following query:
 
+---------------------------------
 'global, total rw;'
+---------------------------------
 
 Would print out the full sum of bytes ever transferred (be it read or write).
 
@@ -341,9 +371,14 @@ The total function prints out the sum of bytes transferred by an object.
 "total w" will compute the sum of bytes written.
 "total rw" will compute the sum of bytes transferred (read and write access).
 
-Example:
+.Total function example:
+====================================
 Print out the number of bytes written on the share "Fritzboxtest":
+---------------------------------
 'share Fritzboxtest, total w;'
+---------------------------------
+====================================
+
 
 list
 ++++
@@ -356,12 +391,18 @@ The list function prints a list of objects related to the given object.
 with the object.
 "list files" will print out the list of known files involved with the object.
 
-Example:
+.List function example:
+===================================
 Prints out all users who ever touched, read or written to file "README":
+--------------------------------
 'file README, list users;'
+--------------------------------
 
 Print out the list of known files on share "Fritzboxtest":
+--------------------------------
 'share Fritzboxtest, list files;'
+--------------------------------
+===================================
 
 top
 +++
@@ -372,12 +413,18 @@ top [number] [files] [users] [shares] [rw] [r] [w]
 The top function prints out a number of top files, users, or shares by
 read, write or read and write access.
 
-Example:
+.Top function example:
+==================================
 Print out the 10 most used files on share "Fritzboxtest" by read access:
+--------------------------------
 'share Fritzboxtest, top 10 files r;'
+--------------------------------
 
 Print out the 10 most used shares on the Samba network:
+--------------------------------
 'global, top 10 shares rw;'
+--------------------------------
+==================================
 
 
 last_activity
@@ -389,12 +436,18 @@ last_activity [number]
 The last_activity function prints out a list of actions an object has been
 involved in. 
 
-Example:
+.last_activity Function example:
+====================================
 Print out the last 10 actions of user holger:
+-----------------------------------
 'user holger, last_activity 10;'
+-----------------------------------
 
 Print out the last 10 actions where file "README" has been involved in:
+-----------------------------------
 'file README, last_activity 10;'
+-----------------------------------
+====================================
 
 usage
 +++++
@@ -405,13 +458,18 @@ usage [rw] [r] [w]
 The usage function sums up the usage or activity of an object by creating
 a virtual day, listing 24 hours and showing the data acitvity by percentage.
 
-Example:
+.usage Function example:
+========================================
 Print a graph of the total usage of the Samba network:
+---------------------------------
 'global, usage rw;'
+---------------------------------
 
 Print a graph of the usage of share "Fritzboxtest" by read-access:
+---------------------------------
 'share Fritzboxtest, usage r;'
-
+---------------------------------
+=========================================
 
 smbtamonitor
 ~~~~~~~~~~~~
