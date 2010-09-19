@@ -3,7 +3,6 @@ The SMB Traffic Analyzer Guide
 Holger Hetterich <ozzy@metal-district.de>
 v0.1, May 2010
 
-[index]
 
 What is SMB Traffic Analyzer
 ----------------------------
@@ -346,6 +345,31 @@ on the full database. Giving the following query:
 
 Would print out the full sum of bytes ever transferred (be it read or write).
 
+Time Modifiers
+++++++++++++++
+
+Any functions that are called on objects can make use of time modifiers, that allow to specifiy a time range the function shall work on. The supported keywords must be used on objects and are called: *FROM - TO* and *SINCE*.
+
+.Example for FROM-TO:
+==================================
+'global from 10-10-2010 to today, total rw;'
+==================================
+
+.Example for SINCE:
+==================================
+'user holger since yesterday, total rw;'
+==================================
+
+Allowed keywords for time specification are:
+$DATE-$TIME in the fowolling format:
+*MM-DD-YYYY HH:MM:SS*
+
+Also, there are the following keywords making the time specification easier:
+*yesterday*, *today* and *now*.
+
+
+
+
 Object Identification
 ^^^^^^^^^^^^^^^^^^^^^
 SMBTA will try to identify the objects that given by searching through it's
@@ -363,7 +387,7 @@ total
 +++++
 
 Syntax:
-total [RW] [R] [W]
+*total [RW] [R] [W]*
 
 The total function prints out the sum of bytes transferred by an object.
 
@@ -383,7 +407,7 @@ Print out the number of bytes written on the share "Fritzboxtest":
 list
 ++++
 Syntax:
-list [users] [files]
+*list [users] [files]*
 
 The list function prints a list of objects related to the given object.
 
@@ -408,7 +432,7 @@ top
 +++
 
 Syntax:
-top [number] [files] [users] [shares] [rw] [r] [w]
+*top [number] [files] [users] [shares] [rw] [r] [w]*
 
 The top function prints out a number of top files, users, or shares by
 read, write or read and write access.
@@ -431,7 +455,7 @@ last_activity
 +++++++++++++
 
 Syntax:
-last_activity [number]
+*last_activity [number]*
 
 The last_activity function prints out a list of actions an object has been
 involved in. 
@@ -453,7 +477,7 @@ usage
 +++++
 
 Syntax:
-usage [rw] [r] [w]
+*usage [rw] [r] [w]*
 
 The usage function sums up the usage or activity of an object by creating
 a virtual day, listing 24 hours and showing the data acitvity by percentage.
