@@ -136,20 +136,20 @@ void visual_monitor_log_calc(struct monitor_item *entry)
         switch(id) {
         case vfs_id_write:
         case vfs_id_pwrite:
-                asprintf(&to_add,"%s: User %s wrote to file %s on share %s",timestamp,username,filename,share);
+                asprintf(&to_add,"%s: User %s wrote to file %s on share %s (%s).",timestamp,username,filename,share,domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_close:
-                asprintf(&to_add,"%s: User %s closed file %s on share %s.",timestamp,username,filename,share);
+                asprintf(&to_add,"%s: User %s closed file %s on share %s (%s).",timestamp,username,filename,share,domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_open:
-                asprintf(&to_add,"%s: User %s opened file %s on share %s",timestamp,username,filename,share);
+                asprintf(&to_add,"%s: User %s opened file %s on share %s (%s).",timestamp,username,filename,share,domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_read:
         case vfs_id_pread:
-                asprintf(&to_add,"%s: User %s read from file %s on share %s",timestamp,username,filename,share);
+                asprintf(&to_add,"%s: User %s read from file %s on share %s (%s).",timestamp,username,filename,share,domain);
                 backlog_add_str(to_add,entry);
                 break;
         default: ;
@@ -161,10 +161,10 @@ void visual_monitor_log_calc(struct monitor_item *entry)
 
 void visual_monitor_log(struct monitor_item *entry)
 {
-	WINDOW *main = newwin(14,78,entry->ypos,entry->xpos);
-	WINDOW *win = subwin(main,11, 70,entry->ypos+1,entry->xpos+1);
-	box(main,0,0);
-	wrefresh(main);
+	WINDOW *ma = newwin(14,78,entry->ypos,entry->xpos);
+	WINDOW *win = subwin(ma,11, 70,entry->ypos+1,entry->xpos+1);
+	box(ma,0,0);
+	wrefresh(ma);
 	if (entry == NULL  || entry->data == NULL) {
 		mvwprintw(win,1,1,"Empty Log.");
 		wrefresh(win);
@@ -184,5 +184,5 @@ void visual_monitor_log(struct monitor_item *entry)
 		
 
 	delwin(win);
-	delwin(main);
+	delwin(ma);
 }

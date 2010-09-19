@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
 #include "include/includes.h"
 /*
  * transmit the monitor function and the pattern
@@ -30,7 +27,7 @@ int network_register_monitor( enum monitor_fn func,
 	char *pattern,char *title, int xpos, int ypos, struct configuration_data *c)
 {
         char *tosend, *data;
-        asprintf(&tosend, "~~0001%i%04i%s%s",func,strlen(param),param,pattern);
+        asprintf(&tosend, "~~0001%i%04i%s%s",func,(int) strlen(param),param,pattern);
         char *body = sql_query(NULL,c,tosend);
 	data = result_get_element(NULL,0,body);
 	monitor_list_add( atoi(data ), func, xpos,ypos,title);	

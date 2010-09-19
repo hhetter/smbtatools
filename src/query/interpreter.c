@@ -712,7 +712,7 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	char *timestr)
 {
 	char *ret;
-	struct tm *tmp;
+	struct tm *tmp = NULL;
 	struct tm tmp2;
 	time_t now;
 	char *outstr = talloc_array(ctx,char,200);

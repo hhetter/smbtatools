@@ -1,5 +1,3 @@
-#include <stdlib.h> 
-#include <stdio.h>
 #include "include/includes.h"
 
 pthread_mutex_t monitor_list_lock;
