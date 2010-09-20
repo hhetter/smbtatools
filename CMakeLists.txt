@@ -10,7 +10,7 @@ PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
 set(APPLICATION_VERSION "0.0.1")
-
+INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite3.cmake)
 # Version setting for the cpack package creator
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
