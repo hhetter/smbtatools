@@ -37,6 +37,7 @@ ncurses
 talloc
 # fixme! this needs a check
 smbclient
+pthread
 )
 SET(PLATFORM_LINKFLAGS "-pthread")
 
