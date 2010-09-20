@@ -130,9 +130,6 @@ INSTALL(FILES doc/smbtamonitor.1
 INSTALL(FILES doc/smbtatorture.1
 	DESTINATION "share/man/man1"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtatorture.1)
-INSTALL(FILES doc/smbta-guide.html
-	DESTINATION "share/doc/packages/smbtatools"
-	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
 INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture DESTINATION bin)
 
