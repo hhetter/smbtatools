@@ -611,7 +611,7 @@ The initial version roadmap is to archive the following:
 Version 0.2
 ^^^^^^^^^^^
 - encryption support smbtad <-> smbtatools
-
+- support clustered Samba
 
 smbtatools
 ~~~~~~~~~~
@@ -628,4 +628,5 @@ Version 0.2
 ^^^^^^^^^^^
 - encryption support smbtad <-> smbtatools
 - XML output support for smbtaquery
+- support clustered Samba
 
