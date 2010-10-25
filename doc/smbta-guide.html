@@ -621,9 +621,8 @@ maintain the storage and accept requests from clients.</p></div>
 <div class="content">
 <pre><tt>smbtad -i 3490 -p 3491</tt></pre>
 </div></div>
-<div class="paragraph"><p>when running as superuser, this command line will listen to VFS module
-connections on port 3490, and listen to client connections on port 3491.</p></div>
-<div class="paragraph"><p>By default, smbtad creates a database as /var/lib/staddb. If the database
+<div class="paragraph"><p>smbtad is a daemon program that can be run by any user. By default, it creates a directory $HOME/.smbtad/ where it stores it&#8217;s database. The above call makes smbtad to listen to the VFS modules connections on port 3490, and listen to client connections on port 3491.</p></div>
+<div class="paragraph"><p>By default, smbtad creates a database as $HOME/.smbtad/staddb. If the database
 already exists, it will use the existing database.</p></div>
 <h4 id="_the_command_line_options_of_smbtad">2.2.1. The command line options of smbtad</h4>
 <div class="paragraph"><p>Any option you give that smbtad doesn&#8217;t understand will lead to print out it&#8217;s list of processed commands. Such as if the user calls:</p></div>
@@ -999,7 +998,7 @@ support clustered Samba
 <div id="footer">
 <div id="footer-text">
 Version 0.2<br />
-Last updated 2010-10-25 17:41:51 CEST
+Last updated 2010-10-25 18:51:19 CEST
 </div>
 </div>
 </body>
