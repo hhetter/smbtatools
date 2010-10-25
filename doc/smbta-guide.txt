@@ -160,10 +160,9 @@ maintain the storage and accept requests from clients.
 smbtad -i 3490 -p 3491
 ---------------------------------
 
-when running as superuser, this command line will listen to VFS module
-connections on port 3490, and listen to client connections on port 3491.
+smbtad is a daemon program that can be run by any user. By default, it creates a directory $HOME/.smbtad/ where it stores it's database. The above call makes smbtad to listen to the VFS modules connections on port 3490, and listen to client connections on port 3491.
 
-By default, smbtad creates a database as /var/lib/staddb. If the database
+By default, smbtad creates a database as $HOME/.smbtad/staddb. If the database
 already exists, it will use the existing database.
 
 The command line options of smbtad
