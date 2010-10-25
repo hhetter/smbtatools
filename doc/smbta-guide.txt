@@ -1,7 +1,7 @@
 The SMB Traffic Analyzer Guide
 ==============================
 Holger Hetterich <ozzy@metal-district.de>
-v0.2, Sep 2010
+v1.0, Oct 2010
 
 What is SMB Traffic Analyzer
 ----------------------------
