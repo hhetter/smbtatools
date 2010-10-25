@@ -36,7 +36,6 @@ Please check SMB Traffic Analyzer's home page for newer versions of the software
 this document:
 http://holger123.wordpress.com/smb-traffic-analyzer/
 
-
 Why using SMB Traffic Analyzer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -105,10 +104,38 @@ openSUSE Build Service.
 Building SMBTA from the sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The SMBTA tools smbtaquery and smbtamonitor are utilizing cmake as the
-primary build tool. To build the tools using cmake, please refer to the
-README file delivered with the smbtatools package.
+The SMBTA tools smbtaquery and smbtamonitor are utilizing "cmake" as the primary build tool. The smbtad daemon program does too.
 
+Before trying to build smbtad and smbtatools, check for the following requirements:
+
+- cmake ( *required for both* )
+- sqlite >= 3.7.0 ( *required for smbtad* )
+- libsmbclient library ( *required for smbtautils* )
+- iniparser (libiniparser) ( *required for both* )
+- ncurses library ( *required for smbtautils* )
+
+With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you've unpacked the smbtatools source tarball at:
+--------------------
+/home/tom/smbtatools
+--------------------
+
+You can now create your own directory where you want to build smbtatools. Like:
+---------------------------------
+mkdir /home/tom/smbtatools-build
+cd /home/tom/smbtatools-build
+---------------------------------
+
+You are now in the build directory. Just run cmake from here:
+---------------------------------
+cmake ../smbtatools/
+---------------------------------
+
+And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.
+
+-----------------------------------
+make
+make install (as superuser)
+------------------------------------
 
 Setting up SMBTA
 ----------------
