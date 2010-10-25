@@ -122,6 +122,7 @@ configuration file. A typical service definition would look like this:
 ---------------------------------------
 [ExampleShare]
 	path = /space
+	read only = no
 ---------------------------------------
 
 Defining the share "ExampleShare" as a CIFS service, refering to the
@@ -133,10 +134,11 @@ VFS module, SMBTA logging for this service can be activated:
 ---------------------------------------
 [ExampleShare]
 	path = /space
-	vfs_objects = vfs_smb_traffic_analyzer
-	vfs_smb_traffic_analyzer:version = V2
-	vfs_smb_traffic_analyzer:host = example.host.ex
-	vfs_smb_traffic_analyzer:port = 3490
+	read only = no
+        vfs objects = smb_traffic_analyzer
+        smb_traffic_analyzer:protocol_version = V2
+        smb_traffic_analyzer:host = localhost
+        smb_traffic_analyzer:port = 3490
 ----------------------------------------
 
 By default, SMBTA will use protocol version 1, to not break any existing
@@ -164,6 +166,80 @@ connections on port 3490, and listen to client connections on port 3491.
 By default, smbtad creates a database as /var/lib/staddb. If the database
 already exists, it will use the existing database.
 
+The command line options of smbtad
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Any option you give that smbtad doesn't understand will lead to print out it's list of processed commands. Such as if the user calls:
+
+---------------------------------
+smbtad --help
+---------------------------------
+
+The following output will appear:
+-----------------------------------------------------------------
+./smbtad: unrecognized option '--help'
+ERROR: unkown option.
+
+SMB Traffic Analyzer daemon
+
+(C) 2008-2010 Holger Hetterich <ozzy@metal-district.de>	
+
+-i	--inet-port		Specifiy the port to be used.	
+				Default: 3490.			
+-d      --debug-level		Specify the debug level (0-10).	
+				Default: 0.			
+-o	--interactive		Don't run as daemon.		
+				(Runs as daemon by default)	
+-c      --config-file		Use configuration file given.	
+-q	--query-port		Specify the port to be used for 
+				clients.			
+-t --maintenance-timer <value>  specify the time intervall to
+                                to start the database 
+                                maintenance routine. Format is
+                                HH:MM:SS
+                                Example: -m 00:30:00 will run
+                                the maintenance routine every
+                                half hour.
+                                Default: 01:00:00
+-m --maintenance-timer-config 
+     <value>   			specify a number of days
+                                and a time. Every database
+                                entry which is older than the
+                                the specified number of days
+                                will be deleted by the
+                                maintenance routine.
+                                Format is: DAYS, HH:MM:SS
+                                Default: 1,00:00:00
+------------------------------------------------------------------
+
+-i --inet-port
+++++++++++++++
+Specifiy the internet socket port, that smbtad is using to listen for data from the VFS module. If the port number is not given, the Default setting 3490 will be used.
+
+-d --debug-level
+++++++++++++++++
+Specify the debug level when running smbtad. If you get smbtad crashing and want to produce a bug report, please run it with -d 10, which is the highest debug level. The default value for this setting is 0, only fatal errors will be reported in this case. The debug messages smbtad is producing will be consumed by syslog and thus appear in your system log.
+
+-o --interactive
+++++++++++++++++
+For debugging reasons, it can be useful to not run smbtad as a daemon program. When run with -o, smbtad will not become a daemon program. The default is to run in daemon mode.
+
+-c --config-file
+++++++++++++++++
+The user can provide a configuration file instead of providing the command line switches.
+
+-q --query-port
++++++++++++++++
+This is the internet socket port to which clients can connect when those want to query the database, or request real time information. In case this parameter is not given, it is set to 3491 (or in other words to the value of --i --inet-port + 1.
+
+-t --maintenance-timer
+++++++++++++++++++++++
+To hinder the database from growing infinite, a maintenance process is included in smbtad, which will clean up the database after a certain rule (see -m --maintenance-timer-config). The -t option specifies the interval in hours, as to then the maintenance process should be run. For example, if you give 00:10:00, a maintenance process will be started every ten minutes.
+
+-m --maintenance-timer-config
++++++++++++++++++++++++++++++
+Here you can specify how the maintenance process should work. The format is DAYS, HH:MM:SS. For example, if you want to delete anything in the database that is older than one day, you would give 1,00:00:00 (which is the default). Would you like to delete anything in the database that is older than 2 weeks, then you would give: 14,00:00:00 as parameter. Having deleted everything that is older than 2 hours, would be 0,02:00:00 as parameter.
+
 Checking the installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -184,33 +260,23 @@ und you can start pointing more shares to it.
 Setting up Encryption
 ~~~~~~~~~~~~~~~~~~~~~
 
-For security reasons, SMBTA can encrypt it's data flow from the module
-to the smbtad component. This is optional, data is not encrypted by
-default.
+For security reasons, SMBTA can encrypt it's data flow from the module to the smbtad component. This is optional, data is not encrypted by default.
 
-The encryption method used in SMBTA is 128bit AES. For this encryption,
-the user needs to generate a key and make the key known to both the
-Samba server where the VFS module is activated and the system smbtad is
-running on.
+The encryption method used in SMBTA is 128bit AES. For this encryption, the user needs to generate a key and make the key known to both the Samba server where the VFS module is activated and the system smbtad is running on.
 
-To ease the installation of encryption, the Samba server includes a small
-utility called smbta-util:
+To ease the installation of encryption, the Samba server includes a small utility called smbta-util:
 
 --------------------------
 smbta -g keyfile
 --------------------------
 
-will generate a key for encryption, activate encryption on the Samba server,
-and save the key to a file. The user can then use this file on the smbtad
-system and store it in a protected place owned by the superuser.
+will generate a key for encryption, activate encryption on the Samba server, and save the key to a file. The user can then use this file on the smbtad system and store it in a protected place owned by the superuser.
 
 --------------------------
 smbta -u 
 --------------------------
 
-will uninstall the key from the Samba server, and deactivate encryption.
-
-To setup the key on the smbtad-system, you run smbtad with this command option:
+will uninstall the key from the Samba server, and deactivate encryption. To setup the key on the smbtad-system, you run smbtad with this command option:
 
 ------------------------------------
 smbtad --keyfile=/etc/smbtad/key
@@ -222,14 +288,7 @@ Using the client programs
 smbtaquery
 ~~~~~~~~~~
 
-The possibilities to create statistical data out of the data set are
-quite wide ranged. Instead of querying the database directly via SQL,
-users may use smbtaquery. It is specialized on the setup of the database,
-and runs a lot of preconfigured queries to produce statistical and
-informational data. smbtaquery is utilizing a simplified language to
-operate on the users whish, translates the commands into SQL, and
-connects to the smbtad program to run the SQL query. The result is
-then printed out.
+The possibilities to create statistical data out of the data set are quite wide ranged. Instead of querying the database directly via SQL, users may use smbtaquery. It is specialized on the setup of the database,and runs a lot of preconfigured queries to produce statistical and informational data. smbtaquery is utilizing a simplified language to operate on the users whish, translates the commands into SQL, and connects to the smbtad program to run the SQL query. The result is then printed out.
 
 
 General usage
@@ -241,23 +300,14 @@ Following is an example of a smbtaquery run:
 smbtaquery -h smbtahost.example.ex -i 3491 -q 'global, usage rw;'
 ---------------------------------
 
-The command line option -h (or --host) is telling smbtaquery to use
-the given host as the system, where smbtad is running on. When running
-queries, it will connect to this system with the port number given with
-the command line option -i. 
+The command line option -h (or --host) is telling smbtaquery to use the given host as the system, where smbtad is running on. When running queries, it will connect to this system with the port number given with the command line option -i. 
 
-Finally the command line option -q (or --query) provides the query to
-run for the build in interpreter of smbtaquery. More on this follows
-in the later chapters.
+Finally the command line option -q (or --query) provides the query to run for the build in interpreter of smbtaquery. More on this follows in the later chapters.
 
 Utilizing a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The command line options -h (--host) and -i are required every time
-smbtaquery should run a query on the database. Therefore, those
-parameters can be stored into a configuration file, which will
-automatically be loaded and parsed if it is found. The location of
-this file is:
+The command line options -h (--host) and -i are required every time smbtaquery should run a query on the database. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:
 
 ---------------------------------
 $HOME/.smbtatools/query-config
@@ -275,15 +325,12 @@ The format of the file is that of a ini file:
 The smbtaquery interpreter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To ease the usage of the database, smbtaquery implements a simplified
-language to query the database. It is specialized for SMBTA.
+To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA.
 
 Syntax
 ++++++
 
-Every command is seperated by a comma, any paraeters to the command are
-seperated by space. The last command ends with a semicolon instead of
-a comma.
+Every command is seperated by a comma, any paraeters to the command are seperated by space. The last command ends with a semicolon instead of a comma.
 
 Here is an example query:
 
@@ -294,21 +341,14 @@ Here is an example query:
 The objects
 +++++++++++
 
-Any functions called by smbtaquery are in relation to an object which is
-named first. An object can be a file, a share, or a username, or global, which
-does not relate to a specific object.
+Any functions called by smbtaquery are in relation to an object which is named first. An object can be a file, a share, or a username, or global, which does not relate to a specific object.
 
 For example if you make a query like this:
 ------------------------------------
 'share Fritzboxtest, usage rw'
 ------------------------------------
 
-The calling of the function "usage rw" (as being introduced later in this chapter)
-is bound to the share "Fritzboxtest". Any results will be related to this share.
-
-The general syntax is first to name the object, and then to run the functions on.
-At any time, you can name a new object, and any function run after the new object
-definition will be run related to this object.
+The calling of the function "usage rw" (as being introduced later in this chapter) is bound to the share "Fritzboxtest". Any results will be related to this share. The general syntax is first to name the object, and then to run the functions on. At any time, you can name a new object, and any function run after the new object definition will be run related to this object.
 
 Say "total r" is a function to get the total number of bytes read by an object.
 A query could then be:
@@ -323,8 +363,7 @@ The following query:
 'share Fritzboxtest, total rw, user holger total w;'
 ------------------------------------
 
-Would first print out the total number of bytes (written and read) on share
-"Fritzboxtest", and then the total number of bytes written by user holger.
+Would first print out the total number of bytes (written and read) on share "Fritzboxtest", and then the total number of bytes written by user holger.
 
 The following object definitions are currently possible:
 --------------------------------------------
@@ -334,9 +373,7 @@ The following object definitions are currently possible:
 'global' Global.
 --------------------------------------------
 
-The "global" parameter is special in the way it treats the following functions.
-Functions running on global are not limited by anything, and always work
-on the full database. Giving the following query:
+The "global" parameter is special in the way it treats the following functions. Functions running on global are not limited by anything, and always work on the full database. Giving the following query:
 
 ---------------------------------
 'global, total rw;'
@@ -371,13 +408,7 @@ Also, there are the following keywords making the time specification easier:
 
 Object Identification
 ^^^^^^^^^^^^^^^^^^^^^
-SMBTA will try to identify the objects that given by searching through it's
-database. For example, the user "holger" could exist more than once. User "holger"
-could be coming from two or more domains, each of these listing user "holger"
-with a different SID. Therefore SMBTA will look up the known SIDs of user "holger"
-and will present a dialog to choose the right user in case more than one user
-"holger" exists. As a consequence, shares are checked for domains, and files are
-checked for the share and the domain.
+SMBTA will try to identify the objects that given by searching through it's database. For example, the user "holger" could exist more than once. User "holger" could be coming from two or more domains, each of these listing user "holger" with a different SID. Therefore SMBTA will look up the known SIDs of user "holger" and will present a dialog to choose the right user in case more than one user "holger" exists. As a consequence, shares are checked for domains, and files are checked for the share and the domain.
 
 The functions
 ^^^^^^^^^^^^^
@@ -497,32 +528,18 @@ Print a graph of the usage of share "Fritzboxtest" by read-access:
 smbtamonitor
 ~~~~~~~~~~~~
 
-smbtamonitor allows to view Samba traffic in real-time. The program connects
-directly to smbtad via the network. To allow real-time, a special feature in
-smbtad has been implemented. Instead of receiving data from the SQL storage,
-smbtad filters and sends directly to smbtamonitor when receiving a data package
-from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening
-on the smbtad socket for news, and visualizes them in an curses window.
+smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.
 
-This concept allows for interesting options, such as computing the throughput
-of an object within smbtad. The queries smbtamonitor is doing are called "monitors"
-by the authors. A "monitor" is like a dynamically loaded module in smbtad,
-requested by smbtamonitor, and doing some computing on the numbers.
+This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.
 
-For example you can watch the total number of transferred bytes and the throughput
-per second of an object by running smbtamonitor.
+For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.
 
-Any smbtamonitor instance is bound to an object ( a user, a file, or a share).
-You can run as many smbtamonitor instances as you want against smbtad.
+Any smbtamonitor instance is bound to an object ( a user, a file, or a share). You can run as many smbtamonitor instances as you want against smbtad.
 
 Utilizing a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The command line options -h (--host) and -i are required every time
-smbtamonitor should run. Therefore, those
-parameters can be stored into a configuration file, which will
-automatically be loaded and parsed if it is found. The location of
-this file is:
+The command line options -h (--host) and -i are required every time smbtamonitor should run. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:
 ----------------------------------------
 $HOME/.smbtatools/monitor-config
 ----------------------------------------
@@ -538,13 +555,11 @@ The format of the file is that of a ini file:
 smbtamonitor startup
 ^^^^^^^^^^^^^^^^^^^^
 
-To start a monitor, use the same arguments for the host and internet port
-to connect to as with smbtaquery:
+To start a monitor, use the same arguments for the host and internet port to connect to as with smbtaquery:
 ------------------------------------------
 smbtamonitor -h examplehost.de.ex -i 3491 --share "Distribution Space"
 ------------------------------------------
-This command will start a real time monitor that will display information about
-the share named "Distribution Space". Likewise, it's possible to run:
+This command will start a real time monitor that will display information about the share named "Distribution Space". Likewise, it's possible to run:
 
 -----------------------------------------
 smbtamonitor -h examplehost.de.ex -i 3491 --user holger
@@ -559,22 +574,13 @@ smbtamonitor -h examplehost.de.ex -i 3491 --file README
 will run a monitor displaying real time information about the file named
 "README".
 
-After identification of the given object, like already mentioned in the smbtaquery
-chapter, the monitor will initialize the curses library for it's display.
+After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it's display. smbtamonitor runs 80x25 display size fixed at the moment. 
 
-smbtamonitor runs 80x25 display size fixed at the moment.
+The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them.
 
-The smbtamonitor screen is the same for any object given. In the upper half
-of the screen the user will be presented the total sum of transferred bytes
-by the given object, sorted by read-only requests, write-only and both of them.
+Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them.
 
-Then the data throughput per second is displayed, this number should change 
-quickly when something is transferred involving the given object. The throughput
-is also sorted by read-only, write-only and both of them.
-
-The lower half of the screen represents a real-time human readable text log
-of what happens with the given object. For example copying a simple file on
-a share should show that the file was opened, written to, and then closed.
+The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.
 
 
 Reporting Problems, bugs, contacting the Authors
@@ -586,13 +592,9 @@ To find the latest news and versions of SMBTA, check out it's homepage:
 http://holger123.wordpress.com/smb-traffic-analyzer/
 -------------------------------------------------
 
-If you can reproduce an error situation, do not hestitate to open
-a bug on http://bugzilla.novell.com, set "Samba" as component,
-and begin the Bug subject with [SMBTA]. 
+If you can reproduce an error situation, do not hestitate to open a bug on http://bugzilla.novell.com, set "Samba" as component, and begin the Bug subject with [SMBTA]. 
 
-If you have problems that might not be as easy to reproduce, or need help
-in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!",
-please send mail to Holger Hetterich <ozzy@metal-district.de>.
+If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich <ozzy@metal-district.de>.
 
 Project outlook and version history
 -----------------------------------
@@ -600,15 +602,15 @@ Project outlook and version history
 smbtad
 ~~~~~~
 
-Version 0.1
+Version 1.0
 ^^^^^^^^^^^
 
-Version 0.1 of smbtad is not yet released, and will be released when it's done.
-The initial version roadmap is to archive the following:
+Version 1.0
+The initial version:
 - full documentation (mainly this guide) on smbtad and the smbtatools.
 - Binary packages for distributions
 
-Version 0.2
+Version 2.0
 ^^^^^^^^^^^
 - encryption support smbtad <-> smbtatools
 - support clustered Samba
@@ -616,15 +618,15 @@ Version 0.2
 smbtatools
 ~~~~~~~~~~
 
-Version 0.1
+Version 1.0
 ^^^^^^^^^^^
 
-Version 0.1 of smbtatools is not yet released, and will be released when it's done.
-The initial version roadmap is to archive the following:
+Version 1.0
+The initial version:
 - full documentation (mainly this guide) on the tools.
 - binary packages
 
-Version 0.2
+Version 2.0
 ^^^^^^^^^^^
 - encryption support smbtad <-> smbtatools
 - XML output support for smbtaquery
