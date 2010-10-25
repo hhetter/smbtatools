@@ -13,6 +13,8 @@ SYNOPSIS
 DESCRIPTION
 -----------
 The smbtaquery program is part of the SMB Traffic Analyzer Tools, which consists of smbtaquery, smbtamonitor(1) and smbtatorture(1)
+Currently, most of the documentation is included in the smbtatools package, in the file "smbta-guide.html".
+
 
 OPTIONS
 -------
