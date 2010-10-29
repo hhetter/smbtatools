@@ -37,6 +37,12 @@
 #include <talloc.h>
 #include "../src/common/config-struct.h"
 
+/* define TALLOC_FREE when older talloc versions are used */
+#ifndef TALLOC_FREE(ctx)
+        #define TALLOC_FREE(ctx) do { talloc_free(ctx); ctx=NULL; } while(0)
+#endif
+
+
 enum network_send_flags {
         UNSENT = 0,
         SENT,
