@@ -124,8 +124,20 @@ SET(CurrentExe "smbtatorture")
 ADD_EXECUTABLE(${CurrentExe}
 	src/torture/smbtatorture.c
 	)
-
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
+
+SET(CurrentExe "rrddriver")
+ADD_EXECUTABLE(${CurrentExe}
+	src/webmon/rrddriver/main.c
+        src/common/common.c
+        src/common/aes.c
+        src/common/rijndael-alg-fst.c
+	src/webmon/rrddriver/configuration.c
+	src/webmon/rrddriver/network.c
+	src/webmon/rrddriver/monitor-list.c
+	)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
+
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
         DESTINATION "share/man/man1"
