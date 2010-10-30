@@ -1,6 +1,6 @@
 /*
- * smbtamonitor
- * real-time monitor for samba traffic analyzer
+ * rrddriver
+ * builds a rrdtool database from smbta data
  *
  * Copyright (C) Michael Haefner, 2010
  *
@@ -29,7 +29,7 @@ int configuration_check_configuration( struct configuration_data *c );
 
 void configuration_show_help()
 {
-        printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
+        printf("rrddriver version %s\n", RRDDRIVER_VERSION);
         printf("(C)opyright 2010 by Michael Haefner\n");
 	printf("(C)opyright 2010 by Benjamin Brunner\n");
         printf("(C)opyright 2010 by Holger Hetterich\n");
@@ -86,7 +86,7 @@ int configuration_load_key_from_file( struct configuration_data *c)
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
-        char *f = talloc_asprintf(ctx,"%s/.smbtatools/monitor.config",a);
+        char *f = talloc_asprintf(ctx,"%s/.smbtatools/rrddriver.config",a);
         FILE * fi = fopen(f,"r");
         if (fi != NULL) {
                 fclose(fi);
@@ -207,18 +207,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
         network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
-	network_register_monitor(MONITOR_THROUGHPUT,"RW",pattern,"Throughput (Read/Write)",1,4,c);
 	network_register_monitor(MONITOR_TOTAL,"R",pattern,"Total (Reading)",27,1,c);
-	network_register_monitor(MONITOR_THROUGHPUT,"R",pattern,"Throughput (Read)",27,4,c);
 	network_register_monitor(MONITOR_TOTAL,"W",pattern,"Total (Writing)",26 + 27,1,c);
-	network_register_monitor(MONITOR_THROUGHPUT,"W",pattern,"Throughput (Write)",26+27,4,c);
-	network_register_monitor(MONITOR_LOG,"none",pattern,"Activity log",1,7,c);
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
-	char *title;
-	asprintf(&title,"SMBTAmonitor - real time monitoring object '%s'",c->object_name);
-	visual_init(title);
-	monitor_list_initial_draw();
 	/* main loop 
 	 * FIXME: Add Keyboard handling here !!
 	 */

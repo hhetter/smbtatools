@@ -20,7 +20,6 @@
 #include <talloc.h>
 #include <signal.h>
 #include <pthread.h>
-#include <curses.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
 #include "../../../include/version.h"
