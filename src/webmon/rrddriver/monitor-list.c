@@ -27,7 +27,7 @@ void monitor_list_init( ) {
  * int xpos, ypos	-> x and y position in a full curses window
  * char *title		-> title to be printed above the monitor data
  */
-int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *title )
+int monitor_list_add( int id, enum monitor_fn func )
 {
 	pthread_mutex_lock(&monitor_list_lock);
 
@@ -45,14 +45,6 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 		entry->data = NULL;
 		entry->next = NULL;
 		entry->type = func;
-		entry->xpos = xpos;
-		entry->ypos = ypos;
-		entry->title = strdup(title);
-		entry->backlog = (struct backlog_list *) malloc(sizeof(struct backlog_list));
-		entry->backlog->begin = NULL;
-		entry->backlog->end = NULL;
-		entry->backlog->backlog_limit = 20;
-		entry->backlog->backlog_count = 0;
 		pthread_mutex_unlock(&monitor_list_lock);
 		return 0;
 	}
@@ -67,15 +59,6 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 	entry->data = NULL;
 	entry->id = id;
 	entry->changed = 0;
-	entry->type = func;
-	entry->xpos = xpos;
-	entry->ypos = ypos;
-	entry->title = strdup(title);
-	entry->backlog = (struct backlog_list *) malloc(sizeof(struct backlog_list));
-	entry->backlog->begin = NULL;
-	entry->backlog->end = NULL;
-	entry->backlog->backlog_limit = 20;
-	entry->backlog->backlog_count = 0;
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
@@ -96,34 +79,6 @@ struct monitor_item *monitor_list_get_by_id( int id )
 	return NULL;
 }
 
-
-/**
- * draw the monitors initially after being initialized
- */
-void monitor_list_initial_draw()
-{
-	pthread_mutex_lock(&monitor_list_lock);
-	struct monitor_item *entry = monlist_start;
-	while (entry != NULL) {
-	        switch(entry->type) {
-	        case MONITOR_ADD: ;
-        	        visual_monitor_add(entry);
-                	break;
-        	case MONITOR_TOTAL: ;
-                	visual_monitor_total(entry);
-                	break;
-        	case MONITOR_THROUGHPUT: ;
-                	visual_monitor_throughput(entry);
-                	break;
-		case MONITOR_LOG:
-			visual_monitor_log(entry);
-			break;
-        	default: ;
-		}
-	entry = entry -> next;
-	}
-	pthread_mutex_unlock(&monitor_list_lock);
-}
 
 void monitor_list_change_results( char *data )
 {
