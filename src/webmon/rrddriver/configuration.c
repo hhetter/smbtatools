@@ -206,9 +206,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	monitor_list_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
-        network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
-	network_register_monitor(MONITOR_TOTAL,"R",pattern,"Total (Reading)",27,1,c);
-	network_register_monitor(MONITOR_TOTAL,"W",pattern,"Total (Writing)",26 + 27,1,c);
+        network_register_monitor(MONITOR_TOTAL,"RW",pattern,c);
+	network_register_monitor(MONITOR_TOTAL,"R",pattern,c);
+	network_register_monitor(MONITOR_TOTAL,"W",pattern,c);
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 	/* main loop 

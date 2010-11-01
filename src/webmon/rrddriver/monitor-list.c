@@ -104,7 +104,6 @@ void monitor_list_change_results( char *data )
 		break;
 */
 	case MONITOR_LOG: ;
-		visual_monitor_log_calc(entry);
 		break;
 	default: ;
 	}

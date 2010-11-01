@@ -35,7 +35,7 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
-#include "../../../iniparser3.0b/src/iniparser.h"
+#include "../../../../iniparser3.0b/src/iniparser.h"
 
-int network_register_monitor( enum monitor_fn func, char *param, char *pattern,char *title, int xpos, int ypos,struct configuration_data *c);
+int network_register_monitor( enum monitor_fn func, char *param, char *pattern,struct configuration_data *c);
 void network_handle_data( struct configuration_data *c);
