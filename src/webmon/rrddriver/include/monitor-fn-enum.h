@@ -15,5 +15,7 @@ enum monitor_fn {
 	MONITOR_THROUGHPUT,	/* Throughput per Second */
 	MONITOR_SMBTA_LOAD,	/* sends smbta load in percent */
 	MONITOR_LOG,		/* send a log of what happens in VFS */
+	MONITOR_READ,		/* sends the bytes that have been read on a single function */
+	MONITOR_WRITE,		/* sends the bytes that have been read on a single function */
 };
 	
