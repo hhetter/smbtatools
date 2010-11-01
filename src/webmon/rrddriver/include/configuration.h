@@ -37,7 +37,7 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
-#include "../../../iniparser3.0b/src/iniparser.h"
+#include "../../../../iniparser3.0b/src/iniparser.h"
 
 
 int configuration_check_configuration( struct configuration_data *c );
