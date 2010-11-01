@@ -46,6 +46,8 @@ void configuration_show_help()
 	printf("-f	--file <string>		Specify a file to monitor.\n");
 	printf("-g	--global		Global mode, run over the full\n");
 	printf("				data set.\n");
+	printf("-t      --timer <num>           Number of seconds defining the intervall\n");
+	pritnf("				to update the rddtool database.\n");
         printf("\n");
 }
 
@@ -59,6 +61,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->config_file = NULL;
         c->debug_level = 0;
         c->keyfile =NULL;
+	c->timer = 5;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -150,6 +153,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "share",1,NULL,'s'},
 			{ "user",1,NULL,'u'},
 			{ "file",1,NULL,'f'},
+			{ "timer",1,NULL,'t'},
                         { 0,0,0,0 }
                 };
 
@@ -189,6 +193,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'f':
 				c->object_type = SMBTA_FILE;
 				c->object_name = strdup( optarg );
+				break;
+			case 't':
+				c->timer= atoi(optarg);
 				break;
                         default :
                                 printf("ERROR: unkown option.\n\n");
@@ -236,6 +243,10 @@ int configuration_check_configuration( struct configuration_data *c )
                 printf("ERROR: please specify a hostname to connect to.\n");
                 return -1;
         }
+	if (c->timer <= 0 ) {
+		printf("ERROR: timer for the update intervall is too short!\n");
+		return -1;
+	}
         return 0;
 }
 
