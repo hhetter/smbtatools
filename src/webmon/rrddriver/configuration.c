@@ -230,7 +230,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	 * FIXME: Add Keyboard handling here !!
 	 */
 	while (1 == 1) {
-		sleep(5);
+		sleep(10);
+		// push values into rrdtool database
+		monitor_list_push_values(c);
 	}
 
 
@@ -275,7 +277,7 @@ void configuration_create_db(struct configuration_data *c)
 	time_t starttime = time(NULL);
 	char timestr[255];
 	sprintf(timestr,"%ju",(uintmax_t) starttime);
-	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:incoming:GAUGE:10:U:U","RRA:AVERAGE:0.5:1:100",(char *) 0 );
+	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:incoming:GAUGE:10:U:U","DS:incoming:GAUGE:10:U:U","DS:incoming:GAUGE:10:U:U", "RRA:AVERAGE:0.5:1:100",(char *) 0 );
 	if (res == -1) {
 		printf("ERROR: error creating the database.\n");
 	}

@@ -111,6 +111,25 @@ void monitor_list_change_results( char *data )
 	talloc_free(ctx);
 }
 
+void monitor_list_push_values(struct configuration_data *c)
+{
+	pthread_mutex_lock(&monitor_list_lock);
+	char rrdbin[255] = "/usr/bin/rrdtool";
+	char dbstring[255];
+	int res;
+	sprintf(dbstring,"%ju:%lu:%lu:%lu",(uintmax_t) time(NULL),
+		global_rw,global_read,global_write);
+	
+        res = execl( rrdbin, rrdbin, "update",c->database,dbstring,(char *) 0 );
+	if (res == -1) {
+		printf("ERROR: Updating the database!");
+		exit(-1);
+	}
+	global_rw = 0;
+	global_read = 0;
+	global_write = 0;
+}
+
 void monitor_list_print_changed() {
 	pthread_mutex_lock(&monitor_list_lock);
 	struct monitor_item *entry = monlist_start;
