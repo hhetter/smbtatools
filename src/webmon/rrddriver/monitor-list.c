@@ -1,7 +1,7 @@
 #include "include/includes.h"
 
 pthread_mutex_t monitor_list_lock;
-
+unsigned long int global_rw,global_read, global_write;
 
 /*
  * For monitor_list, we don't use talloc. We
@@ -15,6 +15,9 @@ pthread_mutex_t monitor_list_lock;
  * init the monitor system */
 void monitor_list_init( ) {
         pthread_mutex_init(&monitor_list_lock, NULL);
+	global_rw = 0;
+	global_read = 0;
+	global_write = 0;
 }
 
 
@@ -92,18 +95,15 @@ void monitor_list_change_results( char *data )
 	tmp = result_get_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
+
 	switch(entry->type) {
-/*	case MONITOR_ADD: ;
-		visual_monitor_add(entry);
+	case MONITOR_READ: ;
+		global_read = global_read + atol(tmp);
+		global_rw = global_rw + atol(tmp);
 		break;
-	case MONITOR_TOTAL: ;
-		visual_monitor_total(entry);
-		break;
-	case MONITOR_THROUGHPUT: ;
-		visual_monitor_throughput(entry);
-		break;
-*/
-	case MONITOR_LOG: ;
+	case MONITOR_WRITE: ;
+		global_write = global_write + atol(tmp);
+		global_rw = global_rw + atol(tmp);
 		break;
 	default: ;
 	}
