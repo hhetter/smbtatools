@@ -25,6 +25,7 @@ pthread_t thread;
 
 
 int configuration_check_configuration( struct configuration_data *c );
+void configuration_create_db(struct configuration_data *c);
 
 
 void configuration_show_help()
@@ -214,6 +215,8 @@ int configuration_parse_cmdline( struct configuration_data *c,
         if (c->config_file != NULL)
                 configuration_load_config_file(c);
         if (configuration_check_configuration(c)==-1) exit(1);
+	configuration_create_db(c);
+
         c->socket = common_connect_socket( c->host, c->port );
 
 	monitor_list_init();
@@ -263,6 +266,19 @@ int configuration_check_configuration( struct configuration_data *c )
 		return -1;
 	}
         return 0;
+}
+
+void configuration_create_db(struct configuration_data *c)
+{
+	char rrdbin[255] = "/usr/bin/rrdtool";
+	int res = 0;
+	time_t starttime = time(NULL);
+	char timestr[255];
+	sprintf(timestr,"%ju",(uintmax_t) starttime);
+	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:incoming:GAUGE:10:U:U","RRA:AVERAGE:0.5:1:100",(char *) 0 );
+	if (res == -1) {
+		printf("ERROR: error creating the database.\n");
+	}
 }
 
 /* 
