@@ -47,7 +47,8 @@ void configuration_show_help()
 	printf("-g	--global		Global mode, run over the full\n");
 	printf("				data set.\n");
 	printf("-t      --timer <num>           Number of seconds defining the intervall\n");
-	pritnf("				to update the rddtool database.\n");
+	printf("				to update the rddtool database.\n");
+	printf("-b	--database <string>	database filename\n");
         printf("\n");
 }
 
@@ -62,6 +63,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->debug_level = 0;
         c->keyfile =NULL;
 	c->timer = 5;
+	c->database = strdup( "database_rrd" );
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -154,11 +156,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "user",1,NULL,'u'},
 			{ "file",1,NULL,'f'},
 			{ "timer",1,NULL,'t'},
+			{ "database",1,NULL,'b'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:?", long_options, &option_index );
+                        "s:u:f:d:i:c:k:h:t:b:?", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
@@ -175,6 +178,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
                         case 'c':
                                 c->config_file = strdup( optarg );
                                 break;
+			case 'b':
+				c->database = strdup(optarg);
+				break;
                         case 'k':
                                 c->keyfile = strdup( optarg);
                                 configuration_load_key_from_file(c);
