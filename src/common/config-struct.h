@@ -38,6 +38,11 @@ struct configuration_data {
         /* this is the filter pattern to correctly monitor the object */
         char *pattern[5];
 
+	/* for rrdtool */
+	char *database;
+	int timer;
+
+
 };
 
 
