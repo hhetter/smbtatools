@@ -277,7 +277,7 @@ void configuration_create_db(struct configuration_data *c)
 	time_t starttime = time(NULL);
 	char timestr[255];
 	sprintf(timestr,"%ju",(uintmax_t) starttime);
-	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:incoming:GAUGE:10:U:U","DS:incoming:GAUGE:10:U:U","DS:incoming:GAUGE:10:U:U", "RRA:AVERAGE:0.5:1:100",(char *) 0 );
+	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:readwrite:GAUGE:10:U:U","DS:read:GAUGE:10:U:U","DS:write:GAUGE:10:U:U", "RRA:AVERAGE:0.5:1:100",(char *) 0 );
 	if (res == -1) {
 		printf("ERROR: error creating the database.\n");
 	}

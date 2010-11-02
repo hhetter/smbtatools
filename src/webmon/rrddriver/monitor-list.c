@@ -128,6 +128,7 @@ void monitor_list_push_values(struct configuration_data *c)
 	global_rw = 0;
 	global_read = 0;
 	global_write = 0;
+	pthread_mutex_unlock(&monitor_list_lock);
 }
 
 void monitor_list_print_changed() {
