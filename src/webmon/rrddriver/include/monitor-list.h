@@ -6,6 +6,7 @@ struct monitor_item {
 	int changed;
 };
 
+void monitor_list_push_values(struct configuration_data *c);
 void monitor_list_init();
 void monitor_list_change_results( char *data );
 struct monitor_item *monlist_end;
