@@ -293,13 +293,13 @@ The encryption method used in SMBTA is 128bit AES. For this encryption, the user
 To ease the installation of encryption, the Samba server includes a small utility called smbta-util:
 
 --------------------------
-smbta -g keyfile
+smbta-util -g keyfile
 --------------------------
 
 will generate a key for encryption, activate encryption on the Samba server, and save the key to a file. The user can then use this file on the smbtad system and store it in a protected place owned by the superuser.
 
 --------------------------
-smbta -u 
+smbta-util -u 
 --------------------------
 
 will uninstall the key from the Samba server, and deactivate encryption. To setup the key on the smbtad-system, you run smbtad with this command option:
