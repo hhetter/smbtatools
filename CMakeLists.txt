@@ -118,6 +118,7 @@ SET(CurrentExe "smbtatorture")
 ADD_EXECUTABLE(${CurrentExe}
 	src/torture/smbtatorture.c
 	)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
 SET(CurrentExe "rrddriver")
 ADD_EXECUTABLE(${CurrentExe}
@@ -131,7 +132,6 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
         DESTINATION "share/man/man1"
