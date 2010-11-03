@@ -273,11 +273,14 @@ int configuration_check_configuration( struct configuration_data *c )
 void configuration_create_db(struct configuration_data *c)
 {
 	char rrdbin[255] = "/usr/bin/rrdtool";
+	char fullstr[500];
 	int res = 0;
 	time_t starttime = time(NULL);
 	char timestr[255];
 	sprintf(timestr,"%ju",(uintmax_t) starttime);
-	res = execl( rrdbin, rrdbin, "create",c->database,"-b",timestr,"-s","1000","DS:readwrite:GAUGE:10:U:U","DS:read:GAUGE:10:U:U","DS:write:GAUGE:10:U:U", "RRA:AVERAGE:0.5:1:100",(char *) 0 );
+	sprintf(fullstr,"%s create %s -b %s -s 100 DS:readwrite:GAUGE:10:U:U DS:read:GAUGE:10:U:U DS:write:GAUGE:10:U:U RRA:AVERAGE:0.5:1:100", rrdbin, c->database, timestr);
+
+	res = system( fullstr );
 	if (res == -1) {
 		printf("ERROR: error creating the database.\n");
 	}

@@ -27,8 +27,6 @@ void monitor_list_init( ) {
  * add a monitor item
  * int id 		-> id of the monitor received by smbtad
  * enum monitor_fn	-> Function of the monitor
- * int xpos, ypos	-> x and y position in a full curses window
- * char *title		-> title to be printed above the monitor data
  */
 int monitor_list_add( int id, enum monitor_fn func )
 {
@@ -62,6 +60,7 @@ int monitor_list_add( int id, enum monitor_fn func )
 	entry->data = NULL;
 	entry->id = id;
 	entry->changed = 0;
+	entry->type = func;
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
@@ -95,7 +94,8 @@ void monitor_list_change_results( char *data )
 	tmp = result_get_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
-
+	printf("Entry ID : %i\n",id);
+	printf("Entry Type : %i\n",entry->type);
 	switch(entry->type) {
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
@@ -117,10 +117,11 @@ void monitor_list_push_values(struct configuration_data *c)
 	char rrdbin[255] = "/usr/bin/rrdtool";
 	char dbstring[255];
 	int res;
-	sprintf(dbstring,"%ju:%lu:%lu:%lu",(uintmax_t) time(NULL),
+	sprintf(dbstring,"%s update %s %ju:%lu:%lu:%lu",rrdbin,c->database,(uintmax_t) time(NULL),
 		global_rw,global_read,global_write);
 	
-        res = execl( rrdbin, rrdbin, "update",c->database,dbstring,(char *) 0 );
+        res = system(dbstring);
+	printf("%s\n",dbstring);
 	if (res == -1) {
 		printf("ERROR: Updating the database!");
 		exit(-1);

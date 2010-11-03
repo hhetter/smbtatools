@@ -17,5 +17,6 @@ enum monitor_fn {
 	MONITOR_LOG,		/* send a log of what happens in VFS */
 	MONITOR_READ,		/* sends the bytes that have been read on a single function */
 	MONITOR_WRITE,		/* sends the bytes that have been read on a single function */
+	MONITOR_UNDEFINED = 255
 };
 	
