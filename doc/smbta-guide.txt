@@ -3,6 +3,14 @@ The SMB Traffic Analyzer Guide
 Holger Hetterich <ozzy@metal-district.de>
 v1.0, Oct 2010
 
+About this document
+-------------------
+
+This documentation is created using asciidoc. The HTML version is produced using:
+-----------------------------------
+asciidoc -a toc smbta-guide.txt
+-----------------------------------
+
 What is SMB Traffic Analyzer
 ----------------------------
 
