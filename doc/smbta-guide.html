@@ -468,7 +468,15 @@ function generateToc(toclevels) {
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
 </div>
 </div>
-<h2 id="_what_is_smb_traffic_analyzer">1. What is SMB Traffic Analyzer</h2>
+<h2 id="_about_this_document">About this document</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This documentation is created using asciidoc. The HTML version is produced using:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>asciidoc -a toc smbta-guide.txt</tt></pre>
+</div></div>
+</div>
+<h2 id="_what_is_smb_traffic_analyzer">What is SMB Traffic Analyzer</h2>
 <div class="sectionbody">
 <div class="paragraph"><p><strong>SMB Traffic Analyzer</strong> (from now on called <strong>SMBTA</strong>) is a software suite utilizing
 the <strong>Samba</strong> CIFS server to create statistics about the data traffic on a Samba
@@ -507,7 +515,7 @@ module.</p></div>
 <div class="paragraph"><p>Please check SMB Traffic Analyzer&#8217;s home page for newer versions of the software or
 this document:
 <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a></p></div>
-<h3 id="_why_using_smb_traffic_analyzer">1.1. Why using SMB Traffic Analyzer</h3><div style="clear:left"></div>
+<h3 id="_why_using_smb_traffic_analyzer">Why using SMB Traffic Analyzer</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Samba services may run on special hardware, like RAID systems, or other specialized
 storage. With SMBTA, the user can create an overview of the network usage
 on the network. SMBTA can be used to answer questions like this:</p></div>
@@ -543,13 +551,13 @@ Which is the top used file by read and write access?
 </p>
 </li>
 </ul></div>
-<h3 id="_isn_8217_t_smbta_a_tool_to_control_employees">1.2. Isn&#8217;t SMBTA a tool to control employees?</h3><div style="clear:left"></div>
+<h3 id="_isn_8217_t_smbta_a_tool_to_control_employees">Isn&#8217;t SMBTA a tool to control employees?</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Yes it can be used like that, but doesn&#8217;t need to be. To expose user names
 to a storage is even forbidden in many countries. Therefore, SMBTA allows
 for anonymization of any data linked to a person.</p></div>
 <div class="paragraph"><p>There are many use cases for SMBTA, like determining and planning hardware for your
 services, or analyzing the network before switching to clustered Samba.</p></div>
-<h3 id="_the_basic_concept_of_smbta">1.3. The basic concept of SMBTA</h3><div style="clear:left"></div>
+<h3 id="_the_basic_concept_of_smbta">The basic concept of SMBTA</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The Samba CIFS server features a Virtual File System Layer (VFS), that allows
 modules to be linked into the layer, replacing or enhancing the functions
 of the VFS. Modules can be linked into and behave completely transparent.</p></div>
@@ -561,7 +569,7 @@ receiver program. This daemon program, smbtad, is then building a
 SQL storage from the data.</p></div>
 <div class="paragraph"><p>Besides of the generated SQL storage, client programs can be used to
 query the storage in a specialized way over the network.</p></div>
-<h3 id="_where_to_get_smbta">1.4. Where to get SMBTA</h3><div style="clear:left"></div>
+<h3 id="_where_to_get_smbta">Where to get SMBTA</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged
 with Samba version greater or equal than 3.2.0. However, the current
 SMBTA module shipping with Samba is only implementing version 1 of the
@@ -577,7 +585,7 @@ programs smbtaquery and smbtamonitor are available in source code from
 the projects homepage at <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a>.
 For the openSUSE Linux distribution, RPM packages are available from the
 openSUSE Build Service.</p></div>
-<h3 id="_building_smbta_from_the_sources">1.5. Building SMBTA from the sources</h3><div style="clear:left"></div>
+<h3 id="_building_smbta_from_the_sources">Building SMBTA from the sources</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The SMBTA tools smbtaquery and smbtamonitor are utilizing "cmake" as the primary build tool. The smbtad daemon program does too.</p></div>
 <div class="paragraph"><p>Before trying to build smbtad and smbtatools, check for the following requirements:</p></div>
 <div class="ulist"><ul>
@@ -630,9 +638,9 @@ cd /home/tom/smbtatools-build</tt></pre>
 make install (as superuser)</tt></pre>
 </div></div>
 </div>
-<h2 id="_setting_up_smbta">2. Setting up SMBTA</h2>
+<h2 id="_setting_up_smbta">Setting up SMBTA</h2>
 <div class="sectionbody">
-<h3 id="_activating_the_vfs_module_on_samba_servers">2.1. Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
+<h3 id="_activating_the_vfs_module_on_samba_servers">Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
 <div class="paragraph"><p>In general, the Samba CIFS server is configured via smb.conf, it&#8217;s main
 configuration file. A typical service definition would look like this:</p></div>
 <div class="listingblock">
@@ -661,7 +669,7 @@ use protocol version 2.</p></div>
 <div class="paragraph"><p>The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.</p></div>
-<h3 id="_setting_up_smbtad">2.2. Setting up smbtad</h3><div style="clear:left"></div>
+<h3 id="_setting_up_smbtad">Setting up smbtad</h3><div style="clear:left"></div>
 <div class="paragraph"><p>On the target host of the module, the program smbtad is running. It&#8217;s task
 is mainly to feed a SQL storage out of the data it receives from the module,
 maintain the storage and accept requests from clients.</p></div>
@@ -672,7 +680,7 @@ maintain the storage and accept requests from clients.</p></div>
 <div class="paragraph"><p>smbtad is a daemon program that can be run by any user. By default, it creates a directory $HOME/.smbtad/ where it stores it&#8217;s database. The above call makes smbtad to listen to the VFS modules connections on port 3490, and listen to client connections on port 3491.</p></div>
 <div class="paragraph"><p>By default, smbtad creates a database as $HOME/.smbtad/staddb. If the database
 already exists, it will use the existing database.</p></div>
-<h4 id="_the_command_line_options_of_smbtad">2.2.1. The command line options of smbtad</h4>
+<h4 id="_the_command_line_options_of_smbtad">The command line options of smbtad</h4>
 <div class="paragraph"><p>Any option you give that smbtad doesn&#8217;t understand will lead to print out it&#8217;s list of processed commands. Such as if the user calls:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -729,7 +737,86 @@ SMB Traffic Analyzer daemon
 <div class="paragraph"><p>To hinder the database from growing infinite, a maintenance process is included in smbtad, which will clean up the database after a certain rule (see -m --maintenance-timer-config). The -t option specifies the interval in hours, as to then the maintenance process should be run. For example, if you give 00:10:00, a maintenance process will be started every ten minutes.</p></div>
 <h5 id="_m_maintenance_timer_config">-m --maintenance-timer-config</h5>
 <div class="paragraph"><p>Here you can specify how the maintenance process should work. The format is DAYS, HH:MM:SS. For example, if you want to delete anything in the database that is older than one day, you would give 1,00:00:00 (which is the default). Would you like to delete anything in the database that is older than 2 weeks, then you would give: 14,00:00:00 as parameter. Having deleted everything that is older than 2 hours, would be 0,02:00:00 as parameter.</p></div>
-<h3 id="_checking_the_installation">2.3. Checking the installation</h3><div style="clear:left"></div>
+<h4 id="_using_a_configuration_file_with_smbtad">Using a configuration file with smbtad</h4>
+<div class="paragraph"><p>All the options mentioned in the paragraph before can be configured with a configuration file. The configuration file has the same format as ini-Files, known from the Windows platform. An example configuration file is included in the smbtad package, in the /dist directory. We will go through a complete configuration file in this chapter, descriping all the options. The configuration file is separated by chapters, such as "general" or "network". Line beginning with # are considered comments.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>/etc/smbtad.conf
+
+# The general section defines options causing
+# changes for the whole application
+[general]
+        # The debug level defines the verbosity in syslog
+        # of smbtad. Values from 0 to 10 are supported, 0
+        # being the normal mode, and 10 being totally verbose.
+        # Note that debug level 10 is causing a speed penalty.
+        # If you think you've found a bug, and try to reproduce it,
+        # please run smbtad with debug_level = 10.
+        debug_level = 0
+
+[network]
+        # The port_number option defines the internet socket port
+        # to be used for listening for data from the VFS module.
+        port_number = 3490
+        # The query_port option defines the internet socket port
+        # to be used for talking to clients such as smbtaquery or
+        # smbtamonitor.
+        query_port = 3491
+
+[database]
+        # Currently, smbtad is employing sqlite3 for it's database
+        # tasks. A data file to be used (with full path) can be specified.
+        sqlite_filename = /tmp/database.db
+
+[maintenance]
+        # To hinder the database from growing infinite, a maintenance process is
+        # included in smbtad. The option "interval" is telling the intervall
+        # as to when the maintenance procedure is run. For example, if you
+        # give "00:10:00" as argument, a maintenance procedure will be run
+        # any ten minutes.
+        interval = 01:00:00
+
+        # The config parameter defines how the maintenance process should work.
+        # The format is DAYS, HH:MM:SS. For example, if you want to delete
+        # anything in the database that is older than one day, you would
+        # give 1,00:00:00 (which is the default). Would you like to delete
+        # anything in the database that is older than 2 weeks, then you would
+        # give: 14,00:00:00 as parameter. Having deleted everything that
+        # is older than 2 hours, would be 0,02:00:00 as parameter.
+        config = 01,00:00:00</tt></pre>
+</div></div>
+<h4 id="_controlling_smbtad_through_the_rcsmbtad_script">Controlling smbtad through the rcsmbtad script</h4>
+<div class="paragraph"><p>The smbtad distribution includes LSB compliant start/stop scripts, as well
+as to check the availability of the service. Provided you have a configuration
+file setup for smbtad in /etc/smbtad.conf, the scripts will use this as the
+configuration for smbtad. smbtad then can be started with:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rcsmbtad start</tt></pre>
+</div></div>
+<div class="olist lowerroman"><ol class="lowerroman">
+<li>
+<p>
+stopped with:
+</p>
+</li>
+</ol></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rcsmbtad stop</tt></pre>
+</div></div>
+<div class="olist lowerroman"><ol class="lowerroman">
+<li>
+<p>
+and checked for availability with:
+</p>
+</li>
+</ol></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rcsmbtad status</tt></pre>
+</div></div>
+<h3 id="_checking_the_installation">Checking the installation</h3><div style="clear:left"></div>
 <div class="paragraph"><p>When everything is set up, move some data on the shares you have activated
 the VFS module on. For example, if you write a file to a share,
 you can check the installation by looking into the database
@@ -742,18 +829,18 @@ $ select * from write;</tt></pre>
 <div class="paragraph"><p>You should now see entries of data written by the user you have done
 the transfer with. If this works, your SMBTA installation works fine
 und you can start pointing more shares to it.</p></div>
-<h3 id="_setting_up_encryption">2.4. Setting up Encryption</h3><div style="clear:left"></div>
+<h3 id="_setting_up_encryption">Setting up Encryption</h3><div style="clear:left"></div>
 <div class="paragraph"><p>For security reasons, SMBTA can encrypt it&#8217;s data flow from the module to the smbtad component. This is optional, data is not encrypted by default.</p></div>
 <div class="paragraph"><p>The encryption method used in SMBTA is 128bit AES. For this encryption, the user needs to generate a key and make the key known to both the Samba server where the VFS module is activated and the system smbtad is running on.</p></div>
 <div class="paragraph"><p>To ease the installation of encryption, the Samba server includes a small utility called smbta-util:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>smbta -g keyfile</tt></pre>
+<pre><tt>smbta-util -g keyfile</tt></pre>
 </div></div>
 <div class="paragraph"><p>will generate a key for encryption, activate encryption on the Samba server, and save the key to a file. The user can then use this file on the smbtad system and store it in a protected place owned by the superuser.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>smbta -u</tt></pre>
+<pre><tt>smbta-util -u</tt></pre>
 </div></div>
 <div class="paragraph"><p>will uninstall the key from the Samba server, and deactivate encryption. To setup the key on the smbtad-system, you run smbtad with this command option:</p></div>
 <div class="listingblock">
@@ -761,11 +848,11 @@ und you can start pointing more shares to it.</p></div>
 <pre><tt>smbtad --keyfile=/etc/smbtad/key</tt></pre>
 </div></div>
 </div>
-<h2 id="_using_the_client_programs">3. Using the client programs</h2>
+<h2 id="_using_the_client_programs">Using the client programs</h2>
 <div class="sectionbody">
-<h3 id="_smbtaquery">3.1. smbtaquery</h3><div style="clear:left"></div>
+<h3 id="_smbtaquery">smbtaquery</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The possibilities to create statistical data out of the data set are quite wide ranged. Instead of querying the database directly via SQL, users may use smbtaquery. It is specialized on the setup of the database,and runs a lot of preconfigured queries to produce statistical and informational data. smbtaquery is utilizing a simplified language to operate on the users whish, translates the commands into SQL, and connects to the smbtad program to run the SQL query. The result is then printed out.</p></div>
-<h4 id="_general_usage">3.1.1. General usage</h4>
+<h4 id="_general_usage">General usage</h4>
 <div class="paragraph"><p>Following is an example of a smbtaquery run:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -773,7 +860,7 @@ und you can start pointing more shares to it.</p></div>
 </div></div>
 <div class="paragraph"><p>The command line option -h (or --host) is telling smbtaquery to use the given host as the system, where smbtad is running on. When running queries, it will connect to this system with the port number given with the command line option -i.</p></div>
 <div class="paragraph"><p>Finally the command line option -q (or --query) provides the query to run for the build in interpreter of smbtaquery. More on this follows in the later chapters.</p></div>
-<h4 id="_utilizing_a_configuration_file">3.1.2. Utilizing a configuration file</h4>
+<h4 id="_utilizing_a_configuration_file">Utilizing a configuration file</h4>
 <div class="paragraph"><p>The command line options -h (--host) and -i are required every time smbtaquery should run a query on the database. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -787,7 +874,7 @@ und you can start pointing more shares to it.</p></div>
         hostname = smbtahost.example.ex
         port = 3491</tt></pre>
 </div></div>
-<h4 id="_the_smbtaquery_interpreter">3.1.3. The smbtaquery interpreter</h4>
+<h4 id="_the_smbtaquery_interpreter">The smbtaquery interpreter</h4>
 <div class="paragraph"><p>To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA.</p></div>
 <h5 id="_syntax">Syntax</h5>
 <div class="paragraph"><p>Every command is seperated by a comma, any paraeters to the command are seperated by space. The last command ends with a semicolon instead of a comma.</p></div>
@@ -848,9 +935,9 @@ $DATE-$TIME in the fowolling format:
 <strong>MM-DD-YYYY HH:MM:SS</strong></p></div>
 <div class="paragraph"><p>Also, there are the following keywords making the time specification easier:
 <strong>yesterday</strong>, <strong>today</strong> and <strong>now</strong>.</p></div>
-<h4 id="_object_identification">3.1.4. Object Identification</h4>
+<h4 id="_object_identification">Object Identification</h4>
 <div class="paragraph"><p>SMBTA will try to identify the objects that given by searching through it&#8217;s database. For example, the user "holger" could exist more than once. User "holger" could be coming from two or more domains, each of these listing user "holger" with a different SID. Therefore SMBTA will look up the known SIDs of user "holger" and will present a dialog to choose the right user in case more than one user "holger" exists. As a consequence, shares are checked for domains, and files are checked for the share and the domain.</p></div>
-<h4 id="_the_functions">3.1.5. The functions</h4>
+<h4 id="_the_functions">The functions</h4>
 <h5 id="_total">total</h5>
 <div class="paragraph"><p>Syntax:
 <strong>total [RW] [R] [W]</strong></p></div>
@@ -945,12 +1032,12 @@ a virtual day, listing 24 hours and showing the data acitvity by percentage.</p>
 <pre><tt>'share Fritzboxtest, usage r;'</tt></pre>
 </div></div>
 </div></div>
-<h3 id="_smbtamonitor">3.2. smbtamonitor</h3><div style="clear:left"></div>
+<h3 id="_smbtamonitor">smbtamonitor</h3><div style="clear:left"></div>
 <div class="paragraph"><p>smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.</p></div>
 <div class="paragraph"><p>This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.</p></div>
 <div class="paragraph"><p>For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.</p></div>
 <div class="paragraph"><p>Any smbtamonitor instance is bound to an object ( a user, a file, or a share). You can run as many smbtamonitor instances as you want against smbtad.</p></div>
-<h4 id="_utilizing_a_configuration_file_2">3.2.1. Utilizing a configuration file</h4>
+<h4 id="_utilizing_a_configuration_file_2">Utilizing a configuration file</h4>
 <div class="paragraph"><p>The command line options -h (--host) and -i are required every time smbtamonitor should run. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -964,7 +1051,7 @@ a virtual day, listing 24 hours and showing the data acitvity by percentage.</p>
         hostname = smbtahost.example.ex
         port = 3491</tt></pre>
 </div></div>
-<h4 id="_smbtamonitor_startup">3.2.2. smbtamonitor startup</h4>
+<h4 id="_smbtamonitor_startup">smbtamonitor startup</h4>
 <div class="paragraph"><p>To start a monitor, use the same arguments for the host and internet port to connect to as with smbtaquery:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -987,7 +1074,7 @@ a virtual day, listing 24 hours and showing the data acitvity by percentage.</p>
 <div class="paragraph"><p>Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them.</p></div>
 <div class="paragraph"><p>The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.</p></div>
 </div>
-<h2 id="_reporting_problems_bugs_contacting_the_authors">4. Reporting Problems, bugs, contacting the Authors</h2>
+<h2 id="_reporting_problems_bugs_contacting_the_authors">Reporting Problems, bugs, contacting the Authors</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>To find the latest news and versions of SMBTA, check out it&#8217;s homepage:</p></div>
 <div class="listingblock">
@@ -997,15 +1084,15 @@ a virtual day, listing 24 hours and showing the data acitvity by percentage.</p>
 <div class="paragraph"><p>If you can reproduce an error situation, do not hestitate to open a bug on <a href="http://bugzilla.novell.com">http://bugzilla.novell.com</a>, set "Samba" as component, and begin the Bug subject with [SMBTA].</p></div>
 <div class="paragraph"><p>If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich &lt;<a href="mailto:ozzy@metal-district.de">ozzy@metal-district.de</a>&gt;.</p></div>
 </div>
-<h2 id="_project_outlook_and_version_history">5. Project outlook and version history</h2>
+<h2 id="_project_outlook_and_version_history">Project outlook and version history</h2>
 <div class="sectionbody">
-<h3 id="_smbtad">5.1. smbtad</h3><div style="clear:left"></div>
-<h4 id="_version_1_0">5.1.1. Version 1.0</h4>
+<h3 id="_smbtad">smbtad</h3><div style="clear:left"></div>
+<h4 id="_version_1_0">Version 1.0</h4>
 <div class="paragraph"><p>Version 1.0
 The initial version:
 - full documentation (mainly this guide) on smbtad and the smbtatools.
 - Binary packages for distributions</p></div>
-<h4 id="_version_2_0">5.1.2. Version 2.0</h4>
+<h4 id="_version_2_0">Version 2.0</h4>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1018,13 +1105,13 @@ support clustered Samba
 </p>
 </li>
 </ul></div>
-<h3 id="_smbtatools">5.2. smbtatools</h3><div style="clear:left"></div>
-<h4 id="_version_1_0_2">5.2.1. Version 1.0</h4>
+<h3 id="_smbtatools">smbtatools</h3><div style="clear:left"></div>
+<h4 id="_version_1_0_2">Version 1.0</h4>
 <div class="paragraph"><p>Version 1.0
 The initial version:
 - full documentation (mainly this guide) on the tools.
 - binary packages</p></div>
-<h4 id="_version_2_0_2">5.2.2. Version 2.0</h4>
+<h4 id="_version_2_0_2">Version 2.0</h4>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1046,7 +1133,7 @@ support clustered Samba
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br />
-Last updated 2010-10-25 20:32:42 CEST
+Last updated 2010-11-06 20:47:16 CEST
 </div>
 </div>
 </body>
