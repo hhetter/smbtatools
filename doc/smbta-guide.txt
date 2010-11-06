@@ -266,6 +266,79 @@ To hinder the database from growing infinite, a maintenance process is included 
 +++++++++++++++++++++++++++++
 Here you can specify how the maintenance process should work. The format is DAYS, HH:MM:SS. For example, if you want to delete anything in the database that is older than one day, you would give 1,00:00:00 (which is the default). Would you like to delete anything in the database that is older than 2 weeks, then you would give: 14,00:00:00 as parameter. Having deleted everything that is older than 2 hours, would be 0,02:00:00 as parameter.
 
+Using a configuration file with smbtad
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All the options mentioned in the paragraph before can be configured with a configuration file. The configuration file has the same format as ini-Files, known from the Windows platform. An example configuration file is included in the smbtad package, in the /dist directory. We will go through a complete configuration file in this chapter, descriping all the options. The configuration file is separated by chapters, such as "general" or "network". Line beginning with # are considered comments.
+
+
+----------------------------------------------------------
+/etc/smbtad.conf
+
+# The general section defines options causing
+# changes for the whole application
+[general]
+	# The debug level defines the verbosity in syslog
+	# of smbtad. Values from 0 to 10 are supported, 0
+	# being the normal mode, and 10 being totally verbose.
+	# Note that debug level 10 is causing a speed penalty.
+	# If you think you've found a bug, and try to reproduce it,
+	# please run smbtad with debug_level = 10.
+	debug_level = 0
+
+[network]
+	# The port_number option defines the internet socket port
+	# to be used for listening for data from the VFS module.
+	port_number = 3490
+	# The query_port option defines the internet socket port
+	# to be used for talking to clients such as smbtaquery or
+	# smbtamonitor.
+	query_port = 3491
+
+[database]
+	# Currently, smbtad is employing sqlite3 for it's database
+	# tasks. A data file to be used (with full path) can be specified.
+	sqlite_filename = /tmp/database.db
+
+[maintenance]
+	# To hinder the database from growing infinite, a maintenance process is
+	# included in smbtad. The option "interval" is telling the intervall
+	# as to when the maintenance procedure is run. For example, if you
+	# give "00:10:00" as argument, a maintenance procedure will be run
+	# any ten minutes.
+	interval = 01:00:00
+
+	# The config parameter defines how the maintenance process should work.
+	# The format is DAYS, HH:MM:SS. For example, if you want to delete
+	# anything in the database that is older than one day, you would
+	# give 1,00:00:00 (which is the default). Would you like to delete
+	# anything in the database that is older than 2 weeks, then you would
+	# give: 14,00:00:00 as parameter. Having deleted everything that
+	# is older than 2 hours, would be 0,02:00:00 as parameter.
+	config = 01,00:00:00
+----------------------------------------------------------------
+
+Controlling smbtad through the rcsmbtad script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The smbtad distribution includes LSB compliant start/stop scripts, as well
+as to check the availability of the service. Provided you have a configuration
+file setup for smbtad in /etc/smbtad.conf, the scripts will use this as the
+configuration for smbtad. smbtad then can be started with:
+
+-----------------------------------
+rcsmbtad start
+-----------------------------------
+
+... stopped with:
+-----------------------------------
+rcsmbtad stop
+-----------------------------------
+... and checked for availability with:
+-----------------------------------
+rcsmbtad status
+-----------------------------------
+
 Checking the installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
