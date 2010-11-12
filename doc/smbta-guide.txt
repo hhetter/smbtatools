@@ -184,6 +184,22 @@ The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.
 
+The module can also run using a unix domain socket, which is useful if you
+want to connect smbtad on the same system as the Samba server. In this case
+The share definition would look like this:
+
+------------------------------------------------------
+[ExampleShare]
+        path = /space
+        read only = no
+        vfs objects = smb_traffic_analyzer
+        smb_traffic_analyzer:protocol_version = V2
+        smb_traffic_analyzer:mode = unix_domain_socket
+------------------------------------------------------
+
+The mode parameter set to "unix_domain_socket" then will use a unix domain
+socket at /var/tmp/stadsocket.
+
 Setting up smbtad
 ~~~~~~~~~~~~~~~~~
 
