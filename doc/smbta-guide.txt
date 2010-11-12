@@ -244,6 +244,9 @@ SMB Traffic Analyzer daemon
                                 maintenance routine.
                                 Format is: DAYS, HH:MM:SS
                                 Default: 1,00:00:00
+-u --unix-domain-socket		Use a unix domain socket under
+				/var/tmp/stadsocket for the
+				connection to the VFS module.
 ------------------------------------------------------------------
 
 -i --inet-port
@@ -273,6 +276,10 @@ To hinder the database from growing infinite, a maintenance process is included 
 -m --maintenance-timer-config
 +++++++++++++++++++++++++++++
 Here you can specify how the maintenance process should work. The format is DAYS, HH:MM:SS. For example, if you want to delete anything in the database that is older than one day, you would give 1,00:00:00 (which is the default). Would you like to delete anything in the database that is older than 2 weeks, then you would give: 14,00:00:00 as parameter. Having deleted everything that is older than 2 hours, would be 0,02:00:00 as parameter.
+
+-u --unix-domain-socket
++++++++++++++++++++++++
+If this option is given, a unix domain socket under /var/tmp/stadsocket will be used for the connection to the VFS module. This is useful if smbtad is to be run on the same machine that runs the Samba server.
 
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
