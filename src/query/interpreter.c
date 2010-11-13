@@ -820,8 +820,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		interpreter_make_times(ctx,obj_struct, command_data);
-		obj_struct->sql = talloc_asprintf(ctx," filename='%s' and "
+		obj_struct->sql = talloc_asprintf(ctx,"%s and filename='%s' and "
 			"%s and %s %s",
+					obj_struct->sql,
 					command_data->arguments[0],
 					obj_struct->from,
 					obj_struct->to,
@@ -834,7 +835,8 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_SHARE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		interpreter_make_times(ctx,obj_struct, command_data);
-		obj_struct->sql = talloc_asprintf(ctx," share='%s' and %s and %s %s",
+		obj_struct->sql = talloc_asprintf(ctx,"%s and share='%s' and %s and %s %s",
+					obj_struct->sql,
 					command_data->arguments[0],
 					obj_struct->from,
 					obj_struct->to,
@@ -847,7 +849,8 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_USER;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		interpreter_make_times(ctx,obj_struct, command_data);
-		obj_struct->sql = talloc_asprintf(ctx," username='%s' and %s and %s %s",
+		obj_struct->sql = talloc_asprintf(ctx,"%s and username='%s' and %s and %s %s",
+					obj_struct->sql,
 					command_data->arguments[0],
 					obj_struct->from,
 					obj_struct->to,
