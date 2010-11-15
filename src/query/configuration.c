@@ -67,6 +67,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->debug_level = 0;
 	c->keyfile =NULL;
 	c->query = NULL;
+	c->file = NULL;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -144,6 +145,7 @@ void configuration_show_help()
 	printf("-q      --query			Run an interpreter command,\n");
 	printf("				or run a SQL select command.\n");
 	printf("-p      --command-help		Interpreter command description.\n");
+	printf("-f      --file <file>		Read the commands from a file.\n");
 	printf("\n");
 }
 
@@ -174,11 +176,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "host",1,NULL,'h'},
 			{ "help",0,NULL,'?'},
 			{ "command-help",0,NULL,'p'},
+			{ "file",1,NULL,'f'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:i:c:k:q:h:p?", long_options, &option_index );
+			"d:f:i:c:k:q:h:p?", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -209,6 +212,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case '?':
 				configuration_show_help();
 				exit(0);
+			case 'f':
+				c->file = strdup( optarg );
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -223,7 +229,14 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	c->socket = common_connect_socket( c->host, c->port );
 
 	/* through all options, now run the query command */
-	if (c->query != NULL) interpreter_run( runtime_mem, c->query, c);
+	if (c->query != NULL) {
+		interpreter_run( runtime_mem, c->query, c);
+		free(c->query);
+	}
+	if (c->file != NULL) {
+		interpreter_run_from_file( runtime_mem, c->file, c);
+		free(c->file);
+	}
 
 	close(c->socket);
 	TALLOC_FREE(runtime_mem);
