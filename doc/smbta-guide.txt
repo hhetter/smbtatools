@@ -325,6 +325,10 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# to be used for talking to clients such as smbtaquery or
 	# smbtamonitor.
 	query_port = 3491
+	# The unix_domain_socket option specifies wether a unix domain
+	# socket is used for the connection to the VFS module.
+	# It's arguments are either yes, or no.
+	unix_domain_socket = no
 
 [database]
 	# Currently, smbtad is employing sqlite3 for it's database
@@ -455,7 +459,30 @@ The format of the file is that of a ini file:
 The smbtaquery interpreter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA.
+To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA. There are two ways to run the buildin interpreter of smbtaquery. Either by using the -q switch on the command line, and run a single line of commands, or by specifying a file containing the commands to run.
+
+In the following example of an smbtaquery call, the -q parameter is used:
+-------------------------------------------------------
+smbtaquery -h localhost -i 3491 -q 'global, total r;'
+-------------------------------------------------------
+
+When using a file to read in commands, the -f Parameter is used. It's argument is the filename of the file to run commands from:
+-------------------------------------------------------
+smbtaquery -h localhost -i 3491 -f testfile.txt
+-------------------------------------------------------
+
+Any line beginning with '#' in the file, will be ignored as comments. At any new line in the file, one or more objects have to be defined.
+Here is an example file:
+------------------------------------------------------
+# Short example
+# Show the global usage of the Samba network
+global, usage rw;
+#
+# Show the sum of bytes written by user 'holger'
+user holger, total w;
+------------------------------------------------------
+
+The commands specified in the file will be run in order given in the file.
 
 Syntax
 ++++++
@@ -478,7 +505,7 @@ For example if you make a query like this:
 'share Fritzboxtest, usage rw'
 ------------------------------------
 
-The calling of the function "usage rw" (as being introduced later in this chapter) is bound to the share "Fritzboxtest". Any results will be related to this share. The general syntax is first to name the object, and then to run the functions on. At any time, you can name a new object, and any function run after the new object definition will be run related to this object.
+The calling of the function "usage rw" (as being introduced later in this chapter) is bound to the share "Fritzboxtest". Any results will be related to this share. The general syntax is first to name the object, and then to run the functions on.
 
 Say "total r" is a function to get the total number of bytes read by an object.
 A query could then be:
@@ -488,12 +515,11 @@ A query could then be:
 
 This call would print the total number of bytes read by the user holger.
 
-The following query:
+By defining more objects in a row, the interpreter conjuncts those objects with AND. For example:
 ------------------------------------
-'share Fritzboxtest, total rw, user holger total w;'
+'file README, share pool, total r;'
 ------------------------------------
-
-Would first print out the total number of bytes (written and read) on share "Fritzboxtest", and then the total number of bytes written by user holger.
+In this example we query for the file README on the share pool, and then run the total function on it.
 
 The following object definitions are currently possible:
 --------------------------------------------
@@ -640,7 +666,7 @@ Syntax:
 *usage [rw] [r] [w]*
 
 The usage function sums up the usage or activity of an object by creating
-a virtual day, listing 24 hours and showing the data acitvity by percentage.
+a virtual day, listing 24 hours and showing the average data acitvity by percentage.
 
 .usage Function example:
 ========================================
