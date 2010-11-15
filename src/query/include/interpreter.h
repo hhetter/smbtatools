@@ -42,4 +42,6 @@
 
 int interpreter_run( TALLOC_CTX *ctx, char *commands,struct configuration_data *config);
 void interpreter_command_help();
-
+int interpreter_run_from_file( TALLOC_CTX *ctx,
+        char *filename,
+        struct configuration_data *config);

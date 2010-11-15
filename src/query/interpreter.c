@@ -940,7 +940,6 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 	return backup;
 }
 		
-
 int interpreter_run( TALLOC_CTX *ctx,
 	char *commands,
 	struct configuration_data *config )
@@ -996,6 +995,33 @@ int interpreter_run( TALLOC_CTX *ctx,
 	}
 	return 0;
 }
+
+int interpreter_run_from_file( TALLOC_CTX *ctx,
+        char *filename,
+        struct configuration_data *config)
+{
+        FILE *file;
+        char cmd[5000];
+
+        file = fopen( filename, "r");
+        if (file == NULL) {
+                printf("ERROR: error reading file '%s'.\n",filename);
+                exit(1);
+        }
+
+        while (!feof(file)) {
+                fgets(cmd,4999,file);
+		cmd[strlen(cmd)-1] = '\0';
+                if ( cmd[0] != '#' && cmd[0] != '\n' && cmd[0] != '\0') {
+                        // anything not a comment is a command
+                        interpreter_run(ctx, cmd,config);
+                }
+        }
+	fclose(file);
+        return 0;
+}
+
+
 
 void interpreter_command_help()
 {

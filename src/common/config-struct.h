@@ -24,6 +24,9 @@ struct configuration_data {
 
         /* runtime data */
         int socket;
+	/* when reading commands from a file, */
+	/* use this filename		      */
+	char *file;
 
 
         /* for smbtaquery */
