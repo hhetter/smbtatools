@@ -21,7 +21,8 @@ struct configuration_data {
         unsigned char key[20];
         /* AES Keyfile */
         char *keyfile;
-
+	/* 1, if a unix socket is used */
+	int unix_socket;
         /* runtime data */
         int socket;
 	/* when reading commands from a file, */

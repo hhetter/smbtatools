@@ -77,6 +77,30 @@ char *common_make_human_readableFORM( TALLOC_CTX *ctx, unsigned long int z )
         return output;
 }
 
+/*
+ * connect to the unix socket at char *name
+ * in the filesystem
+ */
+int common_connect_unix_socket( char *name )
+{
+	int len, sock;
+	struct sockaddr_un remote;
+        if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+                printf("ERROR: Couldn't create unix socket.\n");
+                exit(1);
+        }
+
+        remote.sun_family = AF_UNIX;
+        strncpy(remote.sun_path, name,
+		sizeof(remote.sun_path));
+        len=strlen(remote.sun_path) + sizeof(remote.sun_family);
+        if (connect(sock, (struct sockaddr *)&remote, len) == -1 ) {
+		printf("ERROR: Couldn't connect to unix socket.\n");
+                close(sock);
+                exit(1);
+        }
+        return sock;
+}
 
 /*
  * Take a hostname as string, get its IP,

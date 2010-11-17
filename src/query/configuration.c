@@ -68,6 +68,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->keyfile =NULL;
 	c->query = NULL;
 	c->file = NULL;
+	c->unix_socket = 0;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -125,6 +126,9 @@ int configuration_load_config_file( struct configuration_data *c)
 	if (cc != NULL) {
 		configuration_load_key_from_file( c);
 	}
+	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
+	if (cc != NULL) c->unix_socket = 1;
+
 	return 0;
 }
 
@@ -146,6 +150,8 @@ void configuration_show_help()
 	printf("				or run a SQL select command.\n");
 	printf("-p      --command-help		Interpreter command description.\n");
 	printf("-f      --file <file>		Read the commands from a file.\n");
+	printf("-u	--unix-domain-socket	Use a unix domain socket to \n");
+	printf("				connect to smbtad.\n");
 	printf("\n");
 }
 
@@ -177,11 +183,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "help",0,NULL,'?'},
 			{ "command-help",0,NULL,'p'},
 			{ "file",1,NULL,'f'},
+			{ "unix-domain-socket",0,NULL,'u'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:f:i:c:k:q:h:p?", long_options, &option_index );
+			"d:f:i:c:k:q:h:p?u", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -215,6 +222,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'f':
 				c->file = strdup( optarg );
 				break;
+			case 'u':
+				c->unix_socket = 1;
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -226,7 +236,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	if (c->config_file != NULL)
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
-	c->socket = common_connect_socket( c->host, c->port );
+	if (c->unix_socket != 1)
+		c->socket = common_connect_socket( c->host,
+			c->port );
+	else
+		c->socket = common_connect_unix_socket(
+			"/var/tmp/stadsocket_client");
 
 	/* through all options, now run the query command */
 	if (c->query != NULL) {
@@ -250,7 +265,7 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: debug level has to be between 0 and 10.\n");
 		return -1;
 	}
-	if (c->host == NULL) {
+	if (c->host == NULL && c->unix_socket != 1) {
 		printf("ERROR: please specify a hostname to connect to.\n");
 		return -1;
 	}
