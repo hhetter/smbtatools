@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <talloc.h>
+#include <unistd.h>
 #include "../src/common/config-struct.h"
 
 /* define TALLOC_FREE when older talloc versions are used */
@@ -78,6 +79,7 @@ void common_receive_data( char *buf, int sock, int length, int *rlen);
 int common_get_data_block_length( char *header );
 char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
 void network_close_connection( int sockfd );
+int common_connect_unix_socket( char *name );
 char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
         char *data,

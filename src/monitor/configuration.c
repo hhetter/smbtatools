@@ -46,6 +46,8 @@ void configuration_show_help()
 	printf("-f	--file <string>		Specify a file to monitor.\n");
 	printf("-g	--global		Global mode, run over the full\n");
 	printf("				data set.\n");
+	printf("-n	--unix-domain-socket	Use a unix domain socket to\n");
+	printf("				connect to smbtad.\n");
         printf("\n");
 }
 
@@ -59,6 +61,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->config_file = NULL;
         c->debug_level = 0;
         c->keyfile =NULL;
+	c->unix_socket = 1;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -105,7 +108,8 @@ int configuration_load_config_file( struct configuration_data *c)
 
         cc = iniparser_getstring( Mydict, "network:port_number",NULL);
         if (cc != NULL) c->port = atoi(cc);
-
+	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
+	if (cc != NULL) c->unix_socket = 1;
         cc = iniparser_getstring( Mydict, "network:host_name",NULL);
         if (cc != NULL) c->host = strdup(cc);
         cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
@@ -150,11 +154,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "share",1,NULL,'s'},
 			{ "user",1,NULL,'u'},
 			{ "file",1,NULL,'f'},
+			{ "unix-domain-socket",0,NULL,'n'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:?", long_options, &option_index );
+                        "s:u:f:d:i:c:k:h:?n", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
@@ -186,6 +191,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				c->object_type = SMBTA_USER;
 				c->object_name = strdup( optarg );
 				break;
+			case 'n':
+				c->unix_socket = 1;
+				break;
 			case 'f':
 				c->object_type = SMBTA_FILE;
 				c->object_name = strdup( optarg );
@@ -201,7 +209,11 @@ int configuration_parse_cmdline( struct configuration_data *c,
         if (c->config_file != NULL)
                 configuration_load_config_file(c);
         if (configuration_check_configuration(c)==-1) exit(1);
-        c->socket = common_connect_socket( c->host, c->port );
+	if (c->unix_socket != 1)
+        	c->socket = common_connect_socket( c->host, c->port );
+	else
+		c->socket = common_connect_unix_socket(
+			"/var/tmp/stadsocket_client");
 
 	monitor_list_init();
         /* through all options, now run the query command */
@@ -241,7 +253,7 @@ int configuration_check_configuration( struct configuration_data *c )
                 printf("ERROR: debug level has to be between 0 and 10.\n");
                 return -1;
         }
-        if (c->host == NULL) {
+        if (c->host == NULL && c->unix_socket != 1) {
                 printf("ERROR: please specify a hostname to connect to.\n");
                 return -1;
         }
