@@ -163,6 +163,8 @@ configuration file. A typical service definition would look like this:
 Defining the share "ExampleShare" as a CIFS service, refering to the
 path /space on the servers storage.
 
+Internet socket
++++++++++++++++
 By extending the share definition with the commands to load the SMBTA
 VFS module, SMBTA logging for this service can be activated:
 
@@ -184,6 +186,8 @@ The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.
 
+Unix domain socket
+++++++++++++++++++
 The module can also run using a unix domain socket, which is useful if you
 want to connect smbtad on the same system as the Samba server. In this case
 The share definition would look like this:
@@ -199,6 +203,40 @@ The share definition would look like this:
 
 The mode parameter set to "unix_domain_socket" then will use a unix domain
 socket at /var/tmp/stadsocket.
+
+Anonymization
++++++++++++++
+Anonymization of user related information can be enabled in the VFS module. There are two modes of anonymization possible.
+
+The first method is created by generating a hash number out of the username, and add the number to a given prefix in the configuration. Such, a user called "holger" might become "user123", if "user" was the given prefix. 
+
+---------------------------------------------------------
+[ExampleShare]
+	path = /space
+	read only = no
+	vfs_objects = smb_traffic_analyzer
+	smb_traffic_analyzer:protocol_version = V2
+	smb_traffic_analyzer:mode = unix_domain_socket
+	# enable prefix based anonymization
+	smb_traffic_analyzer:anonymize_prefix = user
+----------------------------------------------------------
+
+The second method is totally anonymizing any users. It just replaces the username (and the SID) to a given prefix.
+
+----------------------------------------------------------
+[ExampleShare]
+	path = /space
+	read only = no
+	vfs_objects = smb_traffic_analyzer
+	smb_traffic_analyzer:protocol_version = V2
+	smb_traffic_analyzer:mode = unix_domain_socket
+	# enable total anonymization mapped to "user"
+	smb_traffic_analyzer:anonymize_prefix = user
+	smb_traffic_analyzer:total_anonymization = yes
+----------------------------------------------------------
+
+
+
 
 Setting up smbtad
 ~~~~~~~~~~~~~~~~~
@@ -296,6 +334,10 @@ Here you can specify how the maintenance process should work. The format is DAYS
 -u --unix-domain-socket
 +++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket will be used for the connection to the VFS module. This is useful if smbtad is to be run on the same machine that runs the Samba server.
+
+-n --unix-domain-socket-cl
+++++++++++++++++++++++++++
+If this option is given, a unix domain socket under /var/tmp/stadsocket_client will be used for the connection to clients such as smbtaquery. This is useful if smbtad is to be run on the same machine that runs the tools.
 
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -437,6 +479,12 @@ smbtaquery -h smbtahost.example.ex -i 3491 -q 'global, usage rw;'
 The command line option -h (or --host) is telling smbtaquery to use the given host as the system, where smbtad is running on. When running queries, it will connect to this system with the port number given with the command line option -i. 
 
 Finally the command line option -q (or --query) provides the query to run for the build in interpreter of smbtaquery. More on this follows in the later chapters.
+
+smbtaquery is able to connect through a unix domain socket to smbtad alternativly. In this case the user gives the -u option instead of -i and -h :
+-------------------------------------
+smbtaquery -u -q 'global, usage rw;'
+-------------------------------------
+
 
 Utilizing a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -715,6 +763,12 @@ To start a monitor, use the same arguments for the host and internet port to con
 ------------------------------------------
 smbtamonitor -h examplehost.de.ex -i 3491 --share "Distribution Space"
 ------------------------------------------
+
+Or, alternativly let smbtamonitor connect through a unix domain socket to smbtad, by invoking the -n switch:
+-------------------------------------------
+smbtamonitor -n --share "Distribution Space"
+-------------------------------------------
+
 This command will start a real time monitor that will display information about the share named "Distribution Space". Likewise, it's possible to run:
 
 -----------------------------------------
@@ -755,36 +809,6 @@ If you have problems that might not be as easy to reproduce, or need help in doi
 Project outlook and version history
 -----------------------------------
 
-smbtad
-~~~~~~
+We're too lazy to maintain such a list of planned ideas and features in this document. Check out the projects homepage to get the latest news, or contact the team to discuss ideas. In General it can be said that smbtatools goes to XML, the web, and will get a gui and graphics.
 
-Version 1.0
-^^^^^^^^^^^
-
-Version 1.0
-The initial version:
-- full documentation (mainly this guide) on smbtad and the smbtatools.
-- Binary packages for distributions
-
-Version 2.0
-^^^^^^^^^^^
-- encryption support smbtad <-> smbtatools
-- support clustered Samba
-
-smbtatools
-~~~~~~~~~~
-
-Version 1.0
-^^^^^^^^^^^
-
-Version 1.0
-The initial version:
-- full documentation (mainly this guide) on the tools.
-- binary packages
-
-Version 2.0
-^^^^^^^^^^^
-- encryption support smbtad <-> smbtatools
-- XML output support for smbtaquery
-- support clustered Samba
 
