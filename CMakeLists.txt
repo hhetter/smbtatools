@@ -30,16 +30,15 @@ SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 
 # Installation prefix /usr
 SET(CMAKE_INSTALL_PREFIX /usr)
-SET(Libraries
-sqlite3
-iniparser
-ncurses
-talloc
-# fixme! this needs a check
-smbclient
-pthread
-)
-SET(PLATFORM_LINKFLAGS "-pthread")
+
+#
+# check for sqlite3
+#
+include(FindSqlite3.cmake)
+FIND_PACKAGE(Sqlite3)
+if (NOT SQLITE3_FOUND)
+	MESSAGE( FATAL_ERROR "ERROR: you'll need sqlite3 development files installed.")
+ENDIF()
 
 #
 # check for libsmbclient
@@ -82,10 +81,17 @@ ENDIF()
 #
 # check for curses
 #
-SET(CURSES_NEED_NCURSES TRUE)
 FIND_PACKAGE(Curses)
-if (NOT CURSES_HAVE_NCURSES_H)
+if (NOT CURSES_HAVE_CURSES_H)
 	MESSAGE( FATAL_ERROR "ERROR: you will need curses development files installed.")
+ENDIF()
+
+#
+# check for pthreads
+#
+FIND_PACKAGE(Threads)
+if (NOT CMAKE_USE_PTHREADS_INIT)
+	MESSAGE( FATAL_ERROR "ERROR: you will need pthread development files installed.")
 ENDIF()
 
 SET(CurrentExe "smbtaquery")
@@ -98,7 +104,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/interpreter.c
 	src/query/network.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE3_LIBRARIES} ${TALLOC_LIBRARIES} iniparser)
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
@@ -112,14 +118,14 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/visual.c
 	src/monitor/backlog.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 SET(CurrentExe "smbtatorture")
 ADD_EXECUTABLE(${CurrentExe}
 	src/torture/smbtatorture.c
 	)
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
         DESTINATION "share/man/man1"
