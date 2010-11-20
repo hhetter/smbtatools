@@ -45,7 +45,7 @@ struct configuration_data {
 	/* for rrdtool */
 	char *database;
 	int timer;
-
+	char *rrdtool_setup;
 
 };
 
