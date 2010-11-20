@@ -38,6 +38,9 @@ void configuration_show_help()
         printf("\n");
         printf("-i      --inet-port <num>       Set the port-number to  \n");
         printf("                                use to <num>.\n");
+	printf("-h      --host <string>		Set the host name to connect to.\n");
+	printf("-n	--unix-domain-socket	Use a unix domain socket to \n");
+	printf("				communicate with smbtad.\n");
         printf("-d      --debug-level <num>     Set the debug level to work\n");
         printf("                                with to <num>. Default: 0\n");
         printf("-c      --config-file <file>    Load the configuration from\n");
@@ -49,7 +52,13 @@ void configuration_show_help()
 	printf("				data set.\n");
 	printf("-t      --timer <num>           Number of seconds defining the intervall\n");
 	printf("				to update the rddtool database.\n");
+	printf("				Default: 10 seconds\n");
 	printf("-b	--database <string>	database filename\n");
+	printf("-r	--rrdtool-setup		rrdtool-setup string\n");
+	printf("				Default is:\n");
+	printf("				DS:readwrite:GAUGE:10:U:U\n");
+	printf("				DS:read:GAUGE:10:U:U\n");
+	printf("				DS:write:GAUGE:10:U:U\n");
         printf("\n");
 }
 
@@ -63,8 +72,10 @@ void configuration_define_defaults( struct configuration_data *c )
         c->config_file = NULL;
         c->debug_level = 0;
         c->keyfile =NULL;
-	c->timer = 5;
+	c->timer = 10;
 	c->database = strdup( "database_rrd" );
+	c->unix_socket = 0;
+	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -158,11 +169,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "file",1,NULL,'f'},
 			{ "timer",1,NULL,'t'},
 			{ "database",1,NULL,'b'},
+			{ "unix-socket",0,NULL,'n'},
+			{ "rrdtool-setup",1,NULL,'r'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:t:b:?", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:t:b:r:?", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
@@ -170,6 +183,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
                         case 'i':
                                 c->port = atoi( optarg );
                                 break;
+			case 'r':
+				free(c->rrdtool_setup);
+				c->rrdtool_setup = strdup(optarg);
+				break;
+			case 'n':
+				c->unix_socket = 1;
+				break;
                         case 'h':
                                 c->host = strdup(optarg);
                                 break;
@@ -216,8 +236,11 @@ int configuration_parse_cmdline( struct configuration_data *c,
                 configuration_load_config_file(c);
         if (configuration_check_configuration(c)==-1) exit(1);
 	configuration_create_db(c);
-
-        c->socket = common_connect_socket( c->host, c->port );
+	if (c->unix_socket == 0)
+		c->socket = common_connect_socket( c->host, c->port );
+	else
+		c->socket = common_connect_unix_socket(
+			"/var/tmp/stadsocket_client");
 
 	monitor_list_init();
         /* through all options, now run the query command */
@@ -230,7 +253,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	 * FIXME: Add Keyboard handling here !!
 	 */
 	while (1 == 1) {
-		sleep(10);
+		sleep( c->timer );
 		// push values into rrdtool database
 		monitor_list_push_values(c);
 	}
@@ -251,7 +274,7 @@ int configuration_check_configuration( struct configuration_data *c )
                 printf("ERROR: debug level has to be between 0 and 10.\n");
                 return -1;
         }
-        if (c->host == NULL) {
+        if (c->host == NULL && c->unix_socket == 0) {
                 printf("ERROR: please specify a hostname to connect to.\n");
                 return -1;
         }
@@ -278,7 +301,12 @@ void configuration_create_db(struct configuration_data *c)
 	time_t starttime = time(NULL);
 	char timestr[255];
 	sprintf(timestr,"%ju",(uintmax_t) starttime);
-	sprintf(fullstr,"%s create %s -b %s -s 100 DS:readwrite:GAUGE:10:U:U DS:read:GAUGE:10:U:U DS:write:GAUGE:10:U:U RRA:AVERAGE:0.5:1:100", rrdbin, c->database, timestr);
+	sprintf(fullstr,"%s create %s -b %s -s %i %s",
+		rrdbin,
+		c->database,
+		timestr,
+		c->timer,
+		c->rrdtool_setup);
 
 	res = system( fullstr );
 	if (res == -1) {
