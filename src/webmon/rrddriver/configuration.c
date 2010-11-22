@@ -76,6 +76,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->database = strdup( "database_rrd" );
 	c->unix_socket = 0;
 	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
+	c->object_name = NULL;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -290,6 +291,11 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: rrdtool doesn't exist in /usr/bin/rrdtool !\n");
 		return -1;
 	}
+	if (c->object_name == NULL) {
+		printf("ERROR: please specify at least one object. ( -f -s -g )\n");
+		return -1;
+	}
+
         return 0;
 }
 
