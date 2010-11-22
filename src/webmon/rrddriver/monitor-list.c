@@ -94,8 +94,6 @@ void monitor_list_change_results( char *data )
 	tmp = result_get_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
-	printf("Entry ID : %i\n",id);
-	printf("Entry Type : %i\n",entry->type);
 	switch(entry->type) {
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
