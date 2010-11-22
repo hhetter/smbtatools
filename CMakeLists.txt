@@ -137,7 +137,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/webmon/rrddriver/network.c
 	src/webmon/rrddriver/monitor-list.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
