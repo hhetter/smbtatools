@@ -94,6 +94,8 @@ if (NOT CMAKE_USE_PTHREADS_INIT)
 	MESSAGE( FATAL_ERROR "ERROR: you will need pthread development files installed.")
 ENDIF()
 
+INCLUDE_DIRECTORIES( ${SQLITE3_INCLUDEDIR} ${TALLOC_INCLUDE_DIR} ${LIBSMBCLIENT_INCLUDE_DIRS} )
+
 SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
 	src/query/main.c
@@ -104,6 +106,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/interpreter.c
 	src/query/network.c
 	)
+
 TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE3_LIBRARIES} ${TALLOC_LIBRARIES} iniparser)
 
 SET(CurrentExe "smbtamonitor")
