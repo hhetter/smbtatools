@@ -21,7 +21,7 @@
 
 #define _XOPEN_SOURCE
 #define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
-
+#define __EXTENSIONS__
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
