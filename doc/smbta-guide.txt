@@ -8,7 +8,7 @@ About this document
 
 This documentation is created using asciidoc. The HTML version is produced using:
 -----------------------------------
-asciidoc -a toc smbta-guide.txt
+asciidoc -n -a toc smbta-guide.txt
 -----------------------------------
 
 What is SMB Traffic Analyzer
@@ -119,7 +119,6 @@ Before trying to build smbtad and smbtatools, check for the following requiremen
 - cmake ( *required for both* )
 - sqlite >= 3.7.0 ( *required for smbtad* )
 - libsmbclient library ( *required for smbtautils* )
-- iniparser (libiniparser) ( *required for both* )
 - ncurses library ( *required for smbtautils* )
 
 With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you've unpacked the smbtatools source tarball at:
@@ -144,6 +143,60 @@ And cmake will check the requirements of smbtatools/smbtad against your system. 
 make
 make install (as superuser)
 ------------------------------------
+
+A short HOWTO
+-------------
+
+The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".
+
+Setting up the Samba Server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Suppose you have this share defined on the server:
+------------------------------------------
+[ExampleShare]
+        path = /space
+        read only = no
+------------------------------------------
+
+then add the following lines to your share definition:
+--------------------------------------------------------
+	vfs objects = smb_traffic_analyzer
+	smb_traffic_analyzer:protocol_version = V2
+	smb_traffic_analyzer:mode = unix_domain_socket
+--------------------------------------------------------
+
+Starting smbtad
+~~~~~~~~~~~~~~~
+
+As superuser, start smbtad on the same machine:
+---------------------------------------------
+$ smbtad -u -n
+---------------------------------------------
+
+This command will start smbtad with unix domain socket configuration.
+
+Produce some traffic
+~~~~~~~~~~~~~~~~~~~~
+
+For a test, fire up smbclient and produce some traffic:
+------------------------------------------------
+$ smbclient //localhost/ExampleShare
+------------------------------------------------
+
+Make sure you copy something from and back to the share.
+
+Run smbtaquery
+~~~~~~~~~~~~~~
+
+Now run smbtaquery on the same machine with a query for the totally transfered bytes:
+---------------------------------------------
+$ smbtaquery -u -q 'global, total rw;'
+---------------------------------------------
+
+This will run smbtaquery set up for a unix domain socket for communication and request the number of globally written and read bytes. If this command returns a number, your installation works, and you can start to adapt or change it to your needs. The next chapter will go in detail of the available options in setting up SMBTA.
+
+If something does not work, check your syslog messages file for error messages from smbtad, and your samba logs.
 
 Setting up SMBTA
 ----------------
@@ -784,13 +837,122 @@ smbtamonitor -h examplehost.de.ex -i 3491 --file README
 will run a monitor displaying real time information about the file named
 "README".
 
-After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it's display. smbtamonitor runs 80x25 display size fixed at the moment. 
+After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it's display. smbtamonitor runs 80x25 display size fixed at the moment. The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them. Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them. The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.
 
-The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them.
 
-Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them.
+smbtatorture
+~~~~~~~~~~~~
 
-The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.
+The smbtatorture program is a small test suite for SMBTA. It's being used mainly by SMBTA developers to do long time tests checking the stability of the software chain, and how it reacts on large amounts of data. Also it is being used to do performance measurement when SMBTA is involved in Samba traffic. smbtatorture can mimic "usual" office traffic loads, or continuous stress testing by making defined pauses while creating traffic. It is able to measure the time it needs for it's own run, and is also able to record and playback it's own run, so that software defects can be reproduced in other setups, and performance measurement can be done. Basically a single smbtatorture instance connects to the samba server as one user, and operates on two shares. It then copies a defined set of files from and to the share. To connect to a CIFS server, smbtatorture is utilizing the libsmbclient library.
+
+smbtatorture command line arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+---------------------------------------------------------------------------------
+holger@linux-xnjq:~/t/smbtatools/run> ./smbtatorture --help
+smbtatorture version 1.2 - small testingsuite for smbta	
+
+(C) 2009-2010 Michael Haefner
+(C) 2009-2010 Holger Hetterich
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+-u --username 		The user smbtatorture should	
+			operate on.			
+			Default: john_doe		
+-w --workgroup		The workgroup smbtatorture should
+			operate on.			
+			Default: WORKGROUP		
+-p --password		Password for the user.		
+			Default: password		
+-h --help		This help text.			
+-1 --share1             SMB URL of first share to be 	
+			used.				
+-2 --share2		SMB URL of second share to be 	
+			used.				
+-c --copy		How many files will be copied   
+			Default: infinite		
+-r --record		filename of saved torture-set   
+			won't work actually		
+-t --time		max time in seconds we should   
+			wait between each copy action.  
+-s --size		size of all files, e.g. 500M or 
+			1.5G				
+-n --number		Number of generated files	
+			Default: 20			
+-v --verbose		be verbose			
+-e --replay		filename of the file to replay.	
+----------------------------------------------------------------------------------
+
+-u --username
++++++++++++++
+Specify a username that smbtatorture should use to connect to the Samba server.
+
+-w --workgroup
+++++++++++++++
+Specify the default workgroup smbtatorture should work on.
+The default is : WORKGROUP
+
+-p --password
++++++++++++++
+Set the password for the user given with the option -u.
+
+-h --help
++++++++++
+Print out a help text on the command line.
+
+-1 --share1
++++++++++++
+Specify the SMB Url of the first share to be used for copying when running.
+
+-2 --share2
++++++++++++
+Specify the SMB Url of the second share to be used for copying when running.
+
+-c --copy
++++++++++
+Specify how many files smbtatorture will copy between the two shares. If not given, it will copy until either something in the software chain breaks or an other error occurs.
+
+-r --record
++++++++++++
+Specify a filename where smbtatorture will record it's own run. The run can be replayed with the -e option.
+
+-t --time
++++++++++
+Specify the maximum time in seconds, smbtatorture should wait between a copy action. If this is 0, smbtatorture does continuous stress testing. The actual pause that smbtatorture is doing is computed as a random number of seconds between the number of seconds given and 0.
+
+-s --size
++++++++++
+Specify the size of all files that smbtatorture will create. For exmaple, if you specify -s 20MB, smbtatorture will create a set of files that is 20MB in size on both shares, creating a total size of 40 MB.
+
+-n --number
++++++++++++
+Specify the number of files smbtatorture will create. For example, if you specify -n 20, smbtatorture will create a set of 20 files, all together with the size given by the -s parameter on both shares, creating a total number of files of 40.
+
+-v --verbose
+++++++++++++
+If given, smbtatorture will be more verbose on what it is doing.
+
+-e --replay
++++++++++++
+Specify a file saved by the -r option, to replay the exact same run.
+
+smbtatorture usage examples
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following example will create 20 files on each shares "pool1" and "pool2", connects as user "holger" with password "the_password". During the run, smbtatorture will output message, being verbose.
+-----------------------------------------------------------------
+smbtatorture -v -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+-----------------------------------------------------------------
+
+The following example will create 10 files of size 40MB on each shares "pool1" and "pool2", connects as user "holger" with password "the_password", being verbose, and records it's own run into file "testrun.txt".
+----------------------------------------------------------------------
+smbtatorture -v -n 10 -s 40MB -r testrun.txt -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+----------------------------------------------------------------------
+
+The following example will replay the run stored in the file "testrun.txt" on the shares "pool1" and "pool2", connect as user "holger" with password "the_password", be verbose.
+------------------------------------------------------------------------------
+smbtatorture -v -e testrun.txt -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+------------------------------------------------------------------------------
+
 
 
 Reporting Problems, bugs, contacting the Authors
@@ -802,9 +964,7 @@ To find the latest news and versions of SMBTA, check out it's homepage:
 http://holger123.wordpress.com/smb-traffic-analyzer/
 -------------------------------------------------
 
-If you can reproduce an error situation, do not hestitate to open a bug on http://bugzilla.novell.com, set "Samba" as component, and begin the Bug subject with [SMBTA]. 
-
-If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich <ozzy@metal-district.de>.
+If you can reproduce an error situation, do not hestitate to open a bug on http://bugzilla.novell.com, set "Samba" as component, and begin the Bug subject with [SMBTA]. If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich <ozzy@metal-district.de>.
 
 Project outlook and version history
 -----------------------------------
