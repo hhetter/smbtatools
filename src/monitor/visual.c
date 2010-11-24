@@ -136,25 +136,48 @@ void visual_monitor_log_calc(struct monitor_item *entry)
         switch(id) {
         case vfs_id_write:
         case vfs_id_pwrite:
-                asprintf(&to_add,"%s: User %s wrote to file %s on share %s (%s).",timestamp,username,filename,share,domain);
+                to_add = talloc_asprintf(ctx,
+			"%s: User %s wrote to file %s on share %s (%s).",
+			timestamp,
+			username,
+			filename,
+			share,
+			domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_close:
-                asprintf(&to_add,"%s: User %s closed file %s on share %s (%s).",timestamp,username,filename,share,domain);
+                to_add = talloc_asprintf(ctx,
+			"%s: User %s closed file %s on share %s (%s).",
+			timestamp,
+			username,
+			filename,
+			share,
+			domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_open:
-                asprintf(&to_add,"%s: User %s opened file %s on share %s (%s).",timestamp,username,filename,share,domain);
+                to_add = talloc_asprintf(ctx,
+			"%s: User %s opened file %s on share %s (%s).",
+			timestamp,
+			username,
+			filename,
+			share,
+			domain);
                 backlog_add_str(to_add,entry);
                 break;
         case vfs_id_read:
         case vfs_id_pread:
-                asprintf(&to_add,"%s: User %s read from file %s on share %s (%s).",timestamp,username,filename,share,domain);
+                to_add = talloc_asprintf(ctx,
+			"%s: User %s read from file %s on share %s (%s).",
+			timestamp,
+			username,
+			filename,
+			share,
+			domain);
                 backlog_add_str(to_add,entry);
                 break;
         default: ;
         }
-        if (to_add != NULL) free(to_add);
 	TALLOC_FREE(ctx);
 }
 

@@ -228,7 +228,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 	char *title;
-	asprintf(&title,"SMBTAmonitor - real time monitoring object '%s'",c->object_name);
+	title = talloc_asprintf(runtime_mem,
+		"SMBTAmonitor - real time monitoring object '%s'",
+		c->object_name);
 	visual_init(title);
 	monitor_list_initial_draw();
 	/* main loop 
