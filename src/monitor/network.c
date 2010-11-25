@@ -77,7 +77,7 @@ void network_handle_data( struct configuration_data *c)
                 	fd_set_r=active_fd_set;
                 	fd_set_w=active_fd_set;
 
-                	z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
+                	z=select( sockfd+1,&fd_set_r,NULL,NULL,NULL);
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;
@@ -93,7 +93,8 @@ void network_handle_data( struct configuration_data *c)
                                 	continue;
                         	}
                         	state = HEADER_RECEIVED;
-                        	data_length = common_get_data_block_length(header);
+                        	data_length = common_get_data_block_length(
+					header);
                         	continue;
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
