@@ -943,9 +943,9 @@ The following example will create 20 files on each shares "pool1" and "pool2", c
 smbtatorture -v -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
 -----------------------------------------------------------------
 
-The following example will create 10 files of size 40MB on each shares "pool1" and "pool2", connects as user "holger" with password "the_password", being verbose, and records it's own run into file "testrun.txt".
+The following example will create 10 files of size 40MB on each shares "pool1" and "pool2", connects as user "holger" with password "the_password", being verbose, and records it's own run into file "testrun.txt". It will copy the files 20 times.
 ----------------------------------------------------------------------
-smbtatorture -v -n 10 -s 40MB -r testrun.txt -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+smbtatorture -v -c 20 -n 10 -s 40MB -r testrun.txt -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
 ----------------------------------------------------------------------
 
 The following example will replay the run stored in the file "testrun.txt" on the shares "pool1" and "pool2", connect as user "holger" with password "the_password", be verbose.
