@@ -96,21 +96,25 @@ void network_handle_data( struct configuration_data *c)
                                 	continue;
                         	}
                         	state = HEADER_RECEIVED;
-                        	data_length = common_get_data_block_length(header);
+                        	data_length = common_get_data_block_length(
+					header);
                         	continue;
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_HEADER_ONGOING) {
-                        	common_receive_data(header + header_position, sockfd,
+                        	common_receive_data(header + header_position,
+					sockfd,
                                 	26-header_position, &header_position);
 
                         	if (header_position != 26) continue;
                         	/* full header */
                         	state = HEADER_RECEIVED;
-                        	data_length= common_get_data_block_length(header);
+                        	data_length= common_get_data_block_length(
+					header);
                         	continue;
                 	} else
-                	if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
+                	if (FD_ISSET( sockfd,&fd_set_r) &&
+				state == HEADER_RECEIVED) {
                         	state = RECEIVING_DATA;
                         	body = talloc_array(NULL, char, data_length +2);
                         	body_position = 0;
@@ -132,8 +136,10 @@ void network_handle_data( struct configuration_data *c)
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_DATA_ONGOING) {
-                        	common_receive_data(body + body_position,sockfd,
-                                	data_length - body_position, &body_position);
+                        	common_receive_data(body + body_position,
+					sockfd,
+                                	data_length - body_position,
+					&body_position);
                         	if (body_position != data_length) continue;
                         	state = UNSENT;
                         	break;
