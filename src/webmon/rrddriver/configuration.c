@@ -303,8 +303,7 @@ void configuration_create_db(struct configuration_data *c)
 {
 	FILE *db;
 	db = fopen(c->database,"r");
-	if (db != NULL) return;
-	else fclose(db);
+	if (db != NULL) { fclose(db); return; }
 	char rrdbin[255] = "/usr/bin/rrdtool";
 	char fullstr[500];
 	int res = 0;
