@@ -119,7 +119,6 @@ void monitor_list_push_values(struct configuration_data *c)
 		global_rw,global_read,global_write);
 	
         res = system(dbstring);
-	printf("%s\n",dbstring);
 	if (res == -1) {
 		printf("ERROR: Updating the database!");
 		exit(-1);
