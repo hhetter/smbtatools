@@ -596,6 +596,12 @@ cd /home/tom/smbtatools-build</tt></pre>
 <div class="content">
 <pre><tt>cmake ../smbtatools/</tt></pre>
 </div></div>
+<div class="paragraph"><p>If you want the later "make install" to install control files for SMBTA into /etc/init.d,
+set this cmake cache value:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cmake -D CMAKE_INSTALL_RCFILE:string=yes ../smbtad/</tt></pre>
+</div></div>
 <div class="paragraph"><p>And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.</p></div>
 <div class="paragraph"><p>If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:</p></div>
 <div class="listingblock">
@@ -1366,7 +1372,7 @@ The default is : WORKGROUP</p></div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br />
-Last updated 2010-11-29 21:52:20 CEST
+Last updated 2010-11-30 13:05:50 CEST
 </div>
 </div>
 </body>

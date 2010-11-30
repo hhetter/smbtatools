@@ -142,5 +142,5 @@ INSTALL(FILES doc/smbtatorture.1
 	DESTINATION "share/man/man1"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtatorture.1)
 
-INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture rrddriver DESTINATION bin)
 
