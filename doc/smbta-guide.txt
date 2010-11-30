@@ -56,50 +56,25 @@ on the network. SMBTA can be used to answer questions like this:
 Isn't SMBTA a tool to control employees?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Yes it can be used like that, but doesn't need to be. To expose user names
-to a storage is even forbidden in many countries. Therefore, SMBTA allows
-for anonymization of any data linked to a person.
+Yes it can be used like that, but doesn't need to be. To expose user names to a storage is even forbidden in many countries. Therefore, SMBTA allows for anonymization of any data linked to a person.
 
-There are many use cases for SMBTA, like determining and planning hardware for your
-services, or analyzing the network before switching to clustered Samba.
+There are many use cases for SMBTA, like determining and planning hardware for your services, or analyzing the network before switching to clustered Samba.
 
 The basic concept of SMBTA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Samba CIFS server features a Virtual File System Layer (VFS), that allows
-modules to be linked into the layer, replacing or enhancing the functions
-of the VFS. Modules can be linked into and behave completely transparent.
+The Samba CIFS server features a Virtual File System Layer (VFS), that allows modules to be linked into the layer, replacing or enhancing the functions of the VFS. Modules can be linked into and behave completely transparent. SMBTA makes use of this functionality by adding a module to Samba's VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read, close etc. 
 
-SMBTA makes use of this functionality by adding a module to Samba's
-VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read,
-close etc. 
-
-The collected data may be be encrypted, and send over the network to a
-receiver program. This daemon program, smbtad, is then building a
-SQL storage from the data.
-
-Besides of the generated SQL storage, client programs can be used to
-query the storage in a specialized way over the network.
+The collected data may be be encrypted, and send over the network to a receiver program. This daemon program, smbtad, is then building a SQL storage from the data. Besides of the generated SQL storage, client programs can be used to query the storage in a specialized way over the network.
 
 
 Where to get SMBTA
 ~~~~~~~~~~~~~~~~~~
 
-The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged
-with Samba version greater or equal than 3.2.0. However, the current
-SMBTA module shipping with Samba is only implementing version 1 of the
-SMBTA protocol, and this document is only refering to version 2 of the
-protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2
-can be found in the current master git source tree of Samba. It is expected
-to be shipped with Samba 3.6.0.
+The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0. However, the current SMBTA module shipping with Samba is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.
 
-For the openSUSE Linux distribution, SMBTAv2 has been backported to current
-Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module
-from the openSUSE BuildService.
+For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at http://holger123.wordpress.com/smb-traffic-analyzer/.
 
-The other parts of SMBTA, the daemon program smbtad, as well as the client
-programs smbtaquery and smbtamonitor are available in source code from
-the projects homepage at http://holger123.wordpress.com/smb-traffic-analyzer/.
 For the openSUSE Linux distribution, RPM packages are available from the 
 openSUSE Build Service.
 
@@ -132,12 +107,30 @@ You are now in the build directory. Just run cmake from here:
 cmake ../smbtatools/
 ---------------------------------
 
+If you want the later "make install" to install control files for SMBTA into /etc/init.d,
+set this cmake cache value:
+-----------------------------------------------------
+cmake -D CMAKE_INSTALL_RCFILE:string=yes ../smbtad/
+-----------------------------------------------------
+
 And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.
 
------------------------------------
+If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:
+---------------------------------------------------------------------------------------------------------
+setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
+setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES
+---------------------------------------------------------------------------------------------------------
+
+After a succesful run of cmake, you can run "make" and "make install" ( and "make install" might require root privileges) as usual:
+---------------------------
 make
-make install (as superuser)
-------------------------------------
+make install
+---------------------------
+
+If you want to install the package to a different prefix, you use:
+------------------------------------------
+make DESTDIR=/$YOUR/$DESTINATION install
+------------------------------------------
 
 A short HOWTO
 -------------

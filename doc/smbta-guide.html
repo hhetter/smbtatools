@@ -545,38 +545,15 @@ Which is the top used file by read and write access?
 </li>
 </ul></div>
 <h3 id="_isn_8217_t_smbta_a_tool_to_control_employees">2.2. Isn&#8217;t SMBTA a tool to control employees?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Yes it can be used like that, but doesn&#8217;t need to be. To expose user names
-to a storage is even forbidden in many countries. Therefore, SMBTA allows
-for anonymization of any data linked to a person.</p></div>
-<div class="paragraph"><p>There are many use cases for SMBTA, like determining and planning hardware for your
-services, or analyzing the network before switching to clustered Samba.</p></div>
+<div class="paragraph"><p>Yes it can be used like that, but doesn&#8217;t need to be. To expose user names to a storage is even forbidden in many countries. Therefore, SMBTA allows for anonymization of any data linked to a person.</p></div>
+<div class="paragraph"><p>There are many use cases for SMBTA, like determining and planning hardware for your services, or analyzing the network before switching to clustered Samba.</p></div>
 <h3 id="_the_basic_concept_of_smbta">2.3. The basic concept of SMBTA</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The Samba CIFS server features a Virtual File System Layer (VFS), that allows
-modules to be linked into the layer, replacing or enhancing the functions
-of the VFS. Modules can be linked into and behave completely transparent.</p></div>
-<div class="paragraph"><p>SMBTA makes use of this functionality by adding a module to Samba&#8217;s
-VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read,
-close etc.</p></div>
-<div class="paragraph"><p>The collected data may be be encrypted, and send over the network to a
-receiver program. This daemon program, smbtad, is then building a
-SQL storage from the data.</p></div>
-<div class="paragraph"><p>Besides of the generated SQL storage, client programs can be used to
-query the storage in a specialized way over the network.</p></div>
+<div class="paragraph"><p>The Samba CIFS server features a Virtual File System Layer (VFS), that allows modules to be linked into the layer, replacing or enhancing the functions of the VFS. Modules can be linked into and behave completely transparent. SMBTA makes use of this functionality by adding a module to Samba&#8217;s VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read, close etc.</p></div>
+<div class="paragraph"><p>The collected data may be be encrypted, and send over the network to a receiver program. This daemon program, smbtad, is then building a SQL storage from the data. Besides of the generated SQL storage, client programs can be used to query the storage in a specialized way over the network.</p></div>
 <h3 id="_where_to_get_smbta">2.4. Where to get SMBTA</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged
-with Samba version greater or equal than 3.2.0. However, the current
-SMBTA module shipping with Samba is only implementing version 1 of the
-SMBTA protocol, and this document is only refering to version 2 of the
-protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2
-can be found in the current master git source tree of Samba. It is expected
-to be shipped with Samba 3.6.0.</p></div>
-<div class="paragraph"><p>For the openSUSE Linux distribution, SMBTAv2 has been backported to current
-Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module
-from the openSUSE BuildService.</p></div>
-<div class="paragraph"><p>The other parts of SMBTA, the daemon program smbtad, as well as the client
-programs smbtaquery and smbtamonitor are available in source code from
-the projects homepage at <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a>.
-For the openSUSE Linux distribution, RPM packages are available from the
+<div class="paragraph"><p>The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0. However, the current SMBTA module shipping with Samba is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.</p></div>
+<div class="paragraph"><p>For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a>.</p></div>
+<div class="paragraph"><p>For the openSUSE Linux distribution, RPM packages are available from the
 openSUSE Build Service.</p></div>
 <h3 id="_building_smbta_from_the_sources">2.5. Building SMBTA from the sources</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The SMBTA tools smbtaquery and smbtamonitor are utilizing "cmake" as the primary build tool. The smbtad daemon program does too.</p></div>
@@ -620,10 +597,22 @@ cd /home/tom/smbtatools-build</tt></pre>
 <pre><tt>cmake ../smbtatools/</tt></pre>
 </div></div>
 <div class="paragraph"><p>And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.</p></div>
+<div class="paragraph"><p>If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
+setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES</tt></pre>
+</div></div>
+<div class="paragraph"><p>After a succesful run of cmake, you can run "make" and "make install" ( and "make install" might require root privileges) as usual:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>make
-make install (as superuser)</tt></pre>
+make install</tt></pre>
+</div></div>
+<div class="paragraph"><p>If you want to install the package to a different prefix, you use:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>make DESTDIR=/$YOUR/$DESTINATION install</tt></pre>
 </div></div>
 </div>
 <h2 id="_a_short_howto">3. A short HOWTO</h2>
@@ -809,7 +798,7 @@ SMB Traffic Analyzer daemon
 <h5 id="_q_query_port">-q --query-port</h5>
 <div class="paragraph"><p>This is the internet socket port to which clients can connect when those want to query the database, or request real time information. In case this parameter is not given, it is set to 3491 (or in other words to the value of --i --inet-port + 1.</p></div>
 <h5 id="_t_maintenance_timer">-t --maintenance-timer</h5>
-<div class="paragraph"><p>To hinder the database from growing infinite, a maintenance process is included in smbtad, which will clean up the database after a certain rule (see -m --maintenance-timer-config). The -t option specifies the interval in hours, as to then the maintenance process should be run. For example, if you give 00:10:00, a maintenance process will be started every ten minutes.</p></div>
+<div class="paragraph"><p>To hinder the database from growing infinite, a maintenance process is included in smbtad, which will clean up the database after a certain rule (see -m --maintenance-timer-config). The -t option specifies the interval in hours, as to when the maintenance process should be run. For example, if you give 00:10:00, a maintenance process will be started every ten minutes.</p></div>
 <h5 id="_m_maintenance_timer_config">-m --maintenance-timer-config</h5>
 <div class="paragraph"><p>Here you can specify how the maintenance process should work. The format is DAYS, HH:MM:SS. For example, if you want to delete anything in the database that is older than one day, you would give 1,00:00:00 (which is the default). Would you like to delete anything in the database that is older than 2 weeks, then you would give: 14,00:00:00 as parameter. Having deleted everything that is older than 2 hours, would be 0,02:00:00 as parameter.</p></div>
 <h5 id="_u_unix_domain_socket">-u --unix-domain-socket</h5>
@@ -1377,7 +1366,7 @@ The default is : WORKGROUP</p></div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br />
-Last updated 2010-11-27 23:20:13 CEST
+Last updated 2010-11-29 21:52:20 CEST
 </div>
 </div>
 </body>
