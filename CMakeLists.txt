@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
-set(APPLICATION_VERSION "0.0.1")
+set(APPLICATION_VERSION "1.2.1")
 INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite3.cmake)
 
 # Build debugging enabled binaries
