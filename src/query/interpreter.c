@@ -54,14 +54,54 @@ void interpreter_open_xml_file(
 	struct configuration_data *c)
 {
         if (c->query_xmlfile != NULL) {
-                c->xml_handle = fopen("w",c->query_xmlfile);
+                c->xml_handle = fopen(c->query_xmlfile,"w");
                 if (c->xml_handle == NULL) {
                         printf("ERROR: error opening xml file '%s'.\n",
                                 c->query_xmlfile);
                         exit(1);
                 }
+		interpreter_xml_create_header(c);
         }
 }
+
+void interpreter_xml_begin_function(
+	struct configuration_data *c,
+	char *funcname)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<function name=\"%s\">\n", funcname);
+}
+
+void interpreter_xml_close_function(
+	struct configuration_data *c,
+	char *funcname)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</function>");
+}
+
+void interpreter_xml_description(
+	struct configuration_data *c,
+	char *description_str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<description>\n%s\n</description>",
+		description_str);
+}
+
+void interpreter_xml_value(
+	struct configuration_data *c,
+	unsigned long int value)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<value>%lu</value>",
+		value);
+}
+
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -666,13 +706,15 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
 {
-	char *query1, *query2 = NULL;
+	char *query1, *query2, *xmldata = NULL;
 	char *qdat;
 	unsigned long int sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
 	}
+
+	interpreter_xml_begin_function(config,"total");
 
 	if (strcmp(command_data->arguments[0],"rw") == 0) {
 		query1 = talloc_asprintf(ctx,
@@ -690,6 +732,12 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 "Total number of bytes transfered %s :		%s\n",
 			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
+
+		xmldata = talloc_asprintf(ctx,
+			"Total number bytes transfered %s.",
+			obj_struct->output_term);
+		interpreter_xml_description(config,xmldata);
+		interpreter_xml_value(config,sum);
 		
 	} else if (strcmp(command_data->arguments[0],"r") == 0) {
 		query1 = talloc_asprintf(ctx,
@@ -702,6 +750,13 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 "Total number of bytes read %s :		%s\n",
 			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
+
+		xmldata = talloc_asprintf(ctx,
+			"Total number of bytes read %s.",
+			obj_struct->output_term);
+		interpreter_xml_description(config,xmldata);
+		interpreter_xml_value(config,sum);
+
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select SUM(length) from write where %s;",
@@ -712,11 +767,20 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 "Total number of bytes written %s :		%s\n",
 			obj_struct->output_term,
 			common_make_human_readable(ctx,sum));
+
+		xmldata = talloc_asprintf(ctx,
+			"Total number of bytes written %s.",
+			obj_struct->output_term);
+		interpreter_xml_description(config,xmldata);
+		interpreter_xml_value(config,sum);
+
 	} else {
 		printf("ERROR: parameter to the 'total' command can only be:\n");
 		printf("rw, r, or w.\n");
 		exit(1);
 	}
+
+	interpreter_xml_close_function(config,"total");
 }
 
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)

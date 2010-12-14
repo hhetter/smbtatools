@@ -194,7 +194,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		};
 
 		i = getopt_long( argc, argv,
-			"d:f:i:c:k:q:h:p?u", long_options, &option_index );
+			"d:f:i:c:k:q:h:x:p?u", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
