@@ -88,7 +88,7 @@ void interpreter_xml_description(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<description>\n%s\n</description>",
+		"<description>\n%s\n</description>\n",
 		description_str);
 }
 
@@ -98,10 +98,20 @@ void interpreter_xml_value(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<value>%lu</value>",
+		"<value>%lu</value>\n",
 		value);
 }
 
+void interpreter_xml_usageentry(
+	struct configuration_data *c,
+	char *timestr,
+	unsigned long int value)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<time>%s</time><value>%lu</value>\n",
+		timestr, value);
+}
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -179,8 +189,12 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	char *query2;
 	char *qtotal;
 	char *qdat;
+	char *xmlstr = NULL;
 	int hour;
        	unsigned long int total,bytes;
+
+	interpreter_xml_begin_function(config, "usage");
+	interpreter_xml_description(config, "24 hours usage");
 
 	if (strcmp(command_data->arguments[0],"r")==0) {
                         query2 = talloc_asprintf(ctx,
@@ -244,9 +258,13 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 			exit(1);
 		}
 		printf("%02i:00 - %02i:00 : %-10s ",hour,hour+1,common_make_human_readable(ctx,bytes));
+		xmlstr = talloc_asprintf(ctx, "%02i:00 - %02i:00", hour, hour+1);
+		interpreter_xml_usageentry(config, xmlstr, bytes);
 		bar(total,bytes);
 	}
 	printf("total: %s\n", common_make_human_readable(ctx,total));
+	interpreter_xml_value(config, total);
+	interpreter_xml_close_function(config,"usage");
 }
 
 
