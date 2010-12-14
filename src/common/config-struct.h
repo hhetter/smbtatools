@@ -33,6 +33,8 @@ struct configuration_data {
         /* for smbtaquery */
         char *query;
         sqlite3 *db;
+	char *query_xmlfile;
+	FILE *xml_handle;
 
         /* for smbtamonitor */
         /* object type specifies the kind of object we are monitoring */

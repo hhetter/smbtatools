@@ -40,6 +40,28 @@ struct interpreter_object {
 
 };
 
+/*
+ * XML output routines
+ */
+void interpreter_xml_create_header(
+	struct configuration_data *c)
+{
+	fprintf( c->xml_handle,
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+}
+
+void interpreter_open_xml_file(
+	struct configuration_data *c)
+{
+        if (c->query_xmlfile != NULL) {
+                c->xml_handle = fopen("w",c->query_xmlfile);
+                if (c->xml_handle == NULL) {
+                        printf("ERROR: error opening xml file '%s'.\n",
+                                c->query_xmlfile);
+                        exit(1);
+                }
+        }
+}
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -1009,6 +1031,7 @@ int interpreter_run_from_file( TALLOC_CTX *ctx,
         file = fopen( filename, "r");
         if (file == NULL) {
                 printf("ERROR: error reading file '%s'.\n",filename);
+		TALLOC_FREE(ctx);
                 exit(1);
         }
 
@@ -1021,6 +1044,7 @@ int interpreter_run_from_file( TALLOC_CTX *ctx,
                 }
         }
 	fclose(file);
+	fclose(config->xml_handle);
         return 0;
 }
 

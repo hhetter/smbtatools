@@ -69,6 +69,8 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->query = NULL;
 	c->file = NULL;
 	c->unix_socket = 0;
+	c->query_xmlfile = NULL;
+	c->xml_handle = NULL;
 }
 
 int configuration_load_key_from_file( struct configuration_data *c)
@@ -154,6 +156,7 @@ void configuration_show_help()
 	printf("-f      --file <file>		Read the commands from a file.\n");
 	printf("-u	--unix-domain-socket	Use a unix domain socket to \n");
 	printf("				connect to smbtad.\n");
+	printf("-x	--xml <file>		Output XML to file <file>.\n");
 	printf("\n");
 }
 
@@ -186,6 +189,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "command-help",0,NULL,'p'},
 			{ "file",1,NULL,'f'},
 			{ "unix-domain-socket",0,NULL,'u'},
+			{ "xml",1,NULL,'x' },
 			{ 0,0,0,0 }
 		};
 
@@ -227,6 +231,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'u':
 				c->unix_socket = 1;
 				break;
+			case 'x':
+				c->query_xmlfile = strdup(optarg);
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -246,6 +253,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			"/var/tmp/stadsocket_client");
 
 	/* through all options, now run the query command */
+
+	/* open a xml output file for writing if needed */
+	interpreter_open_xml_file(c);
 	if (c->query != NULL) {
 		interpreter_run( runtime_mem, c->query, c);
 		free(c->query);
@@ -256,6 +266,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	}
 
 	close(c->socket);
+	if (c->xml_handle != NULL) fclose(c->xml_handle);
 	TALLOC_FREE(runtime_mem);
 	return 0;
 }
