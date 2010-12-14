@@ -123,6 +123,77 @@ void interpreter_xml_objname(
 		str);
 }
 
+void interpreter_xml_begin_table(
+	struct configuration_data *c,
+	int columns)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table columns=%i>",columns);
+}
+
+void interpreter_xml_begin_table_header(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_header>");
+}
+
+void interpreter_xml_table_header_element(
+	struct configuration_data *c,
+	char *element)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<header_element>%s</header_element>",
+		element);
+}
+
+void interpreter_xml_end_table_header(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table_header>");
+}
+
+void interpreter_xml_begin_table_content(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_content>");
+}
+
+void interpreter_xml_table_content(
+	struct configuration_data *c,
+	char *res)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_value>%s</table_value>",
+		res);
+}
+
+void interpreter_xml_end_table_content(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table_content>");
+}
+
+void interpreter_xml_end_table(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table>");
+}
+	
+
+
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
 {
@@ -145,6 +216,7 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
+		struct configuration_data *c,
                 int columns,char *data, ...);
 
 void interpreter_print_numbered_table( TALLOC_CTX *ctx,
@@ -153,6 +225,7 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
+		struct configuration_data *c,
 		int columns,char *data, ...)
 {
 	int col=1;
@@ -162,21 +235,30 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	va_list ap;
 	int count = columns;
 	va_start( ap, NULL);
+	interpreter_xml_begin_table(c,columns);
+	interpreter_xml_begin_table_header(c);
 	while (count --) {
 		arg = va_arg( ap, char *);
+		interpreter_xml_table_header_element(c,arg);
 		printf("%-30s\t",arg);
 	}
 	va_end( ap );
+	interpreter_xml_end_table_header(c);
+
 	printf("\n");
 	printf(
 	"------------------------------------------------------------------------------\n");
 
+	interpreter_xml_begin_table_content(c);
 	while (res != NULL) {
 		res = result_get_element(ctx,element,data);
 		if (res != NULL) printf("%-30s\t",res);
+		if (res != NULL) interpreter_xml_table_content(c,res);
 		if ( col==columns ) { col = 0; printf("\n"); }
 		col++; element++;
 	}
+	interpreter_xml_end_table_content(c);
+	interpreter_xml_end_table(c);
 }
 
 void bar(unsigned long int total, unsigned long int length) {
@@ -486,13 +568,13 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		"select message from last_activity_data order by timestamp desc limit %i;",limit);
 	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
 	
-	interpreter_xml_open_function(config,"last_activity");
+	interpreter_xml_begin_function(config,"last_activity");
 	interpreter_xml_description(config,"Last Activity of object.");
 
 	int i=0;
 	for (i = row1;i>0;i--) {
 		printf("%s\n",result[i]);
-		interpreter_xml_value(config,result[i]);
+		interpreter_xml_strvalue(config,result[i]);
 	}
 	sqlite3_free_table(result);
 	interpreter_xml_close_function(config,"last_activity");
