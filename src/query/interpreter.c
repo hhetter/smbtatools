@@ -475,12 +475,17 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	char *tmp = talloc_asprintf(ctx,
 		"select message from last_activity_data order by timestamp desc limit %i;",limit);
 	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
+	
+	interpreter_xml_open_function(config,"last_activity");
+	interpreter_xml_description(config,"Last Activity of object.");
+
 	int i=0;
 	for (i = row1;i>0;i--) {
 		printf("%s\n",result[i]);
+		interpreter_xml_value(config,result[i]);
 	}
 	sqlite3_free_table(result);
-
+	interpreter_xml_close_function(config,"last_activity");
 }
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
