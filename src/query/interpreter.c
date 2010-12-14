@@ -113,6 +113,16 @@ void interpreter_xml_usageentry(
 		timestr, value);
 }
 
+void interpreter_xml_objname(
+	struct configuration_data *c,
+	char *str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<objname>%s</objname>",
+		str);
+}
+
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
 {
@@ -672,12 +682,19 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
         printf(
         "------------------------------------------------------------------------------\n");
 
+	interpreter_xml_open_function(config, "top");
+	interpreter_xml_description(config, "Top Objects.");
+
 	while (el != NULL) {
 		el = result_get_element(ctx,i,qdat);
 		if (el == NULL) break;
 		printf("%-30s%-30s\n",el,common_make_human_readable(ctx,length[i]));
+		interpreter_xml_objname(config, el);
+		interpreter_xml_value(config, length[i]);
 		i++;
 	}
+
+	interpreter_xml_close_function(config, "top");
 }
 	
 
