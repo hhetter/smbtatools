@@ -70,7 +70,7 @@ void interpreter_xml_begin_function(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<function name=\"%s\">\n", funcname);
+		"<%s>\n", funcname);
 }
 
 void interpreter_xml_close_function(
@@ -79,7 +79,7 @@ void interpreter_xml_close_function(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"</function>");
+		"</%s>", funcname);
 }
 
 void interpreter_xml_description(
@@ -109,7 +109,7 @@ void interpreter_xml_usageentry(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<time>%s</time><value>%lu</value>\n",
+		"<usagerow><time>%s</time><value>%lu</value></usagerow>\n",
 		timestr, value);
 }
 
@@ -228,8 +228,6 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 		struct configuration_data *c,
                 int columns,char *data, ...);
 
-void interpreter_print_numbered_table( TALLOC_CTX *ctx,
-                int columns,char *data, ... );
 
 
 
