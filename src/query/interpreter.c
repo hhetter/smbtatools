@@ -129,7 +129,7 @@ void interpreter_xml_begin_table(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<table columns=%i>",columns);
+		"<table columns=\"%i\">",columns);
 }
 
 void interpreter_xml_begin_table_header(
@@ -189,9 +189,18 @@ void interpreter_xml_end_table(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"</table>");
+		"</table>\n");
 }
 	
+void interpreter_xml_strvalue(
+	struct configuration_data *c,
+	char *str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<value>%s</value>\n",
+		str);
+}
 
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
@@ -764,7 +773,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
         printf(
         "------------------------------------------------------------------------------\n");
 
-	interpreter_xml_open_function(config, "top");
+	interpreter_xml_begin_function(config, "top");
 	interpreter_xml_description(config, "Top Objects.");
 
 	while (el != NULL) {
@@ -800,21 +809,21 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			" from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat, "Name","SID");
+		interpreter_print_table( ctx, config, 2, qdat, "Name","SID");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select share,domain from read where %s "
 			"union select share,domain from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat, "Name","Domain");
+		interpreter_print_table( ctx, config, 2, qdat, "Name","Domain");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select filename,share from read where %s union"
 			" select filename,share from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx,config,query1);
-		interpreter_print_table( ctx, 2, qdat,"Name","Share");
+		interpreter_print_table( ctx, config, 2, qdat,"Name","Share");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command"
 			" can only be:\n");
@@ -1186,7 +1195,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
-		interpreter_print_table(ctx,1,erg,"SQL Result");
+		interpreter_print_table(ctx,config, 1,erg,"SQL Result");
 		exit(0);
 	}
 
