@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <talloc.h>
 #include <unistd.h>
+#include <errno.h>
+#include <limits.h>
 #include "../src/common/config-struct.h"
 
 /* define TALLOC_FREE when older talloc versions are used */
