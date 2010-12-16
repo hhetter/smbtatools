@@ -18,7 +18,7 @@ struct configuration_data {
         /* configuration file */
         char *config_file;
         /* AES Key */
-        unsigned char key[20];
+        unsigned char key[25];
         /* AES Keyfile */
         char *keyfile;
 	/* 1, if a unix socket is used */
