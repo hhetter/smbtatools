@@ -270,7 +270,8 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 int configuration_check_configuration( struct configuration_data *c )
 {
-	FILE *rrdtoolbin;
+       struct stat sb;
+    
         if ( c->debug_level <0 || c->debug_level>10 ) {
                 printf("ERROR: debug level has to be between 0 and 10.\n");
                 return -1;
@@ -283,14 +284,12 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: timer for the update intervall is too short!\n");
 		return -1;
 	}
-	/* check for rrdtool to be available */
-	rrdtoolbin = fopen("/usr/bin/rrdtool","r");
-	if (rrdtoolbin != NULL)
-		fclose(rrdtoolbin);
-	else {
-		printf("ERROR: rrdtool doesn't exist in /usr/bin/rrdtool !\n");
-		return -1;
-	}
+
+       if (stat ("/usr/bin/rrdtool", &sb) == -1) {
+           printf("ERROR: stat failed for rrdtool!\n");
+           return -1;
+       }
+
 	if (c->object_name == NULL) {
 		printf("ERROR: please specify at least one object. ( -f -s -g )\n");
 		return -1;
