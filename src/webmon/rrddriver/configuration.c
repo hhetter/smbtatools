@@ -79,27 +79,6 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->object_name = NULL;
 }
 
-int configuration_load_key_from_file( struct configuration_data *c)
-{
-        FILE *keyfile;
-        char *key = malloc(sizeof(char) * 21);
-        int l;
-        keyfile = fopen(c->keyfile, "r");
-        if (keyfile == NULL) {
-                return -1;
-        }
-        l = fscanf(keyfile, "%20s", key);
-        if (strlen(key) != 16) {
-                printf("ERROR: Key file in wrong format\n");
-                fclose(keyfile);
-                exit(1);
-        }
-        strncpy( (char *) c->key, key, 20);
-        return 0;
-}
-
-
-
 /* load $HOME/.smbtatools/monitor.config */
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
@@ -132,7 +111,7 @@ int configuration_load_config_file( struct configuration_data *c)
         }
         cc = iniparser_getstring(Mydict,"general:keyfile",NULL);
         if (cc != NULL) {
-                configuration_load_key_from_file( c);
+                common_load_key_from_file( c);
         }
         return 0;
 }
@@ -205,7 +184,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				break;
                         case 'k':
                                 c->keyfile = strdup( optarg);
-                                configuration_load_key_from_file(c);
+                                common_load_key_from_file(c);
                                 break;
 			case '?':
 				configuration_show_help();
