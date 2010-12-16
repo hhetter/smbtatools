@@ -73,26 +73,6 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->xml_handle = NULL;
 }
 
-int configuration_load_key_from_file( struct configuration_data *c)
-{
-        FILE *keyfile;
-        char *key = malloc(sizeof(char) * 17);
-        int l;
-        keyfile = fopen(c->keyfile, "r");
-        if (keyfile == NULL) {
-                return -1;
-        }
-        l = fscanf(keyfile, "%s", key);
-        if (strlen(key) != 16) {
-                printf("ERROR: Key file in wrong format\n");
-                fclose(keyfile);
-                exit(1);
-        }
-        strcpy( (char *) c->key, key);
-	syslog(LOG_DEBUG,"KEY LOADEDi\n");
-	return 0;
-}
-
 /* load $HOME/.smbtatools/query.config */
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
@@ -126,7 +106,7 @@ int configuration_load_config_file( struct configuration_data *c)
 	}
 	cc = iniparser_getstring(Mydict,"general:keyfile",NULL);
 	if (cc != NULL) {
-		configuration_load_key_from_file( c);
+		common_load_key_from_file( c);
 	}
 	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
 	if (cc != NULL) c->unix_socket = 1;
@@ -213,7 +193,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				break;
 			case 'k':
 				c->keyfile = strdup( optarg);
-				configuration_load_key_from_file(c);
+				common_load_key_from_file(c);
 				break;
 			case 'q':
 				c->query = strdup( optarg );

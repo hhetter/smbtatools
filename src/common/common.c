@@ -213,6 +213,25 @@ int common_get_data_block_length( char *header )
         return retval;
 }
 
+int common_load_key_from_file( struct configuration_data *c)
+{
+        FILE *keyfile;
+        char *key = malloc(sizeof(char) * 21);
+        int l;
+        keyfile = fopen(c->keyfile, "r");
+        if (keyfile == NULL) {
+                return -1;
+        }
+        l = fscanf(keyfile, "%20s", key);
+        if (strlen(key) != 16) {
+                printf("ERROR: Key file in wrong format\n");
+                fclose(keyfile);
+                exit(1);
+        }
+        strncpy( (char *) c->key, key, 20);
+        return 0;
+}
+
 /*
  * Run a complete SQL query
  */
