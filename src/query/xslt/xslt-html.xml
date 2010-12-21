@@ -12,7 +12,9 @@
   	<colgroup>
     		<col width="10%"/>
     		<col width="10%"/>
-    		<col width="80%"/>
+    		<col width="85%"/>
+		<col width="5%"/>
+		
   	</colgroup>
 
 	<tr>
@@ -29,7 +31,8 @@
 	<tr>
 	<td><xsl:value-of select="time"/></td>
 	<td><xsl:value-of select="convval"/></td>
-	<td><image height="10" width="{percent}%" src="one_pixel.png"/><xsl:value-of select="percent"/>%</td>
+	<td><image height="10" width="{percent}%" src="one_pixel.png"/></td>
+	<td><xsl:value-of select="percent"/>%</td>
 	</tr>
 </xsl:template>
 
