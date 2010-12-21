@@ -336,7 +336,11 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
        	unsigned long int total,bytes;
 
 	interpreter_xml_begin_function(config, "usage");
-	interpreter_xml_description(config, "24 hours usage");
+	xmlstr = talloc_asprintf(ctx, "24 hours average usage %s",
+		obj_struct->output_term);
+
+	interpreter_xml_description(config, xmlstr);
+	TALLOC_FREE(xmlstr);
 
 	if (strcmp(command_data->arguments[0],"r")==0) {
                         query2 = talloc_asprintf(ctx,
