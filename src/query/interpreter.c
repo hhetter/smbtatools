@@ -233,7 +233,6 @@ void interpreter_xml_strvalue(
 		str);
 }
 
->>>>>>> 96e1942... [XML] create the usage function XML with more information, such as the human
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -325,6 +324,13 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	char *qdat;
 	int hour;
        	unsigned long int total,bytes;
+
+	interpreter_xml_begin_function(config, "usage");
+	xmlstr = talloc_asprintf(ctx, "24 hours average usage %s",
+		obj_struct->output_term);
+
+	interpreter_xml_description(config, xmlstr);
+	TALLOC_FREE(xmlstr);
 
 	if (strcmp(command_data->arguments[0],"r")==0) {
                         query2 = talloc_asprintf(ctx,
