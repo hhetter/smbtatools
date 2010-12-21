@@ -8,10 +8,17 @@
 
 <xsl:template match="usage">
 	<xsl:value-of select="description"/>
-	<table border="1">
+	<table border="1" width="100%">
+  	<colgroup>
+    		<col width="10%"/>
+    		<col width="10%"/>
+    		<col width="80%"/>
+  	</colgroup>
+
 	<tr>
 	<th>Time</th>
 	<th>Data Flow</th>
+	<th>Graph</th>
 	</tr>
 	<xsl:apply-templates select="usagerow">
 	</xsl:apply-templates>
@@ -21,10 +28,9 @@
 <xsl:template match="usagerow">
 	<tr>
 	<td><xsl:value-of select="time"/></td>
-	<td><xsl:value-of select="value"/></td>
+	<td><xsl:value-of select="convval"/></td>
+	<td><image height="10" width="{percent}%" src="one_pixel.png"/><xsl:value-of select="percent"/>%</td>
 	</tr>
 </xsl:template>
-
-
 
 </xsl:stylesheet>
