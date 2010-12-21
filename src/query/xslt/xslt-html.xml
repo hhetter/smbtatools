@@ -8,7 +8,7 @@
 
 <xsl:template match="usage">
 	<xsl:value-of select="description"/>
-	<table border="1" width="100%">
+	<table border="1" width="100%" rules="groups">
   	<colgroup>
     		<col width="10%"/>
     		<col width="10%"/>
@@ -31,6 +31,15 @@
 	<td><xsl:value-of select="convval"/></td>
 	<td><image height="10" width="{percent}%" src="one_pixel.png"/><xsl:value-of select="percent"/>%</td>
 	</tr>
+</xsl:template>
+
+
+<xsl:template match="footer">
+	<br/>
+	<hr/>
+	<p align="right">
+	<a href="{homepage}"><xsl:value-of select="application"/></a> Version <xsl:value-of select="version"/>, <xsl:value-of select="timestamp"/>
+	</p>
 </xsl:template>
 
 </xsl:stylesheet>

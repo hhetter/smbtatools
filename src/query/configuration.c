@@ -244,9 +244,8 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		interpreter_run_from_file( runtime_mem, c->file, c);
 		free(c->file);
 	}
-
+	interpreter_close_xml_file(c);
 	close(c->socket);
-	if (c->xml_handle != NULL) fclose(c->xml_handle);
 	TALLOC_FREE(runtime_mem);
 	return 0;
 }

@@ -20,6 +20,7 @@
  */
 
 #include "include/network.h"
+#include "../../include/version.h"
 #include <talloc.h>
 
 struct interpreter_command {
@@ -40,14 +41,42 @@ struct interpreter_object {
 
 };
 
+char *interpreter_return_timestamp_now(TALLOC_CTX *ctx);
+
+
 /*
  * XML output routines
  */
+
+void interpreter_xml_footer(
+	struct configuration_data *c)
+{
+	char *ctx = talloc(NULL, char);
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"<footer><application>SMB Traffic Analyzer</application>"
+		"<version>%s</version>"
+		"<timestamp>%s</timestamp>"
+		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>"
+		"</footer></smbta_output>",
+		SMBTAQUERY_VERSION,
+		interpreter_return_timestamp_now(ctx));
+	TALLOC_FREE(ctx);
+}
+
+void interpreter_close_xml_file(
+        struct configuration_data *c)
+{
+        if (c->xml_handle == NULL) return;
+        interpreter_xml_footer(c);
+        fclose(c->xml_handle);
+}
+
 void interpreter_xml_create_header(
 	struct configuration_data *c)
 {
 	fprintf( c->xml_handle,
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<smbta_output>");
 }
 
 void interpreter_open_xml_file(
@@ -1226,6 +1255,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 			&command_obj,
 			config);
 	}
+
 	return 0;
 }
 
@@ -1252,7 +1282,6 @@ int interpreter_run_from_file( TALLOC_CTX *ctx,
                 }
         }
 	fclose(file);
-	fclose(config->xml_handle);
         return 0;
 }
 
