@@ -105,12 +105,14 @@ void interpreter_xml_value(
 void interpreter_xml_usageentry(
 	struct configuration_data *c,
 	char *timestr,
-	unsigned long int value)
+	unsigned long int value,
+	char *conv_str,
+	char *percent)
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<usagerow><time>%s</time><value>%lu</value></usagerow>\n",
-		timestr, value);
+		"<usagerow><time>%s</time><value>%lu</value><convval>%s</convval><percent>%s</percent></usagerow>\n",
+		timestr, value, conv_str, percent);
 }
 
 void interpreter_xml_objname(
@@ -279,6 +281,18 @@ void bar(unsigned long int total, unsigned long int length) {
 	printf("\n");
 }
 
+char *percent(TALLOC_CTX *ctx,
+	unsigned long int total,
+	unsigned long int length)
+{
+	char *ret;
+	long double percent = total / 100;
+	long double erg = (long double) length / percent;
+	ret = talloc_asprintf(ctx, "%10.2Lf%%", erg);
+	return ret;
+}
+	
+
 void interpreter_fn_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -358,7 +372,8 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 		}
 		printf("%02i:00 - %02i:00 : %-10s ",hour,hour+1,common_make_human_readable(ctx,bytes));
 		xmlstr = talloc_asprintf(ctx, "%02i:00 - %02i:00", hour, hour+1);
-		interpreter_xml_usageentry(config, xmlstr, bytes);
+		interpreter_xml_usageentry(config, xmlstr, bytes,common_make_human_readable(ctx,bytes),
+			 percent(ctx, total ,bytes) );
 		bar(total,bytes);
 	}
 	printf("total: %s\n", common_make_human_readable(ctx,total));
