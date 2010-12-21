@@ -101,13 +101,13 @@ int configuration_load_config_file( struct configuration_data *c)
         if ( Mydict == NULL ) return -1;
 
         cc = iniparser_getstring( Mydict, "network:port_number",NULL);
-        if (cc != NULL) c->port = atoi(cc);
+        if (cc != NULL) c->port = (int) common_myatoi(cc);
 
         cc = iniparser_getstring( Mydict, "network:host_name",NULL);
         if (cc != NULL) c->host = strdup(cc);
         cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
         if (cc != NULL) {
-                c->debug_level = atoi(cc);
+                c->debug_level = (int) common_myatoi(cc);
         }
         cc = iniparser_getstring(Mydict,"general:keyfile",NULL);
         if (cc != NULL) {
@@ -161,7 +161,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
                 switch (i) {
                         case 'i':
-                                c->port = atoi( optarg );
+                                c->port = (int) common_myatoi( optarg );
                                 break;
 			case 'r':
 				free(c->rrdtool_setup);
@@ -174,7 +174,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
                                 c->host = strdup(optarg);
                                 break;
                         case 'd':
-                                c->debug_level = atoi( optarg );
+                                c->debug_level = (int) common_myatoi( optarg );
                                 break;
                         case 'c':
                                 c->config_file = strdup( optarg );
@@ -202,7 +202,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				c->object_name = strdup( optarg );
 				break;
 			case 't':
-				c->timer= atoi(optarg);
+				c->timer= (int) common_myatoi(optarg);
 				break;
                         default :
                                 printf("ERROR: unkown option.\n\n");
