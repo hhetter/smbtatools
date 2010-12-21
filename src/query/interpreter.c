@@ -40,6 +40,173 @@ struct interpreter_object {
 
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * XML output routines
+ */
+void interpreter_xml_create_header(
+	struct configuration_data *c)
+{
+	fprintf( c->xml_handle,
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+}
+
+void interpreter_open_xml_file(
+	struct configuration_data *c)
+{
+        if (c->query_xmlfile != NULL) {
+                c->xml_handle = fopen(c->query_xmlfile,"w");
+                if (c->xml_handle == NULL) {
+                        printf("ERROR: error opening xml file '%s'.\n",
+                                c->query_xmlfile);
+                        exit(1);
+                }
+		interpreter_xml_create_header(c);
+        }
+}
+
+void interpreter_xml_begin_function(
+	struct configuration_data *c,
+	char *funcname)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<%s>\n", funcname);
+}
+
+void interpreter_xml_close_function(
+	struct configuration_data *c,
+	char *funcname)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</%s>", funcname);
+}
+
+void interpreter_xml_description(
+	struct configuration_data *c,
+	char *description_str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<description>\n%s\n</description>\n",
+		description_str);
+}
+
+void interpreter_xml_value(
+	struct configuration_data *c,
+	unsigned long int value)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<value>%lu</value>\n",
+		value);
+}
+
+void interpreter_xml_usageentry(
+	struct configuration_data *c,
+	char *timestr,
+	unsigned long int value,
+	char *conv_str,
+	char *percent)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<usagerow><time>%s</time><value>%lu</value><convval>%s</convval><percent>%s</percent></usagerow>\n",
+		timestr, value, conv_str, percent);
+}
+
+void interpreter_xml_objname(
+	struct configuration_data *c,
+	char *str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<objname>%s</objname>",
+		str);
+}
+
+void interpreter_xml_begin_table(
+	struct configuration_data *c,
+	int columns)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table columns=\"%i\">",columns);
+}
+
+void interpreter_xml_begin_table_header(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_header>");
+}
+
+void interpreter_xml_table_header_element(
+	struct configuration_data *c,
+	char *element)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<header_element>%s</header_element>",
+		element);
+}
+
+void interpreter_xml_end_table_header(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table_header>");
+}
+
+void interpreter_xml_begin_table_content(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_content>");
+}
+
+void interpreter_xml_table_content(
+	struct configuration_data *c,
+	char *res)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_value>%s</table_value>",
+		res);
+}
+
+void interpreter_xml_end_table_content(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table_content>");
+}
+
+void interpreter_xml_end_table(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table>\n");
+}
+	
+void interpreter_xml_strvalue(
+	struct configuration_data *c,
+	char *str)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<value>%s</value>\n",
+		str);
+}
+
+>>>>>>> 96e1942... [XML] create the usage function XML with more information, such as the human
 
 char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
@@ -107,6 +274,18 @@ void bar(unsigned long int total, unsigned long int length) {
 	for (x=0;x<barlength;x++) { printf("#"); }
 	printf("\n");
 }
+
+char *percent(TALLOC_CTX *ctx,
+	unsigned long int total,
+	unsigned long int length)
+{
+	char *ret;
+	long double percent = total / 100;
+	long double erg = (long double) length / percent;
+	ret = talloc_asprintf(ctx, "%10.2Lf%%", erg);
+	return ret;
+}
+	
 
 void interpreter_fn_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -182,6 +361,9 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 			exit(1);
 		}
 		printf("%02i:00 - %02i:00 : %-10s ",hour,hour+1,common_make_human_readable(ctx,bytes));
+		xmlstr = talloc_asprintf(ctx, "%02i:00 - %02i:00", hour, hour+1);
+		interpreter_xml_usageentry(config, xmlstr, bytes,common_make_human_readable(ctx,bytes),
+			 percent(ctx, total ,bytes) );
 		bar(total,bytes);
 	}
 	printf("total: %s\n", common_make_human_readable(ctx,total));
