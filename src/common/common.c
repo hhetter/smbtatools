@@ -232,22 +232,18 @@ int common_load_key_from_file( struct configuration_data *c)
         return 0;
 }
 
-unsigned long long int common_myatoi( char *num)
+long long int common_myatoi( char *num)
 {
 	char *endptr;
 	errno = 0;
-	unsigned long long val;
-	val = strtoll(num, &endptr, 0);
+	long long val;
+	val = strtoll(num, NULL, 10);
 	if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
 		|| (errno != 0 && val == 0)) {
 		perror("strtol");
 		exit(1);
 	}
-	if (endptr == num) {
-               fprintf(stderr, "strtol: No digits were found\n");
-               exit(1);
-           }	
-	return (unsigned long long) val;
+	return val;
 }
 
 
