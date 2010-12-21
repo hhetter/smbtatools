@@ -132,7 +132,7 @@ void monitor_list_change_results( char *data )
 	char *ctx = talloc(NULL, char);
 	char *tmp = NULL;
 	tmp = result_get_element(ctx,0,data);
-	int id = atoi(tmp);
+	int id = (int) common_myatoi(tmp);
 	entry = monitor_list_get_by_id(id);
 	tmp = result_get_element(ctx,1,data);
 	entry->data = strdup(tmp);

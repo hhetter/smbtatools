@@ -72,7 +72,7 @@ enum IntCommands {
  * return a string representation of z
  * e.g. z=1024 output will be 1KB
  */
-
+unsigned long long int common_myatoi( char *num);
 int common_load_key_from_file( struct configuration_data *c);
 char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z );
 int common_connect_socket( const char *hostname,int iport );
