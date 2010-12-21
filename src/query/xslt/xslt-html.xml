@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet 
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+
+<xsl:template match="usage">
+	<xsl:value-of select="description"/>
+	<table border="1" width="100%">
+  	<colgroup>
+    		<col width="10%"/>
+    		<col width="10%"/>
+    		<col width="80%"/>
+  	</colgroup>
+
+	<tr>
+	<th>Time</th>
+	<th>Data Flow</th>
+	<th>Graph</th>
+	</tr>
+	<xsl:apply-templates select="usagerow">
+	</xsl:apply-templates>
+	</table>
+</xsl:template>
+
+<xsl:template match="usagerow">
+	<tr>
+	<td><xsl:value-of select="time"/></td>
+	<td><xsl:value-of select="convval"/></td>
+	<td><image height="10" width="{percent}%" src="one_pixel.png"/><xsl:value-of select="percent"/>%</td>
+	</tr>
+</xsl:template>
+
+</xsl:stylesheet>
