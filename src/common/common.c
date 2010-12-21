@@ -234,7 +234,6 @@ int common_load_key_from_file( struct configuration_data *c)
 
 long long int common_myatoi( char *num)
 {
-	char *endptr;
 	errno = 0;
 	long long val;
 	val = strtoll(num, NULL, 10);
