@@ -29,26 +29,6 @@
 #include <getopt.h>
 #include <syslog.h>
 #include <sys/times.h>
-#include <errno.h>
-#include <limits.h>
-unsigned long long int common_myatoi( char *num)
-{
-        char *endptr;
-        errno = 0;
-        unsigned long long val;
-        val = strtoll(num, &endptr, 0); 
-        if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-                || (errno != 0 && val == 0)) {
-                perror("strtol"); 
-                exit(1);
-        }
-        if (endptr == num) {
-               fprintf(stderr, "strtol: No digits were found\n");
-               exit(1); 
-           }    
-        return (unsigned long long) val; 
-}
-
 struct configuration_data {
 	char *user;
 	char *password;
@@ -429,7 +409,7 @@ int main(int argc, char *argv[])
 				strcpy(config.share2,optarg);
 				break;
 			case 'c':
-				config.copy = (int) common_myatoi(optarg);
+				config.copy = atoi(optarg);
 				break;
 			case 'r':
 				if (config.record!=NULL) free(config.record);
@@ -440,25 +420,25 @@ int main(int argc, char *argv[])
 			case 's':
 				if(strstr(optarg, "M")!=NULL) 
 				{
-					config.size=(int) common_myatoi(optarg)*1024*1024;
+					config.size=atoi(optarg)*1024*1024;
 				}
 				else if(strstr(optarg, "G")!=NULL)
 				{
-					config.size=(int) common_myatoi(optarg)*1024*1024*1024;
+					config.size=atoi(optarg)*1024*1024*1024;
 				}
 				else if(strstr(optarg, "K")!=NULL)
 				{
-					config.size=(int) common_myatoi(optarg)*1024;
+					config.size=atoi(optarg)*1024;
 				}
 				else
-				 	config.size=(int) common_myatoi(optarg);
+				 	config.size=atoi(optarg);
 
 				break;
 			case 't':
-				config.time = (int) common_myatoi(optarg);
+				config.time = atoi(optarg);
 				break;
 			case 'n':
-				config.number = (int) common_myatoi(optarg);
+				config.number = atoi(optarg);
 				break;
 			case 'v':
 				config.verbose = 1;
