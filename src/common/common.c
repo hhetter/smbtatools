@@ -209,7 +209,7 @@ void common_receive_data( char *buf, int sock, int length, int *rlen)
 int common_get_data_block_length( char *header )
 {
         int retval;
-        retval = (int) common_myatoi( header+11 );
+        retval = atoi( header+11 );
         return retval;
 }
 
@@ -232,7 +232,7 @@ int common_load_key_from_file( struct configuration_data *c)
         return 0;
 }
 
-unsigned long long int common_myatoi( char *num)
+unsigned long long int common_atoi( char *num)
 {
 	char *endptr;
 	errno = 0;
@@ -411,7 +411,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
                         bytecount[t-datcount]=data[t];
                 }
                 bytecount[4]='\0';
-                blocksize = (int) common_myatoi(bytecount);
+                blocksize = atoi(bytecount);
                 if (blocksize == 0) {
 			return NULL;
 		}

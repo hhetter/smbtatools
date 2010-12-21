@@ -34,7 +34,7 @@ int network_register_monitor( enum monitor_fn func,
 		pattern);
         char *body = sql_query(NULL,c,tosend);
 	data = result_get_element(NULL,0,body);
-	monitor_list_add( (int) common_myatoi(data ), func);	
+	monitor_list_add( atoi(data ), func);	
 	talloc_free(tosend);
 	talloc_free(data);
 	talloc_free(body);
