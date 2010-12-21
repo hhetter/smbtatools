@@ -125,7 +125,7 @@ void visual_monitor_log_calc(struct monitor_item *entry)
 {
         char *ctx = talloc(NULL,char);
         char *tmp = result_get_element(ctx,0,entry->data);
-        int id = atoi(tmp);
+        int id = (int) common_myatoi(tmp);
         char *username = result_get_element(ctx,1,entry->data);
         char *share = result_get_element(ctx,2,entry->data);
         char *filename = result_get_element(ctx,3,entry->data);

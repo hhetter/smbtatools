@@ -206,7 +206,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		printf("ERROR: the last_activity function expects 1 arguments.\n");
 		exit(1);
 	}
-	int limit = atoi(command_data->arguments[0]);
+	int limit = (int) common_myatoi(command_data->arguments[0]);
 	if (limit == 0 ) {
 		printf("ERROR: last_activity command syntax error."
 			"Limit must be > 0.\n");
@@ -415,7 +415,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		printf("ERROR: the top function expects 3 arguments.\n");
 		exit(1);
 	}
-	int limit = atoi(command_data->arguments[0]);
+	int limit = (int) common_myatoi(command_data->arguments[0]);
 	if (limit == 0 ) {
 		printf("ERROR: top command syntax error.\n");
 		exit(1);
