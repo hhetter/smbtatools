@@ -61,7 +61,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->config_file = NULL;
         c->debug_level = 0;
         c->keyfile =NULL;
-	c->unix_socket = 1;
+	c->unix_socket = 0;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
