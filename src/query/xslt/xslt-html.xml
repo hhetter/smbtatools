@@ -71,6 +71,29 @@
 	</tr>
 </xsl:template>
 
+<xsl:template match="top">
+	<h2>
+	<xsl:value-of select="description"/>
+	</h2>
+	<table border="1" with="100%">
+	<tr>
+	<th>Position</th>
+	<th>Object name</th>
+	<th>Value</th>
+	</tr>
+	<xsl:apply-templates select="toprow">
+	</xsl:apply-templates>
+	</table>
+</xsl:template>
+
+<xsl:template match="toprow">
+	<tr>
+	<td><xsl:value-of select="num"/></td>
+	<td><xsl:value-of select="object"/></td>
+	<td><xsl:value-of select="value"/></td>
+	</tr>
+</xsl:template>
+
 <xsl:template match="footer">
 	<br/>
 	<hr/>
