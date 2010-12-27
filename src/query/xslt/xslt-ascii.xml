@@ -29,6 +29,19 @@ Comment
 <xsl:value-of select="comment"/>|
 </xsl:template>
 
+
+<xsl:template match="top">
+<xsl:value-of select="description"/>
+|Pos		|Object			|Value
+------------------------------------------------------------------------------
+<xsl:apply-templates select="toprow">
+</xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="toprow">
+|<xsl:value-of select="num"/>	|<xsl:value-of select="object"/>		|<xsl:value-of select="value"/>
+</xsl:template>
+
 <xsl:template match="footer">
 ------------------------------------------------------------------------------
 SMB Traffic Analyzer <xsl:value-of select="version"/>, <xsl:value-of select="timestamp"/>
