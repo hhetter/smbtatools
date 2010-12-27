@@ -48,6 +48,21 @@ char *interpreter_return_timestamp_now(TALLOC_CTX *ctx);
  * XML output routines
  */
 
+struct xml_last_activity_data{
+	/* human readable string */
+	char *comment;
+	char *timestamp;
+	char *user;
+	char *file;
+	char *domain;
+	/* extensions for some VFS functions */
+	char *file2;
+	char *value;
+};
+	
+
+
+
 void interpreter_xml_footer(
 	struct configuration_data *c)
 {
@@ -144,6 +159,30 @@ void interpreter_xml_usageentry(
 		timestr, value, conv_str, percent);
 }
 
+void interpreter_xml_last_activityentry(
+	struct configuration_data *c,
+	struct xml_last_activity_data *entry,
+	char *vfs_function)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<last_activityrow>"
+			"<timestamp>%s</timestamp>"
+			"<vfs_func>%s</vfs_func>"
+			"<user>%s</user>"
+			"<file>%s</file>"
+			"<domain>%s</domain>"
+			"<comment>%s</comment>"
+		"</last_acitivityrow>",
+		entry->timestamp,
+		vfs_function,
+		entry->user,
+		entry->file,
+		entry->domain,
+		entry->comment);
+}
+
+	
 void interpreter_xml_objname(
 	struct configuration_data *c,
 	char *str)
@@ -410,11 +449,13 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 {
         char *query1;
         char *qdat = NULL;
+	char *xmlstr = NULL;
 	char *helper = NULL;
 	char **result;
         char *Err;
         int row1,col;
-
+	struct xml_last_activity_data xmldata;
+	TALLOC_CTX *temp = talloc(ctx, char);
 	/* delete any content from the last_activity_data table */
 	sqlite3_exec(config->db,"delete from last_activity_data;",NULL,0,NULL);
         if (command_data->argument_count != 1) {
@@ -427,6 +468,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 			"Limit must be > 0.\n");
 		exit(1);
 	}
+	interpreter_xml_begin_function(config, "last_activity");
+	xmlstr = talloc_asprintf(ctx,"Last activity %s",obj_struct->output_term);
+	interpreter_xml_description(config,xmlstr);
+	TALLOC_FREE(xmlstr);
 
 	/* VFS : read */
         query1 = talloc_asprintf(ctx,
@@ -438,19 +483,25 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	helper = result_get_element(ctx,0,qdat);
 	int row = 0;
 	while( helper != NULL ) {
-		char *tmp = talloc_asprintf(ctx,
+		char *tmp = talloc_asprintf(temp,
 		"INSERT INTO last_activity_data ( timestamp, message) VALUES"
 		" ( '%s', '%s: User %s read %s bytes from file %s.');",
-		result_get_element(ctx,row+1,qdat),
-		result_get_element(ctx,row+1,qdat),
+		result_get_element(temp,row+1,qdat),
+		result_get_element(temp,row+1,qdat),
 		helper,
-		result_get_element(ctx,row+3,qdat),
-		result_get_element(ctx,row+2,qdat));
+		result_get_element(temp,row+3,qdat),
+		result_get_element(temp,row+2,qdat));
 		sqlite3_exec(config->db,tmp,NULL,0,NULL);
 		row=row+4;
-		helper=result_get_element(ctx,row,qdat);
+		helper=result_get_element(temp,row,qdat);
+		
+		xmldata.timestamp = result_get_element(temp,row+1,qdat);
+		xmldata.user = helper;
+		xmldata.file = result_get_element(temp,row+2,qdat);
+		xmldata.value = result_get_element(temp,row+3,qdat);
+		xmldata.comment = tmp;
+		interpreter_xml_last_activityentry(config, &xmldata,"READ");
 	}
-
 	/* VFS: write */
         query1 = talloc_asprintf(ctx,
 	        "select username,timestamp,filename,length from write "
@@ -461,17 +512,24 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s wrote %s bytes to file %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+3,qdat),
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+3,qdat),
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+4;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = result_get_element(temp,row+3,qdat);
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"WRITE");
         }
 
 	/* VFS: open */
@@ -484,16 +542,23 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s opened file %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = result_get_element(temp,row+3,qdat);
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"OPEN");
         }
 
 	/* VFS: close */
@@ -506,16 +571,22 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s closed file %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = result_get_element(temp,row+3,qdat);
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"CLOSE");
         }
 
         /* VFS: rename */
@@ -528,17 +599,24 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s renamed file %s to %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat),
-                result_get_element(ctx,row+3,qdat));
+                result_get_element(temp,row+2,qdat),
+                result_get_element(temp,row+3,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+4;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.file2 = result_get_element(temp,row+3,qdat);
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"RENAME");
         }
 	
 	/* VFS: mkdir */
@@ -551,16 +629,23 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s created directory %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = 0;
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"MKDIR");
         }
 
 	/* VFS: rmdir */
@@ -573,16 +658,23 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s removed directory %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = 0;
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"RMDIR");
         }
 
         /* VFS: chdir */
@@ -595,16 +687,23 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         helper = result_get_element(ctx,0,qdat);
         row = 0;
         while( helper != NULL ) {
-                char *tmp = talloc_asprintf(ctx,
+                char *tmp = talloc_asprintf(temp,
                 "INSERT INTO last_activity_data ( timestamp, message) VALUES"
                 " ( '%s', '%s: User %s changed to directory %s.');",
-                result_get_element(ctx,row+1,qdat),
-                result_get_element(ctx,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
+                result_get_element(temp,row+1,qdat),
                 helper,
-                result_get_element(ctx,row+2,qdat));
+                result_get_element(temp,row+2,qdat));
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+3;
-                helper=result_get_element(ctx,row,qdat);
+                helper=result_get_element(temp,row,qdat);
+
+                xmldata.timestamp = result_get_element(temp,row+1,qdat);
+                xmldata.user = helper;
+                xmldata.file = result_get_element(temp,row+2,qdat);
+                xmldata.value = 0;
+                xmldata.comment = tmp;
+                interpreter_xml_last_activityentry(config, &xmldata,"CHDIR");
         }
 
 	char *tmp = talloc_asprintf(ctx,
@@ -615,7 +714,8 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 		printf("%s\n",result[i]);
 	}
 	sqlite3_free_table(result);
-
+	interpreter_xml_close_function(config,"last_activity");
+	TALLOC_FREE(temp);
 }
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
