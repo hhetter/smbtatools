@@ -447,13 +447,12 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 			printf("ERROR: usage expects r,w, or rw.\n");
 			exit(1);
 		}
-		printf("%02i:00 - %02i:00 : %-10s ",hour,hour+1,common_make_human_readable(ctx,bytes));
 		xmlstr = talloc_asprintf(ctx, "%02i:00 - %02i:00", hour, hour+1);
 		interpreter_xml_usageentry(config, xmlstr, bytes,common_make_human_readable(ctx,bytes),
 			 percent(ctx, total ,bytes) );
-		bar(total,bytes);
 	}
-	printf("total: %s\n", common_make_human_readable(ctx,total));
+	interpreter_xml_value(config, total);
+	interpreter_xml_close_function(config,"usage");
 }
 
 
