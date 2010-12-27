@@ -503,7 +503,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
         	        helper,
                 	result_get_element(temp,row+3,qdat),
                 	result_get_element(temp,row+2,qdat));
-		xmldata.comment = tmp1;
 		char *tmp = talloc_asprintf(temp,
 		"INSERT INTO last_activity_data ( timestamp, message, username, file, value, domain,vfs_func) VALUES"
 		" ( '%s', '%s','%s','%s','%s','%s','VFS:READ');",
@@ -543,15 +542,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 sqlite3_exec(config->db,tmp,NULL,0,NULL);
                 row=row+5;
                 helper=result_get_element(temp,row,qdat);
-/*
-                xmldata.timestamp = result_get_element(temp,row+1,qdat);
-                xmldata.user = helper;
-                xmldata.file = result_get_element(temp,row+2,qdat);
-                xmldata.value = result_get_element(temp,row+3,qdat);
-		xmldata.domain = result_get_element(temp,row+4,qdat);
-                xmldata.comment = tmp;
-                interpreter_xml_last_activityentry(config, &xmldata,"WRITE");
-*/
         }
 
 	/* VFS: open */
