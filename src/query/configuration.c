@@ -47,8 +47,7 @@ sqlite3 *create_db()
 
 	rc = sqlite3_exec( db, \
                 "CREATE TABLE last_activity_data ("
-                "timestamp DATE, message varchar )",NULL,0,&zErrormsg);
-
+                "timestamp DATE, message varchar, username varchar, file varchar, value varchar, domain varchar, vfs_func varchar )",NULL,0,&zErrormsg);
 
 	return db;
 }
