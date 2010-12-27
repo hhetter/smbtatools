@@ -931,9 +931,6 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 
 	i = 0;
 	el = "0";
-	printf("%-30s%-30s\n","Name","Size");
-        printf(
-        "------------------------------------------------------------------------------\n");
 
 	interpreter_xml_begin_function(config, "top");
 	interpreter_xml_description(config, "Top Objects.");
@@ -969,21 +966,23 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			" from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat, "Name","SID");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select share,domain from read where %s "
 			"union select share,domain from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-		interpreter_print_table( ctx, 2, qdat, "Name","Domain");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select filename,share from read where %s union"
 			" select filename,share from write where %s;",
 			obj_struct->sql,obj_struct->sql);
+
 		qdat = sql_query(ctx,config,query1);
-		interpreter_print_table( ctx, 2, qdat,"Name","Share");
+		interpreter_xml_begin_function(config,"list");
+		interpreter_xml_description(config,"List");
+		interpreter_print_table( ctx, config, 2, qdat,"Name","Share");
+		interpreter_xml_close_function(config,"list");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command"
 			" can only be:\n");

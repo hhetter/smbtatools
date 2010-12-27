@@ -102,4 +102,20 @@
 	</p>
 </xsl:template>
 
+<xsl:template match="list">
+	<h2>
+	<xsl:value-of select="description"/>
+	</h2>
+	<table border="1" with="100%">
+	<tr>
+	<th>Object</th>
+	</tr>
+	<xsl:apply-templates select="listrow">
+	</xsl:apply-templates>
+	</table>
+</xsl:template>
+
+<xsl:template match="listrow">
+	<tr>
+	<td><xsl:value-of select="
 </xsl:stylesheet>
