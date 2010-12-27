@@ -1,0 +1,37 @@
+<xsl:stylesheet 
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:output method="xml" encoding="UTF-8"/>
+
+<xsl:template match="usage">
+	<xsl:value-of select="description"/>
+|Time		|DataFlow		|Percent
+------------------------------------------------------------------------------
+<xsl:apply-templates select="usagerow">
+</xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="usagerow">
+<xsl:value-of select="time"/>	|<xsl:value-of select="convval"/>		|<xsl:value-of select="percent"/>%
+</xsl:template>
+
+<xsl:template match="last_activity">
+	<xsl:value-of select="description"/>
+Comment
+------------------------------------------------------------------------------
+<xsl:apply-templates select="last_activityrow">
+</xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="last_activityrow">
+<xsl:value-of select="comment"/>|
+</xsl:template>
+
+<xsl:template match="footer">
+------------------------------------------------------------------------------
+SMB Traffic Analyzer <xsl:value-of select="version"/>, <xsl:value-of select="timestamp"/>
+</xsl:template>
+
+</xsl:stylesheet>
