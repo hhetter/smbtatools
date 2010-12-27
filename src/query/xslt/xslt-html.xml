@@ -38,6 +38,38 @@
 	</tr>
 </xsl:template>
 
+<xsl:template match="last_activity">
+	<h2>
+	<xsl:value-of select="description"/>
+	</h2>
+	<table border="1" width="100%">
+	<tr>
+	<th>Timestamp</th>
+	<th>VFS operation</th>
+	<th>User</th>
+	<th>File/Directory</th>
+	<th>Domain</th>
+	<th>Tranferred bytes</th>
+	<th>Comment</th>
+	<th>Other</th>
+	</tr>
+	<xsl:apply-templates select="last_activityrow">
+	</xsl:apply-templates>
+	</table>
+</xsl:template>
+
+<xsl:template match="last_activityrow">
+	<tr>
+	<td><xsl:value-of select="timestamp"/></td>
+	<td><xsl:value-of select="vfs_func"/></td>
+	<td><xsl:value-of select="user"/></td>
+	<td><xsl:value-of select="file"/></td>
+	<td><xsl:value-of select="domain"/></td>
+	<td><xsl:value-of select="value"/></td>
+	<td><xsl:value-of select="comment"/></td>
+	<td><xsl:value-of select="file2"/></td>
+	</tr>
+</xsl:template>
 
 <xsl:template match="footer">
 	<br/>
