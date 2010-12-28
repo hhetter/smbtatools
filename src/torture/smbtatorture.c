@@ -98,8 +98,12 @@ int mtime(void)
 
 void generate_files()
 {
+        /* on playback, load the number of files */
+        if (config.replay!=NULL) {
+                fscanf(config.player,"number of files: %i\n",&config.number);
+	}
 	int list[config.number];
-	int i;
+	int i,z;
 	int fd, fd2;
 	int bytecount;
 	int debug=0;
@@ -110,6 +114,7 @@ void generate_files()
 		list[i]=(rand() % (config.size-(config.number-i)));
 		config.size=config.size-list[i];
 	}
+/*
 	//check here if there are sizes under 2000 bytes
 	for (i=0;i<config.number;i++) {
 		if (list[i]<config.number) {
@@ -125,8 +130,24 @@ void generate_files()
 			}
 		}
 	}
-
+*/
 	list[config.number-1]=config.size;
+
+	/* when recording, store the list of files and sizes */
+        if (config.record!=NULL) {
+                /* when recording, store the time to wait here          */
+                fprintf(config.recorder,"number of files: %i\n",config.number);
+		for (z=0;z<config.number;z++) {
+			fprintf(config.recorder,"file size: %i\n",list[z]);
+		}
+        }
+	/* on playback, load the list of files and sizes */
+        if (config.replay!=NULL) {
+		for (z=0;z<config.number;z++) {
+			fscanf(config.player,"file size: %i\n",&list[z]);
+		}
+        }
+
 
 	if (config.verbose == 1)
 	{

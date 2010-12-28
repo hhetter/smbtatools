@@ -114,8 +114,9 @@
 	</xsl:apply-templates>
 	</table>
 </xsl:template>
-
+<!--
 <xsl:template match="listrow">
 	<tr>
 	<td><xsl:value-of select="
+-->
 </xsl:stylesheet>
