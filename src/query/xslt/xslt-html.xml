@@ -29,11 +29,13 @@
 	</table>
 </xsl:template>
 
+
+
 <xsl:template match="usagerow">
 	<tr>
 	<td><xsl:value-of select="time"/></td>
 	<td><xsl:value-of select="convval"/></td>
-	<td><image height="10" width="{percent}%" src="one_pixel.png"/></td>
+	<td><image height="10" width="{percent}%" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oMFREBN2EEgkwAAAAdaVRYdENvbW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAAAAxJREFUCNdjWPdYEQAD9QGzXlmXywAAAABJRU5ErkJggg=="/></td>
 	<td><xsl:value-of select="percent"/>%</td>
 	</tr>
 </xsl:template>
