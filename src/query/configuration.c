@@ -120,9 +120,9 @@ int configuration_load_config_file( struct configuration_data *c)
 void configuration_show_help()
 {
 	printf("smbtaquery version %s\n", SMBTAQUERY_VERSION);
-	printf("(C)opyright 2010 by Benjamin Brunner\n");
-	printf("(C)opyright 2010 by Michael Haefner\n");
-	printf("(C)opyright 2010 by Holger Hetterich\n");
+	printf("(C)opyright 2011 by Benjamin Brunner\n");
+	printf("(C)opyright 2011 by Michael Haefner\n");
+	printf("(C)opyright 2011 by Holger Hetterich\n");
 	printf("%s\n", SMBTA_LICENSE);
 	printf("\n");
 	printf("-i	--inet-port <num>	Set the port-number to	\n");
