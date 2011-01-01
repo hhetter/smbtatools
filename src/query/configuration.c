@@ -70,6 +70,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->unix_socket = 0;
 	c->query_xmlfile = NULL;
 	c->xml_handle = NULL;
+	c->query_output = QUERY_ASCII;
 }
 
 /* load $HOME/.smbtatools/query.config */
@@ -136,7 +137,28 @@ void configuration_show_help()
 	printf("-u	--unix-domain-socket	Use a unix domain socket to \n");
 	printf("				connect to smbtad.\n");
 	printf("-x	--xml <file>		Output XML to file <file>.\n");
+	printf("-o	--output		Specify the format to output.\n");
+	printf("				Default: ascii\n");
 	printf("\n");
+}
+
+void configuration_set_output( struct configuration_data *c,
+	char *fmt)
+{
+	if (c->query_xmlfile != NULL) {
+		printf("ERROR: please either specify -x or the -o option!\n");
+		exit(1);
+	}
+	if (strncmp(optarg,"ascii",5) == 0) {
+		c->query_output = QUERY_ASCII;
+		return;
+	} else if (strncmp(optarg,"html",4) == 0) {
+		c->query_output = QUERY_HTML;
+		return;
+	} else {
+		printf("ERROR: unkown output format!\n");
+		exit(1);
+	}
 }
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -169,11 +191,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "file",1,NULL,'f'},
 			{ "unix-domain-socket",0,NULL,'u'},
 			{ "xml",1,NULL,'x' },
+			{ "output",1,NULL,'o'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"d:f:i:c:k:q:h:x:p?u", long_options, &option_index );
+			"o:d:f:i:c:k:q:h:x:p?u", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -213,6 +236,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'x':
 				c->query_xmlfile = strdup(optarg);
 				break;
+			case 'o':
+				configuration_set_output(c,optarg);
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -234,6 +260,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* through all options, now run the query command */
 
 	/* open a xml output file for writing if needed */
+	/* we finally use ascii XML output by default */
+	pid_t pid;
+	pid = getpid();
+	char *tempff= NULL;
+	tempff = talloc_asprintf(runtime_mem,"tmp_xml-%d.xml",pid);
+	if (c->query_xmlfile == NULL)
+		c->query_xmlfile=tempff;
 	interpreter_open_xml_file(c);
 	if (c->query != NULL) {
 		interpreter_run( runtime_mem, c->query, c);
@@ -245,6 +278,30 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	}
 	interpreter_close_xml_file(c);
 	close(c->socket);
+	/* use xsltproc to transform the temporary xml file */
+	char *mode= NULL;
+	char *call = NULL;
+	char *data_path = talloc_asprintf(runtime_mem,"/usr/share/smbtatools");
+	
+	if (strncmp( c->query_xmlfile, tempff,strlen(tempff)) == 0) {
+		if (c->query_output==QUERY_HTML) {
+			mode = talloc_asprintf(runtime_mem,
+				"%s/xslt-html.xml",data_path);
+		} else if (c->query_output==QUERY_ASCII) {
+			mode = talloc_asprintf(runtime_mem,
+				"%s/xslt-ascii.xml",data_path);
+		}
+		call = talloc_asprintf(runtime_mem,
+			"xsltproc %s %s", mode,tempff);
+		int l = system(call);
+		if (l == -1) {
+			printf("ERROR: executing xsltproc.\n");
+			exit(1);
+		}
+		l = remove(tempff);
+	
+	}
+				
 	TALLOC_FREE(runtime_mem);
 	return 0;
 }

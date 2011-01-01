@@ -6,7 +6,10 @@ enum smbta_monitor_object {
         SMBTA_FILE
 };
 
-
+enum smbta_query_output {
+	QUERY_ASCII = 0,
+	QUERY_HTML = 1
+};
 
 struct configuration_data {
         /* Number of the port to use */
@@ -35,6 +38,7 @@ struct configuration_data {
         sqlite3 *db;
 	char *query_xmlfile;
 	FILE *xml_handle;
+	enum smbta_query_output query_output;
 
         /* for smbtamonitor */
         /* object type specifies the kind of object we are monitoring */

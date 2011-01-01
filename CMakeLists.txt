@@ -141,6 +141,14 @@ INSTALL(FILES doc/smbtamonitor.1
 INSTALL(FILES doc/smbtatorture.1
 	DESTINATION "share/man/man1"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME smbtatorture.1)
+#install xslt tranformers
+INSTALL(FILES src/query/xslt/xslt-ascii.xml
+	DESTINATION "share/smbtatools"
+	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME xslt-ascii.xml)
+INSTALL(FILES src/query/xslt/xslt-html.xml
+	DESTINATION "share/smbtatools"
+	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME xslt-html.xml)
+
 
 INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture DESTINATION bin)
 
