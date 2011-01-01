@@ -214,7 +214,23 @@ void interpreter_xml_begin_table(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<table columns=\"%i\">",columns);
+		"<table_columns>%i</table_columns>",columns);
+}
+
+void interpreter_xml_begin_table_row(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"<table_row>");
+}
+
+void interpreter_xml_close_table_row(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf( c->xml_handle,
+		"</table_row>");
 }
 
 void interpreter_xml_begin_table_header(
@@ -336,12 +352,18 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	printf(
 	"------------------------------------------------------------------------------\n");
 
+	interpreter_xml_begin_table_row(c);
 	while (res != NULL) {
 		res = result_get_element(ctx,element,data);
 		if (res != NULL) printf("%-30s\t",res);
-		if ( col==columns ) { col = 0; printf("\n"); }
+		if (res != NULL) interpreter_xml_table_content(c,res);
+		if ( col==columns ) { col = 0; 
+			interpreter_xml_close_table_row(c);
+			interpreter_xml_begin_table_row(c);
+		}
 		col++; element++;
 	}
+	interpreter_xml_close_table_row(c);
 }
 
 void bar(unsigned long int total, unsigned long int length) {
@@ -729,14 +751,6 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
 	int i=0;
 	for (i = row1*col;i>0;i = i - col) {
-		printf("Timestamp: %s\n",result[i]);
-		printf("Username: %s\n",result[i+1]);
-		printf("Message: %s\n",result[i+2]);
-		printf("File: %s\n",result[i+3]);
-		printf("Domain: %s\n,",result[i+4]);
-		printf("Value: %s\n",result[i+5]);
-		printf("VFS: %s\n",result[i+6]);
-		printf("\n");
 
                 xmldata.timestamp = result[i];
                 xmldata.user = result[i+1];
