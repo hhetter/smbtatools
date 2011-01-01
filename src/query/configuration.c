@@ -297,7 +297,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* use xsltproc to transform the temporary xml file */
 	char *mode= NULL;
 	char *call = NULL;
-	char *data_path = talloc_asprintf(runtime_mem,"/usr/share/smbtatools");
+	char *data_path = NULL;
+	char *path = getenv("SMBTATOOLS_DATA_PATH");
+	char *xsltpath = getenv("SMBTATOOLS_XSLTPROC_PATH");
+	if (xsltpath == NULL) xsltpath=talloc_asprintf(runtime_mem," ");
+	if (path == NULL) 
+		data_path = talloc_asprintf(runtime_mem,"/usr/share/smbtatools");
+	else
+		data_path = talloc_asprintf(runtime_mem,"%s",path);
+	
 	
 	if (strncmp( c->query_xmlfile, tempff,strlen(tempff)) == 0) {
 		if (c->query_output==QUERY_HTML) {
@@ -308,7 +316,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				"%s/xslt-ascii.xml",data_path);
 		}
 		call = talloc_asprintf(runtime_mem,
-			"xsltproc %s %s", mode,tempff);
+			"%sxsltproc %s %s", xsltpath, mode,tempff);
 		int l = system(call);
 		if (l == -1) {
 			printf("ERROR: executing xsltproc.\n");
