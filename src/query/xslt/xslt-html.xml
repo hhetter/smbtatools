@@ -110,15 +110,19 @@
 	</h2>
 	<table border="1" with="100%">
 	<tr>
-	<th>Object</th>
+	<xsl:for-each select="header_element">
+	<th><xsl:value-of select="."/></th>
+	</xsl:for-each>
 	</tr>
-	<xsl:apply-templates select="listrow">
-	</xsl:apply-templates>
+	<xsl:for-each select="table_row">
+		<tr>
+		<xsl:for-each select="table_value">
+			<td><xsl:value-of select="."/>
+			</td>
+		</xsl:for-each>
+		</tr>
+	</xsl:for-each>
 	</table>
 </xsl:template>
-<!--
-<xsl:template match="listrow">
-	<tr>
-	<td><xsl:value-of select="
--->
+
 </xsl:stylesheet>
