@@ -125,4 +125,13 @@
 	</table>
 </xsl:template>
 
+<xsl:template match="total">
+	<p>
+	<h2>
+	<xsl:value-of select="description"/>
+	</h2>
+	<xsl:value-of select="totalvalue"/>
+	</p>
+</xsl:template>
+
 </xsl:stylesheet>
