@@ -284,14 +284,27 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	char *data_path = NULL;
 	char *path = getenv("SMBTATOOLS_DATA_PATH");
 	char *xsltpath = getenv("SMBTATOOLS_XSLTPROC_PATH");
-	if (xsltpath == NULL) xsltpath=talloc_asprintf(runtime_mem," ");
+	if (xsltpath == NULL) xsltpath=talloc_asprintf(runtime_mem,"/usr/bin");
 	if (path == NULL) 
 		data_path = talloc_asprintf(runtime_mem,"/usr/share/smbtatools");
 	else
 		data_path = talloc_asprintf(runtime_mem,"%s",path);
 	
-	
+	/* normal operation, just use the temporary xml file */	
 	if (strncmp( c->query_xmlfile, tempff,strlen(tempff)) == 0) {
+		/* check for xsltproc */
+		char *check = NULL;
+		struct stat sb;
+		check = talloc_asprintf(runtime_mem,"%s/xsltproc", xsltpath);
+		if (stat(check, &sb) == -1) {
+			printf("ERROR: xsltproc not found at '%s'.\n"
+				"Please set SMBTATOOLS_XSLTPROC_PATH env\n"
+				"variable to the path, or use the -x option!\n",
+				xsltpath);
+			TALLOC_FREE(runtime_mem);
+			exit(1);
+		}
+       
 		if (c->query_output==QUERY_HTML) {
 			mode = talloc_asprintf(runtime_mem,
 				"%s/xslt-html.xml",data_path);
@@ -300,7 +313,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				"%s/xslt-ascii.xml",data_path);
 		}
 		call = talloc_asprintf(runtime_mem,
-			"%sxsltproc %s %s", xsltpath, mode,tempff);
+			"%s/xsltproc %s %s", xsltpath, mode,tempff);
 		int l = system(call);
 		if (l == -1) {
 			printf("ERROR: executing xsltproc.\n");

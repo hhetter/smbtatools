@@ -461,8 +461,8 @@ function generateToc(toclevels) {
 <h1>The SMB Traffic Analyzer Guide</h1>
 <span id="author">Holger Hetterich</span><br />
 <span id="email"><tt>&lt;<a href="mailto:ozzy@metal-district.de">ozzy@metal-district.de</a>&gt;</tt></span><br />
-<span id="revnumber">version 1.0,</span>
-<span id="revdate">Oct 2010</span>
+<span id="revnumber">version 1.2.2,</span>
+<span id="revdate">Jan 2011</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -576,7 +576,7 @@ libsmbclient library ( <strong>required for smbtautils</strong> )
 </li>
 <li>
 <p>
-ncurses library ( <strong>required for smbtautils</strong> )
+curses library ( <strong>required for smbtautils</strong> )
 </p>
 </li>
 </ul></div>
@@ -595,6 +595,12 @@ cd /home/tom/smbtatools-build</tt></pre>
 <div class="listingblock">
 <div class="content">
 <pre><tt>cmake ../smbtatools/</tt></pre>
+</div></div>
+<div class="paragraph"><p>If you want the later "make install" to install control files for SMBTA into /etc/init.d,
+set this cmake cache value:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cmake -D CMAKE_INSTALL_RCFILE:string=yes ../smbtad/</tt></pre>
 </div></div>
 <div class="paragraph"><p>And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.</p></div>
 <div class="paragraph"><p>If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:</p></div>
@@ -618,6 +624,7 @@ make install</tt></pre>
 <h2 id="_a_short_howto">3. A short HOWTO</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".</p></div>
+<div class="paragraph"><p>For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</p></div>
 <h3 id="_setting_up_the_samba_server">3.1. Setting up the Samba Server</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Suppose you have this share defined on the server:</p></div>
 <div class="listingblock">
@@ -924,7 +931,21 @@ und you can start pointing more shares to it.</p></div>
 <div class="sectionbody">
 <h3 id="_smbtaquery">5.1. smbtaquery</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The possibilities to create statistical data out of the data set are quite wide ranged. Instead of querying the database directly via SQL, users may use smbtaquery. It is specialized on the setup of the database,and runs a lot of preconfigured queries to produce statistical and informational data. smbtaquery is utilizing a simplified language to operate on the users whish, translates the commands into SQL, and connects to the smbtad program to run the SQL query. The result is then printed out.</p></div>
-<h4 id="_general_usage">5.1.1. General usage</h4>
+<h4 id="_requirements">5.1.1. Requirements</h4>
+<div class="paragraph"><p>smbtaquery produces XML to represent it&#8217;s results. To convert the XML data to the desired output format, the <strong>xsltproc</strong> XSL processor is being used, and smbtaquery expects it on the system in /usr/bin/xsltproc. <strong>xsltproc</strong> is part of the libxslt package ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</p></div>
+<div class="paragraph"><p>smbtaquery comes with stylesheets telling the xsltproc program how to translate the XML raw data to other formats. It is expecting these stylesheets in the directory /usr/share/smbtatools/.</p></div>
+<div class="paragraph"><p>If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>export SMBTATOOLS_DATA_PATH=$YOUR/$PATH/$TO/$THE/$DATA</tt></pre>
+</div></div>
+<div class="paragraph"><p>If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>export SMBTATOOLS_XSLTPROC_PATH=$YOUR/$PATH/$TO/$XSLTPROC</tt></pre>
+</div></div>
+<div class="paragraph"><p>If you don&#8217;t intend to use the xsltproc program, don&#8217;t have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.</p></div>
+<h4 id="_general_usage">5.1.2. General usage</h4>
 <div class="paragraph"><p>Following is an example of a smbtaquery run:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -937,7 +958,19 @@ und you can start pointing more shares to it.</p></div>
 <div class="content">
 <pre><tt>smbtaquery -u -q 'global, usage rw;'</tt></pre>
 </div></div>
-<h4 id="_utilizing_a_configuration_file">5.1.2. Utilizing a configuration file</h4>
+<h4 id="_output_modes_saving_results_to_a_file">5.1.3. Output modes, saving results to a file</h4>
+<div class="paragraph"><p>By default, smbtaquery prints it&#8217;s results to the terminal it is running on. To print the results to a file, redirect the output to a file, such as:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>smbtaquery -u -q 'global, usage rw;' &gt; test.txt</tt></pre>
+</div></div>
+<div class="paragraph"><p>smbtaquery is able to produce different output formats. Currently, <strong>ascii</strong> text output (which is the default setting) and <strong>HTML</strong> is implemented. The output format can be specified with the -o $FORMAT option:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>smbtaquery -u -q 'global, usage rw;' -o html &gt; test.html</tt></pre>
+</div></div>
+<div class="paragraph"><p>The generated file "test.html" can then be loaded into a webbrowser for viewing.</p></div>
+<h4 id="_utilizing_a_configuration_file">5.1.4. Utilizing a configuration file</h4>
 <div class="paragraph"><p>The command line options -h (--host) and -i are required every time smbtaquery should run a query on the database. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -951,7 +984,7 @@ und you can start pointing more shares to it.</p></div>
         hostname = smbtahost.example.ex
         port = 3491</tt></pre>
 </div></div>
-<h4 id="_the_smbtaquery_interpreter">5.1.3. The smbtaquery interpreter</h4>
+<h4 id="_the_smbtaquery_interpreter">5.1.5. The smbtaquery interpreter</h4>
 <div class="paragraph"><p>To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA. There are two ways to run the buildin interpreter of smbtaquery. Either by using the -q switch on the command line, and run a single line of commands, or by specifying a file containing the commands to run.</p></div>
 <div class="paragraph"><p>In the following example of an smbtaquery call, the -q parameter is used:</p></div>
 <div class="listingblock">
@@ -1034,9 +1067,9 @@ $DATE-$TIME in the fowolling format:
 <strong>MM-DD-YYYY HH:MM:SS</strong></p></div>
 <div class="paragraph"><p>Also, there are the following keywords making the time specification easier:
 <strong>yesterday</strong>, <strong>today</strong> and <strong>now</strong>.</p></div>
-<h4 id="_object_identification">5.1.4. Object Identification</h4>
+<h4 id="_object_identification">5.1.6. Object Identification</h4>
 <div class="paragraph"><p>SMBTA will try to identify the objects that given by searching through it&#8217;s database. For example, the user "holger" could exist more than once. User "holger" could be coming from two or more domains, each of these listing user "holger" with a different SID. Therefore SMBTA will look up the known SIDs of user "holger" and will present a dialog to choose the right user in case more than one user "holger" exists. As a consequence, shares are checked for domains, and files are checked for the share and the domain.</p></div>
-<h4 id="_the_functions">5.1.5. The functions</h4>
+<h4 id="_the_functions">5.1.7. The functions</h4>
 <h5 id="_total">total</h5>
 <div class="paragraph"><p>Syntax:
 <strong>total [RW] [R] [W]</strong></p></div>
@@ -1365,8 +1398,8 @@ The default is : WORKGROUP</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0<br />
-Last updated 2010-11-29 21:52:20 CEST
+Version 1.2.2<br />
+Last updated 2011-01-03 00:18:08 CEST
 </div>
 </div>
 </body>
