@@ -1,7 +1,7 @@
 The SMB Traffic Analyzer Guide
 ==============================
 Holger Hetterich <ozzy@metal-district.de>
-v1.0, Oct 2010
+v1.2.2, Jan 2011
 
 About this document
 -------------------
@@ -89,7 +89,7 @@ Before trying to build smbtad and smbtatools, check for the following requiremen
 - cmake ( *required for both* )
 - sqlite >= 3.7.0 ( *required for smbtad* )
 - libsmbclient library ( *required for smbtautils* )
-- ncurses library ( *required for smbtautils* )
+- curses library ( *required for smbtautils* )
 
 With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you've unpacked the smbtatools source tarball at:
 --------------------
@@ -136,6 +136,8 @@ A short HOWTO
 -------------
 
 The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".
+
+For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( http://xmlsoft.org/XSLT/ ).
 
 Setting up the Samba Server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -509,6 +511,23 @@ smbtaquery
 
 The possibilities to create statistical data out of the data set are quite wide ranged. Instead of querying the database directly via SQL, users may use smbtaquery. It is specialized on the setup of the database,and runs a lot of preconfigured queries to produce statistical and informational data. smbtaquery is utilizing a simplified language to operate on the users whish, translates the commands into SQL, and connects to the smbtad program to run the SQL query. The result is then printed out.
 
+Requirements
+^^^^^^^^^^^^
+smbtaquery produces XML to represent it's results. To convert the XML data to the desired output format, the *xsltproc* XSL processor is being used, and smbtaquery expects it on the system in /usr/bin/xsltproc. *xsltproc* is part of the libxslt package ( http://xmlsoft.org/XSLT/ ).
+
+smbtaquery comes with stylesheets telling the xsltproc program how to translate the XML raw data to other formats. It is expecting these stylesheets in the directory /usr/share/smbtatools/. 
+
+If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:
+---------------------------------------------------------
+export SMBTATOOLS_DATA_PATH=$YOUR/$PATH/$TO/$THE/$DATA
+---------------------------------------------------------
+
+If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:
+----------------------------------------------------------
+export SMBTATOOLS_XSLTPROC_PATH=$YOUR/$PATH/$TO/$XSLTPROC
+----------------------------------------------------------
+
+If you don't intend to use the xsltproc program, don't have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.
 
 General usage
 ^^^^^^^^^^^^^
@@ -528,6 +547,18 @@ smbtaquery is able to connect through a unix domain socket to smbtad alternativl
 smbtaquery -u -q 'global, usage rw;'
 -------------------------------------
 
+Output modes, saving results to a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+By default, smbtaquery prints it's results to the terminal it is running on. To print the results to a file, redirect the output to a file, such as:
+------------------------------------------------
+smbtaquery -u -q 'global, usage rw;' > test.txt
+------------------------------------------------
+
+smbtaquery is able to produce different output formats. Currently, *ascii* text output (which is the default setting) and *HTML* is implemented. The output format can be specified with the -o $FORMAT option:
+---------------------------------------------------------
+smbtaquery -u -q 'global, usage rw;' -o html > test.html
+---------------------------------------------------------
+The generated file "test.html" can then be loaded into a webbrowser for viewing.
 
 Utilizing a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
