@@ -337,14 +337,14 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
+		struct configuration_data *c,
                 int columns,char *data, ...);
 
-void interpreter_print_numbered_table( TALLOC_CTX *ctx,
-                int columns,char *data, ... );
 
 
 
 void interpreter_print_table( TALLOC_CTX *ctx,
+		struct configuration_data *c,
 		int columns,char *data, ...)
 {
 	int col=1;
@@ -354,12 +354,15 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	va_list ap;
 	int count = columns;
 	va_start( ap, NULL);
+	interpreter_xml_begin_table(c,columns);
+//	interpreter_xml_begin_table_header(c);
 	while (count --) {
 		arg = va_arg( ap, char *);
 		interpreter_xml_table_header_element(c,arg);
 	}
 	va_end( ap );
 //	interpreter_xml_end_table_header(c);
+
 
 	interpreter_xml_begin_table_row(c);
 	while (res != NULL) {
@@ -763,6 +766,8 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	char *tmp = talloc_asprintf(ctx,
 		"select timestamp, username, message, file, domain, value, vfs_func from last_activity_data order by timestamp desc limit %i;",limit);
 	sqlite3_get_table(config->db,tmp,&result,&row1,&col,&Err);
+	
+
 	int i=0;
 	for (i = row1*col;i>0;i = i - col) {
 
@@ -987,10 +992,11 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		num++;
 		el = result_get_element(ctx,i,qdat);
 		if (el == NULL) break;
-		printf("%-30s%-30s\n",el,common_make_human_readable(ctx,length[i]));
 		interpreter_xml_toprow(config,num, el,common_make_human_readable(ctx,length[i]));
 		i++;
 	}
+
+	interpreter_xml_close_function(config, "top");
 }
 	
 
@@ -1017,13 +1023,10 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			" from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-<<<<<<< HEAD
-=======
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
 		interpreter_print_table( ctx, config, 2, qdat, "Name","SID");
 		interpreter_xml_close_function(config,"list");
->>>>>>> 4fb2fef... [XML] complete both xslts. Make meaningful headers.
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of shares %s",
 			obj_struct->output_term);
@@ -1032,13 +1035,10 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 			"union select share,domain from write where %s;",
 			obj_struct->sql,obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
-<<<<<<< HEAD
-=======
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
 		interpreter_print_table( ctx, config, 2, qdat, "Name","Domain");
 		interpreter_xml_close_function(config,"list");
->>>>>>> 4fb2fef... [XML] complete both xslts. Make meaningful headers.
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of files %s",
 			obj_struct->output_term);
@@ -1065,13 +1065,15 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
 {
-	char *query1, *query2 = NULL;
+	char *query1, *query2, *xmldata = NULL;
 	char *qdat;
 	unsigned long int sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
 	}
+
+	interpreter_xml_begin_function(config,"total");
 
 	if (strcmp(command_data->arguments[0],"rw") == 0) {
 		query1 = talloc_asprintf(ctx,
@@ -1085,17 +1087,11 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		sum = atol( result_get_element(ctx,0,qdat));
 		qdat = sql_query(ctx, config, query2);
 		sum = sum + atol( result_get_element(ctx,0,qdat));
-<<<<<<< HEAD
-		printf(
-"Total number of bytes transfered %s :		%s\n",
-			obj_struct->output_term,
-=======
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes transfered %s.",
 			obj_struct->output_term);
 		interpreter_xml_description(config,xmldata);
 		interpreter_xml_totalrow(config,
->>>>>>> 4fb2fef... [XML] complete both xslts. Make meaningful headers.
 			common_make_human_readable(ctx,sum));
 		
 	} else if (strcmp(command_data->arguments[0],"r") == 0) {
@@ -1105,12 +1101,6 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx, config,query1);
 		
 		sum = atol( result_get_element(ctx,0,qdat));
-<<<<<<< HEAD
-		printf(
-"Total number of bytes read %s :		%s\n",
-			obj_struct->output_term,
-			common_make_human_readable(ctx,sum));
-=======
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes read %s.",
 			obj_struct->output_term);
@@ -1118,19 +1108,12 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		interpreter_xml_totalrow(config,
 			common_make_human_readable(ctx,sum));
 
->>>>>>> 4fb2fef... [XML] complete both xslts. Make meaningful headers.
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
 		query1 = talloc_asprintf(ctx,
 			"select SUM(length) from write where %s;",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		sum = atol( result_get_element(ctx,0,qdat));
-<<<<<<< HEAD
-		printf(
-"Total number of bytes written %s :		%s\n",
-			obj_struct->output_term,
-			common_make_human_readable(ctx,sum));
-=======
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes written %s.",
 			obj_struct->output_term);
@@ -1138,12 +1121,13 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		interpreter_xml_totalrow(config,
 			common_make_human_readable(ctx,sum));
 
->>>>>>> 4fb2fef... [XML] complete both xslts. Make meaningful headers.
 	} else {
 		printf("ERROR: parameter to the 'total' command can only be:\n");
 		printf("rw, r, or w.\n");
 		exit(1);
 	}
+
+	interpreter_xml_close_function(config,"total");
 }
 
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
@@ -1427,7 +1411,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
-		interpreter_print_table(ctx,1,erg,"SQL Result");
+		interpreter_print_table(ctx,config, 1,erg,"SQL Result");
 		exit(0);
 	}
 
@@ -1459,6 +1443,7 @@ int interpreter_run_from_file( TALLOC_CTX *ctx,
         file = fopen( filename, "r");
         if (file == NULL) {
                 printf("ERROR: error reading file '%s'.\n",filename);
+		TALLOC_FREE(ctx);
                 exit(1);
         }
 
