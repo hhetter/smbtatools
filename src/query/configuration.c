@@ -68,12 +68,9 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->query = NULL;
 	c->file = NULL;
 	c->unix_socket = 0;
-<<<<<<< HEAD
-=======
 	c->query_xmlfile = NULL;
 	c->xml_handle = NULL;
 	c->query_output = QUERY_ASCII;
->>>>>>> f00e6f8... [XML] Run automatically XML transform, create the output file directly
 }
 
 /* load $HOME/.smbtatools/query.config */
@@ -193,20 +190,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "command-help",0,NULL,'p'},
 			{ "file",1,NULL,'f'},
 			{ "unix-domain-socket",0,NULL,'u'},
-<<<<<<< HEAD
-=======
 			{ "xml",1,NULL,'x' },
 			{ "output",1,NULL,'o'},
->>>>>>> f00e6f8... [XML] Run automatically XML transform, create the output file directly
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-<<<<<<< HEAD
-			"d:f:i:c:k:q:h:p?u", long_options, &option_index );
-=======
 			"o:d:f:i:c:k:q:h:x:p?u", long_options, &option_index );
->>>>>>> f00e6f8... [XML] Run automatically XML transform, create the output file directly
 
 		if ( i == -1 ) break;
 
@@ -243,15 +233,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'u':
 				c->unix_socket = 1;
 				break;
-<<<<<<< HEAD
-=======
 			case 'x':
 				c->query_xmlfile = strdup(optarg);
 				break;
 			case 'o':
 				configuration_set_output(c,optarg);
 				break;
->>>>>>> f00e6f8... [XML] Run automatically XML transform, create the output file directly
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -271,8 +258,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			"/var/tmp/stadsocket_client");
 
 	/* through all options, now run the query command */
-<<<<<<< HEAD
-=======
 
 	/* open a xml output file for writing if needed */
 	/* we finally use ascii XML output by default */
@@ -283,7 +268,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	if (c->query_xmlfile == NULL)
 		c->query_xmlfile=tempff;
 	interpreter_open_xml_file(c);
->>>>>>> f00e6f8... [XML] Run automatically XML transform, create the output file directly
 	if (c->query != NULL) {
 		interpreter_run( runtime_mem, c->query, c);
 		free(c->query);
