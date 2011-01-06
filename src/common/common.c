@@ -429,6 +429,15 @@ char *sql_query( TALLOC_CTX *ctx,
                         break;
                 }
         }
+	if (config->keyfile != NULL) { // encrypted data
+		char *decrypted = common_decrypt(
+				NULL,
+				body,
+				data_length,
+				config->key);
+		talloc_free(body);
+		return decrypted;
+	} 
         return body;
 }
 
