@@ -145,7 +145,12 @@ void network_handle_data( struct configuration_data *c)
                         	break;
                 	}
         	}
-        	monitor_list_change_results(body);
+                if (c->keyfile != NULL) { // body is encrypted
+                        char *crypted = common_decrypt(NULL,body,data_length,
+                                (const unsigned char *) c->key);
+                        monitor_list_change_results(crypted);
+                        talloc_free(crypted);
+                        } else monitor_list_change_results(body);
 		talloc_free(header);
 		talloc_free(body);
 	}
