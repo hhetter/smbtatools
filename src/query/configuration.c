@@ -139,6 +139,8 @@ void configuration_show_help()
 	printf("-x	--xml <file>		Output XML to file <file>.\n");
 	printf("-o	--output		Specify the format to output.\n");
 	printf("				Default: ascii\n");
+	printf("-k	--keyfile <file>	Enable encryption and load the\n");
+	printf("				key from <file>.\n");
 	printf("\n");
 }
 
@@ -183,7 +185,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "inet-port", 1, NULL, 'i' },
 			{ "debug-level",1, NULL, 'd' },
 			{ "config-file",1,NULL,'c'},
-			{ "key-file",1,NULL,'k'},
+			{ "keyfile",1,NULL,'k'},
 			{ "query",1,NULL,'q'},
 			{ "host",1,NULL,'h'},
 			{ "help",0,NULL,'?'},
