@@ -177,6 +177,62 @@ void common_write_data( char *header, char *data,
 }
 
 /**
+ * AES decrypt a data block.
+ * returns the encrypted data block
+ */
+char *common_decrypt( TALLOC_CTX *ctx, char *body, int len, const unsigned char *thekey)
+{
+        AES_KEY key;
+        int i;
+        if (thekey == NULL) return NULL;
+        AES_set_decrypt_key(thekey, 128, &key);
+        char *data = talloc_array( ctx, char, len+4); // malloc(sizeof( char ) * (len +4));
+        int s1 = ( len / 16 );
+        for ( i = 0; i < s1; i++) {
+                AES_decrypt((unsigned char *) body + (i*16), (unsigned char *) data+(i*16), &key);
+        }
+        data[len+1]= '\0';
+        return data;
+}
+
+/**
+ * Encryption of a data block with AES
+ * TALLOC_CTX *ctx      Talloc context to work on
+ * const char *akey     128bit key for the encryption
+ * const char *str      Data buffer to encrypt, \0 terminated
+ * int *len             Will be set to the length of the
+ *                      resulting data block
+ * The caller has to take care for the memory
+ * allocated on the context.
+ */
+char *common_encrypt( TALLOC_CTX *ctx,
+        const char *akey, const char *str, size_t *len)
+{
+        int s1,s2,h,d;
+        AES_KEY key;
+        unsigned char filler[17]= "................";
+        char *output;
+        unsigned char crypted[18];
+        if (akey == NULL) return NULL;
+        AES_set_encrypt_key((unsigned char *) akey, 128, &key);
+        s1 = strlen(str) / 16;
+        s2 = strlen(str) % 16;
+        for (h = 0; h < s2; h++) *(filler+h)=*(str+(s1*16)+h);
+        output = talloc_array(ctx, char, (s1*16)+17 );
+        d=0;
+        for (h = 0; h < s1; h++) {
+                AES_encrypt((unsigned char *) str+(16*h), crypted, &key);
+                for (d = 0; d<16; d++) output[d+(16*h)]=crypted[d];
+        }
+        AES_encrypt( (unsigned char *) str+(16*h), filler, &key );
+        for (d = 0;d < 16; d++) output[d+(16*h)]=*(filler+d);
+        *len = (s1*16)+16;
+        return output;
+}
+
+
+
+/**
  * receive a data block. return 0 if the connection
  * was closed, or return the received buffer
  * int sock             The handle
@@ -281,11 +337,37 @@ char *sql_query( TALLOC_CTX *ctx,
                         * in the Samba sources. They begin at byte
                         * 03 of the header.
                         */
-                        char state_flags[9] = "000000\0";
-                        header = common_create_header(ctx,
-                                state_flags, strlen(query));
-                        common_write_data( header,
-                                query, strlen(query), sockfd);
+                        char state_flags[9];
+			if ( config->keyfile != NULL) {
+				size_t len;
+				strcpy(state_flags,"00E000");
+				char *crypt = common_encrypt(
+					NULL,
+					(const char *) config->key,
+					query,
+					&len);
+				header = common_create_header(
+					ctx,
+					state_flags,
+					len);
+				common_write_data(
+					header,
+					crypt,
+					(int) len,
+					sockfd);
+				talloc_free(crypt);
+			} else {
+				strcpy(state_flags,"000000");
+				header = common_create_header(
+					ctx,
+                                	state_flags,
+					strlen(query));
+				common_write_data(
+					header,
+					query,
+					strlen(query),
+					sockfd);
+			}
                         state = SENT;
                         continue;
                 }
