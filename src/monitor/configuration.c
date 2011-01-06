@@ -48,6 +48,8 @@ void configuration_show_help()
 	printf("				data set.\n");
 	printf("-n	--unix-domain-socket	Use a unix domain socket to\n");
 	printf("				connect to smbtad.\n");
+	printf("-k	--keyfile		Read a encryption key from given\n");
+	printf("				file.\n");
         printf("\n");
 }
 

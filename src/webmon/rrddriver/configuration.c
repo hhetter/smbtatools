@@ -59,6 +59,7 @@ void configuration_show_help()
 	printf("				DS:readwrite:GAUGE:10:U:U\n");
 	printf("				DS:read:GAUGE:10:U:U\n");
 	printf("				DS:write:GAUGE:10:U:U\n");
+	printf("-k	--keyfile		Read encryption key from given file.\n");
         printf("\n");
 }
 
