@@ -141,6 +141,7 @@ void configuration_show_help()
 	printf("				Default: ascii\n");
 	printf("-k	--keyfile <file>	Enable encryption and load the\n");
 	printf("				key from <file>.\n");
+	printf("-K      --create-key <file>	Create a key for encryption in <file>.\n");
 	printf("\n");
 }
 
@@ -162,6 +163,29 @@ void configuration_set_output( struct configuration_data *c,
 		exit(1);
 	}
 }
+
+void configuration_create_key( char *filename )
+{
+        int f;
+	FILE *keyfile;
+	char key[20];
+        srand( (unsigned)time( NULL ) );
+        for ( f = 0; f < 16; f++) {
+                *(key+f) = (rand() % 128) +32;
+        }
+        *(key+16)='\0';
+        printf("Key generated.\n");
+        keyfile = fopen(filename, "w");
+        if (keyfile == NULL) {
+                printf("error creating the keyfile!\n");
+                exit(1);
+        }
+        fprintf(keyfile, "%s", key);
+        fclose(keyfile);
+        printf("File '%s' has been created.\n", filename);
+
+}
+
 
 int configuration_parse_cmdline( struct configuration_data *c,
 	int argc, char *argv[] )
@@ -194,11 +218,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "unix-domain-socket",0,NULL,'u'},
 			{ "xml",1,NULL,'x' },
 			{ "output",1,NULL,'o'},
+			{ "create-key",1,NULL,'K'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"o:d:f:i:c:k:q:h:x:p?u", long_options, &option_index );
+			"o:d:f:i:c:k:q:h:x:p?uK:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -241,6 +266,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'o':
 				configuration_set_output(c,optarg);
 				break;
+			case 'K':
+				configuration_create_key( optarg );
+				exit(0);
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
