@@ -39,6 +39,8 @@
 #include <errno.h>
 #include <limits.h>
 #include "../src/common/config-struct.h"
+#include "crypto/aes.h"
+#include "crypto/rijndael-alg-fst.h"
 
 /* define TALLOC_FREE when older talloc versions are used */
 #ifndef TALLOC_FREE
@@ -88,3 +90,4 @@ char *common_identify( TALLOC_CTX *ctx,
         char *data,
         struct configuration_data *config, int qtype);
 char *result_get_element( TALLOC_CTX *ctx, int number, const char *data );
+char *common_decrypt( TALLOC_CTX *ctx, char *body, int len, const unsigned char *thekey);
