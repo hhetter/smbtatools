@@ -87,11 +87,10 @@ The SMBTA tools smbtaquery and smbtamonitor are utilizing "cmake" as the primary
 Before trying to build smbtad and smbtatools, check for the following requirements:
 
 - cmake ( *required for both* )
-- sqlite >= 3.7.0 ( *required for smbtad* )
 - libsmbclient library ( *required for smbtautils* )
 - curses library ( *required for smbtautils* )
 
-With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you've unpacked the smbtatools source tarball at:
+With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you've unpacked the smbtatools source tarball at (the same procedure can be followed to compile smbtad):
 --------------------
 /home/tom/smbtatools
 --------------------
@@ -101,6 +100,14 @@ You can now create your own directory where you want to build smbtatools. Like:
 mkdir /home/tom/smbtatools-build
 cd /home/tom/smbtatools-build
 ---------------------------------
+
+If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:
+---------------------------------------------------------------------------------------------------------
+setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
+setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES
+---------------------------------------------------------------------------------------------------------
+
+Both smbtatools and smbtad require sqlite to run. If it isn't installed on your system, or isn't available in a version new enough, both packages will build an included sqlite variant and link to this.
 
 You are now in the build directory. Just run cmake from here:
 ---------------------------------
@@ -114,12 +121,6 @@ cmake -D CMAKE_INSTALL_RCFILE:string=yes ../smbtad/
 -----------------------------------------------------
 
 And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.
-
-If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:
----------------------------------------------------------------------------------------------------------
-setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
-setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES
----------------------------------------------------------------------------------------------------------
 
 After a succesful run of cmake, you can run "make" and "make install" ( and "make install" might require root privileges) as usual:
 ---------------------------

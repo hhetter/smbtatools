@@ -566,11 +566,6 @@ cmake ( <strong>required for both</strong> )
 </li>
 <li>
 <p>
-sqlite &gt;= 3.7.0 ( <strong>required for smbtad</strong> )
-</p>
-</li>
-<li>
-<p>
 libsmbclient library ( <strong>required for smbtautils</strong> )
 </p>
 </li>
@@ -580,7 +575,7 @@ curses library ( <strong>required for smbtautils</strong> )
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you&#8217;ve unpacked the smbtatools source tarball at:</p></div>
+<div class="paragraph"><p>With cmake, you usually do an "out-of-source" build. That means that the source will not be build in the original source directory. Here is an example build. Suppose you&#8217;ve unpacked the smbtatools source tarball at (the same procedure can be followed to compile smbtad):</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>/home/tom/smbtatools</tt></pre>
@@ -591,6 +586,13 @@ curses library ( <strong>required for smbtautils</strong> )
 <pre><tt>mkdir /home/tom/smbtatools-build
 cd /home/tom/smbtatools-build</tt></pre>
 </div></div>
+<div class="paragraph"><p>If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
+setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES</tt></pre>
+</div></div>
+<div class="paragraph"><p>Both smbtatools and smbtad require sqlite to run. If it isn&#8217;t installed on your system, or isn&#8217;t available in a version new enough, both packages will build an included sqlite variant and link to this.</p></div>
 <div class="paragraph"><p>You are now in the build directory. Just run cmake from here:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -603,12 +605,6 @@ set this cmake cache value:</p></div>
 <pre><tt>cmake -D CMAKE_INSTALL_RCFILE:string=yes ../smbtad/</tt></pre>
 </div></div>
 <div class="paragraph"><p>And cmake will check the requirements of smbtatools/smbtad against your system. If it complains, it will return human readable messages about what is missing. After a successful cmake run, you can just do "make" and "make install" as "usual" in this directory.</p></div>
-<div class="paragraph"><p>If you have any libraries or required components in other directories than the system paths, you should specify those by specifying environment variables before the cmake run:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>setenv CMAKE_INCLUDE_PATH $YOUR_PATH_TO_EXTERNAL_INCLUDES:$ANOTHER_DIRECTORY_WITH_EXTERNAL_INCLUDES
-setenv CMAKE_LIBRARY_PATH $YOUR_PATH_TO_LIBRARIES:$ANOTHER_DIRECTORY_WITH_LIBRARIES</tt></pre>
-</div></div>
 <div class="paragraph"><p>After a succesful run of cmake, you can run "make" and "make install" ( and "make install" might require root privileges) as usual:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1447,7 +1443,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.2<br />
-Last updated 2011-01-11 14:29:00 CEST
+Last updated 2011-01-16 18:47:50 CEST
 </div>
 </div>
 </body>
