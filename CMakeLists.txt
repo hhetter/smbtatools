@@ -10,7 +10,7 @@ PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
 set(APPLICATION_VERSION "0.0.1")
-INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite3.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 
 # Build debugging enabled binaries
 SET(CMAKE_BUILD_TYPE "Debug")
@@ -23,11 +23,21 @@ SET(CMAKE_INSTALL_PREFIX /usr)
 #
 # check for sqlite3
 #
-include(FindSqlite3.cmake)
-FIND_PACKAGE(Sqlite3)
-if (NOT SQLITE3_FOUND)
-	MESSAGE( FATAL_ERROR "ERROR: you'll need sqlite3 development files installed.")
+include(FindSqlite.cmake)
+FIND_PACKAGE(Sqlite)
+if (NOT SQLITE_FOUND OR CMAKE_FORCE_EMBEDDED_SQLITE)
+        MESSAGE( STATUS "----> FYI: Seems like there're no sqlite3 development files")
+        MESSAGE( STATUS "           installed.")
+        MESSAGE( STATUS "           That's ok, we will build the ")
+        MESSAGE( STATUS "           sqlite amalgamation code then.")
+        SET(SQLITE_LIBRARIES "")
+ELSEIF (SQLITE_FOUND)
+        MESSAGE( STATUS "----> FYI: Nice, your system provides sqlite >= 3.7.0, we")
+        MESSAGE( STATUS "           will make the build linking shared to this library.")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D SQLITE_FOUND")
 ENDIF()
+
+
 
 #
 # check for libsmbclient
@@ -87,6 +97,7 @@ INCLUDE_DIRECTORIES( ${SQLITE3_INCLUDE_DIRS} ${TALLOC_INCLUDE_DIR} ${LIBSMBCLIEN
 
 SET(CurrentExe "smbtaquery")
 ADD_EXECUTABLE(${CurrentExe} 
+	src/query/sqlite/sqlite3.c
 	src/query/main.c
 	src/common/common.c
 	src/common/aes.c
@@ -96,7 +107,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/network.c
 	)
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE3_LIBRARIES} ${TALLOC_LIBRARIES} iniparser)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}

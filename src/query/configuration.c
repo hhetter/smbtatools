@@ -22,7 +22,6 @@
 #include "include/configuration.h"
 #include "include/interpreter.h"
 #include <talloc.h>
-#include <sqlite3.h>
 sqlite3 *create_db()
 {
 	char *a=getenv("HOME");

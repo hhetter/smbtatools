@@ -39,7 +39,11 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
-#include <sqlite3.h>
+#ifndef SQLITE_FOUND
+	#include "../sqlite/sqlite3.h"
+#else
+	#include <sqlite3.h>
+#endif
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
 

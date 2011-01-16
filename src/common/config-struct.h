@@ -1,4 +1,10 @@
-#include <sqlite3.h>
+#ifndef SQLITE_FOUND
+        #include "../query/sqlite/sqlite3.h"
+#else
+        #include <sqlite3.h>
+#endif
+
+
 
 enum smbta_monitor_object {
         SMBTA_SHARE = 0,
