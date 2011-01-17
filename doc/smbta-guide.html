@@ -470,7 +470,14 @@ function generateToc(toclevels) {
 </div>
 <h2 id="_about_this_document">1. About this document</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This documentation is created using asciidoc. The HTML version is produced using:</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">This documentation is created using asciidoc. The HTML version is produced using:</td>
+</tr></table>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>asciidoc -n -a toc smbta-guide.txt</tt></pre>
@@ -478,6 +485,9 @@ function generateToc(toclevels) {
 </div>
 <h2 id="_what_is_smb_traffic_analyzer">2. What is SMB Traffic Analyzer</h2>
 <div class="sectionbody">
+<div class="paragraph"><p><span class="image">
+<img src="gfx/smbta300.png" alt="gfx/smbta300.png" />
+</span></p></div>
 <div class="paragraph"><p><strong>SMB Traffic Analyzer</strong> (from now on called <strong>SMBTA</strong>) is a software suite utilizing
 the <strong>Samba</strong> CIFS server to create statistics about the data traffic on a Samba
 network. SMBTA is made out of several components:</p></div>
@@ -548,13 +558,32 @@ Which is the top used file by read and write access?
 <div class="paragraph"><p>Yes it can be used like that, but doesn&#8217;t need to be. To expose user names to a storage is even forbidden in many countries. Therefore, SMBTA allows for anonymization of any data linked to a person.</p></div>
 <div class="paragraph"><p>There are many use cases for SMBTA, like determining and planning hardware for your services, or analyzing the network before switching to clustered Samba.</p></div>
 <h3 id="_the_basic_concept_of_smbta">2.3. The basic concept of SMBTA</h3><div style="clear:left"></div>
+<div class="imageblock">
+<div class="content">
+<img src="gfx/overview.png" alt="gfx/overview.png" />
+</div>
+</div>
 <div class="paragraph"><p>The Samba CIFS server features a Virtual File System Layer (VFS), that allows modules to be linked into the layer, replacing or enhancing the functions of the VFS. Modules can be linked into and behave completely transparent. SMBTA makes use of this functionality by adding a module to Samba&#8217;s VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read, close etc.</p></div>
 <div class="paragraph"><p>The collected data may be be encrypted, and send over the network to a receiver program. This daemon program, smbtad, is then building a SQL storage from the data. Besides of the generated SQL storage, client programs can be used to query the storage in a specialized way over the network.</p></div>
 <h3 id="_where_to_get_smbta">2.4. Where to get SMBTA</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0. However, the current SMBTA module shipping with Samba is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.</p></div>
-<div class="paragraph"><p>For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a>.</p></div>
-<div class="paragraph"><p>For the openSUSE Linux distribution, RPM packages are available from the
-openSUSE Build Service.</p></div>
+<div class="paragraph"><p>The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">The current SMBTA module shipping with Samba (any version older than 3.6.0pre1) is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. Furthermore, RPM packages for several openSUSE releases of the smbtatools and the smbtad component are available on the buildservice.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at <a href="http://holger123.wordpress.com/smb-traffic-analyzer/">http://holger123.wordpress.com/smb-traffic-analyzer/</a>.</p></div>
 <h3 id="_building_smbta_from_the_sources">2.5. Building SMBTA from the sources</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The SMBTA tools smbtaquery and smbtamonitor are utilizing "cmake" as the primary build tool. The smbtad daemon program does too.</p></div>
 <div class="paragraph"><p>Before trying to build smbtad and smbtatools, check for the following requirements:</p></div>
@@ -620,7 +649,14 @@ make install</tt></pre>
 <h2 id="_a_short_howto">3. A short HOWTO</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".</p></div>
-<div class="paragraph"><p>For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</td>
+</tr></table>
+</div>
 <h3 id="_setting_up_the_samba_server">3.1. Setting up the Samba Server</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Suppose you have this share defined on the server:</p></div>
 <div class="listingblock">
@@ -685,9 +721,16 @@ VFS module, SMBTA logging for this service can be activated:</p></div>
         smb_traffic_analyzer:host = localhost
         smb_traffic_analyzer:port = 3490</tt></pre>
 </div></div>
-<div class="paragraph"><p>By default, SMBTA will use protocol version 1, to not break any existing
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
-use protocol version 2.</p></div>
+use protocol version 2.</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.</p></div>
@@ -912,17 +955,38 @@ und you can start pointing more shares to it.</p></div>
 <h4 id="_requirements">5.1.1. Requirements</h4>
 <div class="paragraph"><p>smbtaquery produces XML to represent it&#8217;s results. To convert the XML data to the desired output format, the <strong>xsltproc</strong> XSL processor is being used, and smbtaquery expects it on the system in /usr/bin/xsltproc. <strong>xsltproc</strong> is part of the libxslt package ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</p></div>
 <div class="paragraph"><p>smbtaquery comes with stylesheets telling the xsltproc program how to translate the XML raw data to other formats. It is expecting these stylesheets in the directory /usr/share/smbtatools/.</p></div>
-<div class="paragraph"><p>If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:</td>
+</tr></table>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>export SMBTATOOLS_DATA_PATH=$YOUR/$PATH/$TO/$THE/$DATA</tt></pre>
 </div></div>
-<div class="paragraph"><p>If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:</td>
+</tr></table>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>export SMBTATOOLS_XSLTPROC_PATH=$YOUR/$PATH/$TO/$XSLTPROC</tt></pre>
 </div></div>
-<div class="paragraph"><p>If you don&#8217;t intend to use the xsltproc program, don&#8217;t have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">If you don&#8217;t intend to use the xsltproc program, don&#8217;t have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.</td>
+</tr></table>
+</div>
 <h4 id="_general_usage">5.1.2. General usage</h4>
 <div class="paragraph"><p>Following is an example of a smbtaquery run:</p></div>
 <div class="listingblock">
@@ -994,7 +1058,14 @@ user holger, total w;</tt></pre>
 <pre><tt>'global, usage rw;'</tt></pre>
 </div></div>
 <h5 id="_the_objects">The objects</h5>
-<div class="paragraph"><p>Any functions called by smbtaquery are in relation to an object which is named first. An object can be a file, a share, or a username, or global, which does not relate to a specific object.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">Any functions called by smbtaquery are in relation to an object which is named first. An object can be a file, a share, or a username, or global, which does not relate to a specific object.</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>For example if you make a query like this:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1443,7 +1514,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.2<br />
-Last updated 2011-01-16 18:47:50 CEST
+Last updated 2011-01-17 17:49:26 CEST
 </div>
 </div>
 </body>
