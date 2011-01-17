@@ -1,7 +1,7 @@
-/usr
-/usr/share
-/usr/share/doc
-/usr/share/images
+/users
+/users/share
+/users/share/doc
+/users/share/images
 /srv1/
 /home/all
 /office_space/media
@@ -13,6 +13,7 @@
 /office_space/data/y2010
 /office_space/data/y2011
 /var/log
-/
-/usr/share/bindings
-
+/shared/
+/shared/appdata
+/shared/programs
+/shared/bindings/office-2.1.1

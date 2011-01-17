@@ -31,6 +31,67 @@
 #include <sys/times.h>
 #include <errno.h>
 #include <limits.h>
+
+
+char **fnamelist;
+
+
+
+char *get_random_filename() {
+	int max_filenames = 0;
+	int max_directories = 0;
+	int nfilename = 0;
+	int ndirectory = 0;
+	int z = 0;
+	char *strdat = NULL;
+	char *fullstr = NULL;
+	char *retstr = NULL;
+	FILE *fnames = fopen("/usr/share/smbtatools/filenames.txt","r");
+	FILE *dnames = fopen("/usr/share/smbtatools/directories.txt","r");
+	if (fnames == NULL || dnames == NULL) {
+		printf("ERROR: 	cannot open filenames list and/or\n");
+		printf("	directory list. Exiting.\n");
+	}
+	while ( !feof(fnames) ) {
+		fscanf(fnames, "%ms\n", &strdat);
+		max_filenames = max_filenames + 1;
+		if (strdat != NULL) free(strdat);
+	}
+        while ( !feof(dnames) ) {
+                fscanf(dnames, "%ms\n", &strdat);
+                if (strdat != NULL) free(strdat);
+                max_directories = max_directories + 1;
+        }
+	rewind(fnames);
+	rewind(dnames);
+	nfilename = rand() % max_filenames;
+	ndirectory = rand() % max_directories;
+	while ( z < ndirectory ) {
+		z++;
+		fscanf(dnames, "%ms\n", &strdat);
+		if (strdat != NULL) free(strdat);
+	}
+	fscanf(dnames, "%ms\n",&fullstr);
+	z = 0;
+	while ( z < nfilename) {
+		z++;
+		fscanf(fnames, "%ms\n", &strdat);
+		if (strdat != NULL) free(strdat);
+	}
+	fscanf(fnames,"%ms\n",&strdat);
+	retstr = (char *) malloc( sizeof(char) * ( strlen(fullstr) + strlen(strdat) ) + 5 );
+	strcpy(retstr, fullstr);
+	strcat(retstr,"/");
+	strcat(retstr, strdat);
+	free(fullstr);
+	free(strdat);
+	fclose(fnames);
+	fclose(dnames);
+	return retstr;
+}	
+	
+		
+
 unsigned long long int common_myatoi( char *num)
 {
         char *endptr;
@@ -154,19 +215,45 @@ void generate_files()
 		printf("Stage 1: creating now the files on both shares\n");
 	}
 
-	//creating now the files on share1
 	for (i=0;i<config.number;i++) {
-		char Dateiname1[strlen(config.share1)+50];
-		char Dateiname2[strlen(config.share2)+50];
-		strcpy(Dateiname1,config.share1);
-		strcpy(Dateiname2,config.share2);
-		char Zahl[50];
-		sprintf(Zahl,"%i",i);
-		strcat(Dateiname1, config.user);
-		strcat(Dateiname2, config.user);
-		strcat(Dateiname1, Zahl);
-		strcat(Dateiname2, Zahl);
-		smbc_init(get_auth_data_fn, debug);
+		char *t = NULL;
+		if (config.replay == NULL) t = get_random_filename();
+                if (config.replay != NULL) {
+                        fscanf(config.player,"Filename: %ms\n",&t);
+                        }
+
+		char *Dateiname1 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(t)+5));
+		char *Dateiname2 = (char *) malloc(sizeof(char) * (strlen(config.share2)+strlen(t)+5));
+		/* when recording, write the list of filenames + paths */
+		if (config.record!=NULL) {
+			fprintf(config.recorder,"Filename: %s\n", t);
+			}
+                strcpy(Dateiname1,config.share1);
+                strcpy(Dateiname2,config.share2);
+                strcat(Dateiname1,t);
+                strcat(Dateiname2,t);
+		fnamelist[i]=t;
+		// create directories
+                smbc_init(get_auth_data_fn, debug);
+		int z= 0;
+		char *sname = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(t)+5 + strlen(config.share2)));
+		while (z<strlen(t)) {
+			if (t[z]=='/') {
+				t[z]='\0';
+				strcpy(sname,config.share1);
+				strcat(sname,t);
+				printf("Creating Directory: %s\n",sname);
+				smbc_mkdir(sname,0777);
+				strcpy(sname,config.share2);
+				strcat(sname,t);
+				printf("Creating Directory: %s\n",sname);
+				smbc_mkdir(sname,0777);
+				t[z]='/';
+				
+			}
+			z++;
+		}
+
 	
 		if ((fd = smbc_open(Dateiname1,
 			O_WRONLY | O_CREAT | O_TRUNC, 0)) < 0)
@@ -217,6 +304,8 @@ void generate_files()
 		}
 
 		smbc_close(fd2);
+		free(Dateiname1);
+		free(Dateiname2);
 	}
 
 }
@@ -230,11 +319,9 @@ void copy()
         int savedErrno;
 	int rTime,justread;
         char buffer[40048];
-	char Zahl[50];
-	char Dateiname1[strlen(config.share1)+50];
-	char Dateiname2[strlen(config.share2)+50];
 	i=( random() % config.number);
-	sprintf(Zahl,"%i",i);
+	char *Dateiname1 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
+	char *Dateiname2 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
 	rTime= (random() % 2);
 	justread= (random() %2); // wether to write to the target share or not
 	switch (rTime)
@@ -249,10 +336,8 @@ void copy()
 		break;
 	}
 
-	strcat(Dateiname1, config.user);
-	strcat(Dateiname2, config.user);
-	strcat(Dateiname1, Zahl);
-	strcat(Dateiname2, Zahl);
+	strcat(Dateiname1, fnamelist[i]);
+	strcat(Dateiname2, fnamelist[i]);
 	/* at this point we have the full filenames. In case of 
 	 * recording, we save them here. In case of replay, we	
 	 * replace them with the strings from the file.
@@ -313,6 +398,8 @@ void copy()
         }
 
 	sleep(rTime);
+	free(Dateiname1);
+	free(Dateiname2);
 	if (config.verbose ==1) printf("Transferring data...\n");
 }
 
@@ -497,8 +584,6 @@ int main(int argc, char *argv[])
 		}
 		}
 
-	/* don't generate the files if we are in playback mode */
-	if (config.replay==NULL) generate_files();
 
 	/* check the mode */
 	if (config.replay!=NULL && config.record!=NULL) {
@@ -527,6 +612,9 @@ int main(int argc, char *argv[])
 		return 0;
 		}
 	}
+        /* init fnamelist */
+        fnamelist = (char **) malloc(sizeof(char *) * (config.number + 1));
+	generate_files();
 	if (config.replay!=NULL) {
 		/* when playing back, get the number of copies first */
 		fscanf(config.player,"copy = %i\n",&config.copy);
