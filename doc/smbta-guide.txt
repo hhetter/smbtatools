@@ -6,13 +6,15 @@ v1.2.2, Jan 2011
 About this document
 -------------------
 
-This documentation is created using asciidoc. The HTML version is produced using:
+TIP: This documentation is created using asciidoc. The HTML version is produced using:
 -----------------------------------
 asciidoc -n -a toc smbta-guide.txt
 -----------------------------------
 
 What is SMB Traffic Analyzer
 ----------------------------
+
+image:gfx/smbta300.png[]
 
 *SMB Traffic Analyzer* (from now on called *SMBTA*) is a software suite utilizing
 the *Samba* CIFS server to create statistics about the data traffic on a Samba
@@ -63,6 +65,8 @@ There are many use cases for SMBTA, like determining and planning hardware for y
 The basic concept of SMBTA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+image::gfx/overview.png[Samba servers configured with the VFS module send meta data to smbtad, which provides database access to the smbtatools programs]
+
 The Samba CIFS server features a Virtual File System Layer (VFS), that allows modules to be linked into the layer, replacing or enhancing the functions of the VFS. Modules can be linked into and behave completely transparent. SMBTA makes use of this functionality by adding a module to Samba's VFS. In the VFS layer, the module is collecting data from prominent VFS functions like write, read, close etc. 
 
 The collected data may be be encrypted, and send over the network to a receiver program. This daemon program, smbtad, is then building a SQL storage from the data. Besides of the generated SQL storage, client programs can be used to query the storage in a specialized way over the network.
@@ -71,13 +75,13 @@ The collected data may be be encrypted, and send over the network to a receiver 
 Where to get SMBTA
 ~~~~~~~~~~~~~~~~~~
 
-The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0. However, the current SMBTA module shipping with Samba is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.
+The SMBTA VFS module is called vfs_smb_traffic_analyzer.so, and is packaged with Samba version greater or equal than 3.2.0. 
 
-For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at http://holger123.wordpress.com/smb-traffic-analyzer/.
+IMPORTANT: The current SMBTA module shipping with Samba (any version older than 3.6.0pre1) is only implementing version 1 of the SMBTA protocol, and this document is only refering to version 2 of the protocol. The implementation of vfs_smb_traffic_analyzer.so protocol version 2 can be found in the current master git source tree of Samba. It is expected to be shipped with Samba 3.6.0.
 
-For the openSUSE Linux distribution, RPM packages are available from the 
-openSUSE Build Service.
+TIP: For the openSUSE Linux distribution, SMBTAv2 has been backported to current Samba releases, from 3.5.0 and newer. You can retrieve the SMBTAv2 VFS module from the openSUSE BuildService. Furthermore, RPM packages for several openSUSE releases of the smbtatools and the smbtad component are available on the buildservice.
 
+The other parts of SMBTA, the daemon program smbtad, as well as the client programs smbtaquery and smbtamonitor are available in source code from the projects homepage at http://holger123.wordpress.com/smb-traffic-analyzer/.
 
 Building SMBTA from the sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,7 +142,7 @@ A short HOWTO
 
 The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".
 
-For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( http://xmlsoft.org/XSLT/ ).
+TIP: For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( http://xmlsoft.org/XSLT/ ).
 
 Setting up the Samba Server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -224,7 +228,7 @@ VFS module, SMBTA logging for this service can be activated:
         smb_traffic_analyzer:port = 3490
 ----------------------------------------
 
-By default, SMBTA will use protocol version 1, to not break any existing
+IMPORTANT: By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
 use protocol version 2.
 
@@ -494,17 +498,17 @@ smbtaquery produces XML to represent it's results. To convert the XML data to th
 
 smbtaquery comes with stylesheets telling the xsltproc program how to translate the XML raw data to other formats. It is expecting these stylesheets in the directory /usr/share/smbtatools/. 
 
-If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:
+TIP: If the stylesheets are installed at a different place, set the SMBTATOOLS_DATA_PATH environment variable to the path where the stylesheets reside:
 ---------------------------------------------------------
 export SMBTATOOLS_DATA_PATH=$YOUR/$PATH/$TO/$THE/$DATA
 ---------------------------------------------------------
 
-If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:
+TIP: If the location of the xsltproc program is different from /usr/bin/, you can tell smbtaquery by setting the SMBTATOOLS_XSLTPROC_PATH environment variable, such as:
 ----------------------------------------------------------
 export SMBTATOOLS_XSLTPROC_PATH=$YOUR/$PATH/$TO/$XSLTPROC
 ----------------------------------------------------------
 
-If you don't intend to use the xsltproc program, don't have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.
+TIP: If you don't intend to use the xsltproc program, don't have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.
 
 General usage
 ^^^^^^^^^^^^^
@@ -597,7 +601,7 @@ Here is an example query:
 The objects
 +++++++++++
 
-Any functions called by smbtaquery are in relation to an object which is named first. An object can be a file, a share, or a username, or global, which does not relate to a specific object.
+IMPORTANT: Any functions called by smbtaquery are in relation to an object which is named first. An object can be a file, a share, or a username, or global, which does not relate to a specific object.
 
 For example if you make a query like this:
 ------------------------------------
