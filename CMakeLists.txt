@@ -159,7 +159,12 @@ INSTALL(FILES src/query/xslt/xslt-ascii.xml
 INSTALL(FILES src/query/xslt/xslt-html.xml
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME xslt-html.xml)
-
+INSTALL(FILES src/torture/tool/filenames.txt
+	DESTINATION "share/smbtatools"
+	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME filenames.txt)
+INSTALL(FILES src/torture/tool/directories.txt
+	DESTINATION "share/smbtatools"
+	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
 INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture DESTINATION bin)
 
