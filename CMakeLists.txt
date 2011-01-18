@@ -129,6 +129,12 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
 
+SET(CurrentExe "smbtatorturesrv")
+ADD_EXECUTABLE(${CurrentExe}
+	src/torture/srv/smbtatorturesrv.c
+	)
+TARGET_LINK_LIBRARIES(${CurrentExe})
+
 SET(CurrentExe "rrddriver")
 ADD_EXECUTABLE(${CurrentExe}
 	src/webmon/rrddriver/main.c
