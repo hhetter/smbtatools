@@ -32,11 +32,82 @@
 #include <errno.h>
 #include <limits.h>
 
+#include <netdb.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/un.h>
+#include <signal.h>
+#include <pthread.h>
+#include <getopt.h>
+#include <syslog.h>
+#include <sys/select.h>
+#include <dlfcn.h>
+#include <string.h>
+#include <stdio.h>
+#include <talloc.h>
+#include <unistd.h>
+#include <errno.h>
+#include <limits.h>
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/un.h>
+#include <signal.h>
+#include <pthread.h>
+#include <getopt.h>
+#include <syslog.h>
+#include <sys/select.h>
+#include <dlfcn.h>
+
+
+
+
+struct configuration_data {
+        char *user;
+        char *password;
+        char *workgroup;
+        char *share1;
+        char *share2;
+        char *record;
+        char *replay;
+        unsigned long int  size;
+        int  copy;
+        int  time;
+        int  number;
+        int verbose;
+
+        FILE *recorder;
+        FILE *player;
+
+        int port;
+        int sockfd;
+        char *host;
+
+} typedef conf;
+
+conf config;
+
+
+
 
 char **fnamelist;
 
 
-
+// get random filenames, either from a
+// smbtatorturesrv, or generate on it's own
 char *get_random_filename() {
 	int max_filenames = 0;
 	int max_directories = 0;
@@ -46,49 +117,91 @@ char *get_random_filename() {
 	char *strdat = NULL;
 	char *fullstr = NULL;
 	char *retstr = NULL;
-	FILE *fnames = fopen("/usr/share/smbtatools/filenames.txt","r");
-	FILE *dnames = fopen("/usr/share/smbtatools/directories.txt","r");
-	if (fnames == NULL || dnames == NULL) {
-		printf("ERROR: 	cannot open filenames list and/or\n");
-		printf("	directory list. Exiting.\n");
-	}
-	while ( !feof(fnames) ) {
-		fscanf(fnames, "%ms\n", &strdat);
-		max_filenames = max_filenames + 1;
-		if (strdat != NULL) free(strdat);
-	}
-        while ( !feof(dnames) ) {
-                fscanf(dnames, "%ms\n", &strdat);
-                if (strdat != NULL) free(strdat);
-                max_directories = max_directories + 1;
-        }
-	rewind(fnames);
-	rewind(dnames);
-	nfilename = rand() % max_filenames;
-	ndirectory = rand() % max_directories;
-	while ( z < ndirectory ) {
-		z++;
-		fscanf(dnames, "%ms\n", &strdat);
-		if (strdat != NULL) free(strdat);
-	}
-	fscanf(dnames, "%ms\n",&fullstr);
-	z = 0;
-	while ( z < nfilename) {
-		z++;
-		fscanf(fnames, "%ms\n", &strdat);
-		if (strdat != NULL) free(strdat);
-	}
-	fscanf(fnames,"%ms\n",&strdat);
-	retstr = (char *) malloc( sizeof(char) * ( strlen(fullstr) + strlen(strdat) ) + 5 );
-	strcpy(retstr, fullstr);
-	strcat(retstr,"/");
-	strcat(retstr, strdat);
-	free(fullstr);
-	free(strdat);
-	fclose(fnames);
-	fclose(dnames);
-	return retstr;
-}	
+
+	switch(config.port) {
+	case 0: ;
+		FILE *fnames = fopen("/usr/share/smbtatools/filenames.txt","r");
+		FILE *dnames = fopen("/usr/share/smbtatools/directories.txt","r");
+		if (fnames == NULL || dnames == NULL) {
+			printf("ERROR: 	cannot open filenames list and/or\n");
+			printf("	directory list. Exiting.\n");
+		}
+		while ( !feof(fnames) ) {
+			fscanf(fnames, "%ms\n", &strdat);
+			max_filenames = max_filenames + 1;
+			if (strdat != NULL) free(strdat);
+		}
+        	while ( !feof(dnames) ) {
+               		fscanf(dnames, "%ms\n", &strdat);
+                	if (strdat != NULL) free(strdat);
+                	max_directories = max_directories + 1;
+        	}
+		rewind(fnames);
+		rewind(dnames);
+		nfilename = rand() % max_filenames;
+		ndirectory = rand() % max_directories;
+		while ( z < ndirectory ) {
+			z++;
+			fscanf(dnames, "%ms\n", &strdat);
+			if (strdat != NULL) free(strdat);
+		}
+		fscanf(dnames, "%ms\n",&fullstr);
+		z = 0;
+		while ( z < nfilename) {
+			z++;
+			fscanf(fnames, "%ms\n", &strdat);
+			if (strdat != NULL) free(strdat);
+		}
+		fscanf(fnames,"%ms\n",&strdat);
+		retstr = (char *) malloc( sizeof(char) * ( strlen(fullstr) + strlen(strdat) ) + 5 );
+		strcpy(retstr, fullstr);
+		strcat(retstr,"/");
+		strcat(retstr, strdat);
+		free(fullstr);
+		free(strdat);
+		fclose(fnames);
+		fclose(dnames);
+		return retstr;
+	default:
+		if (config.verbose==1)
+			printf("Receiving a filename from smbtatorturesrv...\n");
+		// get a filename from smbtatorturesrv
+		fd_set wfd_set;
+		FD_ZERO(&wfd_set);
+		FD_SET(config.sockfd,&wfd_set);
+		z = select(config.sockfd + 1,NULL,&wfd_set,NULL,NULL);
+		if (FD_ISSET( config.sockfd,&wfd_set) ) {
+			strdat=strdup("      ");
+			strcpy(strdat,"0001f");
+			send(config.sockfd,strdat,5,0);
+		}
+		FD_ZERO(&wfd_set);
+		FD_SET(config.sockfd,&wfd_set);
+		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
+		if (FD_ISSET( config.sockfd,&wfd_set) ) {
+			recv(config.sockfd,strdat,4,0);
+			z = atoi(strdat);
+		}
+		FD_ZERO(&wfd_set);
+		FD_SET(config.sockfd,&wfd_set);
+		free(strdat);
+		int zz=z;
+		strdat = (char *) malloc( (sizeof(char)*z)+2);
+		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
+		if (FD_ISSET( config.sockfd,&wfd_set)) {
+			recv(config.sockfd,strdat,zz,0);
+			strdat[zz+1]='\0';
+			if (config.verbose==1)
+				printf("Got this from smbtatorturesrv: > %s <\n",strdat);
+			return strdat;
+		}
+		if (config.verbose==1)
+			printf("WARNING: Unable to receive a filename from smbtatorturesrv!");		
+		return NULL;
+		}
+}
+	
+	
 	
 		
 
@@ -109,29 +222,6 @@ unsigned long long int common_myatoi( char *num)
            }    
         return (unsigned long long) val; 
 }
-
-struct configuration_data {
-	char *user;
-	char *password;
-	char *workgroup;
-	char *share1;
-	char *share2;
-	char *record;
-	char *replay;
-	unsigned long int  size;
-	int  copy;
-	int  time;
-	int  number;
-	int verbose;
-
-	FILE *recorder;
-	FILE *player;
-
-} typedef conf;
-
-conf config;
-
-
 
 static void
 get_auth_data_fn(const char * pServer,
@@ -436,6 +526,10 @@ void help()
 	printf("			Default: 20			\n");
 	printf("-v --verbose		be verbose			\n");
 	printf("-e --replay		filename of the file to replay.	\n");
+	printf("\n");
+	printf("When running networked with smbtatorturesrv:		\n");
+	printf("-P --port		Port to connect to.		\n");
+	printf("-H --host		hostname to connect to.		\n");
 }
 
 void define_config_defaults()
@@ -460,8 +554,47 @@ void define_config_defaults()
 	config.number=20;
 	config.verbose=0;
 	config.replay=NULL;
+	config.port = 0;
+	config.sockfd = 0;
+	config.host = NULL;
 
 }
+
+int connect_smbtatorturesrv(int iport,char *hostname)
+{
+        if ( hostname == NULL ) {
+                printf("ERROR: no hostname given.\n");
+                exit(1);
+        }
+
+        struct addrinfo *ai;   
+        struct addrinfo hints;
+        memset(&hints,'\0',sizeof(hints));
+     
+        hints.ai_flags=AI_ADDRCONFIG;
+        hints.ai_socktype=SOCK_STREAM;
+        char port[255]; 
+        sprintf(port,"%i",iport);
+        int e=getaddrinfo(hostname,port,&hints,&ai);
+        if (e!=0) {
+                printf("ERROR: error getaddrinfo\n");
+                exit(1);
+        } 
+        int sockfd=socket(ai->ai_family,ai->ai_socktype,ai->ai_protocol);
+        if (sockfd==-1) {
+                printf("ERROR: error in socket operation!\n");
+                exit(1);
+        };
+        int result=connect(sockfd,ai->ai_addr,ai->ai_addrlen);
+        if (result==-1) {
+                printf("ERROR: error in connect operation!\n");
+                exit(1);
+        };
+
+        return sockfd;
+
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -480,6 +613,8 @@ int main(int argc, char *argv[])
                 static struct option long_options[] =
                         {
                          { "user",1,NULL,'u' },
+			 { "port",1,NULL,'P' },
+			 { "host",1,NULL,'H' },
                          { "workgroup",1,NULL,'w' },
                          { "password",1,NULL,'p'},
                          { "help",0,NULL,'h' },
@@ -496,7 +631,7 @@ int main(int argc, char *argv[])
                         };
 
                 c=getopt_long(argc,argv,
-                        "e:u:w:p:h1:2:c:r:s:t:n:v",
+                        "e:u:w:p:h1:2:c:r:s:t:n:vH:P:",
                         long_options,&option_index);
                 if (c==-1) break;
                 switch(c)
@@ -520,6 +655,14 @@ int main(int argc, char *argv[])
 				config.password=(char *) malloc(sizeof(char)*
 					strlen(optarg));
 				strcpy(config.password,optarg);
+				break;
+			case 'P':
+				config.port=atoi(optarg);
+				break;
+			case 'H':
+				config.host=(char *) malloc(sizeof(char)*
+					strlen(optarg));
+				strcpy(config.host,optarg);
 				break;
 			case 'h':
 				help();
@@ -591,6 +734,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	if (config.replay!=NULL && config.port!=0) {
+		printf("FYI: 	Since we replay a torture run, we will not\n");
+		printf("	connect to a smbtatorturesrv process.\n");
+		config.port = 0;
+	}
+
 	if (config.record!=NULL && config.copy==0) {
 		printf("ERROR: recording can't be infinite.\n");
 		return 0;
@@ -611,6 +760,15 @@ int main(int argc, char *argv[])
 				" opened for writing.\n");
 		return 0;
 		}
+	}
+	if (config.port != 0) {
+		// connect to smbtatorturesrv
+		if (config.host==NULL) {
+			printf("ERROR: please specify a host to connect to.\n");
+			return 0;
+		}
+		config.sockfd=
+			connect_smbtatorturesrv(config.port, config.host);
 	}
         /* init fnamelist */
         fnamelist = (char **) malloc(sizeof(char *) * (config.number + 1));
@@ -677,6 +835,8 @@ int main(int argc, char *argv[])
 	free(config.password);
 	free(config.share1);
 	free(config.share2);
+	if (config.host != NULL) free(config.host);
+
 	if (config.record!=NULL) {
 		free(config.record);
 		fclose(config.recorder);
@@ -685,7 +845,7 @@ int main(int argc, char *argv[])
 		free(config.replay);
 		fclose(config.player);
 	}
-		
+	if (config.port!=0) close(config.sockfd);		
 
 	return 0;
 
