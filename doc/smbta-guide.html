@@ -1353,11 +1353,12 @@ DS:write:GAUGE:10:U:U</tt></pre>
 <div class="paragraph"><p>This line will create a PNG graphic showing a diagram, titled "Troughput on share <em>pool1</em>, showing the read and write traffic, stacked, from the unix time format you gave with the -s parameter. Please consult the rrdtool documentation for more details.</p></div>
 <h3 id="_smbtatorture">5.4. smbtatorture</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The smbtatorture program is a small test suite for SMBTA. It&#8217;s being used mainly by SMBTA developers to do long time tests checking the stability of the software chain, and how it reacts on large amounts of data. Also it is being used to do performance measurement when SMBTA is involved in Samba traffic. smbtatorture can mimic "usual" office traffic loads, or continuous stress testing by making defined pauses while creating traffic. It is able to measure the time it needs for it&#8217;s own run, and is also able to record and playback it&#8217;s own run, so that software defects can be reproduced in other setups, and performance measurement can be done. Basically a single smbtatorture instance connects to the samba server as one user, and operates on two shares. It then copies a defined set of files from and to the share. To connect to a CIFS server, smbtatorture is utilizing the libsmbclient library.</p></div>
+<div class="paragraph"><p>Several smbtatorture processes can be run in parallel, accessing the same set of shares on a Samba server. The processes shall not use the same files. To prevent this situation, smbtatorture can optionally connect to smbtatorturesrv, which distributes unique filenames to any smbtatorture process it has a connection to.</p></div>
 <h4 id="_smbtatorture_command_line_arguments">5.4.1. smbtatorture command line arguments</h4>
 <div class="listingblock">
 <div class="content">
-<pre><tt>holger@linux-xnjq:~/t/smbtatools/run&gt; ./smbtatorture --help
-smbtatorture version 1.2 - small testingsuite for smbta
+<pre><tt>holger@linux-xnjq:~/t/smbtatools/run&gt; ./smbtatorture
+smbtatorture version 1.0 - small testingsuite for smbta
 
 (C) 2009-2010 Michael Haefner
 (C) 2009-2010 Holger Hetterich
@@ -1386,8 +1387,16 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
 -n --number             Number of generated files
                         Default: 20
 -v --verbose            be verbose
--e --replay             filename of the file to replay.</tt></pre>
+-e --replay             filename of the file to replay.
+
+When running networked with smbtatorturesrv:
+-P --port               Port to connect to.
+-H --host               hostname to connect to.</tt></pre>
 </div></div>
+<h5 id="_p_port">-P --port</h5>
+<div class="paragraph"><p>Port number for the <strong>smbtatorturesrv</strong> connection (see the next section for details).</p></div>
+<h5 id="_h_host">-H --host</h5>
+<div class="paragraph"><p>Hostname of the system that is running <strong>smbtatorturesrv</strong> (see the next section for details).</p></div>
 <h5 id="_u_username">-u --username</h5>
 <div class="paragraph"><p>Specify a username that smbtatorture should use to connect to the Samba server.</p></div>
 <h5 id="_w_workgroup">-w --workgroup</h5>
@@ -1415,7 +1424,30 @@ The default is : WORKGROUP</p></div>
 <div class="paragraph"><p>If given, smbtatorture will be more verbose on what it is doing.</p></div>
 <h5 id="_e_replay">-e --replay</h5>
 <div class="paragraph"><p>Specify a file saved by the -r option, to replay the exact same run.</p></div>
-<h4 id="_smbtatorture_usage_examples">5.4.2. smbtatorture usage examples</h4>
+<h4 id="_running_smbtatorture_networked_and_in_parallel">5.4.2. Running smbtatorture networked and in parallel</h4>
+<div class="paragraph"><p>Some more complex testing environments feature more users, more shares, and more connections for Samba and smbtad to handle. If more than a single smbtatorture process is running, those should not touch the same files at the same time. Therefore, a program called <strong>smbtatorturesrv</strong> is available, which is distributing unique filenames to the processes. The <strong>smbtatorture</strong> program is optionally connecting through an internet socket to this program, to fetch filenames from smbtatorturesrv. To run smbtatorture connected to smbtatorturesrv involves the <strong>-P</strong> and <strong>-H</strong> parameters. <strong>-P</strong> defines the port number to connect to, and <strong>-H</strong> specifies the hostname of the system that is running smbtatorturesrv.</p></div>
+<div class="paragraph"><p>For Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p midland -1 smb://localhost/pool1/ -2 smb://localhost/pool2/</tt></pre>
+</div></div>
+<div class="paragraph"><p>This call would run <strong>verbose</strong>, run with a <strong>maximum time of 10 seconds</strong> between each file operation, create <strong>20 files</strong> with the <strong>overall size of 40 MB</strong>, and connect to <strong>smbtatorturesrv</strong> on <strong>port 3493</strong> on host <strong>localhost</strong> to receive unique filenames.</p></div>
+<h5 id="_smbtatorturesrv">smbtatorturesrv</h5>
+<div class="paragraph"><p>The smbtatorturesrv program is used when multiple instances of smbtatorture are running against two or more shares. In its current implementation, it is serving unique filenames to the smbtatorture client processes.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>holger@linux-xnjq:~/t/smbtatools/run&gt; ./smbtatorturesrv -h
+-p NUMBER       set the portnumber to listen on
+-v --verbose    be verbose.
+-V --version    print version.
+-h --help       this help text.</tt></pre>
+</div></div>
+<div class="paragraph"><p>To make smbtatorturesrv listen on port 3493, the user would issue the following command:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>smbtatorturesrv -p 3493</tt></pre>
+</div></div>
+<h4 id="_smbtatorture_usage_examples">5.4.3. smbtatorture usage examples</h4>
 <div class="paragraph"><p>The following example will create 20 files on each shares "pool1" and "pool2", connects as user "holger" with password "the_password". During the run, smbtatorture will output message, being verbose.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1514,7 +1546,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.2<br />
-Last updated 2011-01-17 17:49:26 CEST
+Last updated 2011-01-19 23:03:32 CEST
 </div>
 </div>
 </body>
