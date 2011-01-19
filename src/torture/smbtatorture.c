@@ -175,6 +175,7 @@ char *get_random_filename() {
 			strcpy(strdat,"0001f");
 			send(config.sockfd,strdat,5,0);
 		}
+		printf("	Send request...\n");
 		FD_ZERO(&wfd_set);
 		FD_SET(config.sockfd,&wfd_set);
 		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
@@ -182,6 +183,9 @@ char *get_random_filename() {
 			recv(config.sockfd,strdat,4,0);
 			z = atoi(strdat);
 		}
+		printf("	Following answer will be %i bytes long...\n",
+			z);
+
 		FD_ZERO(&wfd_set);
 		FD_SET(config.sockfd,&wfd_set);
 		free(strdat);
@@ -190,7 +194,7 @@ char *get_random_filename() {
 		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
 		if (FD_ISSET( config.sockfd,&wfd_set)) {
 			recv(config.sockfd,strdat,zz,0);
-			strdat[zz+1]='\0';
+			strdat[zz]='\0';
 			if (config.verbose==1)
 				printf("Got this from smbtatorturesrv: > %s <\n",strdat);
 			return strdat;

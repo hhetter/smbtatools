@@ -92,6 +92,22 @@ void delete_conn( int socket )
         }
 }
 
+void recreate_fd_sets(  fd_set *active_read_fd_set,
+                                        fd_set *active_write_fd_set)
+{
+        FD_ZERO(active_read_fd_set);
+        FD_ZERO(active_write_fd_set);
+        struct conn_list *Searcher = conn_list_begin;
+
+        while (Searcher != NULL) {
+                FD_SET(Searcher->sockfd, active_read_fd_set);
+                FD_SET(Searcher->sockfd, active_write_fd_set);
+                Searcher = Searcher->next;
+        }
+}
+
+
+
 int conn_list_max()
 {
 	struct conn_list *entry = conn_list_begin;
@@ -227,10 +243,14 @@ void handle_data(int sock, struct configuration *config)
 		printf("ERROR: wrong format!\n");
 		exit(1);
 	}
+	if (t == 0) { // FIXME Client exited to something 
+	}
 	int l = atoi(prefix);
 	inp = (char *) malloc(sizeof(char) * (l+1));
 	t = recv( sock, inp,l,0);
 	// interpret commands
+	printf("Got command: %c\n",inp[0]);
+	r = 1;
 	switch ( inp[0] )
 	{
 	case 'f':
@@ -239,7 +259,7 @@ void handle_data(int sock, struct configuration *config)
 			fname=get_random_filename();
 			r=check_if_filename_exists(fname);
 		}
-			
+		printf("Sending : %s\n",fname);		
 		send_data(fname,sock);
 		break;
 	default:
@@ -267,6 +287,7 @@ void handle_network( struct configuration *config )
 	for (;;) 
 	{
 		maxconn=conn_list_max()+1;
+		recreate_fd_sets(&read_fd_set,&write_fd_set);
 		z = select( maxconn,
                         &read_fd_set, NULL, NULL,NULL);
 	                for( i = 0; i < maxconn; ++i) {
@@ -275,7 +296,9 @@ void handle_network( struct configuration *config )
                                 	if ( i == config->sockfd) {
                                         	sr = accept( config->sockfd,
 							&remote_inet,&t);
+						printf("Accepted Client.\n");
 						add_conn(sr);
+						printf("Connection added.\n");
 					} else handle_data(i,config);
                         	}
                 	}
