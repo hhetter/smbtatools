@@ -73,24 +73,33 @@ void add_conn( int socket)
         }
 }
 
-void delete_conn( int socket )
+
+void delete_conn(int socket)
 {
-        struct conn_list *entry = conn_list_begin;
-        struct conn_list *backup = conn_list_begin;
-        while (entry != NULL) {
-                if ( socket == entry->sockfd) {
-                        if (conn_list_begin==entry) {
-                                conn_list_begin=entry->next;
-                                if (conn_list_end==conn_list_begin)
-                                        conn_list_end=entry->next;
-                        } else  backup->next=entry->next;
-                        free(entry);
-			return;
+        struct conn_list *Searcher = conn_list_begin;
+        struct conn_list *Prev = NULL;
+
+        while (Searcher != NULL) {
+                if ( Searcher->sockfd == socket ) {
+                        if ( Prev == NULL ) {
+                                /* first entry */
+                                conn_list_begin = Searcher->next;
+                                free(Searcher);
+                                return;
                         }
-                backup=entry;
-                entry=entry->next;
+
+                        Prev->next = Searcher->next;
+                        if (Searcher == conn_list_end)
+                                conn_list_end=Prev;
+                        free(Searcher);
+                        return;
+                }
+        Prev = Searcher;
+        Searcher = Searcher->next;
         }
+        return; 
 }
+
 
 void recreate_fd_sets(  fd_set *active_read_fd_set,
                                         fd_set *active_write_fd_set)
@@ -100,6 +109,7 @@ void recreate_fd_sets(  fd_set *active_read_fd_set,
         struct conn_list *Searcher = conn_list_begin;
 
         while (Searcher != NULL) {
+		printf("Recreating %i\n",Searcher->sockfd);
                 FD_SET(Searcher->sockfd, active_read_fd_set);
                 FD_SET(Searcher->sockfd, active_write_fd_set);
                 Searcher = Searcher->next;
@@ -150,6 +160,37 @@ void delete_filename( char *fname )
 			return;
 			}
 		backup=entry;
+		entry=entry->next;
+	}
+}
+
+void delete_all_filenames_of_sock( int sockfd )
+{
+        struct file_element *entry = fnamelist_begin;
+        struct file_element *backup = fnamelist_begin;
+        while (entry != NULL) {
+                if ( entry->socket == sockfd ) {
+			printf("DELETING!\n");
+                        free(entry->filename);
+                        if (fnamelist_begin==entry) {
+				printf("DELETING FIRST\n");
+                                fnamelist_begin=entry->next;
+				backup=entry->next;
+			} else backup->next=entry->next;
+                        free(entry);
+			entry=fnamelist_begin;
+			continue;
+                }
+                backup=entry;
+                entry=entry->next;
+        }
+}
+
+void print_filename_list()
+{
+	struct file_element *entry= fnamelist_begin;
+	while (entry != NULL) {
+		printf("Reserved File: %s Sock : %i\n",entry->filename,entry->socket);
 		entry=entry->next;
 	}
 }
@@ -239,11 +280,16 @@ void handle_data(int sock, struct configuration *config)
 	char *fname=NULL;
 	int r,t;
 	t = recv( sock, prefix, 4, 0);
-	if (t != 4) { 
+	if (t != 4 && t != 0) { 
 		printf("ERROR: wrong format!\n");
 		exit(1);
 	}
-	if (t == 0) { // FIXME Client exited to something 
+	if (t == 0) { 
+		delete_all_filenames_of_sock(sock);
+		delete_conn(sock);
+		printf("Connection closed.\n");
+		print_filename_list();
+		return; 
 	}
 	int l = atoi(prefix);
 	inp = (char *) malloc(sizeof(char) * (l+1));
@@ -259,8 +305,10 @@ void handle_data(int sock, struct configuration *config)
 			fname=get_random_filename();
 			r=check_if_filename_exists(fname);
 		}
+		add_filename(fname, sock);
 		printf("Sending : %s\n",fname);		
 		send_data(fname,sock);
+		print_filename_list();
 		break;
 	default:
 		printf("ERROR: wrong command.\n");
