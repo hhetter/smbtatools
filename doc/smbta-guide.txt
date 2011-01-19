@@ -990,12 +990,14 @@ smbtatorture
 
 The smbtatorture program is a small test suite for SMBTA. It's being used mainly by SMBTA developers to do long time tests checking the stability of the software chain, and how it reacts on large amounts of data. Also it is being used to do performance measurement when SMBTA is involved in Samba traffic. smbtatorture can mimic "usual" office traffic loads, or continuous stress testing by making defined pauses while creating traffic. It is able to measure the time it needs for it's own run, and is also able to record and playback it's own run, so that software defects can be reproduced in other setups, and performance measurement can be done. Basically a single smbtatorture instance connects to the samba server as one user, and operates on two shares. It then copies a defined set of files from and to the share. To connect to a CIFS server, smbtatorture is utilizing the libsmbclient library.
 
+Several smbtatorture processes can be run in parallel, accessing the same set of shares on a Samba server. The processes shall not use the same files. To prevent this situation, smbtatorture can optionally connect to smbtatorturesrv, which distributes unique filenames to any smbtatorture process it has a connection to.
+
 smbtatorture command line arguments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ---------------------------------------------------------------------------------
-holger@linux-xnjq:~/t/smbtatools/run> ./smbtatorture --help
-smbtatorture version 1.2 - small testingsuite for smbta	
+holger@linux-xnjq:~/t/smbtatools/run> ./smbtatorture
+smbtatorture version 1.0 - small testingsuite for smbta	
 
 (C) 2009-2010 Michael Haefner
 (C) 2009-2010 Holger Hetterich
@@ -1025,7 +1027,19 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 			Default: 20			
 -v --verbose		be verbose			
 -e --replay		filename of the file to replay.	
+
+When running networked with smbtatorturesrv:		
+-P --port		Port to connect to.		
+-H --host		hostname to connect to.		
 ----------------------------------------------------------------------------------
+
+-P --port
++++++++++
+Port number for the *smbtatorturesrv* connection (see the next section for details).
+
+-H --host
++++++++++
+Hostname of the system that is running *smbtatorturesrv* (see the next section for details).
 
 -u --username
 +++++++++++++
@@ -1079,6 +1093,34 @@ If given, smbtatorture will be more verbose on what it is doing.
 -e --replay
 +++++++++++
 Specify a file saved by the -r option, to replay the exact same run.
+
+Running smbtatorture networked and in parallel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Some more complex testing environments feature more users, more shares, and more connections for Samba and smbtad to handle. If more than a single smbtatorture process is running, those should not touch the same files at the same time. Therefore, a program called *smbtatorturesrv* is available, which is distributing unique filenames to the processes. The *smbtatorture* program is optionally connecting through an internet socket to this program, to fetch filenames from smbtatorturesrv. To run smbtatorture connected to smbtatorturesrv involves the *-P* and *-H* parameters. *-P* defines the port number to connect to, and *-H* specifies the hostname of the system that is running smbtatorturesrv.
+
+For Example:
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p midland -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+This call would run *verbose*, run with a *maximum time of 10 seconds* between each file operation, create *20 files* with the *overall size of 40 MB*, and connect to *smbtatorturesrv* on *port 3493* on host *localhost* to receive unique filenames.
+
+smbtatorturesrv
++++++++++++++++
+The smbtatorturesrv program is used when multiple instances of smbtatorture are running against two or more shares. In its current implementation, it is serving unique filenames to the smbtatorture client processes.
+--------------------------------------------------------------------
+holger@linux-xnjq:~/t/smbtatools/run> ./smbtatorturesrv -h
+-p NUMBER	set the portnumber to listen on
+-v --verbose	be verbose.
+-V --version	print version.
+-h --help	this help text.
+--------------------------------------------------------------------
+
+To make smbtatorturesrv listen on port 3493, the user would issue the following command:
+------------------------------------------------------------------------
+smbtatorturesrv -p 3493
+------------------------------------------------------------------------
+
 
 smbtatorture usage examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
