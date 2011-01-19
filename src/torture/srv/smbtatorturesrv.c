@@ -235,9 +235,11 @@ void handle_data(int sock, struct configuration *config)
 	{
 	case 'f':
 		// request for a filename
-		fname=get_random_filename();
-		r=1;
-		while( r==1 ) r=check_if_filename_exists(fname);
+		while( r==1 ) {
+			fname=get_random_filename();
+			r=check_if_filename_exists(fname);
+		}
+			
 		send_data(fname,sock);
 		break;
 	default:
