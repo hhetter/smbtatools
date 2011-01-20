@@ -109,7 +109,6 @@ void recreate_fd_sets(  fd_set *active_read_fd_set,
         struct conn_list *Searcher = conn_list_begin;
 
         while (Searcher != NULL) {
-		printf("Recreating %i\n",Searcher->sockfd);
                 FD_SET(Searcher->sockfd, active_read_fd_set);
                 FD_SET(Searcher->sockfd, active_write_fd_set);
                 Searcher = Searcher->next;
@@ -170,10 +169,8 @@ void delete_all_filenames_of_sock( int sockfd )
         struct file_element *backup = fnamelist_begin;
         while (entry != NULL) {
                 if ( entry->socket == sockfd ) {
-			printf("DELETING!\n");
                         free(entry->filename);
                         if (fnamelist_begin==entry) {
-				printf("DELETING FIRST\n");
                                 fnamelist_begin=entry->next;
 				backup=entry->next;
 			} else backup->next=entry->next;
@@ -190,7 +187,6 @@ void print_filename_list()
 {
 	struct file_element *entry= fnamelist_begin;
 	while (entry != NULL) {
-		printf("Reserved File: %s Sock : %i\n",entry->filename,entry->socket);
 		entry=entry->next;
 	}
 }
@@ -287,15 +283,12 @@ void handle_data(int sock, struct configuration *config)
 	if (t == 0) { 
 		delete_all_filenames_of_sock(sock);
 		delete_conn(sock);
-		printf("Connection closed.\n");
-		print_filename_list();
 		return; 
 	}
 	int l = atoi(prefix);
 	inp = (char *) malloc(sizeof(char) * (l+1));
 	t = recv( sock, inp,l,0);
 	// interpret commands
-	printf("Got command: %c\n",inp[0]);
 	r = 1;
 	switch ( inp[0] )
 	{
@@ -306,7 +299,6 @@ void handle_data(int sock, struct configuration *config)
 			r=check_if_filename_exists(fname);
 		}
 		add_filename(fname, sock);
-		printf("Sending : %s\n",fname);		
 		send_data(fname,sock);
 		print_filename_list();
 		break;
@@ -344,9 +336,7 @@ void handle_network( struct configuration *config )
                                 	if ( i == config->sockfd) {
                                         	sr = accept( config->sockfd,
 							&remote_inet,&t);
-						printf("Accepted Client.\n");
 						add_conn(sr);
-						printf("Connection added.\n");
 					} else handle_data(i,config);
                         	}
                 	}
