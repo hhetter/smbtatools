@@ -335,7 +335,7 @@ void handle_network( struct configuration *config )
                                 	int sr; 
                                 	if ( i == config->sockfd) {
                                         	sr = accept( config->sockfd,
-							&remote_inet,&t);
+							(struct sockaddr *) &remote_inet,&t);
 						add_conn(sr);
 					} else handle_data(i,config);
                         	}
