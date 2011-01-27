@@ -336,6 +336,10 @@ void handle_network( struct configuration *config )
                                 	if ( i == config->sockfd) {
                                         	sr = accept( config->sockfd,
 							(struct sockaddr *) &remote_inet,&t);
+						if (sr == -1) {
+							printf("ERROR: Could not accept connection!\n");
+							exit(1);
+						}
 						add_conn(sr);
 					} else handle_data(i,config);
                         	}
