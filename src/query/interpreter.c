@@ -70,10 +70,10 @@ void interpreter_xml_footer(
 	char *ctx = talloc(NULL, char);
 	if (c->xml_handle == NULL) return;
 	fprintf(c->xml_handle,
-		"<footer><application>SMB Traffic Analyzer</application>"
-		"<version>%s</version>"
-		"<timestamp>%s</timestamp>"
-		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>"
+		"<footer><application>SMB Traffic Analyzer</application>\n"
+		"<version>%s</version>\n"
+		"<timestamp>%s</timestamp>\n"
+		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>\n"
 		"</footer></smbta_output>",
 		SMBTAQUERY_VERSION,
 		interpreter_return_timestamp_now(ctx));
@@ -124,7 +124,7 @@ void interpreter_xml_close_function(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"</%s>", funcname);
+		"</%s>\n", funcname);
 }
 
 void interpreter_xml_description(
@@ -166,7 +166,7 @@ void interpreter_xml_usageentry(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<usagerow><time>%s</time><value>%lu</value><convval>%s</convval><percent>%s</percent></usagerow>\n",
+		"<usagerow><time>%s</time>\n<value>%lu</value>\n<convval>%s</convval>\n<percent>%s</percent></usagerow>\n\n",
 		timestr, value, conv_str, percent);
 }
 
@@ -177,15 +177,15 @@ void interpreter_xml_last_activityentry(
 {
 	if (c->xml_handle == NULL || entry->timestamp == NULL) return;
 	fprintf( c->xml_handle,
-		"<last_activityrow>"
-			"<timestamp>%s</timestamp>"
-			"<vfs_func>%s</vfs_func>"
-			"<user>%s</user>"
-			"<file>%s</file>"
-			"<domain>%s</domain>"
-			"<comment>%s</comment>"
-			"<value>%s</value>"
-		"</last_activityrow>",
+		"\n<last_activityrow>\n"
+			"<timestamp>%s</timestamp>\n"
+			"<vfs_func>%s</vfs_func>\n"
+			"<user>%s</user>\n"
+			"<file>%s</file>\n"
+			"<domain>%s</domain>\n"
+			"<comment>%s</comment>\n"
+			"<value>%s</value>\n"
+		"</last_activityrow>\n",
 		entry->timestamp,
 		vfs_function,
 		entry->user,
@@ -203,7 +203,7 @@ void interpreter_xml_toprow(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<toprow><num>%i</num><object>%s</object><value>%s</value></toprow>",
+		"\n<toprow><num>%i</num>\n<object>%s</object>\n<value>%s</value>\n</toprow>\n",
 		num,
 		obj,
 		val);
@@ -215,7 +215,7 @@ void interpreter_xml_objname(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<objname>%s</objname>",
+		"<objname>%s</objname>\n",
 		str);
 }
 
@@ -225,7 +225,7 @@ void interpreter_xml_begin_table(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<table_columns>%i</table_columns>",columns);
+		"<table_columns>%i</table_columns>\n",columns);
 }
 
 void interpreter_xml_begin_table_row(
@@ -234,6 +234,16 @@ void interpreter_xml_begin_table_row(
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
 		"<table_row>");
+}
+
+void interpreter_xml_table_named_row(
+	struct configuration_data *c,
+	char *named_row, char *res)
+{
+	if (c->xml_handle == NULL) return;
+	        fprintf( c->xml_handle,
+               		"<table_value id=\"%s\">%s</table_value>",
+			named_row,res);
 }
 
 void interpreter_xml_close_table_row(
@@ -335,16 +345,9 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 
-
 void interpreter_print_table( TALLOC_CTX *ctx,
 		struct configuration_data *c,
-                int columns,char *data, ...);
-
-
-
-
-void interpreter_print_table( TALLOC_CTX *ctx,
-		struct configuration_data *c,
+		char *named_row,
 		int columns,char *data, ...)
 {
 	int col=1;
@@ -366,8 +369,11 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 
 	interpreter_xml_begin_table_row(c);
 	while (res != NULL) {
-		res = result_get_element(ctx,element,data);
-		if (res != NULL) interpreter_xml_table_content(c,res);
+               res = result_get_element(ctx,element,data);
+		if ( col == 1 && named_row != NULL) {
+		       interpreter_xml_table_named_row(c,named_row,res);
+		}
+		if (res != NULL && col != 1) interpreter_xml_table_content(c,res);
 		if ( col==columns ) { col = 0; 
 			interpreter_xml_close_table_row(c);
 			interpreter_xml_begin_table_row(c);
@@ -1076,7 +1082,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat, "Name","SID");
+		interpreter_print_table( ctx, config, "username",2, qdat, "Name","SID");
 		interpreter_xml_close_function(config,"list");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of shares %s",
@@ -1088,7 +1094,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat, "Name","Domain");
+		interpreter_print_table( ctx, config, "sharename",2, qdat, "Name","Domain");
 		interpreter_xml_close_function(config,"list");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of files %s",
@@ -1101,7 +1107,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat,"Name","Share");
+		interpreter_print_table( ctx, config, "filename",2, qdat,"Name","Share");
 		interpreter_xml_close_function(config,"list");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command"
@@ -1466,7 +1472,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
-		interpreter_print_table(ctx,config, 1,erg,"SQL Result");
+		interpreter_print_table(ctx,config, NULL, 1,erg,"SQL Result");
 		exit(0);
 	}
 
