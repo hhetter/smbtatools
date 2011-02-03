@@ -1,4 +1,6 @@
-Webui::Application.routes.draw do
+Smbtaquery::Application.routes.draw do
+  get "list/index"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

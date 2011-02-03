@@ -4,4 +4,4 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
-Webui::Application.load_tasks
+Smbtaquery::Application.load_tasks
