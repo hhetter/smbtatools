@@ -528,8 +528,8 @@ smbtaquery is able to connect through a unix domain socket to smbtad alternativl
 smbtaquery -u -q 'global, usage rw;'
 -------------------------------------
 
-Output modes, saving results to a file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Output modes, saving of results to a file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 By default, smbtaquery prints it's results to the terminal it is running on. To print the results to a file, redirect the output to a file, such as:
 ------------------------------------------------
 smbtaquery -u -q 'global, usage rw;' > test.txt
