@@ -784,6 +784,57 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	TALLOC_FREE(temp);
 }
 
+void interpreter_fn_search( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query = NULL;
+	char *qdat = NULL;
+	char *xmldata = NULL;
+	const char *str = NULL;
+	const char *str2 = NULL;
+	if (command_data->argument_count != 1) {
+		printf("ERROR: the search function expects one argument\n");
+		exit(1);
+	}
+	xmldata = talloc_asprintf(ctx,"Fuzzy search for '%s' %s.",
+		command_data->arguments[1],
+		obj_struct->output_term);
+
+	
+	static const char *tables[] = { "write", "read", "open", "close", NULL };
+	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain", "timestamp", NULL };
+	int i = 0,t = 0;
+	str = tables[0];
+	str2 = rows[0];
+	while (str != NULL) {
+		while ( str2 != NULL ) {
+			query = talloc_asprintf(ctx,
+				"select username, timestamp, usersid, domain, filename from "
+				"%s where %s = '%s' and %s;",
+				tables[i], rows[t], command_data->arguments[0], obj_struct->sql);
+			qdat = sql_query(ctx,config,query);
+			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
+				switch (t) {
+				case 0:
+					printf("%s is a user, on domain %s.\n",
+						result_get_element(ctx,0,qdat),
+						result_get_element(ctx,3,qdat));
+					break;
+				default: break ;
+				}
+			}
+			t++;
+			str2 =  rows[t];
+		}
+	str2 = rows[0];
+	t = 0;
+	i++;
+	str = tables[i];
+	}
+}
+
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -1317,6 +1368,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_USAGE:
 		interpreter_fn_usage(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_SEARCH:
+		interpreter_fn_search(ctx, command_data, obj_struct,config);
+		break;
 	}
 }
 
@@ -1328,6 +1382,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "top") == 0) return INT_OBJ_TOP;
         if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
 	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
+	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
@@ -1496,5 +1551,7 @@ void interpreter_command_help()
         printf("                                specified object.\n");
 	printf("usage	[r][w][rw]		Show usage statistics\n"
 		"				on an object\n");
+	printf("search 	[string]		Does a search for STRING\n");
+	printf("				over the whole database.\n");
 
 };
