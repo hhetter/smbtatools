@@ -512,7 +512,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	/* delete any content from the last_activity_data table */
 	sqlite3_exec(config->db,"delete from last_activity_data;",NULL,0,NULL);
         if (command_data->argument_count != 1) {
-		printf("ERROR: the last_activity function expects 1 arguments.\n");
+		printf("ERROR: the last_activity function expects 1 argument.\n");
 		exit(1);
 	}
 	int limit = (int) common_myatoi(command_data->arguments[0]);
@@ -1407,6 +1407,11 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 	char *res = talloc_strndup( ctx, go, dif);
 	command_data->argument_count=0;
 	en = strstr(res, " ");
+	if (en == NULL) {
+		printf("ERROR: any function requires a parameter.\n");
+		TALLOC_FREE(ctx);
+		exit(1);
+	}
 	command_data->command = talloc_strndup( ctx, res, en-res);
 	en = en + 1;
 	bn = en;
