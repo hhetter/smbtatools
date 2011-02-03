@@ -70,10 +70,10 @@ void interpreter_xml_footer(
 	char *ctx = talloc(NULL, char);
 	if (c->xml_handle == NULL) return;
 	fprintf(c->xml_handle,
-		"<footer><application>SMB Traffic Analyzer</application>"
-		"<version>%s</version>"
-		"<timestamp>%s</timestamp>"
-		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>"
+		"<footer><application>SMB Traffic Analyzer</application>\n"
+		"<version>%s</version>\n"
+		"<timestamp>%s</timestamp>\n"
+		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>\n"
 		"</footer></smbta_output>",
 		SMBTAQUERY_VERSION,
 		interpreter_return_timestamp_now(ctx));
@@ -124,7 +124,7 @@ void interpreter_xml_close_function(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"</%s>", funcname);
+		"</%s>\n", funcname);
 }
 
 void interpreter_xml_description(
@@ -166,7 +166,7 @@ void interpreter_xml_usageentry(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<usagerow><time>%s</time><value>%lu</value><convval>%s</convval><percent>%s</percent></usagerow>\n",
+		"<usagerow><time>%s</time>\n<value>%lu</value>\n<convval>%s</convval>\n<percent>%s</percent></usagerow>\n\n",
 		timestr, value, conv_str, percent);
 }
 
@@ -177,15 +177,15 @@ void interpreter_xml_last_activityentry(
 {
 	if (c->xml_handle == NULL || entry->timestamp == NULL) return;
 	fprintf( c->xml_handle,
-		"<last_activityrow>"
-			"<timestamp>%s</timestamp>"
-			"<vfs_func>%s</vfs_func>"
-			"<user>%s</user>"
-			"<file>%s</file>"
-			"<domain>%s</domain>"
-			"<comment>%s</comment>"
-			"<value>%s</value>"
-		"</last_activityrow>",
+		"\n<last_activityrow>\n"
+			"<timestamp>%s</timestamp>\n"
+			"<vfs_func>%s</vfs_func>\n"
+			"<user>%s</user>\n"
+			"<file>%s</file>\n"
+			"<domain>%s</domain>\n"
+			"<comment>%s</comment>\n"
+			"<value>%s</value>\n"
+		"</last_activityrow>\n",
 		entry->timestamp,
 		vfs_function,
 		entry->user,
@@ -203,7 +203,7 @@ void interpreter_xml_toprow(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<toprow><num>%i</num><object>%s</object><value>%s</value></toprow>",
+		"\n<toprow><num>%i</num>\n<object>%s</object>\n<value>%s</value>\n</toprow>\n",
 		num,
 		obj,
 		val);
@@ -215,7 +215,7 @@ void interpreter_xml_objname(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<objname>%s</objname>",
+		"<objname>%s</objname>\n",
 		str);
 }
 
@@ -225,7 +225,7 @@ void interpreter_xml_begin_table(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<table_columns>%i</table_columns>",columns);
+		"<table_columns>%i</table_columns>\n",columns);
 }
 
 void interpreter_xml_begin_table_row(
