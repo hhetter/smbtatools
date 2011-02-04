@@ -1100,7 +1100,7 @@ Some more complex testing environments feature more users, more shares, and more
 
 For Example:
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p midland -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
+smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 This call would run *verbose*, run with a *maximum time of 10 seconds* between each file operation, create *20 files* with the *overall size of 40 MB*, and connect to *smbtatorturesrv* on *port 3493* on host *localhost* to receive unique filenames.
