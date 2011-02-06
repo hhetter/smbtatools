@@ -851,6 +851,8 @@ SMB Traffic Analyzer daemon
 <div class="paragraph"><p>If this option is given, a unix domain socket under /var/tmp/stadsocket will be used for the connection to the VFS module. This is useful if smbtad is to be run on the same machine that runs the Samba server.</p></div>
 <h5 id="_n_unix_domain_socket_cl">-n --unix-domain-socket-cl</h5>
 <div class="paragraph"><p>If this option is given, a unix domain socket under /var/tmp/stadsocket_client will be used for the connection to clients such as smbtaquery. This is useful if smbtad is to be run on the same machine that runs the tools.</p></div>
+<h5 id="_p_precision">-p --precision</h5>
+<div class="paragraph"><p>As of version 1.2.3 of smbtad, the program will sum up similar VFS R/W entries in it&#8217;s cache and only store the sum of transferred bytes instead of every single VFS entry. It&#8217;s cache is insert-sort based and the summing up makes the resulting database much smaller than in former releases. Because of this interpolation, statistic results will get slightly unprecise. The -p --precision argument allows the user to control the timespan in seconds, over which the cache is summing up similar VFS R/W entries. The default is set to 5 seconds. The more seconds the user is specifying, the smaller will the resulting database be, and the less precise will the results be, when queried through smbtaquery. To do real data-mining, this argument can be set to 0. In this mode, smbtad isn&#8217;t summing up any VFS entry, and stores them as is in the database. This is the behaviour of smtbad in former releases than 1.2.3.</p></div>
 <h4 id="_using_a_configuration_file_with_smbtad">4.2.2. Using a configuration file with smbtad</h4>
 <div class="paragraph"><p>All the options mentioned in the paragraph before can be configured with a configuration file. The configuration file has the same format as ini-Files, known from the Windows platform. An example configuration file is included in the smbtad package, in the /dist directory. We will go through a complete configuration file in this chapter, descriping all the options. The configuration file is separated by chapters, such as "general" or "network". Line beginning with # are considered comments.</p></div>
 <div class="listingblock">
@@ -1429,7 +1431,7 @@ The default is : WORKGROUP</p></div>
 <div class="paragraph"><p>For Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p midland -1 smb://localhost/pool1/ -2 smb://localhost/pool2/</tt></pre>
+<pre><tt>smbtatorture -P 3493 -H localhost -v -c 100 -n 20 -t 10 -s 40MB -r testrun.txt -u holger -p the_password -1 smb://localhost/pool1/ -2 smb://localhost/pool2/</tt></pre>
 </div></div>
 <div class="paragraph"><p>This call would run <strong>verbose</strong>, run with a <strong>maximum time of 10 seconds</strong> between each file operation, create <strong>20 files</strong> with the <strong>overall size of 40 MB</strong>, and connect to <strong>smbtatorturesrv</strong> on <strong>port 3493</strong> on host <strong>localhost</strong> to receive unique filenames.</p></div>
 <h5 id="_smbtatorturesrv">smbtatorturesrv</h5>
@@ -1546,7 +1548,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.2<br />
-Last updated 2011-01-20 12:14:57 CEST
+Last updated 2011-02-06 21:27:50 CEST
 </div>
 </div>
 </body>
