@@ -389,6 +389,10 @@ If this option is given, a unix domain socket under /var/tmp/stadsocket will be 
 ++++++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket_client will be used for the connection to clients such as smbtaquery. This is useful if smbtad is to be run on the same machine that runs the tools.
 
+-p --precision
+++++++++++++++
+As of version 1.2.3 of smbtad, the program will sum up similar VFS R/W entries in it's cache and only store the sum of transferred bytes instead of every single VFS entry. It's cache is insert-sort based and the summing up makes the resulting database much smaller than in former releases. Because of this interpolation, statistic results will get slightly unprecise. The -p --precision argument allows the user to control the timespan in seconds, over which the cache is summing up similar VFS R/W entries. The default is set to 5 seconds. The more seconds the user is specifying, the smaller will the resulting database be, and the less precise will the results be, when queried through smbtaquery. To do real data-mining, this argument can be set to 0. In this mode, smbtad isn't summing up any VFS entry, and stores them as is in the database. This is the behaviour of smtbad in former releases than 1.2.3.
+
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
