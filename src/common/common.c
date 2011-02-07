@@ -586,6 +586,16 @@ char *common_identify( TALLOC_CTX *ctx,
                         config,
                         query);
                 cols = 2;
+	} else if (Type==INT_OBJ_DOMAIN) {
+		/* identify domains */
+		query = talloc_asprintf(ctx,
+			"select distinct(domain) from read "
+			"UNION select distinct(domain) from write;");
+		qdat = sql_query(
+			ctx,
+			config,
+			query);
+		cols = 1;
         } else {
                 printf("ERROR: Identification of an unkown object type!\n");
                 exit(1);
@@ -609,6 +619,9 @@ char *common_identify( TALLOC_CTX *ctx,
                         case INT_OBJ_FILE:
                                 printf("File %s doesn't exist ",data);
                                 break;
+			case INT_OBJ_DOMAIN:
+				printf("Domain %s doesn't exist ",data);
+				break;
                         default:
                                 printf("ERROR: Unsupported type of object!\n");
                                 exit(1);
@@ -627,6 +640,8 @@ char *common_identify( TALLOC_CTX *ctx,
                 	case INT_OBJ_FILE:
                         	printf("file %s ",data);
                         	break;
+			case INT_OBJ_DOMAIN:
+				printf("domain %s ",data);
                 	default:
                         	printf("ERROR: Unsupported type of object!\n");
                         	exit(1);
@@ -649,13 +664,11 @@ char *common_identify( TALLOC_CTX *ctx,
 					"0001*0001*0001*%04i%s0001*",
 					(int) strlen(data),data);
 					break;
-			/*
-			case INT_OBJ_DOMAIN:
-				retstr = talloc_asprintf(ctx,
-				"0001*0001*0001*0001*%04i%s",
-				(int) strlen(data),data);
-				break;
-			*/
+				case INT_OBJ_DOMAIN:
+					retstr = talloc_asprintf(ctx,
+					"0001*0001*0001*0001*%04i%s",
+					(int) strlen(data),data);
+					break;
 				default:
 					printf("ERROR: unsupported type of object\n");
 					exit(1);

@@ -1349,6 +1349,20 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->output_term = talloc_asprintf(ctx,
 			"by user %s", obj_struct->name);
 		break;
+	case INT_OBJ_DOMAIN:
+		obj_struct->object = INT_OBJ_DOMAIN;
+		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
+		interpreter_make_times(ctx,obj_struct,command_data);
+		obj_struct->sql = talloc_asprintf(ctx,"%s and domain='%s' and %s and %s %s",
+					obj_struct->sql,
+					command_data->arguments[0],
+					obj_struct->from,
+					obj_struct->to,
+					common_identify(ctx,INT_OBJ_DOMAIN,
+						obj_struct->name,config,0));
+		obj_struct->output_term = talloc_asprintf(ctx,
+			"by domain %s",obj_struct->name);
+		break;
 	case INT_OBJ_GLOBAL:
 		obj_struct->object = INT_OBJ_GLOBAL;
 		obj_struct->name= talloc_strdup(ctx, "global");
@@ -1393,6 +1407,7 @@ int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
+	if (strcmp(cmd, "domain") == 0) return INT_OBJ_DOMAIN;
 	if (strncmp(cmd, "global",6) == 0) return INT_OBJ_GLOBAL;
 	return -1;
 }
@@ -1542,6 +1557,8 @@ void interpreter_command_help()
 		"				user USER.\n");
 	printf("file	FILE			Run a query over the\n"
 		"				file FILE.\n");
+	printf("domain	DOMAIN			Run a query over the\n"
+		"				domain DOMAIN\n");
 	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
 	printf("total 	[rw][r][w]		Get the total read(r),\n"
