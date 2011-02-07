@@ -66,6 +66,7 @@ enum IntCommands {
         INT_OBJ_LIST,
         INT_OBJ_TOP,
         INT_OBJ_GLOBAL,
+	INT_OBJ_DOMAIN,
         INT_OBJ_LAST,
         INT_OBJ_USAGE,
 	INT_OBJ_SEARCH};
