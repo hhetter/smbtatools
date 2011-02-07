@@ -370,6 +370,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	interpreter_xml_begin_table_row(c);
 	while (res != NULL) {
                res = result_get_element(ctx,element,data);
+		if (res == NULL) break;
 		if ( col == 1 && named_row != NULL) {
 		       interpreter_xml_table_named_row(c,named_row,res);
 		}
@@ -1142,13 +1143,14 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata = talloc_asprintf(ctx,"List of domains %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select username, usersid, from read where"
-			"%s union select username, usersid"
+			"select domain from read where"
+			"%s union select domain"
 			" from write where %s;",
 			obj_struct->sql, obj_struct->sql);
 		qdat=sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
+		interpreter_print_table( ctx, config, "domain",1,qdat,"Domain");
 		interpreter_xml_close_function(config,"list");
 	} else if (strcmp(command_data->arguments[0],"shares") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of shares %s",
