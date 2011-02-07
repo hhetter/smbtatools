@@ -528,6 +528,7 @@ int interpreter_get_result_rows( char *data, int columns)
         char *ctx = talloc(NULL, char);
         while (res != NULL) {
                 res = result_get_element(ctx,element,data);
+		if (res == NULL) break;
                 // if (res != NULL) printf("OO:%-30s\t",res);
                 if ( col==columns ) { col = 0; row ++;  }
                 col++; element++;
@@ -590,7 +591,9 @@ char *common_identify( TALLOC_CTX *ctx,
 		/* identify domains */
 		query = talloc_asprintf(ctx,
 			"select distinct(domain) from read "
-			"UNION select distinct(domain) from write;");
+			"where domain = '%s' "
+			"UNION select distinct(domain) from write "
+			"where domain = '%s';",data,data);
 		qdat = sql_query(
 			ctx,
 			config,
@@ -608,6 +611,7 @@ char *common_identify( TALLOC_CTX *ctx,
                 /* object at all.                                */
                 char *cmp = NULL;
                 cmp = result_get_element(ctx,0,qdat);
+		printf("CMP: %s\n",cmp);
                 if (strcmp(cmp,"No Results.") == 0) {
                         switch(Type) {
                         case INT_OBJ_USER:
@@ -642,6 +646,7 @@ char *common_identify( TALLOC_CTX *ctx,
                         	break;
 			case INT_OBJ_DOMAIN:
 				printf("domain %s ",data);
+				break;
                 	default:
                         	printf("ERROR: Unsupported type of object!\n");
                         	exit(1);
@@ -701,6 +706,10 @@ char *common_identify( TALLOC_CTX *ctx,
                 interpreter_print_numbered_table(ctx,cols,qdat,
 			"Share","File");
                 break;
+	case INT_OBJ_DOMAIN:
+		printf("Domain '%s' is ambiguous. Please choose:\n",data);
+		interpreter_print_numbered_table(ctx,cols,qdat,"Domain");
+		break;
         default:
                 printf("ERROR: Unsupported type of object!\n");
                 exit(1);
