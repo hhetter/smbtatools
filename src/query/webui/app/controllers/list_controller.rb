@@ -2,11 +2,11 @@ class ListController < ApplicationController
   require "rexml/document"
   include REXML
   def index
-    debugger
+    @test=`/home/benni/run/smbtaquery -h 10.10.103.116 -i 3491 -q 'global, list shares;' -x /home/benni/run/list.xml`
     @shares = Array.new
-    file = File.new( "/home/benni/run/fritz.xml" )
+    file = File.new( "/home/benni/run/list.xml" )
     doc = Document.new file
-    doc.elements.each("smbta_output/list/share") {
+    doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
       |e| @shares << e.text 
     }
   end

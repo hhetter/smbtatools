@@ -1,15 +1,16 @@
 class ConfigController < ApplicationController
   def general
-    @host_ip = ""
+    $host_ip = ""
     @types = Array.new
     @types = ["Inet-Port", "Unix Socket"]
-    @port = ""
+    $type = ""
+    $port = ""
   end
 
   def save
-    @host_ip = params[:host_ip]
-    @type = params[:types]
-    @port = params[:port]
+    $host_ip =  params[:host_ip]
+    $type = params[:type]
+    $port = params[:port]
     redirect_to :controller => "list", :action => "index"
   end
 end

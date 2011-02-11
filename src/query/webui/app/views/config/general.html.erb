@@ -1,10 +1,10 @@
 <% form_tag :action => "save"  do %>
-IP: <%=text_field_tag "host_ip", @host_ip%><br/>
+IP: <%=text_field_tag 'host_ip', $host_ip%><br/>
 Type: 
 <% options = Array.new
   @types.each {|d| options << "#{d.to_s}"}
   opt = {:options => options}%>
-<%=  select_tag "types", options_for_select(options)%><br/>
-Port: <%=text_field_tag "port", @port%><br/>
+<%=  select_tag "types", options_for_select(options, $type)%><br/>
+Port: <%=text_field_tag $port%><br/>
 <%=submit_tag "Commit settings"%>
 <%end%>
