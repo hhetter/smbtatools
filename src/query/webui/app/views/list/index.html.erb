@@ -13,12 +13,18 @@
 
 <body>
   <ul id="browser" class="filetree">
-    <% @shares.each do |share| %>
-      <li><span class="folder"><%=share%></span>
-        <ul>
-          <li><span class="file">Item 1.1</span></li>
-        </ul>
-      </li>
-    <%end%>
+    <li><span class="folder">global</span>
+      <li><span class="folder">
+      <ul>
+        <% @shares.each do |share| %>
+          <li><span class="folder"><%=share%></span>
+            <ul>
+              <li><span class="file">Item 1.1</span></li>
+            </ul>
+	  </li>
+        <%end%>
+      </ul>
+    </li>
   </ul>
+</ul>
 </body>
