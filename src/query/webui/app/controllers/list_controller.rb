@@ -2,6 +2,7 @@ class ListController < ApplicationController
   require "rexml/document"
   include REXML
   def index
+    debugger
     @shares = Array.new
     file = File.new( "/home/benni/run/fritz.xml" )
     doc = Document.new file

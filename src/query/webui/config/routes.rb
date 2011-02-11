@@ -1,4 +1,6 @@
 Smbtaquery::Application.routes.draw do
+  get "config/general"
+  post "config/save"
   get "list/index"
 
   # The priority is based upon order of creation:
