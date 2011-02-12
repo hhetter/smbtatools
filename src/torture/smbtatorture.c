@@ -415,21 +415,10 @@ void copy()
 	int rTime,justread;
         char buffer[40048];
 	i=( random() % config.number);
-	char *Dateiname1 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
-	char *Dateiname2 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
+	char *Dateiname1;
+	char *Dateiname2;
 	rTime= (random() % 2);
 	justread= (random() %2); // wether to write to the target share or not
-	switch (rTime)
-	{
-		case 0:
-		strcpy(Dateiname1, config.share1);
-		strcpy(Dateiname2, config.share2);
-		break;
-		case 1:
-		strcpy(Dateiname1, config.share2);
-		strcpy(Dateiname2, config.share1);
-		break;
-	}
         /* at this point we have the full filenames. In case of 
          * recording, we save them here. In case of replay, we  
          * replace them with the strings from the file.
@@ -443,6 +432,19 @@ void copy()
                 fscanf(config.player,"file1: %i\n",&i);
                 fscanf(config.player,"file2: %i\n",&i);
                 fscanf(config.player,"just read: %i\n",&justread);
+        }
+        Dateiname1 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
+        Dateiname2 = (char *) malloc(sizeof(char) * (strlen(config.share1)+strlen(config.share2)+strlen(fnamelist[i])));
+        switch (rTime)
+        {
+                case 0:
+                strcpy(Dateiname1, config.share1);
+                strcpy(Dateiname2, config.share2);
+                break;
+                case 1:
+                strcpy(Dateiname1, config.share2);
+                strcpy(Dateiname2, config.share1);
+                break;
         }
 
 	strcat(Dateiname1, fnamelist[i]);
