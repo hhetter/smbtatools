@@ -347,7 +347,7 @@ void generate_files()
 			}
 			z++;
 		}
-
+		free(sname);
 	
 		if ((fd = smbc_open(Dateiname1,
 			O_WRONLY | O_CREAT | O_TRUNC, 0)) < 0)
@@ -372,7 +372,8 @@ void generate_files()
 			O_WRONLY | O_CREAT | O_TRUNC, 0) < 0))
 
 			{
-			perror("smbc_open: writing failed");
+			perror("smbc_open: failed");
+			exit(1);
 			}
 
 		bytecount=list[i];
@@ -429,29 +430,30 @@ void copy()
 		strcpy(Dateiname2, config.share1);
 		break;
 	}
+        /* at this point we have the full filenames. In case of 
+         * recording, we save them here. In case of replay, we  
+         * replace them with the strings from the file.
+         */
+        if (config.record!=NULL) {
+                fprintf(config.recorder,"file1: %i\n",i);
+                fprintf(config.recorder,"file2: %i\n",i);
+                fprintf(config.recorder,"just read: %i\n",justread);
+        }
+        if (config.replay!=NULL) {
+                fscanf(config.player,"file1: %i\n",&i);
+                fscanf(config.player,"file2: %i\n",&i);
+                fscanf(config.player,"just read: %i\n",&justread);
+        }
 
 	strcat(Dateiname1, fnamelist[i]);
 	strcat(Dateiname2, fnamelist[i]);
-	/* at this point we have the full filenames. In case of 
-	 * recording, we save them here. In case of replay, we	
-	 * replace them with the strings from the file.
-	 */
-	if (config.record!=NULL) {
-		fprintf(config.recorder,"file1: %s\n",Dateiname1);
-		fprintf(config.recorder,"file2: %s\n",Dateiname2);
-		fprintf(config.recorder,"just read: %i\n",justread);
-	}
-	if (config.replay!=NULL) {
-		fscanf(config.player,"file1: %s\n",Dateiname1);
-		fscanf(config.player,"file2: %s\n",Dateiname2);
-		fscanf(config.player,"just read: %i\n",&justread);
-	}
 
 	smbc_init(get_auth_data_fn, debug);
 
 	if ((fd = smbc_open(Dateiname1, O_RDONLY, 0)) < 0)
 	{	
 		perror("smbc_open failed");
+		exit(1);
 	}
 
 	
@@ -459,6 +461,7 @@ void copy()
 		O_WRONLY | O_CREAT | O_TRUNC, 0)) < 0)
 	{
 		perror("smbc_open: writing failed");
+		exit(1);
 	}
 
 	do
