@@ -11,6 +11,7 @@ class ListController < ApplicationController
     doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
       |e| @shares << e.text 
     }
+    File.delete("/tmp/list.xml")
   end
 
 end
