@@ -63,10 +63,6 @@
 			return this.filter(":has(>ul)");
 		},
 		applyClasses: function(settings, toggler) {
-			this.filter(":has(>ul):not(:has(>a))").find(">span").click(function(event) {
-				toggler.apply($(this).next());
-			}).add( $("a", this) ).hoverClass();
-			
 			if (!settings.prerendered) {
 				// handle closed ones first
 				this.filter(":has(>ul:hidden)")

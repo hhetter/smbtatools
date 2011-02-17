@@ -1,4 +1,4 @@
-.treeview, .treeview ul { 
+.treeview, .treeview ul {
 	padding: 0;
 	margin: 0;
 	list-style: none;
@@ -54,17 +54,16 @@
 .treeview-black li { background-image: url(../images/treeview-black-line.gif); }
 .treeview-black .hitarea, .treeview-black li.lastCollapsable, .treeview-black li.lastExpandable { background-image: url(../images/treeview-black.gif); }  
 
-.treeview-gray li { background-image: url(../images/treeview-gray-line.gif); }
-.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(../images/treeview-gray.gif); } 
+.treeview-gray li { background-image: url(images/treeview-gray-line.gif); }
+.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable { background-image: url(images/treeview-gray.gif); } 
 
-.treeview-famfamfam li { background-image: url(../images/treeview-famfamfam-line.gif); }
-.treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable { background-image: url(../images/treeview-famfamfam.gif); } 
+.treeview-famfamfam li { background-image: url(images/treeview-famfamfam-line.gif); }
+.treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable { background-image: url(images/treeview-famfamfam.gif); } 
 
 
 .filetree li { padding: 3px 0 2px 16px; }
-.filetree span.domain, .filetree span.folder { padding: 1px 0 1px 16px; display: block; }
-.filetree span.domain { background: url(../images/domains.png) 0 0 no-repeat; }
-.filetree li.expandable span.domain { background: url(../images/domains.png) 0 0 no-repeat;}
+.filetree span.global, .filetree span.folder { padding: 1px 0 1px 16px; display: block; }
+.filetree span.global { background: url(../images/domains.png) 0 0 no-repeat; }
 .filetree span.folder, .filetree span.file { padding: 1px 0 1px 16px; display: block; }
 .filetree span.folder { background: url(../images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder { background: url(../images/folder-closed.gif) 0 0 no-repeat; }

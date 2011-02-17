@@ -1,29 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
-  <title>SMBTAquery Index</title>
-
-  <link rel="stylesheet" href="/stylesheets/jquery.treeview.css" />
-  <link rel="stylesheet" href="/stylesheets/screen.css" />
-  <script src="/javascripts/jquery.treeview.js" type="text/javascript"></script>
-  <script type="text/javascript" src="/javascripts/demo.js"></script>
-</head>
-
-<body>
-  <ul id="browser" class="filetree">
-    <li><span class="domain">global</span>
-      <ul>
-        <% @shares.each do |share| %>
-          <li><span class="folder"><%=share%></span>
-            <ul>
-              <li><span class="file">Item 1.1</span></li>
-            </ul>
-	  </li>
-        <%end%>
-      </ul>
-    </li>
-  </ul>
-</ul>
-</body>
+<ul id="browser" class="filetree">
+  <li class="closed"><span class="global">global</span>
+    <ul>
+      <% @domains.each do |domain| %>
+        <li class="closed"><span class="folder"><%=domain%></span>
+          <ul>
+            <li class="closed"><span class="folder">User</span>
+              <ul>
+                <% @users.each do |user| %>
+                  <li><%=user%></li>
+                <%end%>
+              </ul>
+            </li>
+            <li class="closed"><span class="folder">Shares</span>
+              <ul>
+                <% @shares.each do |share| %>
+                  <li class="closed"><span class="folder"><%=share%></span>
+                    <ul>
+                      <li><a href="google.de">File 1.1</a></li>
+                    </ul>
+                  </li>
+                <%end%>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      <%end%>
+    </ul>
+  </li></ul>
