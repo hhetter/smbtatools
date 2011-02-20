@@ -45,6 +45,7 @@ void configuration_show_help()
 	printf("-u	--user <string>		Specify a user to monitor.\n");
 	printf("-f	--file <string>		Specify a file to monitor.\n");
 	printf("-g	--global		Global mode, run over the full\n");
+	printf("-D	--domain <string>	Specify a domain to monitor.\n");
 	printf("				data set.\n");
 	printf("-n	--unix-domain-socket	Use a unix domain socket to\n");
 	printf("				connect to smbtad.\n");
@@ -139,6 +140,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "help",0,NULL,'?'},
 			{ "share",1,NULL,'s'},
 			{ "user",1,NULL,'u'},
+			{ "domain",1,NULL,'D'},
 			{ "file",1,NULL,'f'},
 			{ "unix-domain-socket",0,NULL,'n'},
 			{ "identify",1,NULL,'I'},
@@ -146,7 +148,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:?nI:", long_options, &option_index );
+                        "s:u:f:d:i:c:k:h:?nI:D:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
@@ -173,6 +175,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case '?':
 				configuration_show_help();
 				exit(0);
+			case 'D':
+				c->object_type = SMBTA_DOMAIN;
+				c->object_name = strdup( optarg );
+				break;
 			case 's':
 				c->object_type = SMBTA_SHARE;
 				c->object_name = strdup( optarg );

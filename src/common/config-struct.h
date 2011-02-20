@@ -9,7 +9,8 @@
 enum smbta_monitor_object {
         SMBTA_SHARE = 0,
         SMBTA_USER,
-        SMBTA_FILE
+        SMBTA_FILE,
+	SMBTA_DOMAIN
 };
 
 enum smbta_query_output {
