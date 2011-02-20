@@ -112,9 +112,6 @@ void monitor_list_initial_draw()
         	case MONITOR_TOTAL: ;
                 	visual_monitor_total(entry);
                 	break;
-        	case MONITOR_THROUGHPUT: ;
-                	visual_monitor_throughput(entry);
-                	break;
 		case MONITOR_LOG:
 			visual_monitor_log(entry);
 			break;

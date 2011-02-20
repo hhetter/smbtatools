@@ -57,9 +57,6 @@ void visual_list_initial_draw()
                 case MONITOR_TOTAL: ;
                         visual_monitor_total(entry);
                         break;
-                case MONITOR_THROUGHPUT: ;
-                        visual_monitor_throughput(entry);
-                        break;
                 case MONITOR_LOG:
                         visual_monitor_log(entry);
                         break;
@@ -102,22 +99,6 @@ void visual_monitor_total(struct monitor_item *entry)
         mvwprintw(win,1, 1,"%s (%05u B)",mem,nr);
         wrefresh(win);
         delwin(win);
-	talloc_free(mem);
-}
-
-void visual_monitor_throughput(struct monitor_item *entry)
-{
-	WINDOW *win = newwin(3,26,entry->ypos,entry->xpos);
-	box(win,0,0);
-	unsigned long int nr = 0;
-	if (entry->data != NULL) nr = atol(entry->data);
-	char *mem;
-	mem = common_make_human_readable(NULL,nr);
-	wmove(win,entry->ypos + 2, entry->xpos+ 2);
-	mvwprintw(win,0, 1,entry->title);
-	mvwprintw(win,1, 1,"%s/s",mem);
-	wrefresh(win);
-	delwin(win);
 	talloc_free(mem);
 }
 
