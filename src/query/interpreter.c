@@ -824,11 +824,19 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 			qdat = sql_query(ctx,config,query);
 			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
 				switch (t) {
-				case 0:
-					printf("%s is a user, on domain %s.\n",
-						result_get_element(ctx,0,qdat),
+				case 0: ;
+					printf("%s is a file, on domain %s.\n",
+						command_data->arguments[0],
 						result_get_element(ctx,3,qdat));
 					break;
+				case 1: ;
+					printf("%s is a timestamp...\n",
+						command_data->arguments[0]);
+					break;
+				case 2: ;
+					printf("%s is a user, on domain %s.\n",
+						command_data->arguments[0],
+						result_get_element(ctx,3,qdat));
 				default: break ;
 				}
 			}
