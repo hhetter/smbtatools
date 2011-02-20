@@ -50,6 +50,7 @@ void configuration_show_help()
 	printf("-f	--file <string>		Specify a file to monitor.\n");
 	printf("-g	--global		Global mode, run over the full\n");
 	printf("				data set.\n");
+	printf("-D	--domain		Specify a domain to monitor.\n");
 	printf("-t      --timer <num>           Number of seconds defining the intervall\n");
 	printf("				to update the rddtool database.\n");
 	printf("				Default: 10 seconds\n");
@@ -154,6 +155,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "help",0,NULL,'?'},
 			{ "share",1,NULL,'s'},
 			{ "user",1,NULL,'u'},
+			{ "domain",1,NULL,'D'},
 			{ "file",1,NULL,'f'},
 			{ "timer",1,NULL,'t'},
 			{ "database",1,NULL,'b'},
@@ -164,11 +166,16 @@ int configuration_parse_cmdline( struct configuration_data *c,
                 };
 
                 i = getopt_long( argc, argv,
-                        "ns:u:f:d:i:c:k:h:t:b:r:?I:", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:t:b:r:?I:D:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'D':
+				c->object_type = SMBTA_DOMAIN;
+				c->object_name = strdup( optarg );
+				break;
+				
 			case 'I':
 				c->port = (int) common_myatoi( optarg );
 				break;
