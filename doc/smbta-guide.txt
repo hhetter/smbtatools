@@ -499,6 +499,7 @@ the transfer with. If this works, your SMBTA installation works fine
 und you can start pointing more shares to it.
 
 
+
 Using the client programs
 -------------------------
 
@@ -1170,6 +1171,17 @@ The following example will replay the run stored in the file "testrun.txt" on th
 ------------------------------------------------------------------------------
 smbtatorture -v -e testrun.txt -1 smb://localhost/pool1/ -2 smb://localhost/pool2/
 ------------------------------------------------------------------------------
+
+The SMBTA Stresstest appliance
+------------------------------
+
+The *SMBTA Stresstest* appliance is a self contained linux distribution based on *openSUSE*. It comes with a preconfigured Samba server that is configured with SMBTA on it's shares, and it is running several instances of the *smbtatorture* program on these shares, for several users, resulting in producing an continous flow of traffic on this shares. The appliance is completely self-running, starting the smbtatorture processes directly after booting. Because of this, the SMBTA Stresstest appliance makes an ideal tool for two things: first is to develop SMBTA, and second it is an easy way to give SMBTA a quick test in a safe environment.
+
+In *SMBTA Stresstest*, die *smbtad* daemon program is configured for port 3491 to listen for client connections. If you setup the virtual machine in a way that it's reachable for the host system, you can run the smbtatools directly against it.
+
+*SMBTA Stresstest* is available from SUSE Studio at:
+http://susegallery.com/a/HkqPEE/smbta-stresstest
+
 
 Setting up encryption
 ---------------------
