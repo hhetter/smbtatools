@@ -37,7 +37,10 @@ struct configuration_data {
 	/* when reading commands from a file, */
 	/* use this filename		      */
 	char *file;
-
+	/* if 0, identification is not done. This is */
+	/* needed when smbtad is not maintaining the */
+	/* database. */
+	int identify;
 
         /* for smbtaquery */
         char *query;

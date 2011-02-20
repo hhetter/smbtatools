@@ -60,6 +60,8 @@ void configuration_show_help()
 	printf("				DS:read:GAUGE:10:U:U\n");
 	printf("				DS:write:GAUGE:10:U:U\n");
 	printf("-k	--keyfile		Read encryption key from given file.\n");
+	printf("-I	--identify		0 or 1. if 0, no identification is done.\n");
+	printf("				Default is 1.\n");
         printf("\n");
 }
 
@@ -78,6 +80,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->unix_socket = 0;
 	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
 	c->object_name = NULL;
+	c->identify = 1;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
@@ -114,6 +117,10 @@ int configuration_load_config_file( struct configuration_data *c)
         if (cc != NULL) {
                 common_load_key_from_file( c);
         }
+	cc = iniparser_getstring(Mydict,"general:identify",NULL);
+	if (cc != NULL) {
+		c->identify = (int) common_myatoi(cc);
+	}
         return 0;
 }
 
@@ -152,15 +159,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "database",1,NULL,'b'},
 			{ "unix-socket",0,NULL,'n'},
 			{ "rrdtool-setup",1,NULL,'r'},
+			{ "identify",1,NULL,'I'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "ns:u:f:d:i:c:k:h:t:b:r:?", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:t:b:r:?I:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'I':
+				c->port = (int) common_myatoi( optarg );
+				break;
                         case 'i':
                                 c->port = (int) common_myatoi( optarg );
                                 break;
@@ -272,6 +283,11 @@ int configuration_check_configuration( struct configuration_data *c )
 
 	if (c->object_name == NULL) {
 		printf("ERROR: please specify at least one object. ( -f -s -g )\n");
+		return -1;
+	}
+
+	if (c->identify <0 || c->identify >1) {
+		printf("\nERROR: please specify either 1 or 0 for identify.\n");
 		return -1;
 	}
 

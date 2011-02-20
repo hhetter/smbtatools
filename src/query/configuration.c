@@ -70,6 +70,8 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->query_xmlfile = NULL;
 	c->xml_handle = NULL;
 	c->query_output = QUERY_ASCII;
+	/* with smbtaquery, identification is always on */
+	c->identify = 1;
 }
 
 /* load $HOME/.smbtatools/query.config */
