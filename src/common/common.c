@@ -537,7 +537,45 @@ int interpreter_get_result_rows( char *data, int columns)
         return row ;
 }
 
-
+/**
+ * if config->identify is 0, we don't run sql queries to
+ * identify an object, we just generate a pattern. This
+ * is required if smbtad 's database is handling is shut down
+ */
+char *non_db_simple_identify( TALLOC_CTX *ctx,
+	enum IntCommands Type,
+	char *data,
+	struct configuration_data *config,
+	int qtype)
+{
+	char *retstr = NULL;
+	switch(Type) {
+	case INT_OBJ_USER:
+		retstr = talloc_asprintf(ctx,
+			"%04i%s0001*0001*0001*0001*",
+			(int) strlen(data),data);
+		break;
+	case INT_OBJ_SHARE:
+		retstr = talloc_asprintf(ctx,
+			"0001*0001*%04i%s0001*0001*",
+			(int) strlen(data),data);
+		break;
+	case INT_OBJ_FILE:
+		retstr = talloc_asprintf(ctx,
+			"0001*0001*0001*%04i%s0001*",
+			(int) strlen(data),data);
+		break;
+	case INT_OBJ_DOMAIN:
+		retstr = talloc_asprintf(ctx,
+			"0001*0001*0001*0001*%04i%s",
+			(int) strlen(data),data);
+		break;
+	default:
+		printf("ERROR: unsupported type of object\n");
+		exit(1);
+	}
+	return retstr;
+}
 
 char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
@@ -549,7 +587,14 @@ char *common_identify( TALLOC_CTX *ctx,
         char *qdat;
         char *retstr = NULL;
         int cols = 0;
-        printf("Identifying %s ... ",data);
+
+	if (config->identify == 0) {
+		printf("Identification is shut down, just generating pattern...\n");
+		retstr = non_db_simple_identify(ctx,Type,data,config,qtype);
+		return retstr;
+	}
+
+       printf("Identifying %s ... ",data);
         if (Type==INT_OBJ_USER) {
                 /* identify users by SID */
                 query = talloc_asprintf(ctx,

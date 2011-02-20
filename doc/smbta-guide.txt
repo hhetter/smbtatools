@@ -393,6 +393,10 @@ If this option is given, a unix domain socket under /var/tmp/stadsocket_client w
 ++++++++++++++
 As of version 1.2.3 of smbtad, the program will sum up similar VFS R/W entries in it's cache and only store the sum of transferred bytes instead of every single VFS entry. It's cache is insert-sort based and the summing up makes the resulting database much smaller than in former releases. Because of this interpolation, statistic results will get slightly unprecise. The -p --precision argument allows the user to control the timespan in seconds, over which the cache is summing up similar VFS R/W entries. The default is set to 5 seconds. The more seconds the user is specifying, the smaller will the resulting database be, and the less precise will the results be, when queried through smbtaquery. To do real data-mining, this argument can be set to 0. In this mode, smbtad isn't summing up any VFS entry, and stores them as is in the database. This is the behaviour of smtbad in former releases than 1.2.3.
 
+-U --use_db
++++++++++++
+As of version 1.2.3 of smbtad, the database usage of smbtad can be completely shut down. This is useful when SMBTA is only to be used with rrddriver or smbtamonitor, which only rely on real time data. The option requires an integer argument that is either 0 or 1. If it is 1, which is the default, the database will be handled, if it's 0, only real time data is supported. Please note, that under --use-db = 0 circumstances, some monitor functionality such as the TOTAL monitor, which is supposed to transfer the TOTAL sum of transfered bytes of an object will have a different behaviour. As the database is not available, it cannot query for the initial sum and starts with 0. Also, the real time tools rrddriver and smbtamonitor are doing an identification procedure by default, which must be shut down by using the --I --identify switch with the tools. *If you want to use SMBTA for rrddriver or smbtamonitor only, it is recommended to set this option to 0.*
+
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -412,7 +416,14 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# If you think you've found a bug, and try to reproduce it,
 	# please run smbtad with debug_level = 10.
 	debug_level = 0
-
+	# use_db is the equivalent to the -U --use-db command line
+	# argument.
+	# if use_db is 0, any handling of the database will not be
+	# done.
+	# This is useful if SMBTA is only to be used with rrdriver
+	# or smbtamonitor, and thus only relies on real time data.
+	# Default is 1.
+	use_db = 1
 [network]
 	# The port_number option defines the internet socket port
 	# to be used for listening for data from the VFS module.
@@ -845,6 +856,11 @@ will run a monitor displaying real time information about the file named
 
 After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it's display. smbtamonitor runs 80x25 display size fixed at the moment. The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them. Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them. The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.
 
+Running smbtamonitor without identification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+By default, smbtamonitor runs an identification process, that queries the database of smbtad. However the database handling of smbtad can be shut down by the administrator, if SMBTA is only to be used with rrddriver or smbtamonitor. Therefore the -I --identify command line switch can be used to shut down identification at startup of smbtamonitor. If this parameter is set to 0, identification will be ommited.
+
+
 rrddriver
 ~~~~~~~~~
 
@@ -948,6 +964,13 @@ DS:readwrite:GAUGE:10:U:U
 DS:read:GAUGE:10:U:U
 DS:write:GAUGE:10:U:U
 -------------------------------------------------------------------------------
+
+-I --identify <num>
++++++++++++++++++++
+By default, rrddriver runs an identification process, that queries the database of smbtad. However the database handling of smbtad can be shut down by the administrator, if SMBTA is only to be used with rrddriver or smbtamonitor. Ther
+efore the -I --identify command line switch can be used to shut down identification at startup of rrddriver. If this parameter is set to 0, identification will be ommited.
+
+
 
 rrddriver usage examples
 ^^^^^^^^^^^^^^^^^^^^^^^^

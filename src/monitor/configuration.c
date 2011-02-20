@@ -50,6 +50,8 @@ void configuration_show_help()
 	printf("				connect to smbtad.\n");
 	printf("-k	--keyfile		Read a encryption key from given\n");
 	printf("				file.\n");
+	printf("-I 	--identify		0 or 1. If 0, no identification\n");
+	printf("				is done. Default is 1.\n");
         printf("\n");
 }
 
@@ -64,6 +66,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->debug_level = 0;
         c->keyfile =NULL;
 	c->unix_socket = 0;
+	c->identify = 1;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
@@ -101,6 +104,8 @@ int configuration_load_config_file( struct configuration_data *c)
         if (cc != NULL) {
                 common_load_key_from_file( c);
         }
+	cc = iniparser_getstring(Mydict,"general:identify",NULL);
+	if (cc != NULL) c->identify = (int) common_myatoi(cc);
         return 0;
 }
 
@@ -136,15 +141,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "user",1,NULL,'u'},
 			{ "file",1,NULL,'f'},
 			{ "unix-domain-socket",0,NULL,'n'},
+			{ "identify",1,NULL,'I'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:?n", long_options, &option_index );
+                        "s:u:f:d:i:c:k:h:?nI:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'I':
+				c->identify = (int) common_myatoi( optarg );
+				break;
                         case 'i':
                                 c->port = (int) common_myatoi( optarg );
                                 break;
@@ -237,6 +246,10 @@ int configuration_check_configuration( struct configuration_data *c )
                 printf("ERROR: please specify a hostname to connect to.\n");
                 return -1;
         }
+	if (c->identify <0 || c->identify > 1) {
+		printf("ERROR: please specify either 1 or 0 for identify.\n");
+		return -1;
+	}
         return 0;
 }
 
