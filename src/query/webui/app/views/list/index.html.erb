@@ -1,8 +1,8 @@
 <ul id="browser" class="filetree">
   <li class="closed"><span class="global">global</span>
-    <ul>
-      <% @domains.each do |domain| %>
-        <li class="closed"><span class="folder"><%=domain%></span>
+  <ul>
+    <% @domains.each do |domain| %>
+       <li class="closed"><span class="domain"><%=domain%></span>
           <ul>
             <li class="closed"><span class="folder">User</span>
               <ul>
@@ -26,4 +26,5 @@
         </li>
       <%end%>
     </ul>
-  </li></ul>
+    </li></ul>
+

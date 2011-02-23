@@ -2,7 +2,7 @@ class ConfigController < ApplicationController
   def general
     $host_ip = ""
     @types = Array.new
-    @types = ["Inet-Port", "Unix Socket"]
+    @types = ["Inet-Port", "Unix Domain Socket"]
     $type = ""
     $port = ""
   end
