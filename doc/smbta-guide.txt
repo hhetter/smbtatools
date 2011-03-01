@@ -395,7 +395,7 @@ As of version 1.2.3 of smbtad, the program will sum up similar VFS R/W entries i
 
 -U --use_db
 +++++++++++
-As of version 1.2.3 of smbtad, the database usage of smbtad can be completely shut down. This is useful when SMBTA is only to be used with rrddriver or smbtamonitor, which only rely on real time data. The option requires an integer argument that is either 0 or 1. If it is 1, which is the default, the database will be handled, if it's 0, only real time data is supported. Please note, that under --use-db = 0 circumstances, some monitor functionality such as the TOTAL monitor, which is supposed to transfer the TOTAL sum of transfered bytes of an object will have a different behaviour. As the database is not available, it cannot query for the initial sum and starts with 0. Also, the real time tools rrddriver and smbtamonitor are doing an identification procedure by default, which must be shut down by using the --I --identify switch with the tools. *If you want to use SMBTA for rrddriver or smbtamonitor only, it is recommended to set this option to 0.*
+As of *version 1.2.3 of smbtad*, the database usage of smbtad can be completely shut down. This is useful when SMBTA is only to be used with rrddriver or smbtamonitor, which only rely on real time data. The option requires an integer argument that is either 0 or 1. If it is 1, which is the default, the database will be handled, if it's 0, only real time data is supported. Please note, that under --use-db = 0 circumstances, some monitor functionality such as the TOTAL monitor, which is supposed to transfer the TOTAL sum of transfered bytes of an object will have a different behaviour. As the database is not available, it cannot query for the initial sum and starts with 0. Also, the real time tools rrddriver and smbtamonitor are doing an identification procedure by default, which must be shut down by using the --I --identify switch with the tools. *If you want to use SMBTA for rrddriver or smbtamonitor only, it is recommended to set this option to 0.*
 
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -646,7 +646,7 @@ The following object definitions are currently possible:
 'user $USER' a User
 'file $FILE' a specific file
 'global' Global.
-'domain' $DOMAIN a domain.
+'domain $DOMAIN' a domain.
 --------------------------------------------
 
 The "global" parameter is special in the way it treats the following functions. Functions running on global are not limited by anything, and always work on the full database. Giving the following query:
@@ -810,7 +810,7 @@ This concept allows for interesting options, such as computing the throughput of
 
 For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.
 
-Any smbtamonitor instance is bound to an object ( a user, a file, or a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.
+Any smbtamonitor instance is bound to an object ( a user, a file, a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.
 
 Utilizing a configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1177,7 +1177,7 @@ The SMBTA Stresstest appliance
 
 The *SMBTA Stresstest* appliance is a self contained linux distribution based on *openSUSE*. It comes with a preconfigured Samba server that is configured with SMBTA on it's shares, and it is running several instances of the *smbtatorture* program on these shares, for several users, resulting in producing an continous flow of traffic on this shares. The appliance is completely self-running, starting the smbtatorture processes directly after booting. Because of this, the SMBTA Stresstest appliance makes an ideal tool for two things: first is to develop SMBTA, and second it is an easy way to give SMBTA a quick test in a safe environment.
 
-In *SMBTA Stresstest*, die *smbtad* daemon program is configured for port 3491 to listen for client connections. If you setup the virtual machine in a way that it's reachable for the host system, you can run the smbtatools directly against it.
+In *SMBTA Stresstest*, the *smbtad* daemon program is configured for port 3491 to listen for client connections. If you setup the virtual machine in a way that it's reachable for the host system, you can run the smbtatools directly against it.
 
 *SMBTA Stresstest* is available from SUSE Studio at:
 http://susegallery.com/a/HkqPEE/smbta-stresstest
@@ -1275,6 +1275,6 @@ If you can reproduce an error situation, do not hestitate to open a bug on http:
 Project outlook and version history
 -----------------------------------
 
-We're too lazy to maintain such a list of planned ideas and features in this document. Check out the projects homepage to get the latest news, or contact the team to discuss ideas. In General it can be said that smbtatools goes to XML, the web, and will get a gui and graphics.
+We're too lazy to maintain such a list of planned ideas and features in this document. Check out the projects homepage to get the latest news, or contact the team to discuss ideas. There's a channel #smbta on freenode, feel free to join. In General it can be said that smbtatools goes to XML, the web, and will get a gui and graphics.
 
 
