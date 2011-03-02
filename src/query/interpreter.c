@@ -826,7 +826,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 				switch (t) {
 				case 0: ;
 					printf("%s is a file, on domain %s.\n",
-						command_data->arguments[0],
+						result_get_element(ctx,4,qdat),
 						result_get_element(ctx,3,qdat));
 					break;
 				case 1: ;
@@ -837,6 +837,16 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					printf("%s is a user, on domain %s.\n",
 						result_get_element(ctx,0,qdat),
 						result_get_element(ctx,3,qdat));
+					break;
+				case 3: ;
+					printf("%s is a user's SID, belonging to user %s\n",
+						result_get_element(ctx,2,qdat),
+						result_get_element(ctx,0,qdat));
+					break;
+				case 4: ;
+					printf("%s is a domain.\n",
+						result_get_element(ctx,3,qdat));
+					break;
 				default: break ;
 				}
 			}
