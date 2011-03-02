@@ -807,7 +807,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		obj_struct->output_term);
 
 	
-	static const char *tables[] = { "write", "read", "open", "close", NULL };
+	static const char *tables[] = { "write",  NULL };
 	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain", "timestamp", NULL };
 	int i = 0,t = 0;
 	str = tables[0];
@@ -816,8 +816,11 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
 				"select username, timestamp, usersid, domain, filename from "
-				"%s where %s = '%s' and %s;",
-				tables[i], rows[t], command_data->arguments[0], obj_struct->sql);
+				"write where %s GLOB '%s' and %s UNION "
+				"select username, timestamp, usersid, domain, filename from "
+				"read where %s GLOB '%s' and %s;",
+				 rows[t], command_data->arguments[0], obj_struct->sql,
+				 rows[t], command_data->arguments[0], obj_struct->sql);
 			qdat = sql_query(ctx,config,query);
 			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
 				switch (t) {
@@ -832,7 +835,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					break;
 				case 2: ;
 					printf("%s is a user, on domain %s.\n",
-						command_data->arguments[0],
+						result_get_element(ctx,0,qdat),
 						result_get_element(ctx,3,qdat));
 				default: break ;
 				}
