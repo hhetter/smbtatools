@@ -1,30 +1,9 @@
-<ul id="browser" class="filetree">
-  <li class="closed"><span class="global">global</span>
-  <ul>
-    <% @domains.each do |domain| %>
-       <li class="closed"><span class="domain"><%=domain%></span>
-          <ul>
-            <li class="closed"><span class="folder">User</span>
-              <ul>
-                <% @users.each do |user| %>
-                  <li><%=user%></li>
-                <%end%>
-              </ul>
-            </li>
-            <li class="closed"><span class="folder">Shares</span>
-              <ul>
-                <% @shares.each do |share| %>
-                  <li class="closed"><span class="folder"><%=share%></span>
-                    <ul>
-                      <li><a href="google.de">File 1.1</a></li>
-                    </ul>
-                  </li>
-                <%end%>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      <%end%>
+<ul id="mixed">
+  <li id="domain" class="close hasChildren"><span><%=@global %></span>
+    <ul>
+      <li><span class="placeholder">&nbsp;</span></li>
+  
     </ul>
-    </li></ul>
+  </li>
+</ul>
 
