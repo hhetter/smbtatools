@@ -11,6 +11,6 @@ class ConfigController < ApplicationController
     $host_ip =  params[:host_ip]
     $type = params[:type]
     $port = params[:port]
-    redirect_to :controller => "list", :action => "index"
+    redirect_to :controller => "overview", :action => "index"
   end
 end

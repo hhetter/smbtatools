@@ -1,14 +1,18 @@
 Smbtaquery::Application.routes.draw do
-  get "list/get_domains"
-  post "list/get_domains"
-  get "test/index"
-  post "test/get_domains"
-  get "test/get_domains"
+  get "overview/index"
+  get "overview/get_domains"
+#  get "list/get_domains"
+#  post "list/get_domains"
+#  get "test/index"
+#  post "test/get_domains"
+#  get "test/get_domains"
   get "config/general"
   post "config/save"
-  get "list/index"
-  get "list/get_domains"
-  get "list/get_shares"
+#  get "list/index"
+#  get "list/get_domains"
+#  get "list/get_shares"
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

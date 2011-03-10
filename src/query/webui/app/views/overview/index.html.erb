@@ -1,0 +1,5 @@
+<div id="global">
+  <%=select_tag "domains", options_for_select(["global"]), :size => 5 %>
+  <%=link_to_function image_tag('arrow.png', :alt => "List shares", :title => "List shares"), "getDomains();"%>
+</div>
+
