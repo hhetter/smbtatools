@@ -5,6 +5,21 @@ class OverviewController < ApplicationController
   end
   def get_domains
     initial_command
+    initialize_domains
+    render :update do |page|
+      page.insert_html :after, "global", :partial => "domains"
+      page.call "refreshDomains"
+    end
+  end
+  def refresh_domains
+    initial_command
+    initialize_domains
+    render :update do |page|
+      page.replace "domains", :partial => "domains"
+    end
+  end
+  def initialize_domains
+    initial_command
     cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
       @domains = Array.new
@@ -13,9 +28,6 @@ class OverviewController < ApplicationController
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
       |e| @domains << e.text
     }
-    render :update do |page|
-      page.insert_html :after, "global", :partial => "domains"
-    end
   end
   def initial_command
     if $type == "Inet-Port"

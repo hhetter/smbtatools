@@ -6,6 +6,11 @@ function getDomains () {
     url: "get_domains",
     type: "get"});
 }
+function refreshDomains() {
+  $.ajax({
+    url: "refresh_domains",
+    type: "get"});
+  setTimeout("refreshDomains()",5000);
+}
 $(document).ready(function(){
-  $("#getDomains").function
 });

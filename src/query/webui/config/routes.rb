@@ -1,6 +1,7 @@
 Smbtaquery::Application.routes.draw do
   get "overview/index"
   get "overview/get_domains"
+  get "overview/refresh_domains"
 #  get "list/get_domains"
 #  post "list/get_domains"
 #  get "test/index"

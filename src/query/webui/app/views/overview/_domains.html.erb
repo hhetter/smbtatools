@@ -2,4 +2,5 @@
 <%= select_tag "domains", options_for_select(@domains), :size => 5 %>
 </br>
 <%= select_tag "domfunc", options_for_select(["","usage", "last_activity"])%>
+<%= hidden_field_tag @domains %>
 </div>
