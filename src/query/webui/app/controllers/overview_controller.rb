@@ -3,6 +3,7 @@ class OverviewController < ApplicationController
   include REXML
   def index
   end
+
   def get_domains
     initial_command
     initialize_domains
@@ -11,6 +12,7 @@ class OverviewController < ApplicationController
       page.call "refreshDomains"
     end
   end
+
   def refresh_domains
     initial_command
     initialize_domains
@@ -18,6 +20,23 @@ class OverviewController < ApplicationController
       page.replace "domains", :partial => "domains"
     end
   end
+
+  def get_shares
+    initial_command
+    cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
+    `#{cmd}`
+    @shares = Array.new
+    file = File.new( "/tmp/shares.xml" )
+    doc = Document.new file
+    doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
+      |e| @shares << e.text
+    }
+    File.delete("/tmp/shares.xml")
+    render :update do |page|
+      page.insert_html :after, "domains", :partial => "shares"
+    end
+  end 
+
   def initialize_domains
     initial_command
     cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
@@ -29,6 +48,7 @@ class OverviewController < ApplicationController
       |e| @domains << e.text
     }
   end
+
   def initial_command
     if $type == "Inet-Port"
       @cmd="smbtaquery -h " + $host_ip + " -i " + $port

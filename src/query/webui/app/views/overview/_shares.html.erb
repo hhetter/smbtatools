@@ -1,0 +1,7 @@
+<div id="shares" style="float:left">
+<%= select_tag "shares", options_for_select(@shares), :size => 5 %>
+<%=link_to_function image_tag('arrow.png', :alt => "List shares", :title => "List shares"), "getShares();"%>
+</br>
+<%= select_tag "sharesfunc", options_for_select(["","usage", "last_activity"])%>
+<%= hidden_field_tag @domains %>
+</div>
