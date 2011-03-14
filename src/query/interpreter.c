@@ -809,7 +809,8 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	
 	static const char *tables[] = { "write",  NULL };
 	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain", "timestamp", NULL };
-	int i = 0,t = 0;
+	int i = 0,t = 0, n = 0;
+	char *res = NULL;
 	str = tables[0];
 	str2 = rows[0];
 	while (str != NULL) {
@@ -825,9 +826,13 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
 				switch (t) {
 				case 0: ;
-					printf("%s is a file, on domain %s.\n",
-						result_get_element(ctx,4,qdat),
-						result_get_element(ctx,3,qdat));
+					while (res != NULL) {
+						res = result_get_element(ctx, n,qdat);
+						printf("%s is a file, on domain %s.\n",
+							result_get_element(ctx,4 + n,qdat),
+							result_get_element(ctx,3 + n,qdat));
+						n = n + 5;
+					}
 					break;
 				case 1: ;
 					printf("%s is a timestamp...\n",
