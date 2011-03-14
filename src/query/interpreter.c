@@ -811,7 +811,12 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 
 	
 	static const char *tables[] = { "write",  NULL };
-	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain", "timestamp", NULL };
+	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain",  NULL };
+	static const char *rules[] = { "distinct filename, share, domain ",
+					"username, distinct timestamp, usersid, domain, filename ",
+					"distinct username, domain ",
+					"username, timestamp, distinct usersid, domain, filename ",
+					"username, timestamp, usersid, distinct domain, filename ", NULL };
 	int i = 0,t = 0, n = 0;
 	char *res = NULL;
 	str = tables[0];
@@ -819,22 +824,25 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	while (str != NULL) {
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
-				"select username, timestamp, usersid, domain, filename from "
-				"write where %s GLOB '%s' and %s UNION "
-				"select username, timestamp, usersid, domain, filename from "
-				"read where %s GLOB '%s' and %s;",
-				 rows[t], command_data->arguments[0], obj_struct->sql,
+				"select %s from "
+				"write where %s GLOB '%s' and %s;",
+				 rules[t],
 				 rows[t], command_data->arguments[0], obj_struct->sql);
 			qdat = sql_query(ctx,config,query);
 			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
 				switch (t) {
 				case 0: ;
+					n = 0;
+					res = 10;
 					while (res != NULL) {
 						res = result_get_element(ctx, n,qdat);
-						printf("%s is a file, on domain %s.\n",
-							result_get_element(ctx,4 + n,qdat),
-							result_get_element(ctx,3 + n,qdat));
-						n = n + 5;
+						if (res != NULL) {
+							printf("%s is a file, on share %s, on domain %s.\n",
+								result_get_element(ctx,0 + n,qdat),
+								result_get_element(ctx,1 + n,qdat),
+								result_get_element(ctx,2 + n,qdat));
+						}
+						n = n + 3;
 					}
 					break;
 				case 1: ;
@@ -842,9 +850,17 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 						command_data->arguments[0]);
 					break;
 				case 2: ;
-					printf("%s is a user, on domain %s.\n",
-						result_get_element(ctx,0,qdat),
-						result_get_element(ctx,3,qdat));
+					n = 0;
+					res = "\0";
+					while (res != NULL) {
+						res = result_get_element(ctx,n,qdat);
+						if (res != NULL) {
+							printf("%s is a user, on domain %s.\n",
+								result_get_element(ctx,n+0,qdat),
+								result_get_element(ctx,n+1,qdat));
+						}
+						n = n +2;
+					}
 					break;
 				case 3: ;
 					printf("%s is a user's SID, belonging to user %s\n",
