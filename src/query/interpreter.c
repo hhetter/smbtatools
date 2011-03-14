@@ -811,12 +811,11 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 
 	
 	static const char *tables[] = { "write",  NULL };
-	static const char *rows[] = { "filename", "timestamp", "username", "usersid", "domain",  NULL };
+	static const char *rows[] = { "filename", "username", "usersid", "domain",  NULL };
 	static const char *rules[] = { "distinct filename, share, domain ",
-					"username, distinct timestamp, usersid, domain, filename ",
 					"distinct username, domain ",
-					"username, timestamp, distinct usersid, domain, filename ",
-					"username, timestamp, usersid, distinct domain, filename ", NULL };
+					"distinct usersid, username, domain ",
+					"distinct domain ", NULL };
 	int i = 0,t = 0, n = 0;
 	char *res = NULL;
 	str = tables[0];
@@ -846,10 +845,6 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					}
 					break;
 				case 1: ;
-					printf("%s is a timestamp...\n",
-						command_data->arguments[0]);
-					break;
-				case 2: ;
 					n = 0;
 					res = "\0";
 					while (res != NULL) {
@@ -862,14 +857,31 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 						n = n +2;
 					}
 					break;
-				case 3: ;
-					printf("%s is a user's SID, belonging to user %s\n",
-						result_get_element(ctx,2,qdat),
-						result_get_element(ctx,0,qdat));
+				case 2: ;
+					n = 0;
+					res = "\0";
+					while (res != NULL) {
+						res = result_get_element(ctx,n,qdat);
+						if (res != NULL) {
+							printf("%s is a user's SID, belonging to user %s on domain %s.\n",
+								result_get_element(ctx,n+0,qdat),
+								result_get_element(ctx,n+1,qdat),
+								result_get_element(ctx,n+2,qdat));
+						}
+						n = n + 3;
+					}
 					break;
-				case 4: ;
-					printf("%s is a domain.\n",
-						result_get_element(ctx,3,qdat));
+				case 3: ;
+					n = 0;
+					res = "\0";
+					while (res != NULL) {
+						res = result_get_element(ctx,n,qdat);
+						if (res != NULL) {
+							printf("%s is a domain.\n",
+							result_get_element(ctx,n,qdat));
+						}
+						n = n + 1;
+					}
 					break;
 				default: break ;
 				}
