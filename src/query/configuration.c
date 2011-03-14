@@ -314,18 +314,40 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	char *call = NULL;
 	char *data_path = NULL;
 	char *path = getenv("SMBTATOOLS_DATA_PATH");
+	struct stat sb;
 	char *xsltpath = getenv("SMBTATOOLS_XSLTPROC_PATH");
 	if (xsltpath == NULL) xsltpath=talloc_asprintf(runtime_mem,"/usr/bin");
 	if (path == NULL) 
 		data_path = talloc_asprintf(runtime_mem,"/usr/share/smbtatools");
 	else
 		data_path = talloc_asprintf(runtime_mem,"%s",path);
-	
+	/** 
+	 * check for xslt data files and /usr/share /usr/local/share,
+	 * or fallback to SMBTATOOLS_DATA_PATH
+	 */
+	char *fcheck = talloc_asprintf(runtime_mem,"%s/xslt-ascii.xml",
+			data_path);
+	if ( stat(fcheck, &sb) == -1) {
+		/**
+		 * not found in /usr/share/smbtatools and not in
+		 * SMBTATOOLS_DATA_PATH, checking /usr/local/share
+		 */
+		talloc_free(fcheck);
+		fcheck = talloc_asprintf(runtime_mem,"/usr/local/share/smbtatools/xslt-ascii.xml");
+		if (stat(fcheck, &sb) == -1) {
+			printf("Checking %s\n",fcheck);
+			printf("Warning: xslt stylesheets not found. Try setting\n");
+			printf("setenv SMBTATOOLS_DATA_PATH \"$PATH/$TO/$STYLESHEETS.\"\n");
+		} else {
+			talloc_free(data_path);
+			data_path = talloc_asprintf(runtime_mem,"/usr/local/share/smbtatools/");
+		}
+	}
+
 	/* normal operation, just use the temporary xml file */	
 	if (strncmp( c->query_xmlfile, tempff,strlen(tempff)) == 0) {
 		/* check for xsltproc */
 		char *check = NULL;
-		struct stat sb;
 		check = talloc_asprintf(runtime_mem,"%s/xsltproc", xsltpath);
 		if (stat(check, &sb) == -1) {
 			printf("ERROR: xsltproc not found at '%s'.\n"
