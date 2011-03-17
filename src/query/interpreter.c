@@ -60,9 +60,98 @@ struct xml_last_activity_data{
 	char *file2;
 	char *value;
 };
+
+void interpreter_xml_begin_search(
+	struct configuration_data *c,
+	char *title)
+{
+	if (c->xml_handle == NULL) return;
+	char *ctx = talloc(NULL, char);
+	fprintf(c->xml_handle,
+		"<search>\n"
+		"	<title>%s</title>\n"
+		"	<timestamp>%s</timestamp>\n",
+		title,
+		interpreter_return_timestamp_now(ctx));
+	talloc_free(ctx);
+}
+
+void interpreter_xml_end_search(
+	struct configuration_data *c)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"</search>\n");
+}
 	
+void interpreter_xml_search_result_file(
+		struct configuration_data *c,
+		char *name,
+		char *share,
+		char *domain)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"<result>\n"
+		"	<file>\n"
+		"		<name>%s</name>\n"
+		"		<share>%s</share>\n"
+		"		<domain>%s</domain>\n"
+		"	</file>\n"
+		"</result>\n",
+		name,
+		share,
+		domain);
+}
 
+void interpreter_xml_search_result_domain(
+		struct configuration_data *c,
+		char *name)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"<result>\n"
+		"	<domain>\n"
+		"		<name>%s</name>\n"
+		"	</domain>\n"
+		"</result>\n",
+		name);
+}
 
+void interpreter_xml_search_result_sid(
+		struct configuration_data *c,
+		char *sid,
+		char *user,
+		char *domain)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"<result>\n"
+		"	<sid>\n"
+		"		<name>%s</name>\n"
+		"		<user>%s</user>\n"
+		"		<domain>%s</domain>\n"
+		"	</sid>\n"
+		"</result>\n",
+		sid,user,domain);
+}
+
+void interpreter_xml_search_result_user(
+		struct configuration_data *c,
+		char *name,
+		char *domain)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		"<result>\n"
+		"	<user>\n"
+		"		<name>%s</name>\n"
+		"		<domain>%s</domain>\n"
+		"	</user>\n"
+		"</result\n",
+		name,
+		domain);
+}
 
 void interpreter_xml_footer(
 	struct configuration_data *c)
@@ -70,11 +159,13 @@ void interpreter_xml_footer(
 	char *ctx = talloc(NULL, char);
 	if (c->xml_handle == NULL) return;
 	fprintf(c->xml_handle,
-		"<footer><application>SMB Traffic Analyzer</application>\n"
-		"<version>%s</version>\n"
-		"<timestamp>%s</timestamp>\n"
-		"<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>\n"
-		"</footer></smbta_output>",
+		"<footer>\n"
+		"	<application>SMB Traffic Analyzer</application>\n"
+		"	<version>%s</version>\n"
+		"	<timestamp>%s</timestamp>\n"
+		"	<homepage>http://holger123.wordpress.com/smb-traffic-analyzer/</homepage>\n"
+		"</footer>\n"
+		"</smbta_output>",
 		SMBTAQUERY_VERSION,
 		interpreter_return_timestamp_now(ctx));
 	TALLOC_FREE(ctx);
@@ -92,7 +183,7 @@ void interpreter_xml_create_header(
 	struct configuration_data *c)
 {
 	fprintf( c->xml_handle,
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<smbta_output>");
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<smbta_output>\n\n");
 }
 
 void interpreter_open_xml_file(
@@ -133,7 +224,7 @@ void interpreter_xml_description(
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
-		"<description>\n%s\n</description>\n",
+		"<description>\n	%s\n</description>\n",
 		description_str);
 }
 
@@ -803,9 +894,10 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		exit(1);
 	}
 	xmldata = talloc_asprintf(ctx,"Fuzzy search for '%s' %s.",
-		command_data->arguments[1],
+		command_data->arguments[0],
 		obj_struct->output_term);
 
+	interpreter_xml_begin_search(config, xmldata);
 	
 	static const char *tables[] = { "write",  NULL };
 	static const char *rows[] = { "filename", "username", "usersid", "domain",  NULL };
@@ -829,14 +921,15 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 				switch (t) {
 				case 0: ;
 					n = 0;
-					res = 10;
+					res = "\0";
 					while (res != NULL) {
 						res = result_get_element(ctx, n,qdat);
 						if (res != NULL) {
-							printf("%s is a file, on share %s, on domain %s.\n",
-								result_get_element(ctx,0 + n,qdat),
-								result_get_element(ctx,1 + n,qdat),
-								result_get_element(ctx,2 + n,qdat));
+							interpreter_xml_search_result_file(
+								config,
+								result_get_element(ctx,0+n,qdat), // name
+								result_get_element(ctx,1+n,qdat), // share
+								result_get_element(ctx,2+n,qdat)); // domain
 						}
 						n = n + 3;
 					}
@@ -847,9 +940,10 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					while (res != NULL) {
 						res = result_get_element(ctx,n,qdat);
 						if (res != NULL) {
-							printf("%s is a user, on domain %s.\n",
-								result_get_element(ctx,n+0,qdat),
-								result_get_element(ctx,n+1,qdat));
+							interpreter_xml_search_result_user(
+								config,
+								result_get_element(ctx,n+0,qdat), // name
+								result_get_element(ctx,n+1,qdat)); // domain
 						}
 						n = n +2;
 					}
@@ -860,10 +954,11 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					while (res != NULL) {
 						res = result_get_element(ctx,n,qdat);
 						if (res != NULL) {
-							printf("%s is a user's SID, belonging to user %s on domain %s.\n",
-								result_get_element(ctx,n+0,qdat),
-								result_get_element(ctx,n+1,qdat),
-								result_get_element(ctx,n+2,qdat));
+							interpreter_xml_search_result_sid(
+								config,
+								result_get_element(ctx,n+0,qdat), // sid
+								result_get_element(ctx,n+1,qdat), // username
+								result_get_element(ctx,n+2,qdat)); // domain
 						}
 						n = n + 3;
 					}
@@ -874,8 +969,9 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 					while (res != NULL) {
 						res = result_get_element(ctx,n,qdat);
 						if (res != NULL) {
-							printf("%s is a domain.\n",
-							result_get_element(ctx,n,qdat));
+							interpreter_xml_search_result_domain(
+								config,
+								result_get_element(ctx,n,qdat)); // domain
 						}
 						n = n + 1;
 					}
@@ -891,6 +987,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	i++;
 	str = tables[i];
 	}
+	interpreter_xml_end_search(config);
 }
 
 void interpreter_fn_top_list( TALLOC_CTX *ctx,
