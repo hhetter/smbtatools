@@ -69,7 +69,8 @@ enum IntCommands {
 	INT_OBJ_DOMAIN,
         INT_OBJ_LAST,
         INT_OBJ_USAGE,
-	INT_OBJ_SEARCH};
+	INT_OBJ_SEARCH,
+	INT_OBJ_THROUGHPUT};
 
 
 /*

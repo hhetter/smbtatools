@@ -142,7 +142,14 @@
 </xsl:for-each>
 </xsl:template>
 
-
+<xsl:template match="throughput">
+<h2>
+<xsl:value-of select="title"/>
+</h2>
+<br/>
+<xsl:value-of select="throughput_value"/>
+<br/>
+</xsl:template>
 
 
 
