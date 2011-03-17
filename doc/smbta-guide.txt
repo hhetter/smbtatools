@@ -783,10 +783,10 @@ usage
 +++++
 
 Syntax:
-*usage [rw] [r] [w]*
+*usage [rw|r|w]*
 
 The usage function sums up the usage or activity of an object by creating
-a virtual day, listing 24 hours and showing the average data acitvity by percentage.
+a virtual day, listing 24 hours and showing the average data activity by percentage.
 
 .usage Function example:
 ========================================
@@ -800,6 +800,42 @@ Print a graph of the usage of share "Fritzboxtest" by read-access:
 'share Fritzboxtest, usage r;'
 ---------------------------------
 =========================================
+
+search
+++++++
+
+Syntax:
+*search [term]*
+
+The search function allows a fuzzy search for [term] over the whole database. It allows
+unix-style wildcards like '*' and '?'. If the function finds data that matches the search string,
+it will identify the object and shows related data. For example, if it finds a user name that
+matches to [term], it will identify it as a user, and additionally prints the domain the user is
+belonging to.
+
+.search function example:
+==========================================
+Fuzzy search for the term 'disk12':
+-----------------------------------
+'global, search *disk12*;'
+-----------------------------------
+===========================================
+
+throughput
+++++++++++
+
+Syntax:
+*throughput [num] [minutes|days|seconds|hours] [r|rw|w]*
+
+The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.
+
+.throughput function example:
+============================================
+Sum up the read-only throughput of the last 50 days on share "Fritzboxtest".
+------------------------------------
+'share Fritzboxtest, throughput 50 days r;'
+============================================
+
 
 smbtamonitor
 ~~~~~~~~~~~~

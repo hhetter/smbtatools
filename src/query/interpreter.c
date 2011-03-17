@@ -528,14 +528,21 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 			timestamp,obj_struct->sql);
 	} else if (strcmp(command_data->arguments[2],"rw")==0) {
 		query = talloc_asprintf(ctx,
-			"select sum(length) from write, read where timestamp > '%s' and %s;",
+			"select sum(length) from write where timestamp > '%s' and %s;",
+			timestamp,obj_struct->sql);
+		qdat = sql_query(ctx,config,query);
+		thrput = atol( result_get_element(ctx,0,qdat));
+		talloc_free(query);
+		query = talloc_asprintf(ctx,
+			"select sum(length) from read where timestamp > '%s' and %s;",
 			timestamp,obj_struct->sql);
 	} else {
 		printf("ERROR: Third argument to throughput must be either rw, r, or w.\n");
 		exit(1);
 	}
 	qdat = sql_query(ctx,config,query);
-	thrput = atol( result_get_element(ctx,0,qdat));
+	// we me add in case of rw.
+	thrput = thrput + atol( result_get_element(ctx,0,qdat));
 
 	// very short xml, do this inline
 	if (config->xml_handle != NULL) {
