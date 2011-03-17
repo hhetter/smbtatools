@@ -125,6 +125,27 @@
 	</table>
 </xsl:template>
 
+
+<xsl:template match="search">
+<h2>
+<xsl:value-of select="title"/> at <xsl:value-of select="timestamp"/>
+</h2>
+<xsl:for-each select="result">
+<xsl:for-each select="user"><xsl:value-of select="name"/> is a user, in domain <xsl:value-of select="domain"/>.<br/>
+</xsl:for-each>
+<xsl:for-each select="file"><xsl:value-of select="name"/> is a file, on share <xsl:value-of select="share"/> in domain <xsl:value-of select="domain"/>.<br/>
+</xsl:for-each>
+<xsl:for-each select="sid"><xsl:value-of select="name"/> is a SID, belonging to user <xsl:value-of select="user"/> in domain <xsl:value-of select="domain"/>.<br/>
+</xsl:for-each>
+<xsl:for-each select="domain"><xsl:value-of select="name"/> is a domain.<br/>
+</xsl:for-each>
+</xsl:for-each>
+</xsl:template>
+
+
+
+
+
 <xsl:template match="total">
 	<p>
 	<h2>
