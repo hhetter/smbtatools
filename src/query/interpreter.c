@@ -43,7 +43,7 @@ struct interpreter_object {
 
 
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx);
-
+char *interpreter_return_timestamp_now_minus_sec(TALLOC_CTX *ctx,unsigned int seconds);
 
 /*
  * XML output routines
@@ -493,7 +493,64 @@ char *percent(TALLOC_CTX *ctx,
 	ret = talloc_asprintf(ctx, "%10.2Lf", erg);
 	return ret;
 }
-	
+
+void interpreter_fn_throughput( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *timestamp = NULL;
+	char *query = NULL;
+	char *qdat = NULL;
+	unsigned long int thrput = 0;
+	if (command_data->argument_count != 3) {
+		printf("ERROR: The throughput function expects 3 arguments.\n");
+		exit(1);
+	}
+	unsigned long int value = atol(command_data->arguments[0]);
+	if (value == 0) {
+		printf("ERROR: wrong value as first argument to throughput!\n");
+		exit(1);
+	}
+	if (strcmp(command_data->arguments[1],"minutes")==0) value=value*60;
+	else if (strcmp(command_data->arguments[1],"hours")==0) value=value*60*60;
+	else if (strcmp(command_data->arguments[1],"days")==0) value=value*24*60*60;
+
+	timestamp = interpreter_return_timestamp_now_minus_sec(ctx,value);
+
+	if (strcmp(command_data->arguments[2],"r")==0) {
+		query = talloc_asprintf(ctx,
+			"select sum(length) from read where timestamp > '%s' and %s;",
+			timestamp,obj_struct->sql);
+	} else if (strcmp(command_data->arguments[2],"w")==0) {
+		query = talloc_asprintf(ctx,
+			"select sum(length) from write where timestamp > '%s' and %s;",
+			timestamp,obj_struct->sql);
+	} else if (strcmp(command_data->arguments[2],"rw")==0) {
+		query = talloc_asprintf(ctx,
+			"select sum(length) from write, read where timestamp > '%s' and %s;",
+			timestamp,obj_struct->sql);
+	} else {
+		printf("ERROR: Third argument to throughput must be either rw, r, or w.\n");
+		exit(1);
+	}
+	qdat = sql_query(ctx,config,query);
+	thrput = atol( result_get_element(ctx,0,qdat));
+
+	// very short xml, do this inline
+	if (config->xml_handle != NULL) {
+		fprintf(config->xml_handle,
+			"<throughput>"
+			"	<title>Throughput of %s for the last %s %s, %s-access.</title>\n"
+			"	<throughput_value>%s</throughput_value>\n"
+			"</throughput>\n",
+			obj_struct->output_term,
+			command_data->arguments[0],
+			command_data->arguments[1],
+			command_data->arguments[2],
+			common_make_human_readable(ctx,thrput));
+	}
+}
 
 void interpreter_fn_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -1414,6 +1471,18 @@ char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
 	return outstr;
 }
 
+char *interpreter_return_timestamp_now_minus_sec(TALLOC_CTX *ctx,
+	unsigned int seconds)
+{
+        struct tm *tmp;
+        time_t now;
+        char *outstr = talloc_array(ctx,char,200);
+        now = time(NULL) - seconds;
+        tmp = localtime(&now);
+        strftime(outstr,199,"%Y-%m-%d %T",tmp);
+        return outstr;
+}
+
 char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	char *timestr)
 {
@@ -1607,6 +1676,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_SEARCH:
 		interpreter_fn_search(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_THROUGHPUT:
+		interpreter_fn_throughput(ctx, command_data, obj_struct,config);
+		break;
 	}
 }
 
@@ -1619,6 +1691,7 @@ int interpreter_translate_command(const char *cmd)
         if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
 	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
 	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
+	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
@@ -1797,5 +1870,10 @@ void interpreter_command_help()
 		"				on an object\n");
 	printf("search 	[string]		Does a search for STRING\n");
 	printf("				over the whole database.\n");
+	printf("throughput 	[num]\n");
+	printf("	[seconds|minutes|days]\n");
+	printf("	[r][w][rw]\n		Calculates the data throughput\n");
+	printf("				of the given object of the last\n");
+	printf("				[num] seconds, minutes, or days.\n");
 
 };
