@@ -148,7 +148,7 @@ void interpreter_xml_search_result_user(
 		"		<name>%s</name>\n"
 		"		<domain>%s</domain>\n"
 		"	</user>\n"
-		"</result\n",
+		"</result>\n",
 		name,
 		domain);
 }
