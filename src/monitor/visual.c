@@ -88,18 +88,21 @@ void visual_monitor_add(struct monitor_item *entry)
 
 void visual_monitor_total(struct monitor_item *entry)
 {
-	WINDOW *win = newwin(3,26,entry->ypos,entry->xpos);
+	WINDOW *win = newwin(4,26,entry->ypos,entry->xpos);
 	box(win,0,0);
 	unsigned long int nr = 0;
 	if (entry->data != NULL) nr = atol(entry->data);
 
-	char *mem;
+	char *mem,*mem2;
 	mem = common_make_human_readable(NULL,nr);
-        mvwprintw(win,0, 1,entry->title);
-        mvwprintw(win,1, 1,"%s (%05u B)",mem,nr);
+        mvwprintw(win, 0, 1,entry->title);
+        mvwprintw(win, 1, 1,"%s (%05u B)",mem,nr);
+	mem2 = common_make_human_readable(NULL,entry->thrput);
+	mvwprintw(win, 2, 1,"%s / second",mem2);
         wrefresh(win);
         delwin(win);
 	talloc_free(mem);
+	talloc_free(mem2);
 }
 
 void visual_monitor_log_calc(struct monitor_item *entry)
