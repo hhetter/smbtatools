@@ -4,6 +4,11 @@ struct monitor_item {
 	int ypos;
 	enum monitor_fn type;
 	char *data;
+
+	/* for monitors that have to handle throughput, like TOTAL */
+	unsigned long int thrput;
+	unsigned long int oldval;
+
 	struct monitor_item *next;
 	int changed;
 	char *title;

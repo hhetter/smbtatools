@@ -9,14 +9,40 @@ pthread_mutex_t monitor_list_lock;
  * making the use of malloc easier in this case
  */
 
-
+pthread_t thread3;
+void monitor_list_timer( void *var);
 
 /*
  * init the monitor system */
 void monitor_list_init( ) {
         pthread_mutex_init(&monitor_list_lock, NULL);
+	pthread_create(&thread3,NULL,(void *)&monitor_list_timer,NULL);
 }
 
+void monitor_list_timer( void *var)
+{
+        pthread_detach(pthread_self());
+	struct monitor_item *entry = monlist_start;
+        while ( 1 == 1) {
+                sleep(1);
+                pthread_mutex_lock(&monitor_list_lock);
+		/**
+		 * go through the list of monitors, and if we find a
+		 * TOTAL monitor, produce a new throughput value per second
+		 */
+		while (entry != NULL) {
+			if ( entry->data != NULL &&
+				entry->type == MONITOR_TOTAL ) {
+				entry->thrput =
+					atol(entry->data) - entry->oldval;
+				entry->oldval = atol(entry->data);
+			}
+			entry = entry->next;
+		}
+		entry = monlist_start;
+                pthread_mutex_unlock(&monitor_list_lock);
+        }
+}
 
 
 
@@ -53,6 +79,8 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 		entry->backlog->end = NULL;
 		entry->backlog->backlog_limit = 20;
 		entry->backlog->backlog_count = 0;
+		entry->oldval = 0;
+		entry->thrput = 0;
 		pthread_mutex_unlock(&monitor_list_lock);
 		return 0;
 	}
@@ -76,6 +104,8 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 	entry->backlog->end = NULL;
 	entry->backlog->backlog_limit = 20;
 	entry->backlog->backlog_count = 0;
+	entry->oldval = 0;
+	entry->thrput = 0;
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
