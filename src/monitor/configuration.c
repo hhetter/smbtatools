@@ -222,15 +222,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 	char *title;
 	title = talloc_asprintf(runtime_mem,
-		"SMBTAmonitor - real time monitoring object '%s'",
+		"SMBTAmonitor %s - object '%s' - hit any key to stop monitoring.",
+		SMBTAMONITOR_VERSION,
 		c->object_name);
 	visual_init(title);
 	monitor_list_initial_draw();
 	/* main loop 
 	 * FIXME: Add Keyboard handling here !!
 	 */
+	int key;
 	while (1 == 1) {
-		sleep(5);
+		key = getch();
+		sleep(1);
+		if (key != ERR) break;
 	}
 
 
