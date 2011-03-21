@@ -3,16 +3,8 @@ Smbtaquery::Application.routes.draw do
   get "overview/get_domains"
   get "overview/refresh_domains"
   get "overview/get_shares"
-#  get "list/get_domains"
-#  post "list/get_domains"
-#  get "test/index"
-#  post "test/get_domains"
-#  get "test/get_domains"
   get "config/general"
   post "config/save"
-#  get "list/index"
-#  get "list/get_domains"
-#  get "list/get_shares"
 
 
   # The priority is based upon order of creation:
@@ -64,7 +56,7 @@ Smbtaquery::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => "welcome#index"
+  root :to => "config#general"
 
   # See how all your routes lay out with "rake routes"
 
