@@ -16,6 +16,7 @@ class OverviewController < ApplicationController
   def refresh_domains
     initial_command
     initialize_domains
+    @domain = params[:domain]
     render :update do |page|
       page.replace "domains", :partial => "domains"
     end
@@ -23,6 +24,7 @@ class OverviewController < ApplicationController
 
   def get_shares
     initial_command
+    @domain = params[:domain]
     cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
     `#{cmd}`
     @shares = Array.new
