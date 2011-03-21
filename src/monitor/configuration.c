@@ -228,7 +228,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	visual_init(title);
 	monitor_list_initial_draw();
 	/* main loop 
-	 * FIXME: Add Keyboard handling here !!
 	 */
 	int key;
 	while (1 == 1) {
@@ -240,6 +239,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 
         close(c->socket);
+	endwin();
         TALLOC_FREE(runtime_mem);
         return 0;
 }
