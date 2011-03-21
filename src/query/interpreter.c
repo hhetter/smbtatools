@@ -1081,7 +1081,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username from read"
+				"select distinct username, domain from read"
 				" where %s order by SUM(length) desc"
 				" limit %i;",
 				obj_struct->sql,limit);
@@ -1090,7 +1090,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by write access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username from write "
+				"select distinct username, domain from write "
 				"where %s order by sum(length) desc "
 				"limit %i;",
 				obj_struct->sql,limit);
@@ -1099,7 +1099,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username from "
+				"select distinct username, domain from "
 				"( select * from read UNION select * "
 				"from write) where %s order by "
 				"SUM(length) desc limit %i;",
@@ -1111,7 +1111,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share from read where"
+				"select distinct share, domain from read where"
 				" %s order by sum(length) desc limit %i;",
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
@@ -1119,7 +1119,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share from write where"
+				"select distinct share, domain from write where"
 				" %s order by sum(length) desc limit %i;",
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
@@ -1127,7 +1127,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share from ( select * from"
+				"select distinct share, domain from ( select * from"
 				" read UNION select * from write) where %s"
 				" order by SUM(length) desc limit %i;",
 				obj_struct->sql,limit);
@@ -1138,7 +1138,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename from read where"
+				"select distinct filename, share, domain from read where"
 				" %s order by sum(length) desc limit %i;",
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
@@ -1146,7 +1146,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename from write where"
+				"select distinct filename, share, domain from write where"
 				" %s order by sum(length) desc limit %i;",
 				obj_struct->sql,limit);
 			qdat = sql_query(ctx,config,query1);
@@ -1154,7 +1154,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename from ( select *"
+				"select distinct filename, share, domain from ( select *"
 				" from read UNION select * from write) where"
 				" %s order by sum(length) desc limit %i;",
 				obj_struct->sql,limit);
@@ -1191,10 +1191,10 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		printf("ERROR: top function syntax error.\n");
 		exit(1);
 	}
-	int i = 0;
+	int i = 0,l = 0;
 	char *el = "0";
 	while (el != NULL) {
-		el = result_get_element(ctx,i,qdat);
+		el = result_get_element(ctx,l,qdat);
 		if (el == NULL) break;
 		if (strcmp(command_data->arguments[1],"users")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
@@ -1205,6 +1205,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where "
@@ -1213,6 +1214,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from ( select * from "
@@ -1222,6 +1224,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			}
 		} else if (strcmp(command_data->arguments[1],"domains")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
@@ -1232,6 +1235,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l++;
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
@@ -1240,6 +1244,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l++;
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from ( select * from "
@@ -1249,6 +1254,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l++;
 			}
 		} else if (strcmp(command_data->arguments[1],"shares")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
@@ -1259,6 +1265,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
@@ -1267,6 +1274,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from (select * from "
@@ -1276,6 +1284,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 2;
 			}
 		} else if (strcmp(command_data->arguments[1],"files")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
@@ -1286,7 +1295,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
-					
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
@@ -1295,6 +1304,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from (select * from"
@@ -1304,6 +1314,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=atol(result_get_element(ctx,0,qdat2));
+				l = l + 3;
 			}
 		}
 		i++;
@@ -1311,16 +1322,37 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 
 	i = 0;
 	el = "0";
-
+	l = 0;
+	char *outstr = NULL;
 	interpreter_xml_begin_function(config, "top");
 	interpreter_xml_description(config, xmldata);
 	int num= 0;
 	while (el != NULL) {
 		num++;
 		el = result_get_element(ctx,i,qdat);
+		if (strcmp(command_data->arguments[1],"files")==0) {
+			outstr = talloc_asprintf(ctx,"%s (Share %s, Domain %s)",
+				el,
+				result_get_element(ctx,i+1,qdat),
+				result_get_element(ctx,i+2,qdat));
+		} else if (strcmp(command_data->arguments[1],"shares")==0) {
+			outstr = talloc_asprintf(ctx,"%s (Domain %s)",
+				el,
+				result_get_element(ctx,i+1,qdat));
+		} else if (strcmp(command_data->arguments[1],"users")==0) {
+			outstr = talloc_asprintf(ctx,"%s (Domain %s)",
+				el,
+				result_get_element(ctx,i+1,qdat));
+		} else if (strcmp(command_data->arguments[1],"domains")==0) {
+			outstr = talloc_asprintf(ctx,"%s",el);
+		}
 		if (el == NULL) break;
-		interpreter_xml_toprow(config,num, el,common_make_human_readable(ctx,length[i]));
-		i++;
+		interpreter_xml_toprow(config,num, outstr,common_make_human_readable(ctx,length[l]));
+		if (strcmp(command_data->arguments[1],"files")==0) i = i + 3;
+		else if (strcmp(command_data->arguments[1],"shares")==0) i = i + 2;
+		else if (strcmp(command_data->arguments[1],"users")==0) i= i + 2;
+		else i++;
+		l++;
 	}
 
 	interpreter_xml_close_function(config, "top");
