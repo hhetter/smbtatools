@@ -1,4 +1,5 @@
 class OverviewController < ApplicationController
+  before_filter :required_config
   require "rexml/document"
   include REXML
   def index
@@ -57,6 +58,15 @@ class OverviewController < ApplicationController
     end
     if $type == "Unix Domain Socket"
       @cmd="smbtaquery -h " + $host_ip + " -u " + $port
+    end
+  end
+
+  private
+
+  def required_config
+    debugger
+    if $host_ip.blank? || $port.blank?
+      redirect_to :root, :flash => {:error => "Please enter an valid IP and Port"}
     end
   end
 

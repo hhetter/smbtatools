@@ -1,12 +1,13 @@
 <%= form_tag :action => "save"  do %>
-<table>
-<tr>
-  <td>IP: </td><td><%=text_field_tag 'host_ip', $host_ip%></td></tr>
-<tr><td>Type: </td> 
-<td><% options = Array.new
-@types.each {|d| options << "#{d.to_s}"}%>
-<%=  select_tag "type", options_for_select(options, $type)%></td></tr>
-<tr><td>Port: </td><td><%=text_field_tag 'port', $port%></td></tr>
-<tr><td><%=submit_tag "Commit settings"%></td></tr>
-</table>
+  
+  <table>
+    <tr>
+      <td>IP: </td><td><%=text_field_tag 'host_ip', $host_ip%></td></tr>
+    <tr><td>Type: </td>
+      <td><% options = Array.new
+        @types.each {|d| options << "#{d.to_s}"}%>
+        <%=  select_tag "type", options_for_select(options, $type)%></td></tr>
+    <tr><td>Port: </td><td><%=text_field_tag 'port', $port%></td></tr>
+    <tr><td><%=submit_tag "Commit settings"%></td></tr>
+  </table>
 <%end%>
