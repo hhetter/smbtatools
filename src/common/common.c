@@ -656,7 +656,6 @@ char *common_identify( TALLOC_CTX *ctx,
                 /* object at all.                                */
                 char *cmp = NULL;
                 cmp = result_get_element(ctx,0,qdat);
-		printf("CMP: %s\n",cmp);
                 if (strcmp(cmp,"No Results.") == 0) {
                         switch(Type) {
                         case INT_OBJ_USER:
