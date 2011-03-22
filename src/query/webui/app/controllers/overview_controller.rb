@@ -24,8 +24,9 @@ class OverviewController < ApplicationController
   end
 
   def get_shares
-    initial_command
     @domain = params[:domain]
+    initial_command
+#    @domain = params[:domain]
     cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
     `#{cmd}`
     @shares = Array.new
