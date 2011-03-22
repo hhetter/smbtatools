@@ -446,13 +446,11 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	int count = columns;
 	va_start( ap, NULL);
 	interpreter_xml_begin_table(c,columns);
-//	interpreter_xml_begin_table_header(c);
 	while (count --) {
 		arg = va_arg( ap, char *);
 		interpreter_xml_table_header_element(c,arg);
 	}
 	va_end( ap );
-//	interpreter_xml_end_table_header(c);
 
 
 	interpreter_xml_begin_table_row(c);
@@ -606,7 +604,10 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
                                 obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
                         total = total + atol(result_get_element(ctx,0,qtotal));
-	}	
+	} else {
+		printf("ERROR: unable to find the total value.\n");
+		exit(1);
+	}
 	for (hour = 0;hour<24;hour++) {
 		if (strcmp(command_data->arguments[0],"r")==0) {
 			query = talloc_asprintf(ctx,
@@ -1062,7 +1063,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	char *query1;
 	char *qdat = NULL;
 	char *qdat2 = NULL;
-	char *xmldata;
+	char *xmldata = NULL;
 	if (command_data->argument_count != 3) {
 		printf("ERROR: the top function expects 3 arguments.\n");
 		exit(1);

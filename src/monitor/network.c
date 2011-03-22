@@ -55,7 +55,7 @@ void network_handle_data( struct configuration_data *c)
         char *body=NULL;
         int body_position=0;
         int data_length=0;
-        int sockfd = c->socket;
+        int sockfd;
         enum network_send_flags state = UNSENT;
 
 	state = UNSENT;
@@ -75,9 +75,11 @@ void network_handle_data( struct configuration_data *c)
                 	FD_ZERO (&active_fd_set);
                 	FD_SET(c->socket,&active_fd_set);
                 	fd_set_r=active_fd_set;
-                	fd_set_w=active_fd_set;
 
                 	z=select( sockfd+1,&fd_set_r,NULL,NULL,NULL);
+			if (z == -1) {
+				printf("ERROR: select : %s\n",strerror(errno));
+			}
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;

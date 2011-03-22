@@ -114,7 +114,7 @@ char *get_random_filename() {
 	int nfilename = 0;
 	int ndirectory = 0;
 	int z = 0;
-	char *strdat = NULL;
+	char *strdat;
 	char *fullstr = NULL;
 	char *retstr = NULL;
 
@@ -138,8 +138,13 @@ char *get_random_filename() {
         	}
 		rewind(fnames);
 		rewind(dnames);
-		nfilename = rand() % max_filenames;
-		ndirectory = rand() % max_directories;
+		if (max_filenames != 0 && max_directories != 0) {
+			nfilename = rand() % max_filenames;
+			ndirectory = rand() % max_directories;
+		} else {
+			printf("ERROR: no filenames or directories stored!\n");
+			exit(1);
+		}
 		while ( z < ndirectory ) {
 			z++;
 			fscanf(dnames, "%ms\n", &strdat);
@@ -174,12 +179,12 @@ char *get_random_filename() {
 			strdat=strdup("      ");
 			strcpy(strdat,"0001f");
 			send(config.sockfd,strdat,5,0);
-		}
+		} else strdat = NULL;
 		printf("	Send request...\n");
 		FD_ZERO(&wfd_set);
 		FD_SET(config.sockfd,&wfd_set);
 		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
-		if (FD_ISSET( config.sockfd,&wfd_set) ) {
+		if (FD_ISSET( config.sockfd,&wfd_set) && strdat != NULL) {
 			recv(config.sockfd,strdat,4,0);
 			z = atoi(strdat);
 		}
@@ -269,23 +274,6 @@ void generate_files()
 		list[i]=(rand() % (config.size-(config.number-i)));
 		config.size=config.size-list[i];
 	}
-/*
-	//check here if there are sizes under 2000 bytes
-	for (i=0;i<config.number;i++) {
-		if (list[i]<config.number) {
-			int z;
-			for (z=0;z<config.number;z++) {
-				if (list[z]>2000) {
-					//srand( time(NULL) );
-					int a=rand() % (list[z]);
-					list[z]=list[z]-a;
-					list[i]=list[i]+a;
-					break;
-				}
-			}
-		}
-	}
-*/
 	list[config.number-1]=config.size;
 
 	/* when recording, store the list of files and sizes */
@@ -411,7 +399,6 @@ void copy()
         int ret;
 	int i;
         int debug=0;
-        int savedErrno;
 	int rTime,justread;
         char buffer[40048];
 	i=( random() % config.number);
@@ -469,8 +456,6 @@ void copy()
 	do
 	{
 		ret = smbc_read(fd, buffer, sizeof(buffer));
-	
-		savedErrno = errno;
 		if (ret > 0 && justread!=1) smbc_write(fd2, buffer, ret);
 	} while (ret > 0);
 
