@@ -1,8 +1,7 @@
 <div id="domains" style="float:left">
-<%= select_tag "domains", options_for_select(@domains, @domain), :size => 5 %>
-<%=link_to_function image_tag('arrow.png', :alt => "List shares", :title => "List shares"), "getShares();", :domain => @domain%>
-<br/>
-<%= select_tag "domfunc", options_for_select(["","usage", "last_activity"])%>
-<%= hidden_field_tag @domains %>
-<%= hidden_field_tag "domain", @domain %>
+  <%= select_tag "domains", options_for_select(@domains, @domain), :size => 5, :onChange => "domOnSelectChange()" %>
+  <%= image_tag "arrow.png", :onClick => "getShares()" %>
+  <br/>
+  <%= select_tag "domfunc", options_for_select(["","usage", "last_activity"])%>
+  <%= hidden_field_tag "domain", @domain %>
 </div>
