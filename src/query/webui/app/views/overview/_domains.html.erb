@@ -1,5 +1,5 @@
 <div id="domains" style="float:left">
-  <%= select_tag "domains", options_for_select(@domains, @domain), :size => 5, :onChange => "onSelectChange()" %>
+  <%= select_tag "domains", options_for_select(@domains, @domain), :size => 5, :onChange => "domOnSelectChange()" %>
   <%= image_tag "arrow.png", :onClick => "getShares()" %>
   <br/>
   <%= select_tag "domfunc", options_for_select(["","usage", "last_activity"])%>

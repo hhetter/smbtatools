@@ -7,15 +7,6 @@ function getDomains () {
         type: "get"
     });
 }
-function getShares() {
-    $.ajax({
-        url: "get_shares",
-        type: "get",
-        data: {
-            domain : $("#domain").attr('value')
-            }
-    });
-}
 function refreshDomains() {
     $.ajax({
         url: "refresh_domains",
@@ -26,9 +17,33 @@ function refreshDomains() {
     });
     setTimeout("refreshDomains()",300000);
 }
-function onSelectChange(){
+function getShares() {
+    $.ajax({
+        url: "get_shares",
+        type: "get",
+        data: {
+            domain : $("#domain").attr('value')
+            }
+    });
+}
+function refreshShares() {
+    $.ajax({
+        url: "refresh_shares",
+        type: "get",
+        data: {
+            domain : $("#domain").attr('value'),
+            share:    $("#share").attr(value)
+            }
+    });
+    setTimeout("refreshShares()",300000);
+}
+function domOnSelectChange(){
     var selected = $("#domains option:selected");
     $("#domain").val(selected.val());
+}
+function shareOnSelectChange(){
+    var selected = $("#shares option:selected");
+    $("#share").val(selected.val());
 }
 $(document).ready(function(){
 });

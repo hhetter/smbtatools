@@ -24,10 +24,32 @@ class OverviewController < ApplicationController
   end
 
   def get_shares
+    initial_command
+    initialize_shares
+    @domain = params[:domain]
+    render :update do |page|
+      page.insert_html :after, "domains", :partial => "shares"
+    end
+  end
+
+  def refresh_shares
+    initial_command
+    initialize_shares
+    @domain = params[:domain]
+    @share = params[:share]
+    render :update do |page|
+      page.replace "shares", :partial => "shares"
+    end
+  end
+
+  def initialize_shares
     @domain = params[:domain]
     initial_command
-#    @domain = params[:domain]
-    cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
+    if @domain.blank?
+      cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
+    else
+      cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
+    end
     `#{cmd}`
     @shares = Array.new
     file = File.new( "/tmp/shares.xml" )
@@ -36,9 +58,6 @@ class OverviewController < ApplicationController
       |e| @shares << e.text
     }
     File.delete("/tmp/shares.xml")
-    render :update do |page|
-      page.insert_html :after, "domains", :partial => "shares"
-    end
   end 
 
   def initialize_domains
