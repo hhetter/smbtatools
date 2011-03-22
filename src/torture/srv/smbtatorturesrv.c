@@ -204,8 +204,8 @@ int check_if_filename_exists( char *fname)
 }
 
 char *get_random_filename() {
-        int max_filenames = 0;
-        int max_directories = 0;
+        int max_filenames = 1;
+        int max_directories = 1;
         int nfilename = 0;
         int ndirectory = 0;
         int z = 0;
