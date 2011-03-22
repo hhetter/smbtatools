@@ -27,7 +27,7 @@ class OverviewController < ApplicationController
     @domain = params[:domain]
     initial_command
 #    @domain = params[:domain]
-    cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
+    cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
     `#{cmd}`
     @shares = Array.new
     file = File.new( "/tmp/shares.xml" )
