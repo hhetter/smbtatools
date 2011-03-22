@@ -64,7 +64,6 @@ class OverviewController < ApplicationController
   private
 
   def required_config
-    debugger
     if $host_ip.blank? || $port.blank?
       redirect_to :root, :flash => {:error => "Please enter an valid IP and Port"}
     end
