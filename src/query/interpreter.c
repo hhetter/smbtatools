@@ -327,6 +327,16 @@ void interpreter_xml_begin_table_row(
 		"<table_row>");
 }
 
+void interpreter_xml_table_named_row(
+	struct configuration_data *c,
+	char *named_row, char *res)
+{
+	if (c->xml_handle == NULL) return;
+	        fprintf( c->xml_handle,
+               		"<table_value id=\"%s\">%s</table_value>",
+			named_row,res);
+}
+
 void interpreter_xml_close_table_row(
 	struct configuration_data *c)
 {
@@ -426,16 +436,9 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 
-
 void interpreter_print_table( TALLOC_CTX *ctx,
 		struct configuration_data *c,
-                int columns,char *data, ...);
-
-
-
-
-void interpreter_print_table( TALLOC_CTX *ctx,
-		struct configuration_data *c,
+		char *named_row,
 		int columns,char *data, ...)
 {
 	int col=1;
@@ -1382,7 +1385,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat, "Name","SID");
+		interpreter_print_table( ctx, config, "username",2, qdat, "Name","SID");
 		interpreter_xml_close_function(config,"list");
 	} else if (strcmp(command_data->arguments[0],"domains") == 0) {
 		xmldata = talloc_asprintf(ctx,"List of domains %s",
@@ -1407,7 +1410,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat, "Name","Domain");
+		interpreter_print_table( ctx, config, "sharename",2, qdat, "Name","Domain");
 		interpreter_xml_close_function(config,"list");
 	} else if (strcmp(command_data->arguments[0],"files") == 0) {
 		xmldata=talloc_asprintf(ctx,"List of files %s",
@@ -1420,7 +1423,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		qdat = sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
-		interpreter_print_table( ctx, config, 2, qdat,"Name","Share");
+		interpreter_print_table( ctx, config, "filename",2, qdat,"Name","Share");
 		interpreter_xml_close_function(config,"list");
 	} else {
 		printf("ERROR: 	Arguments for the 'list' command"
@@ -1821,7 +1824,7 @@ int interpreter_run( TALLOC_CTX *ctx,
 		strncmp(commands,"SELECT",strlen("select"))== 0) {
 		*(commands+end-1)=';';
 		char *erg =sql_query(ctx,config,commands);
-		interpreter_print_table(ctx,config, 1,erg,"SQL Result");
+		interpreter_print_table(ctx,config, NULL, 1,erg,"SQL Result");
 		exit(0);
 	}
 
