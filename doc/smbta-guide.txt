@@ -1,7 +1,7 @@
 The SMB Traffic Analyzer Guide
 ==============================
 Holger Hetterich <ozzy@metal-district.de>
-v1.2.2, Jan 2011
+v1.2.3, Mar 2011
 
 About this document
 -------------------
@@ -799,7 +799,7 @@ Print a graph of the usage of share "Fritzboxtest" by read-access:
 ---------------------------------
 'share Fritzboxtest, usage r;'
 ---------------------------------
-=========================================
+========================================
 
 search
 ++++++
@@ -813,13 +813,13 @@ it will identify the object and shows related data. For example, if it finds a u
 matches to [term], it will identify it as a user, and additionally prints the domain the user is
 belonging to.
 
-.search function example:
-==========================================
-Fuzzy search for the term 'disk12':
------------------------------------
+.Search function example:
+====================================================
+Fuzzy search for the term disk12:
+-------------------------------------
 'global, search *disk12*;'
------------------------------------
-===========================================
+-------------------------------------
+=====================================================
 
 throughput
 ++++++++++
@@ -834,6 +834,7 @@ The throughput function calculates the throughput of data of the last [num] minu
 Sum up the read-only throughput of the last 50 days on share "Fritzboxtest".
 ------------------------------------
 'share Fritzboxtest, throughput 50 days r;'
+------------------------------------
 ============================================
 
 
