@@ -29,6 +29,7 @@ class OverviewController < ApplicationController
     @domain = params[:domain]
     render :update do |page|
       page.insert_html :after, "domains", :partial => "shares"
+      page.call "refreshShares"
     end
   end
 
@@ -70,6 +71,7 @@ class OverviewController < ApplicationController
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
       |e| @domains << e.text
     }
+    File.delete("/tmp/domains.xml")
   end
 
   def initial_command

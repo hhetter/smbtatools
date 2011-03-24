@@ -32,7 +32,7 @@ function refreshShares() {
         type: "get",
         data: {
             domain : $("#domain").attr('value'),
-            share:    $("#share").attr(value)
+            share:    $("#share").attr('value')
             }
     });
     setTimeout("refreshShares()",300000);
@@ -44,6 +44,17 @@ function domOnSelectChange(){
 function shareOnSelectChange(){
     var selected = $("#shares option:selected");
     $("#share").val(selected.val());
+}
+function startFunction(){
+    var selected = $("#domfunc option:selected");
+    selected = selected.val();
+    $.ajax({
+        url: "../" + selected +  "/initial",
+        type:"get",
+        data:{
+            domain:$("#domain").attr('value')
+        }
+    });
 }
 $(document).ready(function(){
 });
