@@ -70,6 +70,7 @@ void configuration_define_defaults( struct configuration_data *c )
         c->keyfile =NULL;
 	c->unix_socket = 0;
 	c->identify = 1;
+	c->object_type = SMBTA_NONE;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
@@ -260,6 +261,10 @@ int configuration_check_configuration( struct configuration_data *c )
         }
 	if (c->identify <0 || c->identify > 1) {
 		printf("ERROR: please specify either 1 or 0 for identify.\n");
+		return -1;
+	}
+	if (c->object_type == SMBTA_NONE) {
+		printf("ERROR: please specify an object to monitor.\n");
 		return -1;
 	}
         return 0;
