@@ -6,13 +6,19 @@ class OverviewController < ApplicationController
   end
 
   def get_domains
+    @domain = params[:domain]
     initial_command
     initialize_domains
     render :update do |page|
+      page << "if (!$('div#domains').length)"
       page.insert_html :after, "global", :partial => "domains"
       page.call "refreshDomains"
+      page << "if($('div#domains').length)"
+      page.replace "domains", :partial => "domains"
+      page.call "refreshDomains"
     end
-  end
+    end
+  
 
   def refresh_domains
     initial_command
@@ -28,7 +34,11 @@ class OverviewController < ApplicationController
     initialize_shares
     @domain = params[:domain]
     render :update do |page|
+      page << "if (!$('div#shares').length)"
       page.insert_html :after, "domains", :partial => "shares"
+      page.call "refreshShares"
+      page << "if($('div#domains').length)"
+      page.replace "shares", :partial => "shares"
       page.call "refreshShares"
     end
   end
@@ -65,7 +75,7 @@ class OverviewController < ApplicationController
     initial_command
     cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
-      @domains = Array.new
+    @domains = Array.new
     file = File.new( "/tmp/domains.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {

@@ -1,5 +1,4 @@
 Smbtaquery::Application.routes.draw do
-  get "last_activity/initial"
   get "overview/index"
   get "overview/get_domains"
   get "overview/refresh_domains"

@@ -3,6 +3,6 @@
   <%= image_tag "arrow.png", :onClick => "getShares()" %>
   <br/>
   <%= select_tag "domfunc", options_for_select(["","total", "top","usage", "last_activity"])%>
-  <%= submit_tag "Go", :onclick => "startFunction()" %>
+  <%= submit_tag "Go", :class => "dom", :onclick => "startFunction()" %>
   <%= hidden_field_tag "domain", @domain %>
 </div>
