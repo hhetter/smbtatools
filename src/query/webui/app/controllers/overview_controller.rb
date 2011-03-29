@@ -12,7 +12,6 @@ class OverviewController < ApplicationController
     render :update do |page|
       page << "if (!$('div#domains').length)"
       page.insert_html :after, "global", :partial => "domains"
-      page.call "refreshDomains"
       page << "if($('div#domains').length)"
       page.replace "domains", :partial => "domains"
       page.call "refreshDomains"
@@ -29,27 +28,38 @@ class OverviewController < ApplicationController
     end
   end
 
-  def get_shares
+  def get_shares_and_users
     initial_command
     initialize_shares
+    initialize_users
     @domain = params[:domain]
     render :update do |page|
       page << "if (!$('div#shares').length)"
-      page.insert_html :after, "domains", :partial => "shares"
-      page.call "refreshShares"
-      page << "if($('div#domains').length)"
+      page.insert_html :after, "domains", :partial => "shares"     
+      page << "if($('div#shares').length)"
       page.replace "shares", :partial => "shares"
+      page.delay(1) do
+        page << "if (!$('div#users').length)"
+        page.insert_html :bottom, "shares", :partial => "users"
+        page << "if($('div#users').length)"
+        page.replace "users", :partial => "users"
+      end
       page.call "refreshShares"
     end
   end
 
-  def refresh_shares
+  def refresh_shares_and_users
     initial_command
     initialize_shares
+    initialize_users
     @domain = params[:domain]
     @share = params[:share]
+    @user = params[:user]
     render :update do |page|
       page.replace "shares", :partial => "shares"
+      #page.delay(1) do
+        page.insert_html :bottom, "shares", :partial => "users"
+      #end
     end
   end
 
@@ -70,6 +80,24 @@ class OverviewController < ApplicationController
     }
     File.delete("/tmp/shares.xml")
   end 
+
+  def initialize_users
+    @domain = params[:domain]
+    initial_command
+    if @domain.blank?
+      cmd= @cmd + " -q 'global, list users;' -x /tmp/users.xml"
+    else
+      cmd= @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
+    end
+    `#{cmd}`
+    @users = Array.new
+    file = File.new( "/tmp/users.xml" )
+    doc = Document.new file
+    doc.elements.each("smbta_output/list/table_row/table_value[@id='username']") {
+      |e| @users << e.text
+    }
+    File.delete("/tmp/users.xml")
+  end
 
   def initialize_domains
     initial_command

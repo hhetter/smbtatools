@@ -19,7 +19,7 @@ function refreshDomains() {
 }
 function getShares() {
     $.ajax({
-        url: "get_shares",
+        url: "get_shares_and_users",
         type: "get",
         data: {
             domain : $("#domain").attr('value')
@@ -28,11 +28,12 @@ function getShares() {
 }
 function refreshShares() {
     $.ajax({
-        url: "refresh_shares",
+        url: "refresh_shares_and_users",
         type: "get",
         data: {
             domain : $("#domain").attr('value'),
-            share:    $("#share").attr('value')
+            share:    $("#share").attr('value'),
+            user:      $("#user").attr('value')
             }
     });
     setTimeout("refreshShares()",300000);
