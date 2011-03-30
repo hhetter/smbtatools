@@ -1,5 +1,5 @@
 <div id="users" style="float:left">
-  <%= select_tag "users", options_for_select(@users, @user), :size => 5, :onChange => "userOnSelectChange()" %>
+  <%= select_tag "users", options_for_select(@users, @user), :size => 5, :onChange => "shareOnSelectChange()" %>
   <%#= image_tag "arrow.png", :onClick => "getShares()" %>
   <br/>
   <%= select_tag "userfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>
