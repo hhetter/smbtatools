@@ -93,6 +93,7 @@ class OverviewController < ApplicationController
     cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
     @domains = Array.new
+    @domains << ""
     file = File.new( "/tmp/domains.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
@@ -111,6 +112,7 @@ class OverviewController < ApplicationController
     end
     `#{cmd}`
     @shares = Array.new
+    @shares << ""
     file = File.new( "/tmp/shares.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
@@ -129,6 +131,7 @@ class OverviewController < ApplicationController
     end
     `#{cmd}`
     @users = Array.new
+    @users << ""
     file = File.new( "/tmp/users.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='username']") {
