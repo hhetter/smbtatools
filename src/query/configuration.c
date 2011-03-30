@@ -70,7 +70,7 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->query_xmlfile = NULL;
 	c->xml_handle = NULL;
 	c->query_output = QUERY_ASCII;
-	/* with smbtaquery, identification is always on */
+	/* with smbtaquery, identification is on by default */
 	c->identify = 1;
 }
 
@@ -143,6 +143,8 @@ void configuration_show_help()
 	printf("-k	--keyfile <file>	Enable encryption and load the\n");
 	printf("				key from <file>.\n");
 	printf("-K      --create-key <file>	Create a key for encryption in <file>.\n");
+	printf("-I	--identify <num>	0 = don't run identification,\n");
+	printf("				1 = run idendification (default)\n");
 	printf("\n");
 }
 
@@ -220,11 +222,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "xml",1,NULL,'x' },
 			{ "output",1,NULL,'o'},
 			{ "create-key",1,NULL,'K'},
+			{ "identify",1,NULL,'I'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"o:d:f:i:c:k:q:h:x:p?uK:", long_options, &option_index );
+			"o:d:f:i:c:k:q:h:x:p?uK:I:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -270,6 +273,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'K':
 				configuration_create_key( optarg );
 				exit(0);
+			case 'I': ;
+				c->identify = 0;
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
