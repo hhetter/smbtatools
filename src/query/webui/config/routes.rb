@@ -4,6 +4,8 @@ Smbtaquery::Application.routes.draw do
   get "overview/refresh_domains"
   get "overview/refresh_shares_and_users"
   get "overview/get_shares_and_users"
+  get "overview/get_files"
+  get "overview/refresh_files"
   get "config/general"
   post "config/save"
 

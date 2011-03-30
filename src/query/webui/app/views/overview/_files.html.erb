@@ -1,0 +1,7 @@
+<div id="files" style="float:left">
+  <%= select_tag "files", options_for_select(@files, @file), :size => 10 %>
+  <br/>
+  <%= select_tag "filefunc", options_for_select(["","total", "top","usage", "last_activity"])%>
+  <%= submit_tag "Go", :class => "file", :onclick => "startFunction()" %>
+  <%= hidden_field_tag "domain", @domain %>
+</div>

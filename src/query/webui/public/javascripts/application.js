@@ -26,6 +26,17 @@ function getShares() {
             }
     });
 }
+function getFiles(){
+    $.ajax({
+        url: "get_files",
+        type: "get",
+        data: {
+            domain: $("#domain").attr('value'),
+            share: $("#share").attr('value'),
+            user: $("#user").attr('value')
+        }
+    });
+}
 function refreshShares() {
     $.ajax({
         url: "refresh_shares_and_users",
@@ -38,6 +49,18 @@ function refreshShares() {
     });
     setTimeout("refreshShares()",300000);
 }
+function refreshFiles(){
+    $.ajax({
+        url: "refresh_files",
+        type: "get",
+        data: {
+            domain: $("#domain").attr('value'),
+            share:   $("#share").attr('value'),
+            user:     $("#user").attr('value')
+        }
+    });
+    setTimeout("refreshFiles()", 300000);
+}
 function domOnSelectChange(){
     var selected = $("#domains option:selected");
     $("#domain").val(selected.val());
@@ -45,6 +68,10 @@ function domOnSelectChange(){
 function shareOnSelectChange(){
     var selected = $("#shares option:selected");
     $("#share").val(selected.val());
+}
+function userOnSelectChange(){
+    var selected = $("#users option:selected");
+    $("#user").val(selected.val());
 }
 function startFunction(){
     var selected = $("#domfunc option:selected");

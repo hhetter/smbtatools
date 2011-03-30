@@ -57,10 +57,48 @@ class OverviewController < ApplicationController
     @user = params[:user]
     render :update do |page|
       page.replace "shares", :partial => "shares"
-      #page.delay(1) do
-        page.insert_html :bottom, "shares", :partial => "users"
-      #end
+      page.insert_html :bottom, "shares", :partial => "users"
     end
+  end
+
+  def get_files
+    @domain = params[:domain]
+    @share = params[:share]
+    @user = params[:user]
+    initial_command
+    initialize_files
+    render :update do |page|
+      page << "if (!$('div#files').length)"
+      page.insert_html :after, "shares", :partial => "files"
+      page << "if($('div#files').length)"
+      page.replace "files", :partial => "files"
+      page.call "refreshFiles"
+    end
+  end
+
+  def refresh_files
+    @domain = params[:domain]
+    @share = params[:share]
+    @user = params[:user]
+    @file = params[:file]
+    initial_command
+    initialize_files
+    render :update do |page|
+      page.replace "files", :partial => "files"
+    end
+  end
+
+  def initialize_domains
+    initial_command
+    cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
+    `#{cmd}`
+    @domains = Array.new
+    file = File.new( "/tmp/domains.xml" )
+    doc = Document.new file
+    doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
+      |e| @domains << e.text
+    }
+    File.delete("/tmp/domains.xml")
   end
 
   def initialize_shares
@@ -79,7 +117,7 @@ class OverviewController < ApplicationController
       |e| @shares << e.text
     }
     File.delete("/tmp/shares.xml")
-  end 
+  end
 
   def initialize_users
     @domain = params[:domain]
@@ -99,25 +137,55 @@ class OverviewController < ApplicationController
     File.delete("/tmp/users.xml")
   end
 
-  def initialize_domains
+  def initialize_files
+    @domain = params[:domain]
+    @share = params[:share]
+    @user = params[:user]
     initial_command
-    cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
+    if @domain.blank?
+      if @user.blank? and @share.blank?
+        cmd = @cmd + " -q 'global list files;' -x /tmp/files.xml"
+      end
+      if @user.blank? and ! @share.blank?
+        cmd = @cmd + " -q 'global, share " + @share + ", list files;' -x /tmp/files.xml"
+      end
+      if !@user.blank? and @share.blank?
+        cmd = @cmd + " -q 'global, user " + @user + ", list files;' -x /tmp/files.xml"
+      end
+      if !@user.blank? and !@share.blank?
+        cmd = @cmd + " -q 'global, user " + @user + " share " + @share + ", list files;' -x /tmp/files.xml"
+      end
+    end
+    if !@domain.blank?
+      if @user.blank? and @share.blank?
+        cmd = @cmd + " -q 'domain " + @domain + ", list files;' -x /tmp/files.xml"
+      end
+      if @user.blank? and ! @share.blank?
+        cmd = @cmd + " -q 'domain " + @domain + ", share " + @share + ", list files;' -x /tmp/files.xml"
+      end
+      if !@user.blank? and @share.blank?
+        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", list files;' -x /tmp/files.xml"
+      end
+      if !@user.blank? and !@share.blank?
+        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
+      end
+    end
     `#{cmd}`
-    @domains = Array.new
-    file = File.new( "/tmp/domains.xml" )
+    @files = Array.new
+    file = File.new( "/tmp/files.xml" )
     doc = Document.new file
-    doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
-      |e| @domains << e.text
+    doc.elements.each("smbta_output/list/table_row/table_value[@id='filename']") {
+      |e| @files << e.text
     }
-    File.delete("/tmp/domains.xml")
+    File.delete("/tmp/files.xml")
   end
 
   def initial_command
     if $type == "Inet-Port"
-      @cmd="smbtaquery -h " + $host_ip + " -i " + $port
+      @cmd="smbtaquery -h " + $host_ip + " -i " + $port + " -I 0 "
     end
     if $type == "Unix Domain Socket"
-      @cmd="smbtaquery -h " + $host_ip + " -u " + $port
+      @cmd="smbtaquery -h " + $host_ip + " -u " + $port + " -I 0 "
     end
   end
 

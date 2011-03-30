@@ -1,6 +1,6 @@
 <div id="shares" style="float:left">
   <%= select_tag "shares", options_for_select(@shares, @share), :size => 5, :onChange => "shareOnSelectChange()" %>
-  <%= image_tag "arrow.png", :onClick => "getShares()" %>
+  <%= image_tag "arrow.png", :onClick => "getFiles()" %>
   <br/>
   <%= select_tag "sharesfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>
   <%= hidden_field_tag "domain",  @domain %>
