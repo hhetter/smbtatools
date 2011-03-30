@@ -274,7 +274,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				configuration_create_key( optarg );
 				exit(0);
 			case 'I': ;
-				c->identify = 0;
+				c->identify = (int) common_myatoi( optarg );
 				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
