@@ -549,6 +549,10 @@ char *non_db_simple_identify( TALLOC_CTX *ctx,
 	int qtype)
 {
 	char *retstr = NULL;
+	if (qtype == 0) {
+		retstr = talloc_asprintf(ctx, "and 1=1 ");
+		return retstr;
+	}
 	switch(Type) {
 	case INT_OBJ_USER:
 		retstr = talloc_asprintf(ctx,
