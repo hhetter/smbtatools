@@ -6,7 +6,7 @@ class OverviewController < ApplicationController
   end
 
   def get_domains
-    @domain = params[:domain]
+    #@domain = params[:domain]
     initial_command
     initialize_domains
     render :update do |page|
@@ -72,7 +72,7 @@ class OverviewController < ApplicationController
       page.insert_html :after, "shares", :partial => "files"
       page << "if($('div#files').length)"
       page.replace "files", :partial => "files"
-      page.call "refreshFiles"
+      #page.call "refreshFiles"
     end
   end
 
@@ -147,7 +147,7 @@ class OverviewController < ApplicationController
     initial_command
     if @domain.blank?
       if @user.blank? and @share.blank?
-        cmd = @cmd + " -q 'global list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, list files;' -x /tmp/files.xml"
       end
       if @user.blank? and ! @share.blank?
         cmd = @cmd + " -q 'global, share " + @share + ", list files;' -x /tmp/files.xml"
@@ -156,7 +156,7 @@ class OverviewController < ApplicationController
         cmd = @cmd + " -q 'global, user " + @user + ", list files;' -x /tmp/files.xml"
       end
       if !@user.blank? and !@share.blank?
-        cmd = @cmd + " -q 'global, user " + @user + " share " + @share + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
       end
     end
     if !@domain.blank?
