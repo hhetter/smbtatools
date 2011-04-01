@@ -14,7 +14,6 @@ class OverviewController < ApplicationController
       page.insert_html :after, "global", :partial => "domains"
       page << "if($('div#domains').length)"
       page.replace "domains", :partial => "domains"
-  #    page.call "refreshDomains"
     end
     end
   

@@ -6,5 +6,5 @@
   <%= select_tag "domfunc", options_for_select(["","total", "top","usage", "last_activity"])%>
   <%= submit_tag "Go", :class => "dom", :onclick => "startFunction()" %>
   <%= hidden_field_tag "domain", @domain %>
+  <div id="spinner_getshares" style="display: none; float:left"><%=image_tag('spinner.gif')%>  </div>
 </div>
-<div id="spinner_getshares" style="display: none; float:left"><%=image_tag('spinner.gif')%>  </div>
