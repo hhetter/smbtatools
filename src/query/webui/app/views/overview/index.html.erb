@@ -2,4 +2,5 @@
   <%=select_tag "global", options_for_select(["global"]), :size => 5, :onChange => "getDomains()" %>
   <%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%>
 </div>
+<div id="spinner_getdomains" style="display: none; float:left;"><%=image_tag('spinner.gif')%>  </div>
 
