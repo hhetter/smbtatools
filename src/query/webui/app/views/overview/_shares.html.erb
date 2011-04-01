@@ -1,8 +1,10 @@
 <div id="shares" style="float:left">
   <%= select_tag "sharelist", options_for_select(@shares, @share), :size => 5, :onClick => "shareOnClickChange()" %>
+  <div id="spinner_shares" style="display: none; float:right"><%=image_tag('spinner.gif')%>  </div>
   <%=image_tag('arrow.png', :alt => "List files", :title => "List files")%>
   <br/>
   <%= select_tag "sharesfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>
   <%= hidden_field_tag "domain",  @domain %>
   <%= hidden_field_tag "share", @share %>
 </div>
+<div id="spinner_getfiles" style="display: none; float:left"><%=image_tag('spinner.gif')%>  </div>
