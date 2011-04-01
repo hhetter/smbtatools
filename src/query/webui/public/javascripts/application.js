@@ -92,7 +92,6 @@ function shareOnClickChange(){
    // $("#files").stopTime("files");
     var selected1 = $("#sharelist option:selected");
     var selected2 = $("#userlist option:selected");
-    alert($("select#filelist").attr('options'));
     $("#share").val(selected1.val());
     $("#user").val(selected2.val());
     getFiles();
@@ -131,5 +130,5 @@ $(document).ready(function(){
             i = i+1;
             if (i==3)
                 i = 0;
-    }, 1200);
+    }, 120000);
 });
