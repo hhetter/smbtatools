@@ -1,10 +1,5 @@
 <div id="files" style="float:left">
-<<<<<<< HEAD
   <%= select_tag "files", options_for_select(@files, @file), :size => 10 %>
-=======
-  <%= select_tag "filelist", options_for_select(@files, @file), :size => 10 %>
-  <div id="spinner_files" style="display: none; float:right"><%=image_tag('spinner.gif')%>  </div>
->>>>>>> 4855f6a... [query][webui]Added spinner and correct timers to list functions
   <br/>
   <%= select_tag "filefunc", options_for_select(["","total", "top","usage", "last_activity"])%>
   <%= submit_tag "Go", :class => "file", :onclick => "startFunction()" %>

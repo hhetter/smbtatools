@@ -14,7 +14,7 @@ class OverviewController < ApplicationController
       page.insert_html :after, "global", :partial => "domains"
       page << "if($('div#domains').length)"
       page.replace "domains", :partial => "domains"
-  #    page.call "refreshDomains"
+      page.call "refreshDomains"
     end
     end
   
@@ -44,7 +44,7 @@ class OverviewController < ApplicationController
         page << "if($('div#users').length)"
         page.replace "users", :partial => "users"
       end
-      #page.call "refreshShares"
+      page.call "refreshShares"
     end
   end
 
