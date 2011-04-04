@@ -6,7 +6,6 @@ class OverviewController < ApplicationController
   end
 
   def get_domains
-    #@domain = params[:domain]
     initial_command
     initialize_domains
     render :update do |page|
@@ -15,7 +14,7 @@ class OverviewController < ApplicationController
       page << "if($('div#domains').length)"
       page.replace "domains", :partial => "domains"
     end
-    end
+  end
   
 
   def refresh_domains
@@ -43,7 +42,6 @@ class OverviewController < ApplicationController
         page << "if($('div#users').length)"
         page.replace "users", :partial => "users"
       end
-      #page.call "refreshShares"
     end
   end
 
@@ -68,10 +66,9 @@ class OverviewController < ApplicationController
     initialize_files
     render :update do |page|
       page << "if (!$('div#files').length)"
-      page.insert_html :after, "shares", :partial => "files"
+      page.insert_html :after, "shares_and_users", :partial => "files"
       page << "if($('div#files').length)"
       page.replace "files", :partial => "files"
-      #page.call "refreshFiles"
     end
   end
 

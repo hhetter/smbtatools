@@ -1,4 +1,5 @@
-<div id="shares" style="float:left">
+<div id="shares_and_users" style="float:left">
+<div id="shares">
   <%= select_tag "sharelist", options_for_select(@shares, @share), :size => 5, :onClick => "shareOnClickChange()" %>
   <div id="spinner_shares" style="display: none; float:right"><%=image_tag('spinner.gif')%>  </div>
   <%=image_tag('arrow.png', :alt => "List files", :title => "List files")%>

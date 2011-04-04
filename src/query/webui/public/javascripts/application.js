@@ -19,7 +19,6 @@ function refreshDomains() {
             domain : $("#domain").attr('value')
             }
     });
-//    setTimeout("refreshDomains()",300000);
 }
 function getShares() {
     $("#spinner_getshares").show();
@@ -45,7 +44,6 @@ function getFiles(){
             file:   $("#file").attr('value')
         }
     });
-  //$("#files").oneTime(  6000, "files", refreshFiles());
 }
 
 function refreshShares() {
@@ -60,7 +58,6 @@ function refreshShares() {
             user:      $("#user").attr('value')
             }
     });
- //   setTimeout("refreshShares()",300000);
 }
 function refreshFiles(){
     $("#spinner_files").show();
@@ -75,7 +72,6 @@ function refreshFiles(){
             file:       $("#file").attr('value')
         }
     });
-  //$("#files").oneTime(  6000, "files", refreshFiles());
 }
 function globalOnSelectChange(){
     getDomains();
@@ -86,16 +82,13 @@ function domOnClickChange(){
     getShares();
     if ($("div#files").length)
         $("#files").remove();
- //   $(document).stopTime("files");
 }
 function shareOnClickChange(){
-   // $("#files").stopTime("files");
     var selected1 = $("#sharelist option:selected");
     var selected2 = $("#userlist option:selected");
     $("#share").val(selected1.val());
     $("#user").val(selected2.val());
     getFiles();
-//    $(document).everyTime(  5000, "files", function(i){refreshFiles();}, 0);
 }
 function userOnClickChange(){
     var selected = $("#userlist option:selected");
@@ -125,7 +118,6 @@ $(document).ready(function(){
             }
             if (($("#files").length) && (i==2)) {
                 refreshFiles();
-            //$("#bla").append('<br/>test');
             }
             i = i+1;
             if (i==3)
