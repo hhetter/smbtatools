@@ -1,4 +1,4 @@
-html, body {height:100%; margin: 0; padding: 0; }
+html, body { height:100%; width: 2000px; margin: 0; padding: 0; }
 
 html>body {
 	font-size: 16px; 
@@ -14,7 +14,10 @@ body {
 
 h1, h2 { font-family: 'trebuchet ms', verdana, arial; padding: 10px; margin: 0 }
 h1 { font-size: large }
-
+th {
+    border: solid 1px;
+    background-color: gainsboro;
+}
 #banner { padding: 15px; background-color: #06b; color: white; font-size: large; border-bottom: 1px solid #ccc;
     background: url(bg.gif) repeat-x; text-align: center }
 #banner a { color: white; }
@@ -37,11 +40,21 @@ a img { border: none; }
     background: #ffc0cb;
 }
 
-.spinner{
+.spinner {
     display: none;
     position:absolute;
     top:0;
     right:0;
     opacity:0.5
-
+}
+select {
+    width: 200px;
+    background-color: gainsboro;
+}
+select#filelist {
+    width: auto;
+}
+div#domains, div#global, div#shares_and_users, div#files {
+    display: inline-block;
+    white-space: nowrap;
 }

@@ -1,5 +1,8 @@
 <div id="global" style="position:relative; float:left;">
-  <%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onClick => "getDomains()" %>
-  <%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%>
+  <table>
+    <tr><th>Global</th></tr>
+    <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onClick => "getDomains()" %></td>
+      <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
+  </table>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>

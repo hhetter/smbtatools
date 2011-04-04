@@ -1,9 +1,13 @@
-<div id="files" style="position:relative; float:left">
-  <%= select_tag "filelist", options_for_select(@files, @file), :size => 10 %>
+<div id="files" style="position: relative; float:left;">
+  <table>
+    <tr><th>Files</th></tr>
+    <tr><td><%= select_tag "filelist", options_for_select(@files, @file), :size => 13, :onClick => "fileOnClickChange()" %></td></tr>
+  </table>
   <div id="spinner_files" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <br/>
   <%= select_tag "filefunc", options_for_select(["","total", "top","usage", "last_activity"])%>
   <%= submit_tag "Go", :class => "file", :onclick => "startFunction()" %>
   <%= hidden_field_tag "domain", @domain %>
-  <% content_for :javascript %>
+  <%= hidden_field_tag "share", @share %>
+  <%= hidden_field_tag "user", @user %>
+  <%= hidden_field_tag "file", @file %>
 </div>

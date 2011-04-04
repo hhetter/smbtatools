@@ -95,6 +95,10 @@ function userOnClickChange(){
     $("#user").val(selected.val());
   
 }
+function fileOnClickChange(){
+    var selected = $("#filelist option:selected");
+    $("#file").val(selected.val());
+}
 function startFunction(){
     var selected = $("#domfunc option:selected");
     selected = selected.val();

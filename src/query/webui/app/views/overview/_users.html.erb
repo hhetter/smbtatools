@@ -1,6 +1,8 @@
 <div id="users">
-  <%= select_tag "userlist", options_for_select(@users, @user), :size => 5, :onClick => "shareOnClickChange()" %>
-  <br/>
+  <table>
+    <tr><th>Users</th></tr>
+    <tr><td><%= select_tag "userlist", options_for_select(@users, @user), :size => 5, :onClick => "shareOnClickChange()" %></td></tr>
+  </table>
   <%= select_tag "userfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>
   <%= hidden_field_tag "domain",  @domain %>
   <%= hidden_field_tag "share", @share %>
