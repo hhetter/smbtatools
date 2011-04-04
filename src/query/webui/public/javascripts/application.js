@@ -6,7 +6,7 @@ function getDomains () {
     $.ajax({
         url: "get_domains",
         type: "get",
-        complete: function(){$("#spinner_getdomains").hide();},
+        complete: function(){$("#spinner_getdomains").hide();}
     });
 }
 function refreshDomains() {

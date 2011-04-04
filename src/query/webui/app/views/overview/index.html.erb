@@ -1,5 +1,5 @@
 <div id="global" style="position:relative; float:left;">
   <%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onClick => "getDomains()" %>
   <%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%>
-  <div id="spinner_getdomains" style="display: none; position:absolute; top:0; right:0"><%=image_tag('spinner.gif')%>  </div>
+  <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>

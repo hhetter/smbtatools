@@ -36,3 +36,11 @@ a img { border: none; }
     border: thin solid #8b0000;
     background: #ffc0cb;
 }
+
+.spinner{
+    display: none;
+    position:absolute;
+    top:0;
+    right:0;
+
+}
