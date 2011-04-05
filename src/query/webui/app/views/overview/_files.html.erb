@@ -4,6 +4,7 @@
     <tr><td><%= select_tag "filelist", options_for_select(@files, @file), :size => 13, :onClick => "fileOnClickChange()" %></td></tr>
   </table>
   <div id="spinner_files" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <div id="file_diff" class="diff"><%=image_tag('diff.png')%></div>
   <%= select_tag "filefunc", options_for_select(["","total", "top","usage", "last_activity"])%>
   <%= submit_tag "Go", :class => "file", :onclick => "startFunction()" %>
   <%= hidden_field_tag "domain", @domain %>

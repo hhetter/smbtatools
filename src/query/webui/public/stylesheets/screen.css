@@ -44,12 +44,32 @@ a img { border: none; }
     display: none;
     position:absolute;
     top:0;
-    right:0;
-    opacity:0.5;
+    right:50px;
+}
+.diff {
+    display: none;
+    position:absolute;
+    top:23px;
+    right:52px;
+}
+#spinner_files{
+    display:none;
+    position:absolute;
+    top:0;
+    right:-15px;
+}
+#file_diff{
+    position:absolute;
+    display:none;
+    top:23px;
+    right:-15px;
 }
 select {
     width: 200px;
     background-color: gainsboro;
+}
+select#mode{
+    width:auto;
 }
 select#filelist {
     width: auto;

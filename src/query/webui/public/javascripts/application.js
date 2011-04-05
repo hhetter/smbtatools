@@ -11,13 +11,28 @@ function getDomains () {
 }
 function refreshDomains() {
     $("#spinner_domains").show();
+    var checksum;
+    $('#domainlist option').each(function(){
+        checksum += $(this).val();
+    });
+    checksum = $.md5(checksum);
     $.ajax({
         url: "refresh_domains",
         type: "get",
-        complete: function(){$("#spinner_domains").hide();},
+        complete: function(){
+            $("#spinner_domains").hide();
+            var new_checksum;
+            $('#domainlist option').each(function(){
+                new_checksum += $(this).val();
+            });
+            new_checksum = $.md5(new_checksum);
+            if (checksum != new_checksum)
+                $("#dom_diff").show();
+        },
         data: {
+            checksum: checksum,
             domain : $("#domain").attr('value')
-            }
+        }
     });
 }
 function getShares() {
@@ -48,10 +63,35 @@ function getFiles(){
 
 function refreshShares() {
     $("#spinner_shares").show();
+    var checksum_shares;
+    var checksum_users;
+    $('#sharelist option').each(function(){
+        checksum_shares += $(this).val();
+    });
+    checksum_shares = $.md5(checksum_shares);
+    $('#userlist option').each(function(){
+        checksum_users += $(this).val();
+    });
+    checksum_users = $.md5(checksum_users);
     $.ajax({
         url: "refresh_shares_and_users",
         type: "get",
-        complete: function(){$("#spinner_shares").hide();},
+        complete: function(){$("#spinner_shares").hide();
+        var new_checksum_shares;
+        var new_checksum_users;
+            $('#sharelist option').each(function(){
+                new_checksum_shares += $(this).val();
+            });
+            new_checksum_shares = $.md5(new_checksum_shares);
+            if (checksum_shares != new_checksum_shares)
+                $("#share_diff").show();
+       $('#userlist option').each(function(){
+                new_checksum_users += $(this).val();
+            });
+            new_checksum_users = $.md5(new_checksum_users);
+            if (checksum_users != new_checksum_users)
+                $("#user_diff").show();
+        },
         data: {
             domain : $("#domain").attr('value'),
             share:    $("#share").attr('value'),
@@ -61,10 +101,23 @@ function refreshShares() {
 }
 function refreshFiles(){
     $("#spinner_files").show();
+     var checksum;
+     $('#filelist option').each(function(){
+        checksum += $(this).val();
+    });
+    checksum = $.md5(checksum);
     $.ajax({
         url: "refresh_files",
         type: "get",
-        complete: function(){$("#spinner_files").hide();},
+        complete: function(){$("#spinner_files").hide();
+        var new_checksum;
+            $('#filelist option').each(function(){
+                new_checksum += $(this).val();
+            });
+            new_checksum = $.md5(new_checksum);
+            if (checksum != new_checksum)
+                $("#file_diff").show();
+        },
         data: {
             domain: $("#domain").attr('value'),
             share:   $("#share").attr('value'),
@@ -78,6 +131,7 @@ function globalOnSelectChange(){
 }
 function domOnClickChange(){
     var selected = $("#domainlist option:selected");
+    $("#dom_diff").hide();
     $("#domain").val(selected.val());
     getShares();
     if ($("div#files").length)
@@ -86,17 +140,16 @@ function domOnClickChange(){
 function shareOnClickChange(){
     var selected1 = $("#sharelist option:selected");
     var selected2 = $("#userlist option:selected");
+    $("#share_diff").hide();
+    $("#user_diff").hide();
     $("#share").val(selected1.val());
     $("#user").val(selected2.val());
     getFiles();
-}
-function userOnClickChange(){
-    var selected = $("#userlist option:selected");
-    $("#user").val(selected.val());
-  
+
 }
 function fileOnClickChange(){
     var selected = $("#filelist option:selected");
+    $("#file_diff").hide();
     $("#file").val(selected.val());
 }
 function startFunction(){
