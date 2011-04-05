@@ -45,7 +45,7 @@ a img { border: none; }
     position:absolute;
     top:0;
     right:0;
-    opacity:0.5
+    opacity:0.5;
 }
 select {
     width: 200px;
@@ -53,8 +53,4 @@ select {
 }
 select#filelist {
     width: auto;
-}
-div#domains, div#global, div#shares_and_users, div#files {
-    display: inline-block;
-    white-space: nowrap;
 }
