@@ -2,7 +2,7 @@
   <div id="shares" style="position:relative;">
     <table>
       <tr><th>Shares</th></tr>
-      <tr><td><%=select_tag "sharelist", options_for_select(@shares, @share), :size => 5, :onClick => "shareOnClickChange()" %></td>
+      <tr><td><%=select_tag "sharelist", options_for_select(@shares, @share), :size => 5, :onclick => "shareOnClickChange()" %></td>
         <td><%=image_tag('arrow.png', :alt => "List files", :title => "List files")%></td></tr>
     </table>
     <%= select_tag "sharesfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>

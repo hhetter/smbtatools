@@ -1,11 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>Smbtaquery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
     <%= stylesheet_link_tag :all %>
     <%= javascript_include_tag :defaults %>
     <%= csrf_meta_tag %>
-    <%= yield :javascript_head %>
+    <title>Smbtaquery</title>
   </head>
   <body>
     <div id="container">
@@ -15,11 +18,13 @@
         <div id="titel"><h1>SMBTAquery-web</h1></div>
       </div>
     </div>
-    <hr></hr>
+    <hr/>
     <% flash.each do |key, value| %>
       <div class="flash <%= key %>"><%= value %></div>
     <% end %>
-    <%= yield %>
+    <div id="list" style="position:absolute; height:250px; width:100%;">
+      <%= yield %>
+    </div>
 
   </body>
 </html>

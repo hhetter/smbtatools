@@ -9,7 +9,7 @@ Smbtaquery::Application.routes.draw do
   get "config/general"
   post "config/save"
 
-
+get "overview/test"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

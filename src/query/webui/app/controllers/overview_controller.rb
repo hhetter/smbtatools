@@ -16,6 +16,12 @@ class OverviewController < ApplicationController
     end
   end
   
+  def test
+    @test = File.open("/tmp/test.html", "r")
+    @test = @test.readlines.to_s
+    @test = @test.html_safe
+
+  end
 
   def refresh_domains
     initial_command

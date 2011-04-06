@@ -1,8 +1,10 @@
 <div id="global" style="position:relative; float:left;">
   <table>
     <tr><th>Global</th></tr>
-    <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onClick => "getDomains()" %></td>
+    <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onclick => "getDomains()" %></td>
       <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
   </table>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>
+<div id="mode" style="border:solid 1px; position:absolute; bottom:0;">Choose a mode:<%=select_tag "modelist", options_for_select(["r", "w", "rw"], @mode)%></div>
+<div id="number" style="border:solid 1px; position:absolute; bottom:30px;">Choose number: <%=text_field_tag @number %></div>
