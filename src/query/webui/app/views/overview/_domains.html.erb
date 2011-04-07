@@ -4,8 +4,7 @@
     <tr><td><%= select_tag "domainlist", options_for_select(@domains, @domain), :selected => nil,  :size => 5, :onclick => "domOnClickChange()" %></td>
       <td><%=image_tag('arrow.png', :alt => "List shares and users", :title => "List shares and users")%></td></tr>
   </table>
-  <%= select_tag "domfunc", options_for_select(["","total", "top","usage", "last_activity"])%>
-  <%= submit_tag "Go", :class => "dom", :onclick => "startFunction()" %>
+  <%= select_tag "domain_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "startFunction($('#domain_function option:selected').val())"%>
   <%= hidden_field_tag "domain", @domain %>
   <div id="spinner_domains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
   <div id="dom_diff" class="diff"><%=image_tag('diff.png')%></div>

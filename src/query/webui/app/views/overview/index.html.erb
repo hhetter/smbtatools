@@ -4,7 +4,50 @@
     <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onclick => "getDomains()" %></td>
       <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
   </table>
+  <%= select_tag "global_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "startFunction($('#global_function option:selected').val())"%>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>
-<div id="mode" style="border:solid 1px; position:absolute; bottom:0;">Choose a mode:<%=select_tag "modelist", options_for_select(["r", "w", "rw"], @mode)%></div>
-<div id="number" style="border:solid 1px; position:absolute; bottom:30px;">Choose number: <%=text_field_tag @number %></div>
+<div id="dialog">
+  <div id="help"><b>Choose an object from the tables above</b></div>
+  <div id="usage" class="function_dialog">
+    <table>
+      <tr><td>Choose a mode:</td>
+        <td><%=select_tag "modelist", options_for_select(["", "r", "w", "rw"], @mode)%></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "dom", :disabled=> true%></td>
+        <td><%= submit_tag "Cancel", :class => "dom", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="usage_help" class="function_help">The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</div>
+  </div>
+  <div id="total" class="function_dialog">
+    <table>
+      <tr><td>Choose a mode:</td>
+        <td><%=select_tag "modelist", options_for_select(["", "r", "w", "rw"], @mode)%></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "dom", :disabled=> true%></td>
+        <td><%= submit_tag "Cancel", :class => "dom", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="total_help" class="function_help">The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</div>
+  </div>
+  <div id="last_activity" class="function_dialog">
+    <table>
+      <tr><td>Choose number:</td>
+        <td><%=text_field_tag "number", @number %></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "dom", :disabled=> true%></td>
+        <td><%= submit_tag "Cancel", :class => "dom", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="last_activity_help" class="function_help">The last_activity function shows the last [num] activities in the VFS layer on an object.</div>
+  </div>
+  <div id="top" class="function_dialog">
+    <table>
+      <tr><td>Choose Object:</td>
+        <td><%=select_tag "objectlist", options_for_select(["", "shares", "users"], @object) %></td></tr>
+      <tr><td>Choose a mode:</td>
+        <td><%=select_tag "modelist", options_for_select(["", "r", "w", "rw"], @mode)%></td></tr>
+      <tr><td>Choose number:</td>
+        <td><%=text_field_tag "number", @number %></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "dom", :disabled=> true%></td>
+        <td><%= submit_tag "Cancel", :class => "dom", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="top_help" class="function_help">The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</div>
+  </div>
+</div>
+<%= hidden_field_tag "selected_funtion", @selected_function %>

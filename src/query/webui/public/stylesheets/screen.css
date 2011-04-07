@@ -92,16 +92,55 @@ a img { border: none; }
     top:23px;
     right:-15px;
 }
-#mode, #number{
+.function_help{
+    display:none;
+    width: 40%; 
+    right:0; 
+    top:0; 
+    position:absolute;
+}
+#top_help{
+    top:20px;
+}
+.function_dialog{
+    width:500px;
+    height:120px;
     display: none;
+    position:absolute;
+    top:20px;
+}
+#dialog{
+    border:solid 1px;
+    position:absolute;
+    bottom:0;
+    width:500px;
+    height: 120px;
+}
+#help{
+    position:absolute;
+    width:500px;
+    height: 120px;
+    text-align:center;
+    top:50px;
+}
+#usage_and_total, #last_activity{
+    
+}
+#top{
+    display: none;
+    position:absolute;
+    top:5px;
 }
 select {
     width: 200px;
     background-color: #DCDCDC;
 }
-select#mode{
+select#modelist, select#objectlist{
     width:auto;
 }
 select#filelist {
     width: auto;
+}
+input#number{
+    width:50px;
 }

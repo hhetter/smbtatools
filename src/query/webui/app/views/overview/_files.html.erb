@@ -5,8 +5,7 @@
   </table>
   <div id="spinner_files" class="spinner"><%=image_tag('spinner.gif')%>  </div>
   <div id="file_diff" class="diff"><%=image_tag('diff.png')%></div>
-  <%= select_tag "filefunc", options_for_select(["","total", "top","usage", "last_activity"])%>
-  <%= submit_tag "Go", :class => "file", :onclick => "startFunction()" %>
+  <%= select_tag "file_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "startFunction($('#file_function option:selected').val())"%>
   <%= hidden_field_tag "domain", @domain %>
   <%= hidden_field_tag "share", @share %>
   <%= hidden_field_tag "user", @user %>

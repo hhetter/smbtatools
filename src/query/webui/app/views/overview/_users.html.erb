@@ -1,10 +1,10 @@
 <div id="users" style="position:relative;">
   <table>
     <tr><th>Users</th></tr>
-    <tr><td><%= select_tag "userlist", options_for_select(@users, @user), :size => 5, :onclick => "shareOnClickChange()" %></td></tr>
+    <tr><td><%= select_tag "userlist", options_for_select(@users, @user), :size => 6, :onclick => "shareOnClickChange()" %></td></tr>
   </table>
   <div id="user_diff" class="diff"><%=image_tag('diff.png')%></div>
-  <%= select_tag "userfunc", options_for_select(["","total", "top","usage", "last_activity"], @function)%>
+  <%= select_tag "user_function", options_for_select(["","total", "top","usage", "last_activity"], @function), :class => "function", :onchange => "startFunction($('#user_function option:selected').val())"%>
   <%= hidden_field_tag "domain",  @domain %>
   <%= hidden_field_tag "share", @share %>
   <%= hidden_field_tag "user", @user %>

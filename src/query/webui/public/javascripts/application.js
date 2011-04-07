@@ -152,16 +152,56 @@ function fileOnClickChange(){
     $("#file_diff").hide();
     $("#file").val(selected.val());
 }
-function startFunction(){
-    var selected = $("#domfunc option:selected");
-    selected = selected.val();
-    $.ajax({
-        url: "../" + selected +  "/initial",
-        type:"get",
-        data:{
-            domain:$("#domain").attr('value')
-        }
-    });
+function startFunction(object){
+    if (object == "usage"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#top").fadeOut();
+        $("#usage").fadeIn();
+        $("#usage_help").fadeIn();
+    }
+    else if (object == "total"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#usage").fadeOut();
+        $("#top").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#total").fadeIn();
+        $("#total_help").fadeIn();
+    }
+    else if (object == "last_activity"){
+        $(".function_help").fadeOut();
+        $("#help").fadeOut();
+        $("#last_activity").fadeIn();
+        $("#last_activity_help").fadeIn();
+        $("#usage").fadeOut();
+        $("#total").fadeOut();
+        $("#top").fadeOut();
+    }
+    else if (object == "top"){
+        $(".function_help").fadeOut();
+        $("#help").fadeOut();
+        $("#top").fadeIn();
+        $("#top_help").fadeIn();
+        $("#usage").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+    }
+
+    else{
+        $("#help").fadeIn();
+        $("#usage").fadeOut();
+        $("#total").fadeOut();
+        $("#top").fadeOut();
+        $("#last_activity").fadeOut();
+    }
+}
+function reset_functions(){
+    $(".function_dialog").fadeOut();
+    $(".function").val("");
+    $("#help").fadeIn();
 }
 var i = 0;
 $(document).ready(function(){
