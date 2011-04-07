@@ -153,6 +153,9 @@ function fileOnClickChange(){
     $("#file").val(selected.val());
 }
 function startFunction(object){
+    $("select.objectlist").val("");
+    $("select.modelist").val("");
+    $("input.number").val("");
     if (object == "usage"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
@@ -197,11 +200,46 @@ function startFunction(object){
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
     }
+    inspect_functionsettings();
 }
 function reset_functions(){
     $(".function_dialog").fadeOut();
     $(".function").val("");
     $("#help").fadeIn();
+}
+function inspect_functionsettings(){
+    if($("div#total").css("display") != "none"){
+        if($("select#modelist_total option:selected").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if($("div#usage").css("display") != "none"){
+        if($("select#modelist_usage option:selected").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if($("div#top").css("display") != "none"){
+        if($("select#objectlist_top").val() != "" & $("select#modelist_top").val() != "" & $("input#number_top").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if($("div#last_activity").css("display") != "none"){
+        if($("input#number_last_activity").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
 }
 var i = 0;
 $(document).ready(function(){

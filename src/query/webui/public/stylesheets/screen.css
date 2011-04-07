@@ -135,12 +135,12 @@ select {
     width: 200px;
     background-color: #DCDCDC;
 }
-select#modelist, select#objectlist{
+select.modelist, select.objectlist{
     width:auto;
 }
 select#filelist {
     width: auto;
 }
-input#number{
+input.number{
     width:50px;
 }
