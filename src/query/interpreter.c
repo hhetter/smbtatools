@@ -1893,17 +1893,17 @@ void interpreter_command_help()
 		"				domain DOMAIN\n");
 	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
-	printf("total 	[rw][r][w]		Get the total read(r),\n"
+	printf("total 	[r][w][rw]		Get the total read(r),\n"
 		"				write(w)\n");
 	printf("				or read-write values of\n"
 		"				the object.\n");
-	printf("list 	[shares][users]\n");
-	printf("     	[files]			Lists all shares, all\n"
+	printf("list 	[domains][shares]\n");
+	printf("     	[users][files]		Lists all shares, all\n"
 		"				users, all files on an\n");
 	printf("				object.\n");
 	printf("top 	[num] [shares]\n");
-	printf("    	[users] [rw][r][w]	List the top NUM shares,\n"
-		"				users or files on the\n");
+	printf("    	[users][files]	 	List the top NUM shares,\n"
+		"	[r][w][rw]		users or files on the\n");
 	printf("				object.\n");
         printf("last_activity [num]\n");
         printf("            			List the last NUM \n"

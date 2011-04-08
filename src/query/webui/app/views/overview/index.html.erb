@@ -4,13 +4,13 @@
     <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onclick => "getDomains()" %></td>
       <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
   </table>
-  <%= select_tag "global_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "startFunction($('#global_function option:selected').val())"%>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "startFunction($('#global_function option:selected').val())"%>
 </div>
 
 <div id="dialog">
 
-  <div id="help"><b>Choose an object from the tables above</b></div>
+  <div id="help"><b>Choose an object from the tables above,<br/> and select a function</b></div>
 
   <div id="usage" class="function_dialog">
     <table>
@@ -19,7 +19,7 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true%></td>
         <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="usage_help" class="function_help">The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</div>
+    <div id="usage_help" class="function_help"><i>The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i></div>
   </div>
 
   <div id="total" class="function_dialog">
@@ -29,7 +29,7 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true%></td>
         <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="total_help" class="function_help">The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</div>
+    <div id="total_help" class="function_help"><i>The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</i></div>
   </div>
 
   <div id="last_activity" class="function_dialog">
@@ -39,7 +39,7 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true%></td>
         <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="last_activity_help" class="function_help">The last_activity function shows the last [num] activities in the VFS layer on an object.</div>
+    <div id="last_activity_help" class="function_help"><i>The last_activity function shows the last [num] activities in the VFS layer on an object.</i></div>
   </div>
 
   <div id="top" class="function_dialog">
@@ -53,7 +53,11 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true%></td>
         <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="top_help" class="function_help">The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</div>
+    <div id="top_help" class="function_help"><i>The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</i></div>
   </div>
 </div>
+ <%= hidden_field_tag "domain", @domain %>
+ <%= hidden_field_tag "share", @share %>
+ <%= hidden_field_tag "user", @user %>
+ <%= hidden_field_tag "file", @file %>
 <%= hidden_field_tag "selected_funtion", @selected_function %>
