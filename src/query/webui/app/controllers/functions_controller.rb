@@ -88,5 +88,14 @@ class FunctionsController < ApplicationController
     @output = @output.readlines.to_s
     @output = @output.html_safe
     File.delete("/tmp/function.html")
+    @divname = Array.new
+    @divname << @function
+    @divname << @domain
+    @divname << @share
+    @divname << @user
+    @divname << @file
+    @divname << @mode
+    @divname << @object
+    @divname << @number
   end
 end
