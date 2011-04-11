@@ -15,13 +15,6 @@ class OverviewController < ApplicationController
       page.replace "domains", :partial => "domains"
     end
   end
-  
-  def test
-    @test = File.open("/tmp/test.html", "r")
-    @test = @test.readlines.to_s
-    @test = @test.html_safe
-
-  end
 
   def refresh_domains
     initial_command
@@ -183,15 +176,6 @@ class OverviewController < ApplicationController
       |e| @files << e.text
     }
     File.delete("/tmp/files.xml")
-  end
-
-  def initial_command
-    if $type == "Inet-Port"
-      @cmd="smbtaquery -h " + $host_ip + " -i " + $port + " -I 0 "
-    end
-    if $type == "Unix Domain Socket"
-      @cmd="smbtaquery -h " + $host_ip + " -u " + $port + " -I 0 "
-    end
   end
 
   private

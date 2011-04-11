@@ -1,4 +1,6 @@
 Smbtaquery::Application.routes.draw do
+  get "functions/start_function"
+
   get "overview/index"
   get "overview/get_domains"
   get "overview/refresh_domains"
@@ -9,7 +11,6 @@ Smbtaquery::Application.routes.draw do
   get "config/general"
   post "config/save"
 
-get "overview/test"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

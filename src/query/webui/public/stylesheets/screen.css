@@ -111,8 +111,8 @@ a img { border: none; }
 }
 #dialog{
     border:solid 1px;
-    position:absolute;
-    bottom:0;
+    position:relative;
+    top:150px;
     width:500px;
     height: 120px;
 }

@@ -22,9 +22,8 @@
     <% flash.each do |key, value| %>
       <div class="flash <%= key %>"><%= value %></div>
     <% end %>
-    <div id="list" style="position:absolute; height:275px; width:100%;">
+    <div id="list" style="position:relative; width:150%; height:300px;">
       <%= yield %>
     </div>
-
   </body>
 </html>

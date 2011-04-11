@@ -132,7 +132,7 @@ function globalOnSelectChange(){
 function domOnClickChange(){
     var selected = $("#domainlist option:selected");
     $("#dom_diff").hide();
-    $("#domain").val(selected.val());
+    $("input#domain").val(selected.val());
     getShares();
     if ($("div#files").length)
         $("#files").remove();
@@ -142,21 +142,22 @@ function shareOnClickChange(){
     var selected2 = $("#userlist option:selected");
     $("#share_diff").hide();
     $("#user_diff").hide();
-    $("#share").val(selected1.val());
-    $("#user").val(selected2.val());
+    $("input#share").val(selected1.val());
+    $("input#user").val(selected2.val());
     getFiles();
 
 }
 function fileOnClickChange(){
     var selected = $("#filelist option:selected");
     $("#file_diff").hide();
-    $("#file").val(selected.val());
+    $("input#file").val(selected.val());
 }
-function startFunction(object){
+function configureFunction(){
+    var selected = $(".function option:selected").val();
     $("select.objectlist").val("");
     $("select.modelist").val("");
     $("input.number").val("");
-    if (object == "usage"){
+    if (selected == "usage"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#total").fadeOut();
@@ -165,7 +166,7 @@ function startFunction(object){
         $("#usage").fadeIn();
         $("#usage_help").fadeIn();
     }
-    else if (object == "total"){
+    else if (selected == "total"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#usage").fadeOut();
@@ -174,7 +175,7 @@ function startFunction(object){
         $("#total").fadeIn();
         $("#total_help").fadeIn();
     }
-    else if (object == "last_activity"){
+    else if (selected == "last_activity"){
         $(".function_help").fadeOut();
         $("#help").fadeOut();
         $("#last_activity").fadeIn();
@@ -183,7 +184,7 @@ function startFunction(object){
         $("#total").fadeOut();
         $("#top").fadeOut();
     }
-    else if (object == "top"){
+    else if (selected == "top"){
         $(".function_help").fadeOut();
         $("#help").fadeOut();
         $("#top").fadeIn();
@@ -201,6 +202,25 @@ function startFunction(object){
         $("#last_activity").fadeOut();
     }
     inspect_functionsettings();
+}
+function start_function(){
+    var func = $("select#global_function option:selected").val();
+    $.ajax({
+        url: "../functions/start_function",
+        type: "get",
+        complete: function(){$("#spinner_files").hide();
+        },
+        data: {
+            domain: $("#domain").attr('value'),
+            share:   $("#share").attr('value'),
+            user:     $("#user").attr('value'),
+            file:       $("#file").attr('value'),
+            object:  $("#objectlist_" + func + " option:selected").val(),
+            mode:   $("#modelist_" + func + " option:selected").val(),
+            number:$("#number_" + func).val(),
+            func:     $("select#global_function option:selected").val()
+        }
+    })
 }
 function reset_functions(){
     $(".function_dialog").fadeOut();
