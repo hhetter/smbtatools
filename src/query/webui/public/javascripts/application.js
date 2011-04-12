@@ -127,11 +127,30 @@ function refreshFiles(){
     });
 }
 function globalOnSelectChange(){
+    $("#domain").val("");
+    $("#share").val("");
+    $("#user").val("");
+    $("#file").val("");
+    $("#domainlist option:selected").val("");
+    $("#sharelist option:selected").val("");
+    $("#userlist option:selected").val("");
+    $("#filelist option:selected").val("");
+    if ($("div#shares_and_users").length){
+        $("#files").remove();
+        $("#shares_and_users").remove();
+        $("#shares_and_users").remove();
+    }
     getDomains();
 }
 function domOnClickChange(){
     var selected = $("#domainlist option:selected");
     $("#dom_diff").hide();
+    $("#share").val("");
+    $("#user").val("");
+    $("#file").val("");
+    $("#sharelist option:selected").val("");
+    $("#userlist option:selected").val("");
+    $("#filelist option:selected").val("");
     $("input#domain").val(selected.val());
     getShares();
     if ($("div#files").length)
@@ -140,6 +159,8 @@ function domOnClickChange(){
 function shareOnClickChange(){
     var selected1 = $("#sharelist option:selected");
     var selected2 = $("#userlist option:selected");
+    $("#file").val("");
+    $("#filelist option:selected").val("");
     $("#share_diff").hide();
     $("#user_diff").hide();
     $("input#share").val(selected1.val());
