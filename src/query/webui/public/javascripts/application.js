@@ -285,8 +285,19 @@ function inspect_functionsettings(){
         }
     }
 }
+function highlightClose(cmd){
+    $('#close_function_' + cmd).css({'opacity' : '1'});
+}
+function resetClose(cmd){
+    $('#close_function_' + cmd).css({'opacity' : '0.5'});
+}
+function closeFunction(cmd){
+    $('div#' + cmd).remove();
+}
+
 var i = 0;
 $(document).ready(function(){
+
     setInterval(function()
     {
             if (($("#domains").length) && (i == 0)) {

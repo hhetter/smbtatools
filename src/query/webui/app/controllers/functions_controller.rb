@@ -97,5 +97,6 @@ class FunctionsController < ApplicationController
     @divname << @mode
     @divname << @object
     @divname << @number
+    @divname = @divname.to_s
   end
 end

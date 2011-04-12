@@ -1,3 +1,5 @@
 <div id="<%=@divname%>"style="position:relative; float:left; width:500px; border: solid 1px;">
+  <%=image_tag('function-close.png', :id=> "close_function_" + @divname, :class => "close_function",:onmouseover => "highlightClose('#{@divname}')", :onmouseout => "resetClose('#{@divname}')",  :onclick => "closeFunction('#{@divname}')")%>
   <%= @output %>
+  <%=hidden_field_tag :id => "function_"+@cmd%>
 </div>
