@@ -1,6 +1,7 @@
-html, body { height:100%; width: 2000px; margin: 0; padding: 0; }
+html, body { height:100%; margin: 0; padding: 0; }
 
 html>body {
+        width: 2000px;
 	font-size: 16px; 
 	font-size: 68.75%;
 } /* Reset Base Font Size */
@@ -85,6 +86,10 @@ a img { border: none; }
     position:absolute;
     top:0;
     right:-15px;
+}
+#spinner_function{
+    bottom:0;
+    right:0;
 }
 #file_diff{
     position:absolute;

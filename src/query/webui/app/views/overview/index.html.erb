@@ -17,7 +17,7 @@
       <tr><td>Choose a mode:</td>
         <td><%=select_tag "modelist_usage", options_for_select(["", "r", "w", "rw"], @mode), :class=> "modelist", :onchange =>"inspect_functionsettings()" %></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
-        <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
     <div id="usage_help" class="function_help"><i>The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i></div>
   </div>
@@ -27,7 +27,7 @@
       <tr><td>Choose a mode:</td>
         <td><%=select_tag "modelist_total", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
-        <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
     <div id="total_help" class="function_help"><i>The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</i></div>
   </div>
@@ -37,7 +37,7 @@
       <tr><td>Choose number:</td>
         <td><%=text_field_tag "number_last_activity", @number, :class => "number", :onchange => "inspect_functionsettings()" %></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
-        <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
     <div id="last_activity_help" class="function_help"><i>The last_activity function shows the last [num] activities in the VFS layer on an object.</i></div>
   </div>
@@ -51,10 +51,11 @@
       <tr><td>Choose number:</td>
         <td><%=text_field_tag "number_top", "", :class => "number", :onchange => "inspect_functionsettings()" %></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
-        <td><%= submit_tag "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
     <div id="top_help" class="function_help"><i>The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</i></div>
   </div>
+  <div id="spinner_function" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>
  <%= hidden_field_tag "domain", @domain %>
  <%= hidden_field_tag "share", @share %>

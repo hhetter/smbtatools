@@ -204,11 +204,14 @@ function configureFunction(){
     inspect_functionsettings();
 }
 function start_function(){
+     $("#spinner_function").show();
+     $('input.start').attr('disabled', 'disabled');
     var func = $("select#global_function option:selected").val();
     $.ajax({
         url: "../functions/start_function",
         type: "get",
-        complete: function(){$("#spinner_files").hide();
+        complete: function(){$("#spinner_function").hide();
+            reset_functions();
         },
         data: {
             domain: $("#domain").attr('value'),
