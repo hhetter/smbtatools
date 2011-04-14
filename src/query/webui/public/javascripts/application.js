@@ -187,6 +187,7 @@ function configureFunction(){
         $("#usage").fadeOut();
         $("#search").fadeIn();
         $("#search_help").fadeIn();
+        $("#throughput").fadeOut();
     }
     else if (selected == "usage"){
         $("#help").fadeOut();
@@ -197,6 +198,7 @@ function configureFunction(){
         $("#top").fadeOut();
         $("#usage").fadeIn();
         $("#usage_help").fadeIn();
+        $("#throughput").fadeOut();
     }
     else if (selected == "total"){
         $("#help").fadeOut();
@@ -207,6 +209,7 @@ function configureFunction(){
         $("#last_activity").fadeOut();
         $("#total").fadeIn();
         $("#total_help").fadeIn();
+        $("#throughput").fadeOut();
     }
     else if (selected == "last_activity"){
         $(".function_help").fadeOut();
@@ -217,6 +220,7 @@ function configureFunction(){
         $("#usage").fadeOut();
         $("#total").fadeOut();
         $("#top").fadeOut();
+        $("#throughput").fadeOut();
     }
     else if (selected == "top"){
         $(".function_help").fadeOut();
@@ -227,6 +231,18 @@ function configureFunction(){
         $("#usage").fadeOut();
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
+        $("#throughput").fadeOut();
+    }
+    else if (selected == "throughput"){
+        $(".function_help").fadeOut();
+        $("#help").fadeOut();
+        $("#search").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#usage").fadeOut();
+        $("#total").fadeOut();
+        $("#top").fadeOut();
+        $("#throughput").fadeIn();
+        $("#throughput_help").fadeIn();
     }
 
     else{
@@ -236,6 +252,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
+        $("#throughput").fadeOut();
     }
     inspect_functionsettings();
 }
@@ -258,6 +275,7 @@ function start_function(){
             object:  $("#objectlist_" + func + " option:selected").val(),
             mode:   $("#modelist_" + func + " option:selected").val(),
             number:$("#number_" + func).val(),
+            timemode: $("select#timelist option:selected").val(),
             func:     $("select#global_function option:selected").val()
         }
     })
@@ -276,7 +294,7 @@ function inspect_functionsettings(){
             $(".start").attr("disabled", "true");
         }
     }
-    if($("div#total").css("display") != "none"){
+    else if($("div#total").css("display") != "none"){
         if($("select#modelist_total option:selected").val() != ""){
             $(".start").removeAttr("disabled");
         }
@@ -302,6 +320,14 @@ function inspect_functionsettings(){
     }
     else if($("div#last_activity").css("display") != "none"){
         if($("input#number_last_activity").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if($("div#throughput").css("display") != "none"){
+        if($("input#number_throughput").val() != "" & $("select#timelist").val() != "" & $("select#modelist_throughput").val() != ""){
             $(".start").removeAttr("disabled");
         }
         else{

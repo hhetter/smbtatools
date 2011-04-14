@@ -75,6 +75,7 @@ class FunctionsController < ApplicationController
     @mode = params[:mode]
     @object = params[:object]
     @number = params[:number]
+    @timemode = params[:timemode]
     @cmd += @function
     if @function == "total" || @function == "usage"
       @cmd += " " + @mode + ";'"
@@ -87,6 +88,9 @@ class FunctionsController < ApplicationController
     end
     if @function == "search"
       @cmd += " " + @search + ";'"
+    end
+    if @function == "throughput"
+      @cmd += " " + @number + " " + @timemode + " " + @mode + ";'"
     end
     @cmd += " -o html > /tmp/function.html"
     `#{@cmd}`

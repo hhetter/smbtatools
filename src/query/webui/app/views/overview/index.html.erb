@@ -19,7 +19,7 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="search_help" class="function_help"><i>The help function allows a fulltext search over an object<br/>It supports unix like wildcars (*,?).</i></div>
+    <div id="search_help" class="function_help"><i>The search function allows a fulltext search over an object<br/>It supports unix like wildcars (*,?).</i></div>
   </div>
 
   <div id="usage" class="function_dialog">
@@ -64,6 +64,18 @@
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
     <div id="top_help" class="function_help"><i>The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</i></div>
+  </div>
+  <div id="throughput" class="function_dialog">
+    <table>
+      <tr><td>Enter a time periode:</td>
+        <td><%=text_field_tag "number_throughput", "", :class => "number", :onkeyup => "inspect_functionsettings()" %></td>
+        <td><%=select_tag "timelist", options_for_select(["seconds", "minutes", "days"], @timemode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
+      <tr><td>Choose a mode:</td>
+        <td><%=select_tag "modelist_throughput", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="throughput_help" class="function_help"><i>The throughput function calculates the data throughput of an object over a given time and differs between read, write, or rw access.</i></div>
   </div>
   <div id="spinner_functions" class="spinner"><%=image_tag('spinner.gif')%>  </div>
 </div>
