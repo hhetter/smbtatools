@@ -1,4 +1,6 @@
 class FunctionsController < ApplicationController
+  require 'digest/md5'
+
   def start_function
     get_function
     render :update do |page|
@@ -98,8 +100,8 @@ class FunctionsController < ApplicationController
     @divname << @object
     @divname << @number
     @divname = @divname.to_s
+    @divname = Digest::MD5.hexdigest(@divname)
   end
-
   def refresh_function
     @cmd = params[:cmd]
     @divname = params[:divname]
