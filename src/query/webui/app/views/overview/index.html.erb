@@ -69,7 +69,7 @@
     <table>
       <tr><td>Enter a time periode:</td>
         <td><%=text_field_tag "number_throughput", "", :class => "number", :onkeyup => "inspect_functionsettings()" %></td>
-        <td><%=select_tag "timelist", options_for_select(["seconds", "minutes", "days"], @timemode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
+        <td><%=select_tag "timelist", options_for_select(["seconds", "minutes", "hours", "days"], @timemode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
       <tr><td>Choose a mode:</td>
         <td><%=select_tag "modelist_throughput", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
