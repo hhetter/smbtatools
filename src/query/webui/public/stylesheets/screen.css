@@ -161,3 +161,13 @@ input.number{
     opacity: 0.5;
     filter:alpha(opacity=50);
 }
+.defined_function{
+    position:relative;
+    float:left;
+    width:500px;
+    max-height:500px;
+    overflow:auto;
+    border: solid 1px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
