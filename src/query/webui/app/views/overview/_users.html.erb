@@ -1,8 +1,0 @@
-<div id="users" style="position:relative;">
-  <table>
-    <tr><th>Users</th></tr>
-    <tr><td><%= select_tag "userlist", options_for_select(@users, @user), :size => 6, :onclick => "shareOnClickChange()" %></td></tr>
-  </table>
-  <div id="user_diff" class="diff"><%=image_tag('diff.png')%></div>
-</div>
-</div>
