@@ -70,6 +70,7 @@ class FunctionsController < ApplicationController
 
   def get_function
     get_objects
+    @search = params[:search]
     @function = params[:func]
     @mode = params[:mode]
     @object = params[:object]
@@ -84,6 +85,9 @@ class FunctionsController < ApplicationController
     if @function == "last_activity"
       @cmd += " " + @number + ";'"
     end
+    if @function == "search"
+      @cmd += " " + @search + ";'"
+    end
     @cmd += " -o html > /tmp/function.html"
     `#{@cmd}`
     @output = File.open("/tmp/function.html", "r")
@@ -96,6 +100,7 @@ class FunctionsController < ApplicationController
     @divname << @share
     @divname << @user
     @divname << @file
+    @divname << @search
     @divname << @mode
     @divname << @object
     @divname << @number

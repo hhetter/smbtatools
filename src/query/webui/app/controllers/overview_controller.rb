@@ -31,16 +31,10 @@ class OverviewController < ApplicationController
     initialize_users
     @domain = params[:domain]
     render :update do |page|
-      page << "if (!$('div#shares').length)"
+      page << "if (!$('div#shares_and_users').length)"
       page.insert_html :after, "domains", :partial => "shares"     
-      page << "if($('div#shares').length)"
-      page.replace "shares", :partial => "shares"
-      page.delay(1) do
-        page << "if (!$('div#users').length)"
-        page.insert_html :bottom, "shares", :partial => "users"
-        page << "if($('div#users').length)"
-        page.replace "users", :partial => "users"
-      end
+      page << "if($('div#shares_and_users').length)"
+      page.replace "shares_and_users", :partial => "shares"
     end
   end
 
@@ -52,8 +46,7 @@ class OverviewController < ApplicationController
     @share = params[:share]
     @user = params[:user]
     render :update do |page|
-      page.replace "shares", :partial => "shares"
-      page.insert_html :bottom, "shares", :partial => "users"
+      page.replace "shares_and_users", :partial => "shares"
     end
   end
 

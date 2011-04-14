@@ -5,12 +5,22 @@
       <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
   </table>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","total", "top","usage", "last_activity"]), :class => "function", :onchange => "configureFunction()"%>
+  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","search", "total", "top","usage", "last_activity", "throughput"]), :class => "function", :onchange => "configureFunction()"%>
 </div>
 
 <div id="dialog">
 
   <div id="help"><b>Choose an object from the tables above,<br/> and select a function</b></div>
+
+  <div id="search" class="function_dialog">
+    <table>
+      <tr><td>Enter a search string:</td>
+        <td><%=text_field_tag "search", @search, :class => "search", :onkeyup => "inspect_functionsettings()" %></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+    </table>
+    <div id="search_help" class="function_help"><i>The help function allows a fulltext search over an object<br/>It supports unix like wildcars (*,?).</i></div>
+  </div>
 
   <div id="usage" class="function_dialog">
     <table>
@@ -35,7 +45,7 @@
   <div id="last_activity" class="function_dialog">
     <table>
       <tr><td>Choose number:</td>
-        <td><%=text_field_tag "number_last_activity", @number, :class => "number", :onchange => "inspect_functionsettings()" %></td></tr>
+        <td><%=text_field_tag "number_last_activity", @number, :class => "number", :onkeyup => "inspect_functionsettings()" %></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
@@ -49,7 +59,7 @@
       <tr><td>Choose a mode:</td>
         <td><%=select_tag "modelist_top", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
       <tr><td>Choose number:</td>
-        <td><%=text_field_tag "number_top", "", :class => "number", :onchange => "inspect_functionsettings()" %></td></tr>
+        <td><%=text_field_tag "number_top", "", :class => "number", :onkeyup => "inspect_functionsettings()" %></td></tr>
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>

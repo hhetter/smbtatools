@@ -178,9 +178,20 @@ function configureFunction(){
     $("select.objectlist").val("");
     $("select.modelist").val("");
     $("input.number").val("");
-    if (selected == "usage"){
+    if (selected == "search"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#top").fadeOut();
+        $("#usage").fadeOut();
+        $("#search").fadeIn();
+        $("#search_help").fadeIn();
+    }
+    else if (selected == "usage"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#search").fadeOut();
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
@@ -190,6 +201,7 @@ function configureFunction(){
     else if (selected == "total"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
+        $("#search").fadeOut();
         $("#usage").fadeOut();
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
@@ -199,6 +211,7 @@ function configureFunction(){
     else if (selected == "last_activity"){
         $(".function_help").fadeOut();
         $("#help").fadeOut();
+        $("#search").fadeOut();
         $("#last_activity").fadeIn();
         $("#last_activity_help").fadeIn();
         $("#usage").fadeOut();
@@ -208,6 +221,7 @@ function configureFunction(){
     else if (selected == "top"){
         $(".function_help").fadeOut();
         $("#help").fadeOut();
+        $("#search").fadeOut();
         $("#top").fadeIn();
         $("#top_help").fadeIn();
         $("#usage").fadeOut();
@@ -217,6 +231,7 @@ function configureFunction(){
 
     else{
         $("#help").fadeIn();
+        $("#search").fadeOut();
         $("#usage").fadeOut();
         $("#total").fadeOut();
         $("#top").fadeOut();
@@ -239,6 +254,7 @@ function start_function(){
             share:   $("#share").attr('value'),
             user:     $("#user").attr('value'),
             file:       $("#file").attr('value'),
+            search: $("input#search").attr('value'),
             object:  $("#objectlist_" + func + " option:selected").val(),
             mode:   $("#modelist_" + func + " option:selected").val(),
             number:$("#number_" + func).val(),
@@ -252,6 +268,14 @@ function reset_functions(){
     $("#help").fadeIn();
 }
 function inspect_functionsettings(){
+    if($("div#search").css("display") != "none"){
+        if($("input#search").val().length != 0){
+            $(".start").removeAttr("disabled");
+        }
+        if($("input#search").val().length == 0){
+            $(".start").attr("disabled", "true");
+        }
+    }
     if($("div#total").css("display") != "none"){
         if($("select#modelist_total option:selected").val() != ""){
             $(".start").removeAttr("disabled");
@@ -286,20 +310,20 @@ function inspect_functionsettings(){
     }
 }
 function highlightClose(divname){
-    $('#close_function_' + divname).css({'opacity' : '1'});
+    $('#close_function_' + divname).css({'opacity' : '1',  'filter':'alpha(opacity=100)'});
 }
 function resetClose(divname){
-    $('#close_function_' + divname).css({'opacity' : '0.5'});
+    $('#close_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
 }
 function closeFunction(divname){
     $('div#' + divname).remove();
 }
 
 function highlightRefresh(divname){
-    $('#refresh_function_' + divname).css({'opacity' : '1'});
+    $('#refresh_function_' + divname).css({'opacity' : '1', 'filter':'alpha(opacity=100)'});
 }
 function resetRefresh(divname){
-    $('#refresh_function_' + divname).css({'opacity' : '0.5'});
+    $('#refresh_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
 }
 function refreshFunction(divname){
   $("#spinner_function_" + divname).show();

@@ -153,11 +153,11 @@ input.number{
     position:absolute;
     right:0;
     opacity: 0.5;
-    filter:alpha(opacity=0.5);
+    filter:alpha(opacity=50);
 }
 .refresh_function{
     position:absolute;
     right:17px;
     opacity: 0.5;
-    filter:alpha(opacity=0.5);
+    filter:alpha(opacity=50);
 }
