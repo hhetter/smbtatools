@@ -1,6 +1,6 @@
 Smbtaquery::Application.routes.draw do
   get "functions/start_function"
-
+  get "functions/refresh_function"
   get "overview/index"
   get "overview/get_domains"
   get "overview/refresh_domains"

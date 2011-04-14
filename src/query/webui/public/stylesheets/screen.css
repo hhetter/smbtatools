@@ -87,7 +87,7 @@ a img { border: none; }
     top:0;
     right:-15px;
 }
-#spinner_function{
+#spinner_functions{
     bottom:0;
     right:0;
 }
@@ -152,6 +152,12 @@ input.number{
 .close_function{
     position:absolute;
     right:0;
+    opacity: 0.5;
+    filter:alpha(opacity=0.5);
+}
+.refresh_function{
+    position:absolute;
+    right:17px;
     opacity: 0.5;
     filter:alpha(opacity=0.5);
 }

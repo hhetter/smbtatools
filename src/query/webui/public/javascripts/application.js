@@ -225,13 +225,13 @@ function configureFunction(){
     inspect_functionsettings();
 }
 function start_function(){
-     $("#spinner_function").show();
+     $("#spinner_functions").show();
      $('input.start').attr('disabled', 'disabled');
     var func = $("select#global_function option:selected").val();
     $.ajax({
         url: "../functions/start_function",
         type: "get",
-        complete: function(){$("#spinner_function").hide();
+        complete: function(){$("#spinner_functions").hide();
             reset_functions();
         },
         data: {
@@ -285,14 +285,34 @@ function inspect_functionsettings(){
         }
     }
 }
-function highlightClose(cmd){
-    $('#close_function_' + cmd).css({'opacity' : '1'});
+function highlightClose(divname){
+    $('#close_function_' + divname).css({'opacity' : '1'});
 }
-function resetClose(cmd){
-    $('#close_function_' + cmd).css({'opacity' : '0.5'});
+function resetClose(divname){
+    $('#close_function_' + divname).css({'opacity' : '0.5'});
 }
-function closeFunction(cmd){
-    $('div#' + cmd).remove();
+function closeFunction(divname){
+    $('div#' + divname).remove();
+}
+
+function highlightRefresh(divname){
+    $('#refresh_function_' + divname).css({'opacity' : '1'});
+}
+function resetRefresh(divname){
+    $('#refresh_function_' + divname).css({'opacity' : '0.5'});
+}
+function refreshFunction(divname){
+  $("#spinner_function_" + divname).show();
+  $.ajax({
+        url: "../functions/refresh_function",
+        type: "get",
+        complete: function(){$("#spinner_function_" + divname).hide();
+        },
+        data: {
+            divname: divname,
+            cmd : $("#function_" + divname).attr('value')
+        }
+    })
 }
 
 var i = 0;

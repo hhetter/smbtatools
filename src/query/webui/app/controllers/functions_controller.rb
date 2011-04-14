@@ -99,4 +99,17 @@ class FunctionsController < ApplicationController
     @divname << @number
     @divname = @divname.to_s
   end
+
+  def refresh_function
+    @cmd = params[:cmd]
+    @divname = params[:divname]
+     `#{@cmd}`
+    @output = File.open("/tmp/function.html", "r")
+    @output = @output.readlines.to_s
+    @output = @output.html_safe
+    File.delete("/tmp/function.html")
+    render :update do |page|
+      page.replace @divname, :partial => "start_function"
+    end
+  end
 end
