@@ -46,7 +46,21 @@ struct configuration_data {
 
         /* for smbtaquery */
         char *query;
-        sqlite3 *db;
+
+	/* DBI support */
+	/* host to connect to */
+	char *dbhost;
+	/* name of the database */
+	char *dbname;
+	/* user of the db */
+	char *dbuser;
+	/* driver for DBI */
+	char *dbdriver;
+	/* password of the user */
+	char *dbpassword;
+	/* DBI connection */
+	dbi_conn DBIconn;
+
 	char *query_xmlfile;
 	FILE *xml_handle;
 	enum smbta_query_output query_output;

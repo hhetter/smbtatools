@@ -593,7 +593,6 @@ char *common_identify( TALLOC_CTX *ctx,
         int cols = 0;
 
 	if (config->identify == 0) {
-		printf("Identification is shut down, just generating pattern...\n");
 		retstr = non_db_simple_identify(ctx,Type,data,config,qtype);
 		return retstr;
 	}
