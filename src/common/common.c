@@ -305,140 +305,15 @@ long long int common_myatoi( char *num)
 /*
  * Run a complete SQL query
  */
-char *sql_query( TALLOC_CTX *ctx,
+dbi_result sql_query( TALLOC_CTX *ctx,
         struct configuration_data *config,
         char *query )
 {
+	dbi_result res;
         if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
-        fd_set fd_set_r,fd_set_w,active_fd_set;
-        int z=0;
-        char *header=NULL;
-        int header_position=0;
-        char *body=NULL;
-        int body_position=0;
-        int data_length=0;
-        int sockfd = config->socket;
-        enum network_send_flags state = UNSENT;
-        while (state != DATA_RECEIVED) {
-                /* Initialize the set of active input sockets. */
-                FD_ZERO (&active_fd_set);
-                FD_SET(config->socket,&active_fd_set);
-                fd_set_r=active_fd_set;
-                fd_set_w=active_fd_set;
-
-                z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
-                if (FD_ISSET( sockfd,&fd_set_w) && state == UNSENT) {
-                        /* ready to write to the socket */
-
-                        /*
-                        * The state flags are part of the header
-                        * and are descripted in the protocol description
-                        * in vfs_smb_traffic_analyzer.h
-                        * in the Samba sources. They begin at byte
-                        * 03 of the header.
-                        */
-                        char state_flags[9];
-			if ( config->keyfile != NULL) {
-				size_t len;
-				strcpy(state_flags,"00E000");
-				char *crypt = common_encrypt(
-					NULL,
-					(const char *) config->key,
-					query,
-					&len);
-				header = common_create_header(
-					ctx,
-					state_flags,
-					len);
-				common_write_data(
-					header,
-					crypt,
-					(int) len,
-					sockfd);
-				talloc_free(crypt);
-			} else {
-				strcpy(state_flags,"000000");
-				header = common_create_header(
-					ctx,
-                                	state_flags,
-					strlen(query));
-				common_write_data(
-					header,
-					query,
-					strlen(query),
-					sockfd);
-			}
-                        state = SENT;
-                        continue;
-                }
-                if (FD_ISSET( sockfd,&fd_set_r) && state == SENT) {
-                        /* ready to read */
-                        state = RECEIVING_HEADER;
-                        header = talloc_array(ctx, char, 29);
-                        common_receive_data(header, sockfd, 26,
-                                &header_position);
-                        if (header_position == 0) {
-                                network_close_connection(sockfd);
-                                continue;
-                        }
-                        if (header_position != 26) {
-                                state = RECEIVING_HEADER_ONGOING;
-                                continue;
-                        }
-                        state = HEADER_RECEIVED;
-                        data_length = common_get_data_block_length(header);
-                        continue;
-                } else
-                if (FD_ISSET( sockfd,&fd_set_r) &&
-                        state == RECEIVING_HEADER_ONGOING) {
-                        common_receive_data(header + header_position, sockfd,
-                                26-header_position, &header_position);
-
-                        if (header_position != 26) continue;
-                        /* full header */
-                        state = HEADER_RECEIVED;
-                        data_length= common_get_data_block_length(header);
-                        continue;
-                } else
-                if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
-                        state = RECEIVING_DATA;
-                        body = talloc_array(ctx, char, data_length +2);
-                        body_position = 0;
-                        common_receive_data(body,
-                                        sockfd,
-                                        data_length,
-                                        &body_position);
-                        if (body_position==0) {
-                                network_close_connection(sockfd);
-                                continue;
-                        }
-                        if (body_position != data_length) {
-                                state = RECEIVING_DATA_ONGOING;
-                                continue;
-                        }
-                        /* full data set received */
-                        state = DATA_RECEIVED;
-                        break;
-                } else
-                if (FD_ISSET( sockfd,&fd_set_r) &&
-                        state == RECEIVING_DATA_ONGOING) {
-                        common_receive_data(body + body_position,sockfd,
-                                data_length - body_position, &body_position);
-                        if (body_position != data_length) continue;
-                        state = DATA_RECEIVED;
-                        break;
-                }
-        }
-	if (config->keyfile != NULL) { // encrypted data
-		char *decrypted = common_decrypt(
-				NULL,
-				body,
-				data_length,
-				config->key);
-		talloc_free(body);
-		return decrypted;
-	} 
-        return body;
+	res = dbi_conn_query( config->DBIconn, query);
+	if ( res == NULL) return NULL;
+	return res;
 }
 
 
@@ -484,35 +359,32 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
  * int number                   the number of the column to get
  * const char *data             the result data block
  */
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
+char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 {
-        char bytecount[10];
-        int datcount = 0;
-        int t;
-        int c = 0;
-        int blocksize = 0;
-        char *result = NULL;
-        for (c = 0; c <= number; c++) {
-                for (t = datcount; t<datcount+4 ; t++) {
-                        bytecount[t-datcount]=data[t];
-                }
-                bytecount[4]='\0';
-                blocksize = (int) common_myatoi(bytecount);
-                if (blocksize == 0) {
-			return NULL;
+	int fields;
+	int dv, dv2;
+	const char *result = NULL;
+	char *bufres;
+	fields = dbi_result_get_numfields(data);
+	if (fields == DBI_FIELD_ERROR) return NULL;
+	if (number <= fields) { result = dbi_result_get_string_idx(
+					data,
+					(unsigned int) number);
+				bufres = talloc_strdup( ctx, result);
+	} else {
+		dv = number / fields;
+		dv2 = number - ( dv * fields);
+		if ( dbi_result_seek_row(data,dv) == 0) {
+			printf("ERROR: error seeking row.\n");
+			talloc_free(ctx);
+			exit(1);
 		}
-                if ( c == number) {
-                        result = talloc_array(ctx,char, blocksize +1);
-                        datcount = datcount + 4;
-                        for (t = datcount; t<datcount + blocksize; t++) {
-                                result[t-datcount] = data[t];
-                        }
-                        result[blocksize]='\0';
-                        datcount = datcount + blocksize +1;
-                        break;
-                } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
-        }
-        return result;
+		result = dbi_result_get_string_idx(
+				data,
+				(unsigned int) dv2);
+		bufres = talloc_strdup(ctx,result);
+	}
+        return bufres;
 }
 
 

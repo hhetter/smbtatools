@@ -116,7 +116,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/network.c
 	)
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
@@ -130,7 +130,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/visual.c
 	src/monitor/backlog.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 SET(CurrentExe "smbtatorture")
 ADD_EXECUTABLE(${CurrentExe}
@@ -154,7 +154,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/webmon/rrddriver/network.c
 	src/webmon/rrddriver/monitor-list.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 
 # install documentation

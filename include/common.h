@@ -41,6 +41,7 @@
 #include "../src/common/config-struct.h"
 #include "crypto/aes.h"
 #include "crypto/rijndael-alg-fst.h"
+#include <dbi.h>
 
 /* define TALLOC_FREE when older talloc versions are used */
 #ifndef TALLOC_FREE
@@ -85,12 +86,12 @@ char *common_create_header( TALLOC_CTX *ctx, const char *state_flags, size_t dat
 void common_write_data( char *header, char *data, int dlength, int _socket);
 void common_receive_data( char *buf, int sock, int length, int *rlen);
 int common_get_data_block_length( char *header );
-char *sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
+dbi_result sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
 void network_close_connection( int sockfd );
 int common_connect_unix_socket( char *name );
 char *common_identify( TALLOC_CTX *ctx,
         enum IntCommands Type,
         char *data,
         struct configuration_data *config, int qtype);
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data );
+char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data );
 char *common_decrypt( TALLOC_CTX *ctx, char *body, int len, const unsigned char *thekey);

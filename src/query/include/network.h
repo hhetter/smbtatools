@@ -40,6 +40,6 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "configuration.h"
-
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data );
+#include <dbi.h>
+char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data );
 

@@ -64,7 +64,7 @@ struct configuration_data {
 	char *query_xmlfile;
 	FILE *xml_handle;
 	enum smbta_query_output query_output;
-
+	sqlite3 *db;
         /* for smbtamonitor */
         /* object type specifies the kind of object we are monitoring */
         enum smbta_monitor_object object_type;
