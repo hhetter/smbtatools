@@ -22,6 +22,9 @@
 #include "include/configuration.h"
 #include "include/interpreter.h"
 #include <talloc.h>
+
+/* creates a local sqlite database that smbtaquery uses while in */
+/* operation */
 sqlite3 *create_db()
 {
 	char *a=getenv("HOME");
@@ -72,6 +75,12 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->query_output = QUERY_ASCII;
 	/* with smbtaquery, identification is on by default */
 	c->identify = 1;
+	/* DBI */
+	c->dbhost = NULL;
+	c->dbname = NULL;
+	c->dbuser = NULL;
+	c->dbdriver = NULL;
+	c->dbpassword = NULL;
 }
 
 /* load $HOME/.smbtatools/query.config */
@@ -96,11 +105,6 @@ int configuration_load_config_file( struct configuration_data *c)
 
 	if ( Mydict == NULL ) return -1;
 
-	cc = iniparser_getstring( Mydict, "network:port_number",NULL);
-	if (cc != NULL) c->port = (int) common_myatoi(cc);
-
-	cc = iniparser_getstring( Mydict, "network:host_name",NULL);
-	if (cc != NULL) c->host = strdup(cc);
 	cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
 	if (cc != NULL) {
 		c->debug_level = (int) common_myatoi(cc);
@@ -109,8 +113,22 @@ int configuration_load_config_file( struct configuration_data *c)
 	if (cc != NULL) {
 		common_load_key_from_file( c);
 	}
-	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
-	if (cc != NULL) c->unix_socket = 1;
+
+	cc = iniparser_getstring(Mydict,"database:name",NULL);
+	if (cc != NULL) c->dbname = strdup(cc);
+
+	cc = iniparser_getstring(Mydict,"database:host",NULL);
+	if (cc != NULL) c->dbhost = strdup(cc);
+
+	cc = iniparser_getstring(Mydict,"database:driver",NULL);
+	if (cc != NULL) c->dbdriver = strdup(cc);
+
+	cc = iniparser_getstring(Mydict,"database:user",NULL);
+	if (cc != NULL) c->dbuser = strdup(cc);
+
+	cc = iniparser_getstring(Mydict,"database:password",NULL);
+	if (cc != NULL) c->dbpassword = strdup(cc);
+
 
 	return 0;
 }
@@ -123,10 +141,11 @@ void configuration_show_help()
 	printf("(C)opyright 2011 by Holger Hetterich\n");
 	printf("%s\n", SMBTA_LICENSE);
 	printf("\n");
-	printf("-i	--inet-port <num>	Set the port-number to	\n");
-	printf("				use to <num>.\n");
-	printf("-h	--host <string>		Define the host name to \n");
-	printf("				connect to.\n");
+	printf("-M	--dbdriver <str>	Set the libDBI database driver to use.\n");
+	printf("-N	--dbname <str>		Set the name of the database to open.\n");
+	printf("-S	--dbuser <str>		Set the name of the user for the database.\n");
+	printf("-H	--dbhost <str>		Set the hostname to connect to.\n");
+	printf("-P	--dbpassword <str>	Set the password to use.\n");
 	printf("-d	--debug-level <num>	Set the debug level to work\n");
 	printf("				with to <num>. Default: 0\n");
 	printf("-c	--config-file <file>	Load the configuration from\n");
@@ -135,7 +154,6 @@ void configuration_show_help()
 	printf("				or run a SQL select command.\n");
 	printf("-p      --command-help		Interpreter command description.\n");
 	printf("-f      --file <file>		Read the commands from a file.\n");
-	printf("-u	--unix-domain-socket	Use a unix domain socket to \n");
 	printf("				connect to smbtad.\n");
 	printf("-x	--xml <file>		Output XML to file <file>.\n");
 	printf("-o	--output		Specify the format to output.\n");
@@ -188,6 +206,48 @@ void configuration_create_key( char *filename )
         printf("File '%s' has been created.\n", filename);
 
 }
+/*
+ *  * Create a database connection and setup the required tables
+ *   * returns 0 if fine, 1 on error
+ *    */
+int configuration_database_connect( struct configuration_data *conf )
+{
+	int rc;
+	const char *dberror;
+	/**
+	 * Initialize the DBI layer
+	 * 	 	 
+	 */
+	if ( conf->dbdriver == NULL) {
+		printf("ERROR: drivername == NULL. Exiting.\n");
+		return 1;
+		}
+	rc = dbi_initialize(NULL);
+	if ( rc == -1 ) {
+		printf("DBI: ERROR dbi_initialize. Exiting.\n");
+		return 1;
+		}
+	conf->DBIconn = dbi_conn_new(conf->dbdriver);
+	if (conf->DBIconn == NULL) {
+		printf("DBI: ERROR dbi_conn_new, with driver %s.\n",
+			conf->dbdriver);
+		dbi_conn_error(conf->DBIconn, &dberror);
+		printf("DBI: %s\n",dberror);
+		return 1;
+		}
+	dbi_conn_set_option(conf->DBIconn, "host", conf->dbhost);
+	dbi_conn_set_option(conf->DBIconn, "username", conf->dbuser);
+	dbi_conn_set_option(conf->DBIconn, "password", conf->dbpassword);
+	dbi_conn_set_option(conf->DBIconn, "dbname", conf->dbname);
+	dbi_conn_set_option(conf->DBIconn, "encoding", "UTF-8");
+	if ( dbi_conn_connect(conf->DBIconn) < 0) {
+		printf("DBI: could not connect, please check options.\n");
+		dbi_conn_error(conf->DBIconn,&dberror);
+		printf("DBI: %s\n",dberror);
+		return 1;
+		}
+	return 0;
+}
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -195,7 +255,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 {
 	int i;
 	TALLOC_CTX *runtime_mem = NULL;
-	c->db = create_db();
 	configuration_define_defaults( c );
 
 
@@ -209,7 +268,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		int option_index = 0;
 
 		static struct option long_options[] = {\
-			{ "inet-port", 1, NULL, 'i' },
 			{ "debug-level",1, NULL, 'd' },
 			{ "config-file",1,NULL,'c'},
 			{ "keyfile",1,NULL,'k'},
@@ -218,25 +276,38 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "help",0,NULL,'?'},
 			{ "command-help",0,NULL,'p'},
 			{ "file",1,NULL,'f'},
-			{ "unix-domain-socket",0,NULL,'u'},
 			{ "xml",1,NULL,'x' },
 			{ "output",1,NULL,'o'},
 			{ "create-key",1,NULL,'K'},
 			{ "identify",1,NULL,'I'},
+			{ "dbdriver",1,NULL,'M'},
+			{ "dbname",1,NULL,'N'},
+			{ "dbuser",1,NULL,'S'},
+			{ "dbhost",1,NULL,'H'},
+			{ "dbpassword",1,NULL,'P'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"o:d:f:i:c:k:q:h:x:p?uK:I:", long_options, &option_index );
+			"M:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
 		switch (i) {
-			case 'i':
-				c->port = (int) common_myatoi( optarg );
+			case 'M':
+				c->dbdriver = strdup( optarg );
 				break;
-			case 'h':
-				c->host = strdup(optarg);
+			case 'N':
+				c->dbname = strdup( optarg );
+				break;
+			case 'S':
+				c->dbuser = strdup( optarg );
+				break;
+			case 'H':
+				c->dbhost = strdup( optarg );
+				break;
+			case 'P':
+				c->dbpassword = strdup( optarg );
 				break;
 			case 'd':
 				c->debug_level = (int) common_myatoi( optarg );
@@ -261,9 +332,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'f':
 				c->file = strdup( optarg );
 				break;
-			case 'u':
-				c->unix_socket = 1;
-				break;
 			case 'x':
 				c->query_xmlfile = strdup(optarg);
 				break;
@@ -287,12 +355,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	if (c->config_file != NULL)
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
-	if (c->unix_socket != 1)
-		c->socket = common_connect_socket( c->host,
-			c->port );
-	else
-		c->socket = common_connect_unix_socket(
-			"/var/tmp/stadsocket_client");
+
+	/* Build up the connection to the database */
+	if (configuration_database_connect(c) == 1) {
+		printf("\nError on database connect.\n");
+		talloc_free(runtime_mem);
+		exit(1);
+	}
 
 	/* through all options, now run the query command */
 
@@ -391,10 +460,6 @@ int configuration_check_configuration( struct configuration_data *c )
 {
 	if ( c->debug_level <0 || c->debug_level>10 ) {
 		printf("ERROR: debug level has to be between 0 and 10.\n");
-		return -1;
-	}
-	if (c->host == NULL && c->unix_socket != 1) {
-		printf("ERROR: please specify a hostname to connect to.\n");
 		return -1;
 	}
 	return 0;

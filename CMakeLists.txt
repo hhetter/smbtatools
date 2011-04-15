@@ -2,7 +2,7 @@
 #
 #
 #
-
+#
 
 # Check the minimum required cmake version for this project
 cmake_minimum_required(VERSION 2.6)
@@ -16,6 +16,18 @@ INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+
+#
+# check for libdbi
+#
+include(FindLibDBI.cmake)
+FIND_PACKAGE(LibDBI)
+if (NOT LIBDBI_INCLUDE_DIR)
+	        MESSAGE( FATAL_ERROR "ERROR: you will need the libdbi development files installed.")
+	ENDIF()
+	if (LIBDBI_INCLUDE_DIR)
+		        INCLUDE_DIRECTORIES(${LIBDBI_INCLUDE_DIR})
+		ENDIF()
 
 #
 # check for sqlite3

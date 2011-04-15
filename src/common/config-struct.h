@@ -4,7 +4,7 @@
         #include <sqlite3.h>
 #endif
 
-
+#include <dbi.h>
 
 enum smbta_monitor_object {
         SMBTA_SHARE = 0,
