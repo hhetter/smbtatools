@@ -361,30 +361,57 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
  */
 char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 {
-	int fields;
+	int fields; long long rr;
 	int dv, dv2;
-	const char *result = NULL;
+	const char *result;
 	char *bufres;
+	number++;
+	dbi_result_first_row(data);
 	fields = dbi_result_get_numfields(data);
 	if (fields == DBI_FIELD_ERROR) return NULL;
-	if (number <= fields) { result = dbi_result_get_string_idx(
-					data,
-					(unsigned int) number);
-				bufres = talloc_strdup( ctx, result);
+	if (number <= fields) {
+		if (dbi_result_get_field_type_idx(
+				data, (unsigned int) number) ==
+				DBI_TYPE_STRING) {
+					result = dbi_result_get_string_idx(
+						data,
+						(unsigned int) number);
+					bufres = talloc_strdup( ctx,(const char *) result);
+					printf("%s\n",bufres);
+					return bufres;
+					} else {
+						rr = dbi_result_get_longlong_idx(
+								data,
+								(unsigned int) number);
+						unsigned int attribs;
+						attribs = dbi_result_get_field_attribs_idx(data, 1);
+
+						printf("Number: %i\n",attribs);
+						printf("%i",(1 << 5));
+						bufres = talloc_asprintf(ctx,"%i",rr);
+						return bufres;
+					}
 	} else {
 		dv = number / fields;
 		dv2 = number - ( dv * fields);
 		if ( dbi_result_seek_row(data,dv) == 0) {
-			printf("ERROR: error seeking row.\n");
-			talloc_free(ctx);
-			exit(1);
+			return NULL;
 		}
-		result = dbi_result_get_string_idx(
+		if (dbi_result_get_field_type_idx(
+					data, (unsigned int) dv2) == DBI_TYPE_STRING) {
+			result = dbi_result_get_string_idx(
 				data,
 				(unsigned int) dv2);
-		bufres = talloc_strdup(ctx,result);
+			bufres = talloc_strdup(ctx,(const char *) result);
+			return bufres;
+		} else {
+			int rr = dbi_result_get_int_idx(
+					data,
+					(unsigned int) number);
+			bufres = talloc_asprintf(ctx,"%i",rr);
+			return bufres;
+		}
 	}
-        return bufres;
 }
 
 

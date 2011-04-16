@@ -1458,6 +1458,9 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 
 		qdat = sql_query(ctx, config,query1);
 		sum = atol( result_get_element(ctx,0,qdat));
+		const char *errf;
+		dbi_conn_error(config->DBIconn, &errf);
+		printf("%s\n",errf);
 		qdat = sql_query(ctx, config, query2);
 		sum = sum + atol( result_get_element(ctx,0,qdat));
 		xmldata = talloc_asprintf(ctx,
