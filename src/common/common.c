@@ -377,7 +377,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						data,
 						(unsigned int) number);
 					bufres = talloc_strdup( ctx,(const char *) result);
-					printf("%s\n",bufres);
 					return bufres;
 					} else {
 						rr = dbi_result_get_longlong_idx(
@@ -386,8 +385,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						unsigned int attribs;
 						attribs = dbi_result_get_field_attribs_idx(data, 1);
 
-						printf("Number: %i\n",attribs);
-						printf("%i",(1 << 5));
 						bufres = talloc_asprintf(ctx,"%i",rr);
 						return bufres;
 					}
