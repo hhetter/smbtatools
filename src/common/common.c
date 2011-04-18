@@ -396,7 +396,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 					}
 	} else {
 		dv = (number / fields)+1;
-		dv2 = (number - ( dv * fields));
+		dv2 = (number+fields) - ( dv * fields);
 		if ( dbi_result_seek_row(data,dv) == 0) {
 			return NULL;
 		}
