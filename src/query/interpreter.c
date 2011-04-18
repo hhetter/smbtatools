@@ -490,6 +490,10 @@ char *percent(TALLOC_CTX *ctx,
 	unsigned long int length)
 {
 	char *ret;
+	if (length == 0) {
+		ret = talloc_asprintf(ctx,"0.00");
+		return ret;
+	}
 	long double percent = (long double) total / 100;
 	long double erg = (long double) length / percent;
 	ret = talloc_asprintf(ctx, "%10.2Lf", erg);
