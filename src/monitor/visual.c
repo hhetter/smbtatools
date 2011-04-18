@@ -54,8 +54,9 @@ void visual_list_initial_draw()
                 case MONITOR_ADD: ;
                         visual_monitor_add(entry);
                         break;
-                case MONITOR_TOTAL: ;
-                        visual_monitor_total(entry);
+                case MONITOR_READ:
+		case MONITOR_WRITE: ;
+                        visual_monitor_read_write(entry);
                         break;
                 case MONITOR_LOG:
                         visual_monitor_log(entry);
@@ -86,7 +87,7 @@ void visual_monitor_add(struct monitor_item *entry)
 }
 
 
-void visual_monitor_total(struct monitor_item *entry)
+void visual_monitor_read_write(struct monitor_item *entry)
 {
 	WINDOW *win = newwin(4,26,entry->ypos,entry->xpos);
 	box(win,0,0);
@@ -101,6 +102,17 @@ void visual_monitor_total(struct monitor_item *entry)
 	mvwprintw(win, 2, 1,"%s / second",mem2);
         wrefresh(win);
         delwin(win);
+
+	if (entry->showtotal == 1) {
+		WINDOW *win2 = newwin(4,26,entry->totaly,entry->totalx);
+		box(win2,0,0);
+		mem = common_make_human_readable(mem,entry->totalsum);
+		mvwprintw(win2,0,1,entry->totaltitle);
+		mvwprintw(win2,1,1,"%s (%05u B)",mem,entry->totalsum);
+		// FIXME: Throughput w/ partners !!
+		wrefresh(win2);
+		delwin(win2);
+	}
 	talloc_free(mem);
 	talloc_free(mem2);
 }
