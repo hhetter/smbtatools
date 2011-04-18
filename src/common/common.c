@@ -365,10 +365,16 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 	int dv, dv2;
 	const char *result;
 	char *bufres;
+	int rows;
 	number++;
 	dbi_result_first_row(data);
 	fields = dbi_result_get_numfields(data);
 	if (fields == DBI_FIELD_ERROR) return NULL;
+	rows = dbi_result_get_numrows(data);
+	if (rows == 0) {
+		bufres = talloc_asprintf(ctx,"No Results.");
+		return bufres;
+	}
 	if (number <= fields) {
 		if (dbi_result_get_field_type_idx(
 				data, (unsigned int) number) ==

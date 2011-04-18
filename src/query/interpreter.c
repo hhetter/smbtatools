@@ -977,7 +977,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
 				"select %s from "
-				"write where %s GLOB '%s' and %s;",
+				"write where %s LIKE '%s' and %s;",
 				 rules[t],
 				 rows[t], command_data->arguments[0], obj_struct->sql);
 			qdat = sql_query(ctx,config,query);
