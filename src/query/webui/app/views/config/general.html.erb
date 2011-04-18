@@ -2,12 +2,17 @@
   
   <table>
     <tr>
-      <td>IP: </td><td><%=text_field_tag 'host_ip', $host_ip%></td></tr>
-    <tr><td>Type: </td>
+      <td>DB-host: </td><td><%=text_field_tag 'dbhost', $dbhost%></td></tr>
+    <tr><td>DB-name: </td><td><%= text_field_tag 'dbname', $dbname %></td></tr>
+        <tr><td>DB-driver: </td>
       <td><% options = Array.new
-        @types.each {|d| options << "#{d.to_s}"}%>
-        <%=  select_tag "type", options_for_select(options, $type)%></td></tr>
-    <tr><td>Port: </td><td><%=text_field_tag 'port', $port%></td></tr>
+        @dbdrivers.each {|d| options << "#{d.to_s}"}%>
+        <%=  select_tag "dbdriver", options_for_select(options, $dbdriver)%></td></tr>
+        <tr><td>DB-user: </td>
+          <td><%=text_field_tag "dbuser", $dbuser%></td></tr>
+        <tr><td>DB-password: </td>
+          <td><%=password_field_tag "dbpassword", $dbpassword%></td></tr>
+
     <tr><td><%=submit_tag "Commit settings"%></td></tr>
   </table>
 <%end%>

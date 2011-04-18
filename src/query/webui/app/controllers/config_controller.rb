@@ -1,16 +1,19 @@
 class ConfigController < ApplicationController
   def general
-    $host_ip = ""
-    @types = Array.new
-    @types = ["Inet-Port", "Unix Domain Socket"]
-    $type = ""
-    $port = ""
+    @dbdrivers = ["pgsql", "mysql", "sqlite"]
+    $dbdriver = ""
+    $dbname = ""
+    $dbuser = ""
+    $dbhost = ""
+    $dbpassword = ""
   end
 
   def save
-    $host_ip =  params[:host_ip]
-    $type = params[:type]
-    $port = params[:port]
+    $dbdriver = params[:dbdriver]
+    $dbname = params[:dbname]
+    $dbuser = params[:dbuser]
+    $dbhost = params[:dbhost]
+    $dbpassword = params[:dbpassword]
     redirect_to :controller => "overview", :action => "index"
   end
 end
