@@ -400,7 +400,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 		if ( dbi_result_seek_row(data,dv) == 0) {
 			return NULL;
 		}
-		printf("SUCHE: %i in ROW : %i\n",dv2,dv);
 		if (dbi_result_get_field_type_idx(
 					data, (unsigned int) dv2) == DBI_TYPE_STRING) {
 			result = dbi_result_get_string_idx(
