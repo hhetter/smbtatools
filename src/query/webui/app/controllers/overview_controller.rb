@@ -175,7 +175,7 @@ class OverviewController < ApplicationController
 
   def required_config
     if $dbdriver.blank? || $dbname.blank? || $dbuser.blank? || $dbhost.blank?
-      redirect_to :root, :flash => {:error => "Please enter an valid IP and Port"}
+      redirect_to :root, :flash => {:error => "Please check your configuration."}
     end
   end
 
