@@ -32,7 +32,7 @@ void network_close_connection( int sockfd ) {
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long z )
 {
 	char kbstring[20];
 	char *output;

@@ -80,7 +80,7 @@ enum IntCommands {
  */
 long long int common_myatoi( char *num);
 int common_load_key_from_file( struct configuration_data *c);
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z );
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long z );
 int common_connect_socket( const char *hostname,int iport );
 char *common_create_header( TALLOC_CTX *ctx, const char *state_flags, size_t data_len);
 void common_write_data( char *header, char *data, int dlength, int _socket);

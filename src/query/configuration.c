@@ -257,7 +257,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	TALLOC_CTX *runtime_mem = NULL;
 	configuration_define_defaults( c );
 
-
 	if ( argc == 1 ) {
 		printf("ERROR: not enough arguments.\n\n");
 		configuration_show_help();
