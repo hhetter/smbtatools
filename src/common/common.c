@@ -395,11 +395,12 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						return bufres;
 					}
 	} else {
-		dv = number / fields;
-		dv2 = number - ( dv * fields);
+		dv = (number / fields)+1;
+		dv2 = (number - ( dv * fields));
 		if ( dbi_result_seek_row(data,dv) == 0) {
 			return NULL;
 		}
+		printf("SUCHE: %i in ROW : %i\n",dv2,dv);
 		if (dbi_result_get_field_type_idx(
 					data, (unsigned int) dv2) == DBI_TYPE_STRING) {
 			result = dbi_result_get_string_idx(

@@ -459,6 +459,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	interpreter_xml_begin_table_row(c);
 	while (res != NULL) {
                res = result_get_element(ctx,element,data);
+	       printf("RES: %s EL:%i\n",res, element);
 		if (res == NULL) break;
 		if ( col == 1 && named_row != NULL) {
 		       interpreter_xml_table_named_row(c,named_row,res);
