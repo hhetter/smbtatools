@@ -5,7 +5,7 @@
       <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
   </table>
   <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","search", "total", "top","usage", "last_activity", "throughput"]), :class => "function", :onchange => "configureFunction()"%>
+  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","search", "list", "total", "top","usage", "last_activity", "throughput"]), :class => "function", :onchange => "configureFunction()"%>
 </div>
 
 <div id="dialog">
@@ -21,7 +21,15 @@
     </table>
     <div id="search_help" class="function_help"><i>The search function allows a fulltext search over an object<br/>It supports unix like wildcars (*,?).</i></div>
   </div>
-
+  <div id="list_func" class="function_dialog">
+    <table>
+      <tr><td>Choose Object</td>
+        <td><%=select_tag "objectlist_list", options_for_select(["", "shares", "users", "files"], @object), :class => "objectlist", :onchange => "inspect_functionsettings()" %></td></tr>
+      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+    </table>
+  </div>
+  <div id="list_help" class="function_help"><i>The list function creates a list of objects that are involved with the selected object.</i></div>
   <div id="usage" class="function_dialog">
     <table>
       <tr><td>Choose a mode:</td>

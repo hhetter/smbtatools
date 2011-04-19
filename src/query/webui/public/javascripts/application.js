@@ -178,6 +178,7 @@ function configureFunction(){
     $("select.objectlist").val("");
     $("select.modelist").val("");
     $("input.number").val("");
+    $("input.search").val("");
     if (selected == "search"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
@@ -188,6 +189,19 @@ function configureFunction(){
         $("#search").fadeIn();
         $("#search_help").fadeIn();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
+    }
+    else if (selected == "list"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#top").fadeOut();
+        $("#usage").fadeOut();
+        $("#search").fadeOut();
+        $("#search_help").fadeOut();
+        $("#throughput").fadeOut();
+        $("#list_func").fadeIn();
     }
     else if (selected == "usage"){
         $("#help").fadeOut();
@@ -199,6 +213,7 @@ function configureFunction(){
         $("#usage").fadeIn();
         $("#usage_help").fadeIn();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
     }
     else if (selected == "total"){
         $("#help").fadeOut();
@@ -210,6 +225,7 @@ function configureFunction(){
         $("#total").fadeIn();
         $("#total_help").fadeIn();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
     }
     else if (selected == "last_activity"){
         $(".function_help").fadeOut();
@@ -221,6 +237,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#top").fadeOut();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
     }
     else if (selected == "top"){
         $(".function_help").fadeOut();
@@ -232,6 +249,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
     }
     else if (selected == "throughput"){
         $(".function_help").fadeOut();
@@ -243,6 +261,7 @@ function configureFunction(){
         $("#top").fadeOut();
         $("#throughput").fadeIn();
         $("#throughput_help").fadeIn();
+        $("#list_func").fadeOut();
     }
 
     else{
@@ -253,6 +272,7 @@ function configureFunction(){
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
         $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
     }
     inspect_functionsettings();
 }
@@ -291,6 +311,14 @@ function inspect_functionsettings(){
             $(".start").removeAttr("disabled");
         }
         if($("input#search").val().length == 0){
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if($("div#list_func").css("display") != "none"){
+        if($("select#objectlist_list option:selected").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
             $(".start").attr("disabled", "true");
         }
     }

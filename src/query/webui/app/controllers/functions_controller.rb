@@ -80,6 +80,9 @@ class FunctionsController < ApplicationController
     if @function == "total" || @function == "usage"
       @cmd += " " + @mode + ";'"
     end
+    if @function == "list"
+      @cmd += " " + @object + ";'"
+    end
     if @function == "top"
       @cmd += " " + @number + " " + @object + " " + @mode +  ";'"
     end
