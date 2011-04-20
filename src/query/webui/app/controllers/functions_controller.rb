@@ -15,6 +15,16 @@ class FunctionsController < ApplicationController
     @share = params[:share]
     @user = params[:user]
     @file = params[:file]
+    if @domain == ""
+      @domain = "(All)"
+    end
+    if @share == ""
+      @share = "(All)"
+    end
+    if @user == ""
+      @user = "(All)"
+    end
+
     if @domain == "(All)"
       if @user == "(All)" and @share == "(All)" and @file.blank?
         @cmd += " -q 'global, "
