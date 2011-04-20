@@ -45,18 +45,18 @@ char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long k )
 			kb = diff.quot;
 			rest = diff.rem;
 			}
-	if (kb >= 1024) { diff = lldiv(kb, 1024); // mb
+	if (kb >= 1024) { diff = lldiv(kb+rest, 1024); // mb
 			strcpy(kbstring,"MB");
 			kb = diff.quot;
 			rest = diff.rem;
 		}
 	if (kb >= 1024) {
-	                diff = lldiv(kb,1024); // gb
+	                diff = lldiv(kb+rest,1024); // gb
 			kb = diff.quot;
 			rest = diff.rem;
 	                strcpy(kbstring,"GB");}
 	if (kb >= 1024) {
-	                diff = lldiv(kb,1024); // tb
+	                diff = lldiv(kb+rest,1024); // tb
 			kb = diff.quot;
 			rest = diff.rem;
 	                strcpy(kbstring,"TB");}
