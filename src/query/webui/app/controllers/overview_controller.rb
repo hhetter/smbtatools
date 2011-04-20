@@ -82,8 +82,7 @@ class OverviewController < ApplicationController
     logger.debug cmd
     `#{cmd}`
     @domains = Array.new
-    @domains << "(All)"
-    @domain = "(All)"
+    @domains << ""
     file = File.new( "/tmp/domains.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
@@ -95,7 +94,7 @@ class OverviewController < ApplicationController
   def initialize_shares
     @domain = params[:domain]
     initial_command
-    if @domain == "(All)"
+    if @domain.blank?
       cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
     else
       cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
@@ -103,8 +102,7 @@ class OverviewController < ApplicationController
     logger.debug cmd
     `#{cmd}`
     @shares = Array.new
-    @shares << "(All)"
-    @share = "(All)"
+    @shares << ""
     file = File.new( "/tmp/shares.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
@@ -116,7 +114,7 @@ class OverviewController < ApplicationController
   def initialize_users
     @domain = params[:domain]
     initial_command
-    if @domain == "(All)"
+    if @domain.blank?
       cmd= @cmd + " -q 'global, list users;' -x /tmp/users.xml"
     else
       cmd= @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
@@ -124,8 +122,7 @@ class OverviewController < ApplicationController
     logger.debug cmd
     `#{cmd}`
     @users = Array.new
-    @users << "(All)"
-    @user = "(All)"
+    @users << ""
     file = File.new( "/tmp/users.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='username']") {
@@ -139,31 +136,31 @@ class OverviewController < ApplicationController
     @share = params[:share]
     @user = params[:user]
     initial_command
-    if @domain == "(All)"
-      if @user == "(All)" and @share == "(All)"
+    if @domain.blank?
+      if @user.blank? and @share.blank?
         cmd = @cmd + " -q 'global, list files;' -x /tmp/files.xml"
       end
-      if @user == "(All)" and @share != "(All)"
+      if @user.blank? and ! @share.blank?
         cmd = @cmd + " -q 'global, share " + @share + ", list files;' -x /tmp/files.xml"
       end
-      if @user != "(All)" and @share == "(All)"
+      if !@user.blank? and @share.blank?
         cmd = @cmd + " -q 'global, user " + @user + ", list files;' -x /tmp/files.xml"
       end
-      if @user != "(All)" and @share != "(All)"
+      if !@user.blank? and !@share.blank?
         cmd = @cmd + " -q 'global, user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
       end
     end
-    if @domain != "(All)"
-      if @user == "(All)" and @share == "(All)"
+    if !@domain.blank?
+      if @user.blank? and @share.blank?
         cmd = @cmd + " -q 'domain " + @domain + ", list files;' -x /tmp/files.xml"
       end
-      if @user == "(All)" and @share != "(All)"
+      if @user.blank? and ! @share.blank?
         cmd = @cmd + " -q 'domain " + @domain + ", share " + @share + ", list files;' -x /tmp/files.xml"
       end
-      if @user != "(All)" and @share == "(All)"
+      if !@user.blank? and @share.blank?
         cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", list files;' -x /tmp/files.xml"
       end
-      if @user != "(All)" and @share == "(All)"
+      if !@user.blank? and !@share.blank?
         cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
       end
     end
