@@ -3,6 +3,7 @@ class FunctionsController < ApplicationController
 
   def start_function
     get_function
+    logger.debug @cmd
     render :update do |page|
       page.insert_html :after, "list", :partial => "start_function"
     end
