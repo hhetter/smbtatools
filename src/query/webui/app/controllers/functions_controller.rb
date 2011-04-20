@@ -3,6 +3,7 @@ class FunctionsController < ApplicationController
 
   def start_function
     get_function
+    logger.debug @cmd
     render :update do |page|
       page.insert_html :after, "list", :partial => "start_function"
     end
@@ -14,55 +15,65 @@ class FunctionsController < ApplicationController
     @share = params[:share]
     @user = params[:user]
     @file = params[:file]
-    if @domain.blank?
-      if @user.blank? and @share.blank? and @file.blank?
+    if @domain == ""
+      @domain = "(All)"
+    end
+    if @share == ""
+      @share = "(All)"
+    end
+    if @user == ""
+      @user = "(All)"
+    end
+
+    if @domain == "(All)"
+      if @user == "(All)" and @share == "(All)" and @file.blank?
         @cmd += " -q 'global, "
       end
-      if @user.blank? and @share.blank? and !@file.blank?
+      if @user == "(All)" and @share == "(All)" and !@file.blank?
         @cmd += "-q 'global, file " + @file + ", "
       end
-      if @user.blank? and !@share.blank? and @file.blank?
+      if @user == "(All)" and @share != "(All)" and @file.blank?
         @cmd += "-q 'global, share " + @share + ", "
       end
-      if @user.blank? and !@share.blank? and !@file.blank?
+      if @user == "(All)" and @share != "(All)" and !@file.blank?
         @cmd += "-q 'global, share " + @share + ", file " + @file + ", "
       end
-      if !@user.blank? and @share.blank? and @file.blank?
+      if @user != "(All)" and @share == "(All)" and @file.blank?
         @cmd += "-q 'global, user " + @user + ", "
       end
-      if !@user.blank? and @share.blank? and !@file.blank?
+      if @user != "(All)" and @share == "(All)" and !@file.blank?
         @cmd += "-q 'global, user " + @user + ", file " + @file + ", "
       end
-      if !@user.blank? and !@share.blank? and @file.blank?
+      if @user != "(All)" and @share != "(All)" and @file.blank?
         @cmd += "-q 'global, user " + @user + ", share " + @share + ", "
       end
-      if !@user.blank? and !@share.blank? and !@file.blank?
+      if @user != "(All)" and @share != "(All)" and !@file.blank?
         @cmd += "-q 'global, user " + @user + ", share " + @share + ", file " + @file + ", "
       end
     end
-    if !@domain.blank?
-      if @user.blank? and @share.blank? and @file.blank?
+    if @domain != "(All)"
+      if @user == "(All)" and @share == "(All)" and @file.blank?
         @cmd += " -q 'domain " + @domain + ", "
       end
-      if @user.blank? and @share.blank? and !@file.blank?
+      if @user == "(All)" and @share == "(All)" and !@file.blank?
         @cmd += "-q 'domain " + @domain + ", file " + @file + ", "
       end
-      if @user.blank? and !@share.blank? and @file.blank?
+      if @user == "(All)" and @share != "(All)" and @file.blank?
         @cmd += "-q 'domain " + @domain + ", share " + @share + ", "
       end
-      if @user.blank? and !@share.blank? and !@file.blank?
+      if @user == "(All)" and @share != "(All)" and !@file.blank?
         @cmd += "-q 'domain " + @domain + ", share " + @share + ", file " + @file + ", "
       end
-      if !@user.blank? and @share.blank? and @file.blank?
+      if @user != "(All)" and @share == "(All)" and @file.blank?
         @cmd += "-q 'domain " + @domain + ", user " + @user + ", "
       end
-      if !@user.blank? and @share.blank? and !@file.blank?
+      if @user != "(All)" and @share == "(All)" and !@file.blank?
         @cmd += "-q 'domain " + @domain + ", user " + @user + ", file " + @file + ", "
       end
-      if !@user.blank? and !@share.blank? and @file.blank?
+      if @user != "(All)" and @share != "(All)" and @file.blank?
         @cmd += "-q 'domain " + @domain + ", user " + @user + ", share " + @share + ", "
       end
-      if !@user.blank? and !@share.blank? and !@file.blank?
+      if @user != "(All)" and @share != "(All)" and !@file.blank?
         @cmd += "-q 'domain " + @domain + ", user " + @user + ", share " + @share + ", file " + @file + ", "
       end
     end
