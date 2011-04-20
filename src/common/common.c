@@ -32,34 +32,35 @@ void network_close_connection( int sockfd ) {
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long int kb )
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long k )
 {
 	char kbstring[20];
 	char *output;
-	unsigned long long int rest = 0;
+	long long kb =  (long long ) k;
+	long long int rest = 0;
 	lldiv_t diff;
 	strcpy(kbstring,"Bytes");
-	if (kb>=1024) { diff =  lldiv(kb, 1024); // kb
+	if (kb >= 1024) { diff =  lldiv(kb, 1024); // kb
 			strcpy(kbstring,"KB");
 			kb = diff.quot;
 			rest = diff.rem;
 			}
-	if (kb>=1024) { diff = lldiv(kb, 1024); // mb
+	if (kb >= 1024) { diff = lldiv(kb, 1024); // mb
 			strcpy(kbstring,"MB");
 			kb = diff.quot;
 			rest = diff.rem;
 		}
-	if (kb>=1024) {
+	if (kb >= 1024) {
 	                diff = lldiv(kb,1024); // gb
 			kb = diff.quot;
 			rest = diff.rem;
 	                strcpy(kbstring,"GB");}
-	if (kb>=1024) {
+	if (kb >= 1024) {
 	                diff = lldiv(kb,1024); // tb
 			kb = diff.quot;
 			rest = diff.rem;
 	                strcpy(kbstring,"TB");}
-	output = talloc_asprintf( ctx,"%llu.%llu %s",kb,rest,kbstring);
+	output = talloc_asprintf( ctx,"%lli.%lli %s",kb,rest,kbstring);
 	return output;
 }
 
@@ -402,7 +403,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						unsigned int attribs;
 						attribs = dbi_result_get_field_attribs_idx(data, 1);
 
-						bufres = talloc_asprintf(ctx,"%i",rr);
+						bufres = talloc_asprintf(ctx,"%lli",rr);
 						return bufres;
 					}
 	} else {
