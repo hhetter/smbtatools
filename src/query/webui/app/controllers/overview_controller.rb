@@ -79,7 +79,6 @@ class OverviewController < ApplicationController
   def initialize_domains
     initial_command
     cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
-    logger.debug cmd
     `#{cmd}`
     @domains = Array.new
     @domains << "(All)"
@@ -100,7 +99,6 @@ class OverviewController < ApplicationController
     else
       cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
     end
-    logger.debug cmd
     `#{cmd}`
     @shares = Array.new
     @shares << "(All)"
@@ -121,7 +119,6 @@ class OverviewController < ApplicationController
     else
       cmd= @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
     end
-    logger.debug cmd
     `#{cmd}`
     @users = Array.new
     @users << "(All)"
@@ -163,11 +160,10 @@ class OverviewController < ApplicationController
       if @user != "(All)" and @share == "(All)"
         cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", list files;' -x /tmp/files.xml"
       end
-      if @user != "(All)" and @share == "(All)"
+      if @user != "(All)" and @share != "(All)"
         cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
       end
     end
-    logger.debug cmd
     `#{cmd}`
     @files = Array.new
     file = File.new( "/tmp/files.xml" )
