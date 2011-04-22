@@ -374,11 +374,10 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
 char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 {
 	int fields; long long rr;
-	int dv, dv2;
+	div_t dv, dv2;
 	const char *result;
 	char *bufres;
-	int rows;
-	number++;
+	int rows,row,cell;
 	dbi_result_first_row(data);
 	fields = dbi_result_get_numfields(data);
 	if (fields == DBI_FIELD_ERROR) return NULL;
@@ -387,46 +386,34 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 		bufres = talloc_asprintf(ctx,"No Results.");
 		return bufres;
 	}
-	if (number <= fields) {
-		if (dbi_result_get_field_type_idx(
-				data, (unsigned int) number) ==
+	
+	// we count from 0 on
+	number++;
+	// row and cell to select
+	dv = div( number-1 , fields );
+	row = dv.quot + 1 ;
+	cell = dv.rem + 1;
+	if ( dbi_result_seek_row(data,row) == 0) {
+		return NULL;
+	}
+	if (dbi_result_get_field_type_idx(
+				data, (unsigned int) cell) ==
 				DBI_TYPE_STRING) {
 					result = dbi_result_get_string_idx(
 						data,
-						(unsigned int) number);
+						(unsigned int) cell);
 					bufres = talloc_strdup( ctx,(const char *) result);
 					return bufres;
 					} else {
 						rr = dbi_result_get_longlong_idx(
 								data,
-								(unsigned int) number);
+								(unsigned int) cell);
 						unsigned int attribs;
-						attribs = dbi_result_get_field_attribs_idx(data, 1);
 
-						bufres = talloc_asprintf(ctx,"%lli",rr);
+						bufres = talloc_asprintf(ctx,"%lliHI",rr);
 						return bufres;
 					}
-	} else {
-		dv = (number / fields)+1;
-		dv2 = (number+fields) - ( dv * fields);
-		if ( dbi_result_seek_row(data,dv) == 0) {
-			return NULL;
-		}
-		if (dbi_result_get_field_type_idx(
-					data, (unsigned int) dv2) == DBI_TYPE_STRING) {
-			result = dbi_result_get_string_idx(
-				data,
-				(unsigned int) dv2);
-			bufres = talloc_strdup(ctx,(const char *) result);
-			return bufres;
-		} else {
-			int rr = dbi_result_get_int_idx(
-					data,
-					(unsigned int) number);
-			bufres = talloc_asprintf(ctx,"%i",rr);
-			return bufres;
-		}
-	}
+	 
 }
 
 

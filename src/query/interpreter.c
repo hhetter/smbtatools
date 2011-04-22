@@ -954,7 +954,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		struct configuration_data *config)
 {
 	char *query = NULL;
-	char *qdat = NULL;
+	dbi_result qdat;
 	char *xmldata = NULL;
 	const char *str = NULL;
 	const char *str2 = NULL;
@@ -1440,7 +1440,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct configuration_data *config)
 {
 	char *query1, *query2, *xmldata = NULL;
-	char *qdat;
+	dbi_result qdat;
 	unsigned long long sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
