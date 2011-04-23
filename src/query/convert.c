@@ -138,7 +138,7 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 	char *tables[] = { "read", "write", "mkdir", "rmdir", "close", "rename", "open", "chdir", NULL };
 	int rownums[] = {   6+2,    6+2,     6+3,    6+3,     6+2,     6+3,      6+3,    6+2 };
 
-	/* go through every table, and copy the contents to the remote database *
+	/* go through every table, and copy the contents to the remote database */
 	int cc = 0;
 	while (tables[cc] != NULL) {
 		dbi_result res;

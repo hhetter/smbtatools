@@ -362,6 +362,10 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
 
+	/* create a local sqlite database as a helper */
+	c->db=create_db();
+
+
 	/* Build up the connection to the database */
 	if (configuration_database_connect(c) == 1) {
 		printf("\nError on database connect.\n");
