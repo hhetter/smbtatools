@@ -40,7 +40,7 @@ static void enter_data( struct confdata *c)
 	printf("        - the username to use to connect to the database\n");
 	printf("        - the password for this user\n");
 	printf("        - the name of the database on the remote system\n");
-	printf("        - the type of database you use (mysql, pgsql, sqlite\n");
+	printf("        - the type of database you use (mysql, pgsql, sqlite)\n");
 
 	printf("\n");
 	printf("Enter the hostname of the system running the database:\n");
@@ -111,19 +111,20 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 {
 	printf("\n");
 	printf("-> Upgrading database from version 1.0 - 1.2.3 to version 1.2.4.\n");
+	printf("----------------------------------------------------------------\n");
 	printf("\n");
 	printf("Requirements:\n");
 	printf("You will need access to the sqlite3 database created by the\n");
 	printf("former version.\n");
 	enter_data(c);
 	printf("Enter the filename of the sqlite3 database:\n");
-	fgets(c->sqlite_filename,255,stdin);
+	scanf("%200s",c->sqlite_filename);
 	printf("\n");
 	printf("Opening sqlite database... ");
 	sqlite3 *db = NULL;
 	int ch;
-	ch = sqlite3_open(c->sqlite_filename, &db);
-	if (ch != SQLITE_OK) {
+	ch = sqlite3_open_v2(c->sqlite_filename, &db, SQLITE_OPEN_READONLY,NULL);
+	if (ch != SQLITE_OK ) {
 		printf("error opening the sqlite database.\n");
 		exit(1);
 	}
@@ -134,12 +135,15 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 		exit(1);
 	}
 
-	char *tables[] = { "read", "write", "close", "rename", "open", "chdir", NULL };
-	/* go through every table, and copy the contents to the remote database */
+	char *tables[] = { "read", "write", "mkdir", "rmdir", "close", "rename", "open", "chdir", NULL };
+	int rownums[] = {   6+2,    6+2,     6+3,    6+3,     6+2,     6+3,      6+3,    6+2 };
+
+	/* go through every table, and copy the contents to the remote database *
 	int cc = 0;
 	while (tables[cc] != NULL) {
 		dbi_result res;
 		printf("Processing table '%s'...\n", tables[cc]);
+
 		cc++;
 	}
 }
