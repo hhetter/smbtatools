@@ -23,7 +23,7 @@
 struct confdata {
 	char dbiuser[50];
 	char dbihost[50];
-	char dbipasswd[50];
+	char dbipassword[50];
 	char dbidbname[50];
 	char dbidriver[50];
 	int entered;
@@ -48,7 +48,7 @@ static void enter_data( struct confdata *c)
 	printf("Enter the user to use to connect to the database:\n");
 	scanf("%50s",c->dbiuser);
 	printf("Enter the password for user %s:\n",c->dbiuser);
-	scanf("%50s",c->dbipasswd);
+	scanf("%50s",c->dbipassword);
 	printf("Enter the name of the remote database:\n");
 	scanf("%50s",c->dbidbname);
 	printf("Enter the database driver to use (sqlite, mysql, pgsql):\n");
@@ -71,6 +71,7 @@ static int convert_database_connect( struct confdata *conf )
 {
        int rc;
        const char *dberror;
+       printf("Opening connection to the remote database via libDBI...\n");
         /**
 	 *          * Initialize the DBI layer
 	 *                   *               
@@ -88,14 +89,12 @@ static int convert_database_connect( struct confdata *conf )
         if (conf->DBIconn == NULL) {
                 printf("DBI: ERROR dbi_conn_new, with driver %s.\n",
                 conf->dbidriver);
-                dbi_conn_error(conf->DBIconn, &dberror);
-                printf("DBI: %s\n",dberror);
-                return 1;
+                exit(1);
         }
         dbi_conn_set_option(conf->DBIconn, "host", conf->dbihost);
         dbi_conn_set_option(conf->DBIconn, "username", conf->dbiuser);
         dbi_conn_set_option(conf->DBIconn, "password", conf->dbipassword);
-        dbi_conn_set_option(conf->DBIconn, "dbname", conf->dbiname);
+        dbi_conn_set_option(conf->DBIconn, "dbname", conf->dbidbname);
         dbi_conn_set_option(conf->DBIconn, "encoding", "UTF-8");
         if ( dbi_conn_connect(conf->DBIconn) < 0) {
                 printf("DBI: could not connect, please check options.\n");
@@ -103,11 +102,12 @@ static int convert_database_connect( struct confdata *conf )
                 printf("DBI: %s\n",dberror);
                 return 1;
         }
+	printf("Ok, DBI connection established.\n");
         return 0;
 }
 
 
-static void 1_2_3_to_1_2_4(struct confdata *c)
+static void _1_2_3_to_1_2_4(struct confdata *c)
 {
 	printf("\n");
 	printf("-> Upgrading database from version 1.0 - 1.2.3 to version 1.2.4.\n");
@@ -115,9 +115,9 @@ static void 1_2_3_to_1_2_4(struct confdata *c)
 	printf("Requirements:\n");
 	printf("You will need access to the sqlite3 database created by the\n");
 	printf("former version.\n");
-	enter_data();
+	enter_data(c);
 	printf("Enter the filename of the sqlite3 database:\n");
-	scanf("%255s",c->sqlite_filename);
+	fgets(c->sqlite_filename,255,stdin);
 	printf("\n");
 	printf("Opening sqlite database... ");
 	sqlite3 *db = NULL;
@@ -128,14 +128,24 @@ static void 1_2_3_to_1_2_4(struct confdata *c)
 		exit(1);
 	}
 	printf("Ok.\n");
-	printf("Opening connection to remote database... ");
 	ch = convert_database_connect(c);
-	if (ch == 0) {
-		printf("Ok - connection established.\n");
-	} else {
+	if (ch == 1) {
 		printf("\n ERROR.\n");
 		exit(1);
 	}
+
+	char *tables[] = { "read", "write", "close", "rename", "open", "chdir", NULL };
+	/* go through every table, and copy the contents to the remote database */
+	int cc = 0;
+	while (tables[cc] != NULL) {
+		dbi_result res;
+		printf("Processing table '%s'...\n", tables[cc]);
+		cc++;
+	}
+}
+
+
+	
 
 
 
@@ -145,7 +155,7 @@ void smbta_convert()
 {
 	int chose = 0;
 	struct confdata c;
-	c->entered = 0;
+	c.entered = 0;
 	printf("\n");
 	printf("Select the SMBTA version you are coming from.\n");
 	printf("1) 1.0 - 1.2.3\n");
@@ -159,16 +169,16 @@ void smbta_convert()
 	scanf("%d",&chose);
 	switch (chose) {
 		case 1:
-			1_2_3_to_1_2_4(c);
+			_1_2_3_to_1_2_4(&c);
 			break;
 		case 2:
-			printf("Exiting.\n)";
+			printf("Exiting.\n");
 			exit(0);
 			break;
 		default:
 			printf("Wrong input.\n");
 			exit(1);
 		}
-}
-        return 0;
+
+        return ;
 }

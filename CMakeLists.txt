@@ -114,6 +114,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/configuration.c
 	src/query/interpreter.c
 	src/query/network.c
+	src/query/convert.c
 	)
 
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)

@@ -163,6 +163,9 @@ void configuration_show_help()
 	printf("-K      --create-key <file>	Create a key for encryption in <file>.\n");
 	printf("-I	--identify <num>	0 = don't run identification,\n");
 	printf("				1 = run idendification (default)\n");
+	printf("-C	--convert		run an interactive conversion/update\n");
+	printf("				process to convert an older database\n");
+	printf("				to this version of SMBTA.\n");
 	printf("\n");
 }
 
@@ -284,15 +287,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "dbuser",1,NULL,'S'},
 			{ "dbhost",1,NULL,'H'},
 			{ "dbpassword",1,NULL,'P'},
+			{ "convert",0,NULL,'C'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"M:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
+			"CM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
 		switch (i) {
+			case 'C':
+				smbta_convert();
+				exit(0);
 			case 'M':
 				c->dbdriver = strdup( optarg );
 				break;
