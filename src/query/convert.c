@@ -35,8 +35,7 @@ static void enter_data( struct confdata *c)
 {
 	if (c->entered == 1) return;
 
-	printf("\nYou need a freshly setup new database reachable for\n");
-	printf("this program, in particular you need to know:\n");
+	printf("\nFollowing information is required to access the target database:\n");
 	printf("        - the hostname of the machine running the database\n");
 	printf("        - the username to use to connect to the database\n");
 	printf("        - the password for this user\n");
@@ -150,12 +149,21 @@ void smbta_convert()
 	printf("\n");
 	printf("Select the SMBTA version you are coming from.\n");
 	printf("1) 1.0 - 1.2.3\n");
+	printf("	Allows to convert a sqlite3 based database created\n");
+	printf("	with the SMBTA 1.0 - 1.2.3 releases to a new 1.2.4\n");
+	printf("	based database, that has been already setup with\n");
+	printf("	'smbta -T'.\n");
+	printf("2) Quit program\n");
 	printf("\n");
 	printf("Enter Number:\n");
 	scanf("%d",&chose);
 	switch (chose) {
 		case 1:
 			1_2_3_to_1_2_4(c);
+			break;
+		case 2:
+			printf("Exiting.\n)";
+			exit(0);
 			break;
 		default:
 			printf("Wrong input.\n");
