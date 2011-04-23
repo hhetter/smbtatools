@@ -382,10 +382,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 	fields = dbi_result_get_numfields(data);
 	if (fields == DBI_FIELD_ERROR) return NULL;
 	rows = dbi_result_get_numrows(data);
-	if (rows == 0) {
-		bufres = talloc_asprintf(ctx,"No Results.");
-		return bufres;
-	}
+	if (rows == 0) return NULL;
 	
 	// we count from 0 on
 	number++;

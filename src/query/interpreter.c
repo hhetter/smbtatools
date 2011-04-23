@@ -547,7 +547,7 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 		exit(1);
 	}
 	qdat = sql_query(ctx,config,query);
-	// we me add in case of rw.
+	// we add in case of rw.
 	thrput = thrput + strtoull(result_get_element(ctx,0,qdat),NULL,0);
 
 	// very short xml, do this inline
