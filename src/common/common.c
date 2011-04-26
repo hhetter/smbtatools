@@ -401,15 +401,25 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						(unsigned int) cell);
 					bufres = talloc_strdup( ctx,(const char *) result);
 					return bufres;
-					} else {
+					} else if (dbi_result_get_field_type_idx(
+								data, (unsigned int) cell) ==
+							DBI_TYPE_INTEGER) {
 						rr = dbi_result_get_longlong_idx(
 								data,
 								(unsigned int) cell);
 						unsigned int attribs;
 
-						bufres = talloc_asprintf(ctx,"%lliHI",rr);
+						bufres = talloc_asprintf(ctx,"%lli",rr);
 						return bufres;
+					} else if (dbi_result_get_field_type_idx(
+								data, (unsigned int) cell) ==
+							DBI_TYPE_DATETIME) {
+						char *rrd = dbi_result_get_string_copy_idx(data, (unsigned int) cell);
+						return rrd;
 					}
+
+
+
 	 
 }
 
