@@ -2,7 +2,7 @@
  * smbtatorture
  * small testingsuite for smbta
  *
- * Copyright (C) Michael Haefner, 2009, 2010
+ * Copyright (C) Michael Haefner, 2009, 2010, 2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,62 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "../../include/version.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <stdlib.h>
+#include <arpa/inet.h>
+#include <dlfcn.h>
 #include <errno.h>
-#include <string.h>
+#include <getopt.h>
 #include <libsmbclient.h>
-#include <getopt.h>
-#include <syslog.h>
-#include <sys/times.h>
-#include <errno.h>
 #include <limits.h>
-
 #include <netdb.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/times.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <sys/un.h>
-#include <signal.h>
-#include <pthread.h>
-#include <getopt.h>
 #include <syslog.h>
-#include <sys/select.h>
-#include <dlfcn.h>
-#include <string.h>
-#include <stdio.h>
 #include <talloc.h>
+#include <time.h>
 #include <unistd.h>
-#include <errno.h>
-#include <limits.h>
-
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/un.h>
-#include <signal.h>
-#include <pthread.h>
-#include <getopt.h>
-#include <syslog.h>
-#include <sys/select.h>
-#include <dlfcn.h>
-
-
 
 
 struct configuration_data {
@@ -99,9 +68,6 @@ struct configuration_data {
 } typedef conf;
 
 conf config;
-
-
-
 
 char **fnamelist;
 
@@ -210,10 +176,6 @@ char *get_random_filename() {
 		}
 }
 	
-	
-	
-		
-
 unsigned long long int common_myatoi( char *num)
 {
         char *endptr;
@@ -492,8 +454,8 @@ void help()
 
 	printf("smbtatorture version %s - small testingsuite for smbta	\n", SMBTATORTURE_VERSION);
 	printf("\n");
-	printf("(C) 2009-2010 Michael Haefner\n");
-	printf("(C) 2009-2010 Holger Hetterich\n");
+	printf("(C) 2009-2011 Michael Haefner\n");
+	printf("(C) 2009-2011 Holger Hetterich\n");
 	printf("%s\n",SMBTA_LICENSE);
 	printf("-u --username 		The user smbtatorture should	\n");
 	printf("			operate on.			\n");
