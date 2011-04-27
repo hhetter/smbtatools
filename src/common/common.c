@@ -414,7 +414,9 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 					} else if (dbi_result_get_field_type_idx(
 								data, (unsigned int) cell) ==
 							DBI_TYPE_DATETIME) {
-						char *rrd = dbi_result_get_string_copy_idx(data, (unsigned int) cell);
+						char *rrd = talloc_asprintf(ctx,"1"); 
+						// dbi_result_get_as_string_copy_idx(data, (unsigned int) cell);
+						// wait for new libDBI release to fix this with ^^^
 						return rrd;
 					}
 
