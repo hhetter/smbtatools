@@ -864,6 +864,22 @@ Sum up the read-only throughput of the last 50 days on share "Fritzboxtest".
 ------------------------------------
 ============================================
 
+webSMBTA
+~~~~~~~~
+
+*webSMBTA* is a web interface for SMB Traffic Analyzer. It is using the *smbtaquery* program as a data provider and presents a modern, intuitive, rails based web application.
+
+Installation
+^^^^^^^^^^^^
+
+Currently *webSMBTA* is in BETA, as it has not yet been employed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use *webSMBTA* is to start it with the rails integrated webserver:
+
+-----------------------------------------------
+cd query/webui/
+rails server
+-----------------------------------------------
+
+
 
 smbtamonitor
 ~~~~~~~~~~~~
