@@ -1,0 +1,6 @@
+webSMBTA is currently considered as BETA.
+
+It was not yet employed on webservers like apache.
+
+webSMTA can be started by running "rails server" in this directory.
+
