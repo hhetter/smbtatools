@@ -30,8 +30,8 @@ int network_register_monitor( enum monitor_fn func,
         char *tosend, *data;
         tosend = talloc_asprintf(NULL,"~~0001%i%04i%s%s",
 		func,(int) strlen(param),param,pattern);
-        char *body = sql_query(NULL,c,tosend);
-	data = result_get_element(NULL,0,body);
+        char *body = connect_monitor(NULL,c,tosend);
+	data = _mon_result_get_element(NULL,0,body);
 	retval = (int) common_myatoi(data);
 	monitor_list_add( retval, func, xpos,ypos,title);	
 	talloc_free(tosend);

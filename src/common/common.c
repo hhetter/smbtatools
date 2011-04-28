@@ -426,6 +426,141 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 }
 
 
+char *connect_monitor( TALLOC_CTX *ctx,
+         struct configuration_data *config,
+         char *query )
+ {
+         if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
+        fd_set fd_set_r,fd_set_w,active_fd_set;
+        int z=0;
+        char *header=NULL;
+        int header_position=0;
+        char *body=NULL;
+        int body_position=0;
+        int data_length=0;
+        int sockfd = config->socket;
+        enum network_send_flags state = UNSENT;
+        while (state != DATA_RECEIVED) {
+                /* Initialize the set of active input sockets. */
+               FD_ZERO (&active_fd_set);
+                FD_SET(config->socket,&active_fd_set);
+                fd_set_r=active_fd_set;
+                fd_set_w=active_fd_set;
+
+                z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
+                if (FD_ISSET( sockfd,&fd_set_w) && state == UNSENT) {
+                        /* ready to write to the socket */
+
+                        /*
+                        * The state flags are part of the header
+                        * and are descripted in the protocol description
+                        * in vfs_smb_traffic_analyzer.h
+                        * in the Samba sources. They begin at byte
+                        * 03 of the header.
+                        */
+                        char state_flags[9];
+			if ( config->keyfile != NULL) {
+				size_t len;
+				strcpy(state_flags,"00E000");
+				char *crypt = common_encrypt(
+					NULL,
+					(const char *) config->key,
+					query,
+					&len);
+				header = common_create_header(
+					ctx,
+					state_flags,
+					len);
+				common_write_data(
+					header,
+					crypt,
+					(int) len,
+					sockfd);
+				talloc_free(crypt);
+			} else {
+				strcpy(state_flags,"000000");
+				header = common_create_header(
+					ctx,
+                                	state_flags,
+					strlen(query));
+				common_write_data(
+					header,
+					query,
+					strlen(query),
+					sockfd);
+			}
+                        state = SENT;
+                        continue;
+                }
+                if (FD_ISSET( sockfd,&fd_set_r) && state == SENT) {
+                        /* ready to read */
+                        state = RECEIVING_HEADER;
+                        header = talloc_array(ctx, char, 29);
+                        common_receive_data(header, sockfd, 26,
+                                &header_position);
+                        if (header_position == 0) {
+                                network_close_connection(sockfd);
+                                continue;
+                        }
+                        if (header_position != 26) {
+                                state = RECEIVING_HEADER_ONGOING;
+                                continue;
+                        }
+                        state = HEADER_RECEIVED;
+                        data_length = common_get_data_block_length(header);
+                        continue;
+                } else
+                if (FD_ISSET( sockfd,&fd_set_r) &&
+                        state == RECEIVING_HEADER_ONGOING) {
+                        common_receive_data(header + header_position, sockfd,
+                                26-header_position, &header_position);
+
+                        if (header_position != 26) continue;
+                        /* full header */
+                        state = HEADER_RECEIVED;
+                        data_length= common_get_data_block_length(header);
+                        continue;
+                } else
+                if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
+                        state = RECEIVING_DATA;
+                        body = talloc_array(ctx, char, data_length +2);
+                        body_position = 0;
+                        common_receive_data(body,
+                                        sockfd,
+                                        data_length,
+                                        &body_position);
+                        if (body_position==0) {
+                                network_close_connection(sockfd);
+                                continue;
+                        }
+                        if (body_position != data_length) {
+                                state = RECEIVING_DATA_ONGOING;
+                                continue;
+                        }
+                        /* full data set received */
+                        state = DATA_RECEIVED;
+                        break;
+                } else
+                if (FD_ISSET( sockfd,&fd_set_r) &&
+                        state == RECEIVING_DATA_ONGOING) {
+                        common_receive_data(body + body_position,sockfd,
+                                data_length - body_position, &body_position);
+                        if (body_position != data_length) continue;
+                        state = DATA_RECEIVED;
+                        break;
+                }
+        }
+	if (config->keyfile != NULL) { // encrypted data
+		char *decrypted = common_decrypt(
+				NULL,
+				body,
+				data_length,
+				config->key);
+		talloc_free(body);
+		return decrypted;
+	} 
+        return body;
+}
 
 
 int interpreter_get_result_rows( char *data, int columns)

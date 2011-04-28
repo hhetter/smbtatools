@@ -87,6 +87,7 @@ void common_write_data( char *header, char *data, int dlength, int _socket);
 void common_receive_data( char *buf, int sock, int length, int *rlen);
 int common_get_data_block_length( char *header );
 dbi_result sql_query( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
+char *connect_monitor( TALLOC_CTX *ctx, struct configuration_data *config, char *query );
 void network_close_connection( int sockfd );
 int common_connect_unix_socket( char *name );
 char *common_identify( TALLOC_CTX *ctx,
