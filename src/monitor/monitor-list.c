@@ -217,10 +217,10 @@ void monitor_list_change_results( char *data )
 	struct monitor_item *entry;
 	char *ctx = talloc(NULL, char);
 	char *tmp = NULL;
-	tmp = result_get_element(ctx,0,data);
+	tmp = result_get_monitor_element(ctx,0,data);
 	int id = (int) common_myatoi(tmp);
 	entry = monitor_list_get_by_id(id);
-	tmp = result_get_element(ctx,1,data);
+	tmp = result_get_monitor_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
 	if (entry->type == MONITOR_WRITE ||

@@ -363,6 +363,39 @@ void interpreter_print_numbered_table( TALLOC_CTX *ctx,
         }
 }
 
+char *result_get_monitor_element( TALLOC_CTX *ctx, int number, char *data )
+ {
+        char bytecount[10];
+        int datcount = 0;
+        int t;
+        int c = 0;
+        int blocksize = 0;
+        char *result = NULL;
+        for (c = 0; c <= number; c++) {
+                for (t = datcount; t<datcount+4 ; t++) {
+                        bytecount[t-datcount]=data[t];
+                }
+                bytecount[4]='\0';
+                blocksize = (int) common_myatoi(bytecount);
+                if (blocksize == 0) {
+			return NULL;
+ 		}
+                if ( c == number) {
+                        result = talloc_array(ctx,char, blocksize +1);
+                        datcount = datcount + 4;
+                        for (t = datcount; t<datcount + blocksize; t++) {
+                                result[t-datcount] = data[t];
+                        }
+                        result[blocksize]='\0';
+                        datcount = datcount + blocksize +1;
+                        break;
+                } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
+        }
+        return result;
+ }
+ 
+
+
 
 /*
  * Get a single column of the result data from a query-result
@@ -419,10 +452,7 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						// wait for new libDBI release to fix this with ^^^
 						return rrd;
 					}
-
-
-
-	 
+return NULL;
 }
 
 

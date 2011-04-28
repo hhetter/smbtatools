@@ -95,4 +95,5 @@ char *common_identify( TALLOC_CTX *ctx,
         char *data,
         struct configuration_data *config, int qtype);
 char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data );
+char *result_get_monitor_element( TALLOC_CTX *ctx, int number, char *data);
 char *common_decrypt( TALLOC_CTX *ctx, char *body, int len, const unsigned char *thekey);
