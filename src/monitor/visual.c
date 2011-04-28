@@ -120,13 +120,13 @@ void visual_monitor_read_write(struct monitor_item *entry)
 void visual_monitor_log_calc(struct monitor_item *entry)
 {
         char *ctx = talloc(NULL,char);
-        char *tmp = result_get_element(ctx,0,entry->data);
+        char *tmp = result_get_monitor_element(ctx,0,entry->data);
         int id = (int) common_myatoi(tmp);
-        char *username = result_get_element(ctx,1,entry->data);
-        char *share = result_get_element(ctx,2,entry->data);
-        char *filename = result_get_element(ctx,3,entry->data);
-        char *domain = result_get_element(ctx,4,entry->data);
-        char *timestamp = result_get_element(ctx,5,entry->data);
+        char *username = result_get_monitor_element(ctx,1,entry->data);
+        char *share = result_get_monitor_element(ctx,2,entry->data);
+        char *filename = result_get_monitor_element(ctx,3,entry->data);
+        char *domain = result_get_monitor_element(ctx,4,entry->data);
+        char *timestamp = result_get_monitor_element(ctx,5,entry->data);
 
         char *to_add = NULL;
         switch(id) {
