@@ -869,6 +869,11 @@ webSMBTA
 
 *webSMBTA* is a web interface for SMB Traffic Analyzer. It is using the *smbtaquery* program as a data provider and presents a modern, intuitive, rails based web application.
 
+Requirements
+^^^^^^^^^^^^
+
+*webSMBTA* relies on a fully working SMBTA setup, including a working database, and the *smbtaquery* program installed in system paths. If you can run a query like 'global, total rw;' via smbtaquery, all should be fine.
+
 Installation
 ^^^^^^^^^^^^
 
@@ -878,6 +883,56 @@ Currently *webSMBTA* is in BETA, as it has not yet been employed with a full web
 cd query/webui/
 rails server
 -----------------------------------------------
+
+First startup
+^^^^^^^^^^^^^
+
+At first startup, webSMBTA will show a configuration dialog like this:
+image:gfx/webSMBTA/configuration.png[webSMBTA configuration dialog appearing at the first startup of the application]
+
+The field *DB-host* takes the hostname of the system that is running the database, or the ip-address of that system.
+The field *DB-name* takes the name of the database on the system specified by *DB-host*.
+The field *DB-driver* is a select box and let's you choose the database driver to use to access the database.
+- *pgsql* is a PostgreSQL database.
+- *mysql* is a MySQL database.
+- *sqlite* is a Sqlite3 based database.
+The field *DB-user* takes the username of the user that has access to the database specified in *DB-name*.
+The field *DB-password* takes the password of the user specified in *DB-user*.
+
+Click the button *Commit settings* to let webSMBTA connect to the database and initiate the first data view.
+
+First data view, "global"
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After committing the configuration settings, *webSMBTA* will jump into the first data view that looks like this:
+image:gfx/webSMBTA/startup.png[webSMBTA data view on the first level]
+
+As you can see, the view is called "Global", which means that the program is operating over the whole database, not taking any special SMB related objects into account. Like *smbtaquery*, *webSMBTA* is works based on objects, and the "Global" object is special in the way that it runs over the whole database.
+
+You surely notice the arrow to the right, showing that there is more to explore. By clicking on the "global" entry in the selection field, the next data view will appear.
+
+Second data view, "domains"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After clicking the "global" selection, *webSMBTA* will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about. 
+
+If you click on on of the domains in the selection area, this domain will be chosen as an object to work with, and from now on *webSMBTA* will bound all it's results to this domain.
+
+As you can see, the first entry in the selection area is "(All)", which you can use to de-select a domain. If you click this selection, *webSMBTA* will operate with "Global" as the object (see previous section).
+
+Third data view, "shares and users"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After choosing an object in the "domains" selection, *webSMBTA* will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.
+image:gfx/webSMBTA/shares_users.png[webSMBTA's third data view, showing the shares and users belonging to a chosen domain]
+
+This view is special, as it allows you to select one share, one user, or one user and one share. In the example picture shown above, user "Hettich" is selected, and share "trigger". This means that *webSMBTA* will run any operations belonging to the user "Hettich" on the share "trigger". For example, if you de-select the share "trigger" by clicking on "(All)" in the share-selection, *webSMBTA* will run operations belonging to the user "Hettich" on the selection domain, but not limited to the share "trigger".
+
+Fourth data view, "files"
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have chosen a user or a share, or both, *webSMBTA* will automatically do a query on the database for the list of files that have been touched by the object that has been chosen so far. Clicking on one of the files in that selection, will make *webSMBTA* process all operations over this specific file.
+image:gfx/webSMBTA/main-screen.png[The main object selector screen of webSMBTA, including the file selection]
 
 
 
