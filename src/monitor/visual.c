@@ -93,7 +93,6 @@ void visual_monitor_read_write(struct monitor_item *entry)
 	box(win,0,0);
 	unsigned long int nr = 0;
 	if (entry->data != NULL) nr = atol(entry->data);
-
 	char *mem,*mem2;
 	mem = common_make_human_readable(NULL,nr);
         mvwprintw(win, 0, 1,entry->title);
@@ -102,7 +101,6 @@ void visual_monitor_read_write(struct monitor_item *entry)
 	mvwprintw(win, 2, 1,"%s / second",mem2);
         wrefresh(win);
         delwin(win);
-
 	if (entry->showtotal == 1) {
 		WINDOW *win2 = newwin(4,26,entry->totaly,entry->totalx);
 		box(win2,0,0);

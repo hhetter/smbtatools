@@ -153,6 +153,7 @@ int monitor_item_set_total( struct monitor_item *entry,
 	entry->totalx = x;
 	entry->totaly = y;
 	entry->total_partner = partner;
+	entry->totaltitle= strdup(title);
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
