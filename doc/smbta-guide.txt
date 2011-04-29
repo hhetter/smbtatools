@@ -316,22 +316,30 @@ smbtad --help
 
 The following output will appear:
 -----------------------------------------------------------------
-./smbtad: unrecognized option '--help'
-ERROR: unkown option.
+ERROR: not enough arguments.
 
-SMB Traffic Analyzer daemon
+SMB Traffic Analyzer daemon version 1.2.4
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 
-(C) 2008-2010 Holger Hetterich <ozzy@metal-district.de>	
+(C) 2008-2011 Holger Hetterich <ozzy@metal-district.de> 
 
--i	--inet-port		Specifiy the port to be used.	
-				Default: 3490.			
--d      --debug-level		Specify the debug level (0-10).	
-				Default: 0.			
--o	--interactive		Don't run as daemon.		
-				(Runs as daemon by default)	
--c      --config-file		Use configuration file given.	
--q	--query-port		Specify the port to be used for 
-				clients.			
+-S      --dbuser                Specifiy the user for the database.
+-H      --dbhost                Specifiy the host of the database.
+-P      --dbpassword            Specifiy to password to access the db.
+-M      --dbdriver              Specify the libDBI driver to use.
+-N      --dbname                Specify the name of the database.
+-i      --inet-port             Specifiy the port to be used.   
+                                Default: 3490.                  
+-u      --unix-domain-socket    If this parameter is specified, 
+                                a unix domain socket at         
+                                /var/tmp/stadsocket will be     
+                                used.                           
+-d      --debug-level           Specify the debug level (0-10). 
+                                Default: 0.                     
+-q      --query-port            Port to be used for clients.    
+-o      --interactive           Don't run as daemon.            
+                                (Runs as daemon by default)     
+-c      --config-file           Use configuration file given.   
 -t --maintenance-timer <value>  specify the time intervall to
                                 to start the database 
                                 maintenance routine. Format is
@@ -341,7 +349,7 @@ SMB Traffic Analyzer daemon
                                 half hour.
                                 Default: 01:00:00
 -m --maintenance-timer-config 
-     <value>   			specify a number of days
+     <value>                    specify a number of days
                                 and a time. Every database
                                 entry which is older than the
                                 the specified number of days
@@ -349,9 +357,15 @@ SMB Traffic Analyzer daemon
                                 maintenance routine.
                                 Format is: DAYS, HH:MM:SS
                                 Default: 1,00:00:00
--u --unix-domain-socket		Use a unix domain socket under
-				/var/tmp/stadsocket for the
-				connection to the VFS module.
+-k --keyfile                    Keyfile for encryption to be used
+                                between module and smbtad.
+-p --precision                  Precision value for the build-in
+                                cache. Default is 5.
+-U --use-db                     Specify 0 or 1 as argument. If
+                                this is 0, no database handling
+                                will be done. Default is 1.
+-T --setup                      Do the initial database setup and exit.
+
 ------------------------------------------------------------------
 
 -i --inet-port
@@ -370,7 +384,7 @@ For debugging reasons, it can be useful to not run smbtad as a daemon program. W
 ++++++++++++++++
 The user can provide a configuration file instead of providing the command line switches.
 
--q --query-port ( *NO LONGER EXISTING SINCE VERSION 1.2.4*)
+-q --query-port ( *from version 1.2.4 on only for smbtamonitor connections!* )
 +++++++++++++++
 This is the internet socket port to which clients can connect when those want to query the database, or request real time information. In case this parameter is not given, it is set to 3491 (or in other words to the value of --i --inet-port + 1.
 
@@ -386,7 +400,7 @@ Here you can specify how the maintenance process should work. The format is DAYS
 +++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket will be used for the connection to the VFS module. This is useful if smbtad is to be run on the same machine that runs the Samba server.
 
--n --unix-domain-socket-cl ( *NO LONGER EXISTING SINCE VERSION 1.2.4* )
+-n --unix-domain-socket-cl ( *from version 1.2.4 on only for smbtamonitor connection!* )
 ++++++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket_client will be used for the connection to clients such as smbtaquery. This is useful if smbtad is to be run on the same machine that runs the tools.
 
@@ -423,6 +437,9 @@ Database drivers are:
 ++++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -N argument specifies the name of the database to be used for the database connection.
 
+-T --setup ( *ONLY VERSIONS FROM 1.2.4 ON* )
++++++++++++
+As of *version 1.2.4 of smbtad*, the database needs to be setup by the -T --setup switch. This will access the database, and create the initial tables and structure of the database. smbtad will not daemonize after this call, just return normally.
 
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -589,13 +606,182 @@ export SMBTATOOLS_XSLTPROC_PATH=$YOUR/$PATH/$TO/$XSLTPROC
 
 TIP: If you don't intend to use the xsltproc program, don't have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.
 
+smbtaquery command line arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If smbtaquery is called without enough arguments or wrong arguments, it'll bring it's list of available command line options as a reaction:
+
+-------------------------------------------------------------
+holger@linux-lm9n:~/Dev/smbtatools/run> ./smbtaquery 
+ERROR: not enough arguments.
+
+smbtaquery version 1.2.3-devel
+(C)opyright 2011 by Benjamin Brunner
+(C)opyright 2011 by Michael Haefner
+(C)opyright 2011 by Holger Hetterich
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+-M	--dbdriver <str>	Set the libDBI database driver to use.
+-N	--dbname <str>		Set the name of the database to open.
+-S	--dbuser <str>		Set the name of the user for the database.
+-H	--dbhost <str>		Set the hostname to connect to.
+-P	--dbpassword <str>	Set the password to use.
+-d	--debug-level <num>	Set the debug level to work
+				with to <num>. Default: 0
+-c	--config-file <file>	Load the configuration from
+				a file given as <file>.
+-q      --query			Run an interpreter command,
+				or run a SQL select command.
+-p      --command-help		Interpreter command description.
+-f      --file <file>		Read the commands from a file.
+				connect to smbtad.
+-x	--xml <file>		Output XML to file <file>.
+-o	--output		Specify the format to output.
+				Default: ascii
+-k	--keyfile <file>	Enable encryption and load the
+				key from <file>.
+-K      --create-key <file>	Create a key for encryption in <file>.
+-I	--identify <num>	0 = don't run identification,
+				1 = run idendification (default)
+-C	--convert		run an interactive conversion/update
+				process to convert an older database
+				to this version of SMBTA.
+
+--------------------------------------------------------------
+
+-M --dbdriver
++++++++++++++
+ATTENTION: only for smbtaquery version >= 1.2.4
+Takes a string as argument to specifiy the name of the database driver
+to use to access the database. Valid choices are:
+pgsql (Postgresql)
+mysql (MySQL)
+sqlite3 (Sqlite)
+
+-N --dbname
++++++++++++
+ATTENTION: only for smbtaquery version >= 1.2.4
+Takes a string as argument to specifiy the name of the database to be
+used.
+
+-S --dbuser
++++++++++++
+ATTENTION: only for smbtaquery version >= 1.2.4
+Takes a string as argument to specifiy the name of the user who is accessing
+the database.
+
+-H --dbhost
++++++++++++
+ATTENTION: only for smbtaquery version >= 1.2.4
+Takes a string as argument to specify the hostname of the system that is
+running the database or the IP Address of that system.
+
+-P --dbpassword
++++++++++++++++
+ATTENTION: only for smbtaquery version >= 1.2.4
+Takes a string as argument to specify the password for the user to access
+the database.
+
+-d --debuglevel
++++++++++++++++
+The debuglevel can be set here, ranging from 1 to 10. If you want to run
+smbtaquery more verbose, such as seeing the SQL queries smbtaquery actually
+runs, set this to 10.
+
+-c --configfile
++++++++++++++++
+A configuration file can be set here, the argument takes a string. If this
+parameter is given, smbtaquery will load the configuration file, which overrides
+anything given on the command line.
+
+-q --query
+++++++++++
+This command line argument is used to run a query, in the language the
+smbtaquery interpreter provides. See the next sections for more details on this
+function.
+
+-f --file
++++++++++
+Instead of taking input for a query from the -q --query command, smbtaquery can
+work sequentially through a file, see the next sections for more details on this
+function.
+
+-x --xml
+++++++++
+smbtaquery in general produces xml output, that is automatically interpreted
+by libxslt to generate the preferred output format. If you want to force smbtaquery
+to write it's xml output into a file, use this option, and provide the filename as
+argument.
+
+-o --output
++++++++++++
+Through XML processing, smbtaquery allows different output formats to choose.
+Currently, HTML and ascii text is supported. If this option is not given, the
+default will be "ascii". Current valid options are:
+ascii - ascii text output
+html  - html output
+
+-k --keyfile
+++++++++++++
+ATTENTION: only of use in smbtaquery <= 1.2.3
+This option specifies a keyfile that can be used to encrypt the transfer between
+smbtad and smbtaquery. The argument is a string that is the full path to the
+keyfile.
+
+-K --create-key
++++++++++++++++
+ATTENTION: only of use in smbtaquery <= 1.2.3
+This option takes a string as argument, and creates a 128Bit AES key to encrypt
+data transfer with the -k --keyfile option. The string given represents the file
+to be created with the key.
+
+-I --identify
+++++++++++++++
+This option takes an integer as argument and is either 0 or 1.
+Given with 0, smbtaquery will not try to identify the objects given in a query.
+This can be useful, for example when smbtaquery is called from webSMBTA, which
+always comes with a set of pre-identified objects.
+If this option is set to 1, which is the default if the option is not given,
+smbtaquery will try to identify an object any time. See the next sections for more
+details on this function.
+
+-C --convert
+++++++++++++
+ATTENTION: only from smbtaquery version >= 1.2.4 on
+If this option is given, smbtaquery will not go into normal operation, but instead
+provides an interactive session with the aim to convert databases from one version
+to the current one. 
+
+-i --inet-port
+++++++++++++++
+ATTENTION: only valid for smbtaquery version <= 1.2.3
+This option takes an integer that specifies the internet socket port to use to connect
+to smbtad to run queries.
+
+-u --unix-domain-socket
++++++++++++++++++++++++
+ATTENTION: only valid for smbtaquery version <= 1.2.3
+It this option is given, smbtaquery will use a unix-domain socket to communicate
+with smbtad.
+
+
 General usage
 ^^^^^^^^^^^^^
 
 Following is an example of a smbtaquery run:
 
 ---------------------------------
+ATTENTION:
+*The following example only works with smbtaquery <= 1.2.3*
+
 smbtaquery -h smbtahost.example.ex -i 3491 -q 'global, usage rw;'
+
+or 
+ATTENTION:
+*The following example only works with smbtaquery >= 1.2.4*
+
+smbtaquery -H databasehost.example.ex -U dbuser -P dbpasswd -N
+
 ---------------------------------
 
 The command line option -h (or --host) is telling smbtaquery to use the given host as the system, where smbtad is running on. When running queries, it will connect to this system with the port number given with the command line option -i. 
