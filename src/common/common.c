@@ -407,7 +407,7 @@ char *result_get_monitor_element( TALLOC_CTX *ctx, int number, char *data )
 char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 {
 	int fields; long long rr;
-	div_t dv, dv2;
+	div_t dv;
 	const char *result;
 	char *bufres;
 	int rows,row,cell;
@@ -440,8 +440,6 @@ char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
 						rr = dbi_result_get_longlong_idx(
 								data,
 								(unsigned int) cell);
-						unsigned int attribs;
-
 						bufres = talloc_asprintf(ctx,"%lli",rr);
 						return bufres;
 					} else if (dbi_result_get_field_type_idx(

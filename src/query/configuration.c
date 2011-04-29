@@ -21,6 +21,7 @@
 #include "../../include/version.h"
 #include "include/configuration.h"
 #include "include/interpreter.h"
+#include "include/convert.h"
 #include <talloc.h>
 
 /* creates a local sqlite database that smbtaquery uses while in */
