@@ -365,8 +365,7 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
                                 this is 0, no database handling
                                 will be done. Default is 1.
 -T --setup                      Do the initial database setup and exit.
-
-------------------------------------------------------------------
+-----------------------------------------------------------------
 
 -i --inet-port
 ++++++++++++++
@@ -384,9 +383,9 @@ For debugging reasons, it can be useful to not run smbtad as a daemon program. W
 ++++++++++++++++
 The user can provide a configuration file instead of providing the command line switches.
 
--q --query-port ( *from version 1.2.4 on only for smbtamonitor connections!* )
+-q --query-port
 +++++++++++++++
-This is the internet socket port to which clients can connect when those want to query the database, or request real time information. In case this parameter is not given, it is set to 3491 (or in other words to the value of --i --inet-port + 1.
+This is the internet socket port to which clients can connect when those want to request real time information. In case this parameter is not given, it is set to 3491 (or in other words to the value of --i --inet-port + 1.
 
 -t --maintenance-timer
 ++++++++++++++++++++++
@@ -400,31 +399,31 @@ Here you can specify how the maintenance process should work. The format is DAYS
 +++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket will be used for the connection to the VFS module. This is useful if smbtad is to be run on the same machine that runs the Samba server.
 
--n --unix-domain-socket-cl ( *from version 1.2.4 on only for smbtamonitor connection!* )
+-n --unix-domain-socket-cl
 ++++++++++++++++++++++++++
 If this option is given, a unix domain socket under /var/tmp/stadsocket_client will be used for the connection to clients such as smbtaquery. This is useful if smbtad is to be run on the same machine that runs the tools.
 
--p --precision ( *ONLY VERSIONS FROM 1.2.3 ON* )
+-p --precision
 ++++++++++++++
-As of version 1.2.3 of smbtad, the program will sum up similar VFS R/W entries in it's cache and only store the sum of transferred bytes instead of every single VFS entry. It's cache is insert-sort based and the summing up makes the resulting database much smaller than in former releases. Because of this interpolation, statistic results will get slightly unprecise. The -p --precision argument allows the user to control the timespan in seconds, over which the cache is summing up similar VFS R/W entries. The default is set to 5 seconds. The more seconds the user is specifying, the smaller will the resulting database be, and the less precise will the results be, when queried through smbtaquery. To do real data-mining, this argument can be set to 0. In this mode, smbtad isn't summing up any VFS entry, and stores them as is in the database. This is the behaviour of smtbad in former releases than 1.2.3.
+As of *version 1.2.3 of smbtad*, the program will sum up similar VFS R/W entries in it's cache and only store the sum of transferred bytes instead of every single VFS entry. It's cache is insert-sort based and the summing up makes the resulting database much smaller than in former releases. Because of this interpolation, statistic results will get slightly unprecise. The -p --precision argument allows the user to control the timespan in seconds, over which the cache is summing up similar VFS R/W entries. The default is set to 5 seconds. The more seconds the user is specifying, the smaller will the resulting database be, and the less precise will the results be, when queried through smbtaquery. To do real data-mining, this argument can be set to 0. In this mode, smbtad isn't summing up any VFS entry, and stores them as is in the database. This is the behaviour of smtbad in former releases than 1.2.3.
 
--U --use_db ( *ONLY VERSIONS FROM 1.2.3 ON* )
+-U --use_db
 +++++++++++
 As of *version 1.2.3 of smbtad*, the database usage of smbtad can be completely shut down. This is useful when SMBTA is only to be used with rrddriver or smbtamonitor, which only rely on real time data. The option requires an integer argument that is either 0 or 1. If it is 1, which is the default, the database will be handled, if it's 0, only real time data is supported. Please note, that under --use-db = 0 circumstances, some monitor functionality such as the TOTAL monitor, which is supposed to transfer the TOTAL sum of transfered bytes of an object will have a different behaviour. As the database is not available, it cannot query for the initial sum and starts with 0. Also, the real time tools rrddriver and smbtamonitor are doing an identification procedure by default, which must be shut down by using the --I --identify switch with the tools. *If you want to use SMBTA for rrddriver or smbtamonitor only, it is recommended to set this option to 0.*
 
--S --dbuser (*ONLY VERSIONS FROM 1.2.4 ON* )
+-S --dbuser
 +++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -S argument specifies the user of the database, and must be a valid user of the database.
 
--H --dbhost ( *ONLY VERSIONS FROM 1.2.4 ON* )
+-H --dbhost
 +++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -H argument specifies the host name of the system where the database runs.
 
--P --dbpassword ( *ONLY VERSIONS FROM 1.2.4 ON* )
+-P --dbpassword
 +++++++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -P argument specifies the password of the user (given with '-S --dbuser' to access the database.
 
--M --dbdriver ( *ONLY VERSIONS FROM 1.2.4 ON* )
+-M --dbdriver 
 +++++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -M argument specifies the driver to use for the database connection.
 
@@ -433,11 +432,11 @@ Database drivers are:
 - *"mysql"* for MySQL (untested).
 - *"sqlite3"* for Sqlite3 (untested).
 
--N --dbname ( *ONLY VERSIONS FROM 1.2.4 ON* )
+-N --dbname
 ++++++++++++
 As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. The -N argument specifies the name of the database to be used for the database connection.
 
--T --setup ( *ONLY VERSIONS FROM 1.2.4 ON* )
+-T --setup
 +++++++++++
 As of *version 1.2.4 of smbtad*, the database needs to be setup by the -T --setup switch. This will access the database, and create the initial tables and structure of the database. smbtad will not daemonize after this call, just return normally.
 
