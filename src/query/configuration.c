@@ -88,7 +88,7 @@ void configuration_define_defaults( struct configuration_data *c )
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
-        char *f = talloc_asprintf(ctx,"%s/.smbtatools/query.config",a);
+        char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
 	FILE * fi = fopen(f,"r");
         if (fi != NULL) {
                 fclose(fi);
