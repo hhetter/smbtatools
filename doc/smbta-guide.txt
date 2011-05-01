@@ -582,6 +582,76 @@ und you can start pointing more shares to it.
 Using the client programs
 -------------------------
 
+Using a configuration file with the client programs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All client programs described in the following sections can make use of a configuration file. Since any of the tools have quite similar options and parameters, a single configuration file can be used by default which is located in
+
+-----------------------------------------
+$(HOME)/./smbtatools/smbtatools.config
+-----------------------------------------
+
+Following is a sample configuration file, describing all possible options. For further questions to these options, please see the chapter about the program you are refering to below.
+
+-----------------------------------------------
+[general]
+# In general, the programs are more verbose by running them
+# at debug level 10. debug level 0 is the default
+# debug_level = 10
+
+[network]
+
+# The "smbta_port_number" option is used for all real-time
+# programs that are using a direct connection to smbtad,
+# such as smbtamonitor or rrddriver.
+# It is the port number on which smbtad is listening for 
+# incoming client connections
+smbta_port_number = 3491
+
+# The "smbta_host" options is used as the host to connect
+# to that has smbtad running. This option is used for all
+# real-time programs that require a direct connection
+# to smbtad, such as smbtamonitor or rrddriver.
+smbta_host = examplehost.ex.di
+
+# The "unix_domain_socket" option is used for all real-time
+# programs that are using a direct connection to smbtad,
+# such as smbtamonitor or rrddriver.
+# If this option is set to something, such as "yes",
+# the connection to smbtad will be done by a unix domain socket
+# instead of a internet socket.
+# The default behaviour is to use an internet socket, and
+# if this option is not given, it won't be used.
+# unix_domain_socket = yes
+
+[database]
+
+# The "host" parameter is used for smbtaquery. It's argument
+# is the hostname or ip-address of the system that is running
+# the database.
+host = dbhost.example.ex
+
+# The "user" parameter is used for smbtaquery. It's argument
+# is the name of the user on the database system to use for
+# doing queries.
+user = testuser
+
+# The "password" parameter is used for smbtaquery. It's argument
+# is the password of the user given in the "user" parameter.
+password = password
+
+# The "driver" parameter is used for the libDBI driver to be
+# used to make the connection to, and specifies the database
+# that is being used. Valid values are:
+# pgsql (Postgresql), mysql (MySQL), sqlite3 (Sqlite3)
+driver = pgsql
+
+# The "name" parameter is used for the name of the database
+# to connect to.
+name = smbta-database
+
+----------------------------------------------------
+
 smbtaquery
 ~~~~~~~~~~
 
@@ -650,8 +720,7 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 
 -M --dbdriver
 +++++++++++++
-ATTENTION: only for smbtaquery version >= 1.2.4
-Takes a string as argument to specifiy the name of the database driver
+Takes a string as argument to specify the driver
 to use to access the database. Valid choices are:
 pgsql (Postgresql)
 mysql (MySQL)
@@ -659,25 +728,21 @@ sqlite3 (Sqlite)
 
 -N --dbname
 +++++++++++
-ATTENTION: only for smbtaquery version >= 1.2.4
 Takes a string as argument to specifiy the name of the database to be
 used.
 
 -S --dbuser
 +++++++++++
-ATTENTION: only for smbtaquery version >= 1.2.4
 Takes a string as argument to specifiy the name of the user who is accessing
 the database.
 
 -H --dbhost
 +++++++++++
-ATTENTION: only for smbtaquery version >= 1.2.4
 Takes a string as argument to specify the hostname of the system that is
 running the database or the IP Address of that system.
 
 -P --dbpassword
 +++++++++++++++
-ATTENTION: only for smbtaquery version >= 1.2.4
 Takes a string as argument to specify the password for the user to access
 the database.
 
@@ -720,19 +785,12 @@ default will be "ascii". Current valid options are:
 ascii - ascii text output
 html  - html output
 
--k --keyfile
-++++++++++++
-ATTENTION: only of use in smbtaquery <= 1.2.3
-This option specifies a keyfile that can be used to encrypt the transfer between
-smbtad and smbtaquery. The argument is a string that is the full path to the
-keyfile.
-
 -K --create-key
 +++++++++++++++
-ATTENTION: only of use in smbtaquery <= 1.2.3
 This option takes a string as argument, and creates a 128Bit AES key to encrypt
-data transfer with the -k --keyfile option. The string given represents the file
-to be created with the key.
+data transfer. The string given represents the file
+to be created with the key. This keyfile can be used with rrddriver or smbtamonitor
+to encrypt data flow with smbtad.
 
 -I --identify
 ++++++++++++++
@@ -746,22 +804,9 @@ details on this function.
 
 -C --convert
 ++++++++++++
-ATTENTION: only from smbtaquery version >= 1.2.4 on
 If this option is given, smbtaquery will not go into normal operation, but instead
 provides an interactive session with the aim to convert databases from one version
 to the current one. 
-
--i --inet-port
-++++++++++++++
-ATTENTION: only valid for smbtaquery version <= 1.2.3
-This option takes an integer that specifies the internet socket port to use to connect
-to smbtad to run queries.
-
--u --unix-domain-socket
-+++++++++++++++++++++++
-ATTENTION: only valid for smbtaquery version <= 1.2.3
-It this option is given, smbtaquery will use a unix-domain socket to communicate
-with smbtad.
 
 
 General usage
@@ -770,58 +815,25 @@ General usage
 Following is an example of a smbtaquery run:
 
 ---------------------------------
-ATTENTION:
-*The following example only works with smbtaquery <= 1.2.3*
-
-smbtaquery -h smbtahost.example.ex -i 3491 -q 'global, usage rw;'
-
-or 
-ATTENTION:
-*The following example only works with smbtaquery >= 1.2.4*
-
-smbtaquery -H databasehost.example.ex -U dbuser -P dbpasswd -N
-
+smbtaquery -H databasehost.example.ex -U dbuser -P dbpasswd -N smbtad -M pgsql -q 'global, total rw;'
 ---------------------------------
 
-The command line option -h (or --host) is telling smbtaquery to use the given host as the system, where smbtad is running on. When running queries, it will connect to this system with the port number given with the command line option -i. 
+Telling smbtaquery to connect to a postgresql database as user dbuser with password dbpasswd, on host databasehost.example.ex.
 
 Finally the command line option -q (or --query) provides the query to run for the build in interpreter of smbtaquery. More on this follows in the later chapters.
-
-smbtaquery is able to connect through a unix domain socket to smbtad alternativly. In this case the user gives the -u option instead of -i and -h :
--------------------------------------
-smbtaquery -u -q 'global, usage rw;'
--------------------------------------
 
 Output modes, saving of results to a file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 By default, smbtaquery prints it's results to the terminal it is running on. To print the results to a file, redirect the output to a file, such as:
 ------------------------------------------------
-smbtaquery -u -q 'global, usage rw;' > test.txt
+smbtaquery -q 'global, usage rw;' > test.txt
 ------------------------------------------------
 
 smbtaquery is able to produce different output formats. Currently, *ascii* text output (which is the default setting) and *HTML* is implemented. The output format can be specified with the -o $FORMAT option:
 ---------------------------------------------------------
-smbtaquery -u -q 'global, usage rw;' -o html > test.html
+smbtaquery -q 'global, usage rw;' -o html > test.html
 ---------------------------------------------------------
 The generated file "test.html" can then be loaded into a webbrowser for viewing.
-
-Utilizing a configuration file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The command line options -h (--host) and -i are required every time smbtaquery should run a query on the database. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:
-
----------------------------------
-$HOME/.smbtatools/query.config
----------------------------------
-whereas $HOME is the users home directory.
-
-The format of the file is that of a ini file:
-
--------------------------------
-[network]
-	host_name = smbtahost.example.ex
-	port_number = 3491
--------------------------------
 
 The smbtaquery interpreter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -830,12 +842,12 @@ To ease the usage of the database, smbtaquery implements a simplified language t
 
 In the following example of an smbtaquery call, the -q parameter is used:
 -------------------------------------------------------
-smbtaquery -h localhost -i 3491 -q 'global, total r;'
+smbtaquery -q 'global, total r;'
 -------------------------------------------------------
 
 When using a file to read in commands, the -f Parameter is used. It's argument is the filename of the file to run commands from:
 -------------------------------------------------------
-smbtaquery -h localhost -i 3491 -f testfile.txt
+smbtaquery -f testfile.txt
 -------------------------------------------------------
 
 Any line beginning with '#' in the file, will be ignored as comments. At any new line in the file, one or more objects have to be defined.
@@ -1168,21 +1180,6 @@ For example you can watch the total number of transferred bytes and the throughp
 
 Any smbtamonitor instance is bound to an object ( a user, a file, a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.
 
-Utilizing a configuration file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The command line options -h (--host) and -i are required every time smbtamonitor should run. Therefore, those parameters can be stored into a configuration file, which will automatically be loaded and parsed if it is found. The location of this file is:
-----------------------------------------
-$HOME/.smbtatools/monitor.config
-----------------------------------------
-whereas $HOME is the users home directory.
-
-The format of the file is that of a ini file:
-----------------------------------------
-[network]
-        host_name = smbtahost.example.ex
-        port_number = 3491
-----------------------------------------
 
 smbtamonitor startup
 ^^^^^^^^^^^^^^^^^^^^
