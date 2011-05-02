@@ -1068,8 +1068,22 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	char *qdat = NULL;
 	char *qdat2 = NULL;
 	char *xmldata = NULL;
-	if (command_data->argument_count != 3) {
-		printf("ERROR: the top function expects 3 arguments.\n");
+	char *order = NULL;
+	if (command_data->argument_count > 4) {
+		printf("ERROR: the top function expects 4 arguments.\n");
+		exit(1);
+	}
+	if (command_data->argument_count ==3) {
+		/**
+		 * desc or asc is not given, so we
+		 * default to desc
+		 */
+		order = talloc_strdup(ctx,"desc");
+	} else if ( strcmp(command_data->arguments[3],"desc") == 0 ||
+		strcmp(command_data->arguments[3],"asc") ==0) {
+			order = talloc_strdup(ctx,command_data->arguments[3]);
+	} else {
+		printf("ERROR: the 3rd argument to top is either desc or asc.\n");
 		exit(1);
 	}
 	int limit = (int) common_myatoi(command_data->arguments[0]);
@@ -1084,18 +1098,18 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct username, domain,sum(length) over (Partition by username) from read"
-				" where %s order by sum(length) over (Partition by username) desc"
+				" where %s order by sum(length) over (Partition by username) %s"
 				" limit %i;",
-				obj_struct->sql,limit);
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by write access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct username, domain, sum(length) over (Partition by username) from write "
-				"where %s order by sum(length) over (Partition by username)  desc "
+				"where %s order by sum(length) over (Partition by username)  %s "
 				"limit %i;",
-				obj_struct->sql,limit);
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read-write access.",
@@ -1104,8 +1118,8 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				"select distinct username, domain,sum(length) over (Partition by username)  from "
 				"( select * from read UNION select * "
 				"from write) as subrequest where %s order by "
-				"sum(length) over (Partition by username) desc limit %i;",
-				obj_struct->sql,limit);
+				"sum(length) over (Partition by username) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"shares")==0) {
@@ -1114,16 +1128,16 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct share, domain,sum(length) over (Partition by share) from read where"
-				" %s order by sum(length) over (Partition by share) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct share, domain, sum(length) over (Partition by share) from write where"
-				" %s order by sum(length) over (Partition by share) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read-write access.",
@@ -1131,8 +1145,8 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			query1 = talloc_asprintf(ctx,
 				"select distinct share, domain, sum(length) over (Partition by share) from ( select * from"
 				" read UNION select * from write) as subrequest where %s"
-				" order by sum(length) over (Partition by share) desc limit %i;",
-				obj_struct->sql,limit);
+				" order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"files")==0) {
@@ -1141,16 +1155,16 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct filename, share, domain, sum(length) over (Partition by filename) from read where"
-				" %s order by sum(length) over (Partition by filename) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by filename) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct filename, share, domain, sum(length) over (Partition by filename) from write where"
-				" %s order by sum(length) over (Partition by filename)  desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by filename)  %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read-write access.",
@@ -1158,8 +1172,8 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			query1 = talloc_asprintf(ctx,
 				"select distinct filename, share, domain, sum(length) over (Partition by filename)  from ( select *"
 				" from read UNION select * from write) as subrequest where"
-				" %s order by sum(length) over (Partition by filename) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by filename) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"domains")==0) {
@@ -1168,16 +1182,16 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
 				"select distinct domain, sum(length) over (Partition by domain) from read where"
-				" %s order by sum(length) over (Partition by domain) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by domain) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata = talloc_asprintf(ctx,"Top %i domains %s by write access.",
 				limit,obj_struct->output_term);
 			query1= talloc_asprintf(ctx,
 				"select distinct domain, sum(length) over (Partition by domain)  from write where"
-				" %s order by sum(length) over (Partition by domain) desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by domain) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata = talloc_asprintf(ctx,"Top %i domains %s by read-write access.",
@@ -1185,8 +1199,8 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			query1=talloc_asprintf(ctx,
 				"select distinct domain, sum(length) over (Partition by domain)  from ( select *"
 				"from read UNION selec t* from write ) as subrequest where"
-				" %s order by sum(length) over (Partition by domain)  desc limit %i;",
-				obj_struct->sql,limit);
+				" %s order by sum(length) over (Partition by domain)  %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat=sql_query(ctx,config,query1);
 		}
 	} else {
@@ -1909,9 +1923,9 @@ void interpreter_command_help()
 		"				users, all files on an\n");
 	printf("				object.\n");
 	printf("top 	[num] [shares]\n");
-	printf("    	[users][files]	 	List the top NUM shares,\n"
+	printf( "    	[users][files]	 	List the top NUM shares,\n"
 		"	[r][w][rw]		users or files on the\n");
-	printf("				object.\n");
+	printf( "	[desc] [asc]		object.\n");
         printf("last_activity [num]\n");
         printf("            			List the last NUM \n"
 		"				activities from the \n");
