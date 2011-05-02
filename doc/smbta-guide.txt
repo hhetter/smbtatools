@@ -998,10 +998,10 @@ top
 +++
 
 Syntax:
-*top [number] [files] [users] [shares] [rw] [r] [w]*
+*top [number] [files] [users] [shares] [rw] [r] [w] [asc][desc]*
 
 The top function prints out a number of top files, users, or shares by
-read, write or read and write access.
+read, write or read and write access. The "asc" and "desc" arguments are optional. The sort direction of the function can be changed by adding one of these arguments.
 
 .Top function example:
 ==================================
