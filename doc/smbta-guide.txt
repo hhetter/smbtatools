@@ -468,57 +468,40 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# Default is 1.
 	use_db = 1
 [network]
-	# The port_number option defines the internet socket port
-	# to be used for listening for data from the VFS module.
-	port_number = 3490
 	# The query_port option defines the internet socket port
-	# to be used for talking to clients such as smbtaquery or
+	# to be used for talking to clients such as 
 	# smbtamonitor.
-	# ATTENTION: from version 1.2.4 on, the query_port will only
-	# be used for smbtamonitor connections
 	query_port = 3491
 	# The unix_domain_socket option specifies wether a unix domain
 	# socket is used for the connection to the VFS module.
 	# It's arguments are either yes, or no.
 	unix_domain_socket = no
 	# The unix_domain_socket_clients option specifies wether a unix
-	# domain socket is used for the connection for the clients
-	# ATTENTION: from version 1.2.4 on, the unix_domain_socket_clients
-	# option is only used for smbtamonitor
+	# domain socket is used for the connection to real-time clients
 	unix_domain_socket_clients = no
 
 
 [database]
-	# Currently, smbtad is employing sqlite3 for it's database
-	# tasks. A data file to be used (with full path) can be specified.
-	# ATTENTION: this option is only used on smbtad <= 1.2.3
-	sqlite_filename = /tmp/database.db
-	#
 	# The "name" option specifies the name of the database to be used
 	# for smbtad. The database must have been prepared by using
 	# smbta -T.
-	# ATTENTION: for smbtad >= 1.2.4 ONLY!
 	name = dbname
 	# 
 	# The "host" option specifies the name or IP adress of the system
 	# running the database
-	# ATTENTION: for smbtad >= 1.2.4 ONLY!
 	host = examplehost.test.ex
 	#
 	# The "driver" option specifies the name of the database driver
 	# to use to access the database. Valid values are 
 	# pgsql (postgresql), mysql (mysql), or sqlite3 (sqlite)
-	# ATTENTION: for smbtad >= 1.2.4 ONLY!
 	driver = pgsql
 	#
 	# The "user" option specifies the name of the user to use to
 	# access the database.
-	# ATTENTION: for smbtad >= 1.2.4 ONLY!
 	user = testuser
 	#
 	# The "password" option specifies the password of the user given
 	# with the "user" option.
-	# ATTENTION: for smbtad >= 1.2.4 ONLY!
 	password = testpassword
 
 [maintenance]
