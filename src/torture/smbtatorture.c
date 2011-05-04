@@ -36,14 +36,6 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/times.h>
-<<<<<<< HEAD
-#include <sys/types.h>
-#include <sys/un.h>
-#include <syslog.h>
-#include <talloc.h>
-#include <time.h>
-#include <unistd.h>
-=======
 #include <errno.h>
 #include <limits.h>
 
@@ -88,7 +80,6 @@
 #include <dlfcn.h>
 
 
->>>>>>> devel
 
 
 struct configuration_data {
@@ -119,131 +110,7 @@ conf config;
 char **fnamelist;
 
 
-// get random filenames, either from a
-// smbtatorturesrv, or generate on it's own
-char *get_random_filename() {
-	int max_filenames = 0;
-	int max_directories = 0;
-	int nfilename = 0;
-	int ndirectory = 0;
-	int z = 0;
-	char *strdat;
-	char *fullstr = NULL;
-	char *retstr = NULL;
-
-	switch(config.port) {
-	case 0: ;
-		FILE *fnames = fopen("/usr/share/smbtatools/filenames.txt","r");
-		FILE *dnames = fopen("/usr/share/smbtatools/directories.txt","r");
-		if (fnames == NULL || dnames == NULL) {
-			printf("ERROR: 	cannot open filenames list and/or\n");
-			printf("	directory list. Exiting.\n");
-		}
-		while ( !feof(fnames) ) {
-			fscanf(fnames, "%ms\n", &strdat);
-			max_filenames = max_filenames + 1;
-			if (strdat != NULL) free(strdat);
-		}
-        	while ( !feof(dnames) ) {
-               		fscanf(dnames, "%ms\n", &strdat);
-                	if (strdat != NULL) free(strdat);
-                	max_directories = max_directories + 1;
-        	}
-		rewind(fnames);
-		rewind(dnames);
-		if (max_filenames != 0 && max_directories != 0) {
-			nfilename = rand() % max_filenames;
-			ndirectory = rand() % max_directories;
-		} else {
-			printf("ERROR: no filenames or directories stored!\n");
-			exit(1);
-		}
-		while ( z < ndirectory ) {
-			z++;
-			fscanf(dnames, "%ms\n", &strdat);
-			if (strdat != NULL) free(strdat);
-		}
-		fscanf(dnames, "%ms\n",&fullstr);
-		z = 0;
-		while ( z < nfilename) {
-			z++;
-			fscanf(fnames, "%ms\n", &strdat);
-			if (strdat != NULL) free(strdat);
-		}
-		fscanf(fnames,"%ms\n",&strdat);
-		retstr = (char *) malloc( sizeof(char) * ( strlen(fullstr) + strlen(strdat) ) + 5 );
-		strcpy(retstr, fullstr);
-		strcat(retstr,"/");
-		strcat(retstr, strdat);
-		free(fullstr);
-		free(strdat);
-		fclose(fnames);
-		fclose(dnames);
-		return retstr;
-	default:
-		if (config.verbose==1)
-			printf("Receiving a filename from smbtatorturesrv...\n");
-		// get a filename from smbtatorturesrv
-		fd_set wfd_set;
-		FD_ZERO(&wfd_set);
-		FD_SET(config.sockfd,&wfd_set);
-		z = select(config.sockfd + 1,NULL,&wfd_set,NULL,NULL);
-		if (FD_ISSET( config.sockfd,&wfd_set) ) {
-			strdat=strdup("      ");
-			strcpy(strdat,"0001f");
-			send(config.sockfd,strdat,5,0);
-		} else strdat = NULL;
-		printf("	Send request...\n");
-		FD_ZERO(&wfd_set);
-		FD_SET(config.sockfd,&wfd_set);
-		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
-		if (FD_ISSET( config.sockfd,&wfd_set) && strdat != NULL) {
-			recv(config.sockfd,strdat,4,0);
-			z = atoi(strdat);
-		}
-		printf("	Following answer will be %i bytes long...\n",
-			z);
-
-		FD_ZERO(&wfd_set);
-		FD_SET(config.sockfd,&wfd_set);
-		free(strdat);
-		int zz=z;
-		strdat = (char *) malloc( (sizeof(char)*z)+2);
-		z = select(config.sockfd+1,&wfd_set,NULL,NULL,NULL);
-		if (FD_ISSET( config.sockfd,&wfd_set)) {
-			recv(config.sockfd,strdat,zz,0);
-			strdat[zz]='\0';
-			if (config.verbose==1)
-				printf("Got this from smbtatorturesrv: > %s <\n",strdat);
-			return strdat;
-		}
-		if (config.verbose==1)
-			printf("WARNING: Unable to receive a filename from smbtatorturesrv!");		
-		return NULL;
-		}
-}
 	
-unsigned long long int common_myatoi( char *num)
-{
-        char *endptr;
-        errno = 0;
-        unsigned long long val;
-        val = strtoll(num, &endptr, 0); 
-        if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-                || (errno != 0 && val == 0)) {
-                perror("strtol"); 
-                exit(1);
-        }
-        if (endptr == num) {
-               fprintf(stderr, "strtol: No digits were found\n");
-               exit(1); 
-           }    
-        return (unsigned long long) val; 
-}
-
-
-char **fnamelist;
-
 
 // get random filenames, either from a
 // smbtatorturesrv, or generate on it's own
@@ -690,7 +557,6 @@ void define_config_defaults()
 	config.port = 0;
 	config.sockfd = 0;
 	config.host = NULL;
-<<<<<<< HEAD
 
 }
 
@@ -729,46 +595,6 @@ int connect_smbtatorturesrv(int iport,char *hostname)
 
 }
 
-=======
-
-}
-
-int connect_smbtatorturesrv(int iport,char *hostname)
-{
-        if ( hostname == NULL ) {
-                printf("ERROR: no hostname given.\n");
-                exit(1);
-        }
-
-        struct addrinfo *ai;   
-        struct addrinfo hints;
-        memset(&hints,'\0',sizeof(hints));
-     
-        hints.ai_flags=AI_ADDRCONFIG;
-        hints.ai_socktype=SOCK_STREAM;
-        char port[255]; 
-        sprintf(port,"%i",iport);
-        int e=getaddrinfo(hostname,port,&hints,&ai);
-        if (e!=0) {
-                printf("ERROR: error getaddrinfo\n");
-                exit(1);
-        } 
-        int sockfd=socket(ai->ai_family,ai->ai_socktype,ai->ai_protocol);
-        if (sockfd==-1) {
-                printf("ERROR: error in socket operation!\n");
-                exit(1);
-        };
-        int result=connect(sockfd,ai->ai_addr,ai->ai_addrlen);
-        if (result==-1) {
-                printf("ERROR: error in connect operation!\n");
-                exit(1);
-        };
-
-        return sockfd;
-
-}
-
->>>>>>> devel
 
 int main(int argc, char *argv[])
 {

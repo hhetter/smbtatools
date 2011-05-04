@@ -4,22 +4,14 @@
         #include <sqlite3.h>
 #endif
 
-<<<<<<< HEAD
-
-=======
 #include <dbi.h>
->>>>>>> devel
 
 enum smbta_monitor_object {
         SMBTA_SHARE = 0,
         SMBTA_USER,
         SMBTA_FILE,
-<<<<<<< HEAD
-	SMBTA_DOMAIN
-=======
 	SMBTA_DOMAIN,
 	SMBTA_NONE
->>>>>>> devel
 };
 
 enum smbta_query_output {
