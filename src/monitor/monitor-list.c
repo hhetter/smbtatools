@@ -28,11 +28,18 @@ void monitor_list_timer( void *var)
                 pthread_mutex_lock(&monitor_list_lock);
 		/**
 		 * go through the list of monitors, and if we find a
-		 * TOTAL monitor, produce a new throughput value per second
+		 * READ/WRITE monitor, produce a new throughput value 
+		 * per second.
 		 */
 		while (entry != NULL) {
 			if ( entry->data != NULL &&
-				entry->type == MONITOR_TOTAL ) {
+				entry->type == MONITOR_READ ) {
+				entry->thrput =
+					atol(entry->data) - entry->oldval;
+				entry->oldval = atol(entry->data);
+			}
+			if ( entry->data != NULL &&
+				entry->type == MONITOR_WRITE ) {
 				entry->thrput =
 					atol(entry->data) - entry->oldval;
 				entry->oldval = atol(entry->data);
@@ -81,6 +88,15 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 		entry->backlog->backlog_count = 0;
 		entry->oldval = 0;
 		entry->thrput = 0;
+		entry->sum = 0;
+		/* additional parameters for READ and WRITE monitors */
+		entry->showtotal = 0;
+		entry->totalx = 0;
+		entry->totaly = 0;
+		entry->total_partner = NULL;
+		entry->totaltitle = NULL;
+		entry->totalsum = 0;
+
 		pthread_mutex_unlock(&monitor_list_lock);
 		return 0;
 	}
@@ -106,9 +122,42 @@ int monitor_list_add( int id, enum monitor_fn func, int xpos, int ypos, char *ti
 	entry->backlog->backlog_count = 0;
 	entry->oldval = 0;
 	entry->thrput = 0;
+	entry->sum = 0;
+
+	/* additional parameters for READ and WRITE monitors */
+	entry->showtotal = 0;
+	entry->totalx = 0;
+	entry->totaly = 0;
+	entry->total_partner = NULL;
+	entry->totaltitle = NULL;
+	entry->totalsum = 0;
+
 	pthread_mutex_unlock(&monitor_list_lock);
 	return 0;
 }
+
+int monitor_item_set_total( struct monitor_item *entry,
+		int x,
+		int y,
+		char *title,
+		struct monitor_item *partner)
+{
+	pthread_mutex_lock(&monitor_list_lock);
+	if ( partner == NULL || title == NULL ||
+			(partner->type != MONITOR_READ &&
+			 partner->type != MONITOR_WRITE)) {
+		pthread_mutex_unlock(&monitor_list_lock);
+		return 1; // error
+	}
+	entry->showtotal = 1;
+	entry->totalx = x;
+	entry->totaly = y;
+	entry->total_partner = partner;
+	entry->totaltitle= strdup(title);
+	pthread_mutex_unlock(&monitor_list_lock);
+	return 0;
+}
+
 
 
 /**
@@ -139,8 +188,9 @@ void monitor_list_initial_draw()
 	        case MONITOR_ADD: ;
         	        visual_monitor_add(entry);
                 	break;
-        	case MONITOR_TOTAL: ;
-                	visual_monitor_total(entry);
+        	case MONITOR_READ:
+		case MONITOR_WRITE:
+                	visual_monitor_read_write(entry);
                 	break;
 		case MONITOR_LOG:
 			visual_monitor_log(entry);
@@ -151,6 +201,16 @@ void monitor_list_initial_draw()
 	}
 	pthread_mutex_unlock(&monitor_list_lock);
 }
+void monitor_list_trigger_partners( struct monitor_item *request )
+{
+	struct monitor_item *entry = monlist_start;
+	while (entry != NULL) {
+		if ( entry->total_partner == request) {
+			entry->totalsum = entry->totalsum + atol(request->data);
+		}
+		entry= entry->next;
+	}
+}
 
 void monitor_list_change_results( char *data )
 {
@@ -158,12 +218,18 @@ void monitor_list_change_results( char *data )
 	struct monitor_item *entry;
 	char *ctx = talloc(NULL, char);
 	char *tmp = NULL;
-	tmp = result_get_element(ctx,0,data);
+	tmp = result_get_monitor_element(ctx,0,data);
 	int id = (int) common_myatoi(tmp);
 	entry = monitor_list_get_by_id(id);
-	tmp = result_get_element(ctx,1,data);
+	tmp = result_get_monitor_element(ctx,1,data);
 	entry->data = strdup(tmp);
 	entry->changed = 1;
+	if (entry->type == MONITOR_WRITE ||
+		entry->type == MONITOR_READ) {
+		entry->sum = entry->sum + atol(entry->data);
+		entry->totalsum = entry->totalsum + atol(entry->data);
+		monitor_list_trigger_partners( entry );
+	}
 	switch(entry->type) {
 /*	case MONITOR_ADD: ;
 		visual_monitor_add(entry);

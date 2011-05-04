@@ -4,13 +4,22 @@
         #include <sqlite3.h>
 #endif
 
+<<<<<<< HEAD
 
+=======
+#include <dbi.h>
+>>>>>>> devel
 
 enum smbta_monitor_object {
         SMBTA_SHARE = 0,
         SMBTA_USER,
         SMBTA_FILE,
+<<<<<<< HEAD
 	SMBTA_DOMAIN
+=======
+	SMBTA_DOMAIN,
+	SMBTA_NONE
+>>>>>>> devel
 };
 
 enum smbta_query_output {
@@ -45,11 +54,24 @@ struct configuration_data {
 
         /* for smbtaquery */
         char *query;
-        sqlite3 *db;
+	/* DBI support */
+	/* host to connect to */
+	char *dbhost;
+	/* name of the database */
+	char *dbname;
+	/* user of the db */
+	char *dbuser;
+	/* driver for DBI */
+	char *dbdriver;
+	/* password of the user */
+	char *dbpassword;
+	/* DBI connection */
+	dbi_conn DBIconn;
+
 	char *query_xmlfile;
 	FILE *xml_handle;
 	enum smbta_query_output query_output;
-
+	sqlite3 *db;
         /* for smbtamonitor */
         /* object type specifies the kind of object we are monitoring */
         enum smbta_monitor_object object_type;

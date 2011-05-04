@@ -583,7 +583,6 @@ Following is a sample configuration file, describing all possible options. For f
 # debug_level = 10
 
 [network]
-
 # The "smbta_port_number" option is used for all real-time
 # programs that are using a direct connection to smbtad,
 # such as smbtamonitor or rrddriver.
@@ -814,7 +813,7 @@ smbtaquery -q 'global, usage rw;' > test.txt
 
 smbtaquery is able to produce different output formats. Currently, *ascii* text output (which is the default setting) and *HTML* is implemented. The output format can be specified with the -o $FORMAT option:
 ---------------------------------------------------------
-smbtaquery -q 'global, usage rw;' -o html > test.html
+smbtaquery -u -q 'global, usage rw;' -o html > test.html
 ---------------------------------------------------------
 The generated file "test.html" can then be loaded into a webbrowser for viewing.
 
@@ -1152,6 +1151,42 @@ image:gfx/webSMBTA/main-screen.png[The main object selector screen of webSMBTA, 
 
 
 
+search
+++++++
+
+Syntax:
+*search [term]*
+
+The search function allows a fuzzy search for [term] over the whole database. It allows
+unix-style wildcards like '*' and '?'. If the function finds data that matches the search string,
+it will identify the object and shows related data. For example, if it finds a user name that
+matches to [term], it will identify it as a user, and additionally prints the domain the user is
+belonging to.
+
+.search function example:
+==========================================
+Fuzzy search for the term 'disk12':
+-----------------------------------
+'global, search *disk12*;'
+-----------------------------------
+===========================================
+
+throughput
+++++++++++
+
+Syntax:
+*throughput [num] [minutes|days|seconds|hours] [r|rw|w]*
+
+The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.
+
+.throughput function example:
+============================================
+Sum up the read-only throughput of the last 50 days on share "Fritzboxtest".
+------------------------------------
+'share Fritzboxtest, throughput 50 days r;'
+============================================
+
+
 smbtamonitor
 ~~~~~~~~~~~~
 
@@ -1162,7 +1197,6 @@ This concept allows for interesting options, such as computing the throughput of
 For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.
 
 Any smbtamonitor instance is bound to an object ( a user, a file, a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.
-
 
 smbtamonitor startup
 ^^^^^^^^^^^^^^^^^^^^

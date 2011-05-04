@@ -1,0 +1,175 @@
+html, body { height:100%; margin: 0; padding: 0; }
+
+html>body {
+        width: 2000px;
+	font-size: 16px; 
+	font-size: 68.75%;
+} /* Reset Base Font Size */
+
+body {
+	font-family: Verdana, helvetica, arial, sans-serif;
+	font-size: 68.75%;
+	background: #fff;
+	color: #333;
+}
+#header
+{
+    width: 100%;
+    height: 90px;
+    background-color: green;
+    font-family: Verdana, Tahoma, sans-serif;
+    font-size: 11px;
+}
+#container{
+    height: 150px;
+}
+
+h1{ font-family: Verdana, Tahoms, sans-serfi;
+    color: white;
+}
+
+#version {
+    display: inline;
+    position:absolute; top:55px; left:200px;
+    color: white;
+}
+#bild {
+    display: inline;
+    position:absolute; top:20px; left:20px;
+}
+#titel {
+    display: inline;
+    position:absolute; top:15px; left:140px;
+    color:black;}
+
+h1, h2 { font-family: 'trebuchet ms', verdana, arial; padding: 10px; margin: 0 }
+h1 { font-size: large }
+th {
+    border: solid 1px;
+    background-color: #DCDCDC;
+}
+#banner { padding: 15px; background-color: #06b; color: white; font-size: large; border-bottom: 1px solid #ccc;
+    background: url(bg.gif) repeat-x; text-align: center }
+#banner a { color: white; }
+
+#main { padding: 1em; }
+
+a img { border: none; }
+
+.flash {
+    text-align: center;
+    padding:    .3em .4em;
+    margin:             0 auto .5em;
+    clear:              both;
+    max-width:  46.923em; 
+}
+
+.flash.error {
+    border: thin solid #8b0000;
+    background: #ffc0cb;
+}
+
+.spinner {
+    display: none;
+    position:absolute;
+    top:0;
+    right:50px;
+}
+.diff {
+    display: none;
+    position:absolute;
+    top:23px;
+    right:52px;
+}
+#spinner_files{
+    display:none;
+    position:absolute;
+    top:0;
+    right:-15px;
+}
+#spinner_functions{
+    bottom:0;
+    right:0;
+}
+#file_diff{
+    position:absolute;
+    display:none;
+    top:23px;
+    right:-15px;
+}
+.function_help{
+    display:none;
+    width: 40%; 
+    right:0; 
+    top:0; 
+    position:absolute;
+}
+#top_help{
+    top:20px;
+}
+.function_dialog{
+    width:500px;
+    height:120px;
+    display: none;
+    position:absolute;
+    top:20px;
+}
+#dialog{
+    border:solid 1px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:500px;
+    height: 150px;
+}
+#help{
+    position:absolute;
+    width:500px;
+    height: 120px;
+    text-align:center;
+    top:50px;
+}
+#usage_and_total, #last_activity{
+    
+}
+#top{
+    display: none;
+    position:absolute;
+    top:5px;
+}
+select {
+    width: 200px;
+    background-color: #DCDCDC;
+}
+select.modelist, select.objectlist{
+    width:auto;
+}
+select#filelist {
+    width: auto;
+}
+input.number{
+    width:50px;
+}
+.close_function{
+    position:absolute;
+    right:0;
+    opacity: 0.5;
+    filter:alpha(opacity=50);
+}
+.refresh_function{
+    position:absolute;
+    right:17px;
+    opacity: 0.5;
+    filter:alpha(opacity=50);
+}
+.defined_function{
+    position:relative;
+    float:left;
+    width:500px;
+    max-height:500px;
+    overflow:auto;
+    border: solid 1px;
+    margin-top:5px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}

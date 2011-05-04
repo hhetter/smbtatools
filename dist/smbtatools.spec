@@ -24,7 +24,7 @@ BuildRequires:  sqlite3-devel libiniparser-devel
 Requires:	sqlite3 ncurses
 License:        GPLv3+
 Group:          Productivity/Networking/Samba
-Version:        1.2.1
+Version:        1.1
 Release:        1
 Summary:        Tools for configuration and query of SMB Traffic Analyzer
 Url:            http://github.com/hhetter/smbtatools

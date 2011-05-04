@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
+    <%= stylesheet_link_tag :all %>
+    <%= javascript_include_tag :defaults %>
+    <%= csrf_meta_tag %>
+    <title>Smbtaquery</title>
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <div id="version"><i>Version 1.2.3</i></div>
+        <div id="logo"><%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index"%></div>
+        <div id="titel"><h1><i>web</i>SMBTA</h1></div>
+        <div id="hp_link" style="margin-left:10px; margin-top:10px;"><%=link_to "Homepage", "http://holger123.wordpress.com/category/smb-traffic-analyzer/"%>&nbsp;&nbsp;
+           <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %></div>
+      </div>
+    </div>
+    <hr/>
+    <% flash.each do |key, value| %>
+      <div class="flash <%= key %>"><%= value %></div>
+    <% end %>
+    <div id="list" style="position:relative; max-width:2000px; height:350px;">
+      <%= yield %>
+    </div>
+  </body>
+</html>

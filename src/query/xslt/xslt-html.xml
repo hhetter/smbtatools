@@ -12,10 +12,10 @@
 	</h2>
 	<table border="1" width="100%" rules="groups">
   	<colgroup>
-    		<col width="10%"/>
-    		<col width="10%"/>
-    		<col width="85%"/>
-		<col width="5%"/>
+    		<col width="65px"/>
+    		<col width="60px"/>
+    		<col width="150px"/>
+		<col width="30px"/>
 		
   	</colgroup>
 

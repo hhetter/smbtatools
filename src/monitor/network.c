@@ -26,16 +26,18 @@ int network_register_monitor( enum monitor_fn func,
 	char *param,
 	char *pattern,char *title, int xpos, int ypos, struct configuration_data *c)
 {
+	int retval = 0;
         char *tosend, *data;
         tosend = talloc_asprintf(NULL,"~~0001%i%04i%s%s",
 		func,(int) strlen(param),param,pattern);
-        char *body = sql_query(NULL,c,tosend);
-	data = result_get_element(NULL,0,body);
-	monitor_list_add( (int) common_myatoi(data ), func, xpos,ypos,title);	
+        char *body = connect_monitor(NULL,c,tosend);
+	data = result_get_monitor_element(NULL,0,body);
+	retval = (int) common_myatoi(data);
+	monitor_list_add( retval, func, xpos,ypos,title);	
 	talloc_free(tosend);
 	talloc_free(data);
 	talloc_free(body);
-        return 1;
+        return retval;
 }
 
 

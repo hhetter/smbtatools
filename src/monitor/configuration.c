@@ -3,7 +3,7 @@
  * real-time monitor for samba traffic analyzer
  *
  * Copyright (C) Michael Haefner, 2010
- *
+ * Copyright (C) Holger Hetterich, 2011
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -37,6 +37,8 @@ void configuration_show_help()
         printf("\n");
         printf("-i      --inet-port <num>       Set the port-number to  \n");
         printf("                                use to <num>.\n");
+        printf("-h      --host <string>         Define the host name to \n");
+        printf("                                connect to.\n");
         printf("-d      --debug-level <num>     Set the debug level to work\n");
         printf("                                with to <num>. Default: 0\n");
         printf("-c      --config-file <file>    Load the configuration from\n");
@@ -68,13 +70,14 @@ void configuration_define_defaults( struct configuration_data *c )
         c->keyfile =NULL;
 	c->unix_socket = 0;
 	c->identify = 1;
+	c->object_type = SMBTA_NONE;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
-        char *f = talloc_asprintf(ctx,"%s/.smbtatools/monitor.config",a);
+        char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
         FILE * fi = fopen(f,"r");
         if (fi != NULL) {
                 fclose(fi);
@@ -91,11 +94,11 @@ int configuration_load_config_file( struct configuration_data *c)
 
         if ( Mydict == NULL ) return -1;
 
-        cc = iniparser_getstring( Mydict, "network:port_number",NULL);
+        cc = iniparser_getstring( Mydict, "network:smbtad_port_number",NULL);
         if (cc != NULL) c->port = (int) common_myatoi(cc);
 	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
 	if (cc != NULL) c->unix_socket = 1;
-        cc = iniparser_getstring( Mydict, "network:host_name",NULL);
+        cc = iniparser_getstring( Mydict, "network:smbtad_host_name",NULL);
         if (cc != NULL) c->host = strdup(cc);
         cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
         if (cc != NULL) {
@@ -214,10 +217,22 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	monitor_list_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
-        network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
-	network_register_monitor(MONITOR_TOTAL,"R",pattern,"Total (Reading)",27,1,c);
-	network_register_monitor(MONITOR_TOTAL,"W",pattern,"Total (Writing)",26 + 27,1,c);
+        // network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
+	int rmon = 0;
+	int wmon = 0;
+	rmon = network_register_monitor(MONITOR_READ,"R",pattern,"Total (Reading)",27,1,c);
+	wmon = network_register_monitor(MONITOR_WRITE,"W",pattern,"Total (Writing)",26 + 27,1,c);
 	network_register_monitor(MONITOR_LOG,"none",pattern,"Activity log",1,7,c);
+
+	/**
+	 * setup the read monitor to partner with the write monitor to
+	 * produce a total sum
+	 */
+	monitor_item_set_total( monitor_list_get_by_id(rmon),
+			1,1,
+			"Total (Read/Write)",
+			monitor_list_get_by_id(wmon));
+
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 	char *title;
@@ -258,6 +273,10 @@ int configuration_check_configuration( struct configuration_data *c )
         }
 	if (c->identify <0 || c->identify > 1) {
 		printf("ERROR: please specify either 1 or 0 for identify.\n");
+		return -1;
+	}
+	if (c->object_type == SMBTA_NONE) {
+		printf("ERROR: please specify an object to monitor.\n");
 		return -1;
 	}
         return 0;

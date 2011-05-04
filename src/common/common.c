@@ -32,23 +32,35 @@ void network_close_connection( int sockfd ) {
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long int z )
+char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long k )
 {
 	char kbstring[20];
 	char *output;
+	long long kb =  (long long ) k;
+	long long int rest = 0;
+	lldiv_t diff;
 	strcpy(kbstring,"Bytes");
-	long double kb = (long double) z;
-	if (kb>=1024) { kb = kb/1024; // kb
-			strcpy(kbstring,"KB");}
-	if (kb>=1024) { kb = kb/1024; // mb
-	                strcpy(kbstring,"MB");}
-	if (kb>=1024) {
-	                kb = kb/1024; // gb
+	if (kb >= 1024) { diff =  lldiv(kb, 1024); // kb
+			strcpy(kbstring,"KB");
+			kb = diff.quot;
+			rest = diff.rem;
+			}
+	if (kb >= 1024) { diff = lldiv(kb+rest, 1024); // mb
+			strcpy(kbstring,"MB");
+			kb = diff.quot;
+			rest = diff.rem;
+		}
+	if (kb >= 1024) {
+	                diff = lldiv(kb+rest,1024); // gb
+			kb = diff.quot;
+			rest = diff.rem;
 	                strcpy(kbstring,"GB");}
-	if (kb>=1024) {
-	                kb = kb/1024; // tb
+	if (kb >= 1024) {
+	                diff = lldiv(kb+rest,1024); // tb
+			kb = diff.quot;
+			rest = diff.rem;
 	                strcpy(kbstring,"TB");}
-	output = talloc_asprintf( ctx,"%4.02LF %s",kb,kbstring);
+	output = talloc_asprintf( ctx,"%lli.%lli %s",kb,rest,kbstring);
 	return output;
 }
 
@@ -305,11 +317,148 @@ long long int common_myatoi( char *num)
 /*
  * Run a complete SQL query
  */
-char *sql_query( TALLOC_CTX *ctx,
+dbi_result sql_query( TALLOC_CTX *ctx,
         struct configuration_data *config,
         char *query )
 {
+	dbi_result res;
         if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
+	res = dbi_conn_query( config->DBIconn, query);
+	if ( res == NULL) return NULL;
+	return res;
+}
+
+
+void interpreter_print_numbered_table( TALLOC_CTX *ctx,
+                int columns,char *data, ... )
+{
+        int col=1;
+        int row=1;
+        int element=0;
+        char *res = " ";
+        char *arg = NULL;
+        va_list ap;
+        int count = columns;
+        va_start( ap, NULL);
+        printf("     ");
+        while (count --) {
+                arg = va_arg( ap, char *);
+                printf("%-30s\t",arg);
+        }
+        va_end( ap );
+        printf("\n");
+        printf(
+        "------------------------------------------------------------------------------\n");
+        printf("%04i|",row);
+        while (res != NULL) {
+                res = result_get_element(ctx,element,data);
+                if (res != NULL) printf("%-30s\t",res);
+                if ( col==columns ) {
+                        row++;
+                        col = 0;
+                        if (result_get_element(ctx,element+1,data) != NULL)
+                                printf("\n%04i|",row);
+                }
+                col++; element++;
+        }
+}
+
+char *result_get_monitor_element( TALLOC_CTX *ctx, int number, char *data )
+ {
+        char bytecount[10];
+        int datcount = 0;
+        int t;
+        int c = 0;
+        int blocksize = 0;
+        char *result = NULL;
+        for (c = 0; c <= number; c++) {
+                for (t = datcount; t<datcount+4 ; t++) {
+                        bytecount[t-datcount]=data[t];
+                }
+                bytecount[4]='\0';
+                blocksize = (int) common_myatoi(bytecount);
+                if (blocksize == 0) {
+			return NULL;
+ 		}
+                if ( c == number) {
+                        result = talloc_array(ctx,char, blocksize +1);
+                        datcount = datcount + 4;
+                        for (t = datcount; t<datcount + blocksize; t++) {
+                                result[t-datcount] = data[t];
+                        }
+                        result[blocksize]='\0';
+                        datcount = datcount + blocksize +1;
+                        break;
+                } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
+        }
+        return result;
+ }
+ 
+
+
+
+/*
+ * Get a single column of the result data from a query-result
+ *
+ * TALLOC_CTX *ctx              the talloc context to work on
+ * int number                   the number of the column to get
+ * const char *data             the result data block
+ */
+char *result_get_element( TALLOC_CTX *ctx, int number, dbi_result data )
+{
+	int fields; long long rr;
+	div_t dv;
+	const char *result;
+	char *bufres;
+	int rows,row,cell;
+	dbi_result_first_row(data);
+	fields = dbi_result_get_numfields(data);
+	if (fields == DBI_FIELD_ERROR) return NULL;
+	rows = dbi_result_get_numrows(data);
+	if (rows == 0) return NULL;
+	
+	// we count from 0 on
+	number++;
+	// row and cell to select
+	dv = div( number-1 , fields );
+	row = dv.quot + 1 ;
+	cell = dv.rem + 1;
+	if ( dbi_result_seek_row(data,row) == 0) {
+		return NULL;
+	}
+	if (dbi_result_get_field_type_idx(
+				data, (unsigned int) cell) ==
+				DBI_TYPE_STRING) {
+					result = dbi_result_get_string_idx(
+						data,
+						(unsigned int) cell);
+					bufres = talloc_strdup( ctx,(const char *) result);
+					return bufres;
+					} else if (dbi_result_get_field_type_idx(
+								data, (unsigned int) cell) ==
+							DBI_TYPE_INTEGER) {
+						rr = dbi_result_get_longlong_idx(
+								data,
+								(unsigned int) cell);
+						bufres = talloc_asprintf(ctx,"%lli",rr);
+						return bufres;
+					} else if (dbi_result_get_field_type_idx(
+								data, (unsigned int) cell) ==
+							DBI_TYPE_DATETIME) {
+						char *rrd = talloc_asprintf(ctx,"1"); 
+						// dbi_result_get_as_string_copy_idx(data, (unsigned int) cell);
+						// wait for new libDBI release to fix this with ^^^
+						return rrd;
+					}
+return NULL;
+}
+
+
+char *connect_monitor( TALLOC_CTX *ctx,
+         struct configuration_data *config,
+         char *query )
+ {
+         if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
         fd_set fd_set_r,fd_set_w,active_fd_set;
         int z=0;
         char *header=NULL;
@@ -321,7 +470,7 @@ char *sql_query( TALLOC_CTX *ctx,
         enum network_send_flags state = UNSENT;
         while (state != DATA_RECEIVED) {
                 /* Initialize the set of active input sockets. */
-                FD_ZERO (&active_fd_set);
+               FD_ZERO (&active_fd_set);
                 FD_SET(config->socket,&active_fd_set);
                 fd_set_r=active_fd_set;
                 fd_set_w=active_fd_set;
@@ -442,82 +591,6 @@ char *sql_query( TALLOC_CTX *ctx,
 }
 
 
-void interpreter_print_numbered_table( TALLOC_CTX *ctx,
-                int columns,char *data, ... )
-{
-        int col=1;
-        int row=1;
-        int element=0;
-        char *res = " ";
-        char *arg = NULL;
-        va_list ap;
-        int count = columns;
-        va_start( ap, NULL);
-        printf("     ");
-        while (count --) {
-                arg = va_arg( ap, char *);
-                printf("%-30s\t",arg);
-        }
-        va_end( ap );
-        printf("\n");
-        printf(
-        "------------------------------------------------------------------------------\n");
-        printf("%04i|",row);
-        while (res != NULL) {
-                res = result_get_element(ctx,element,data);
-                if (res != NULL) printf("%-30s\t",res);
-                if ( col==columns ) {
-                        row++;
-                        col = 0;
-                        if (result_get_element(ctx,element+1,data) != NULL)
-                                printf("\n%04i|",row);
-                }
-                col++; element++;
-        }
-}
-
-
-/*
- * Get a single column of the result data from a query-result
- *
- * TALLOC_CTX *ctx              the talloc context to work on
- * int number                   the number of the column to get
- * const char *data             the result data block
- */
-char *result_get_element( TALLOC_CTX *ctx, int number, const char *data )
-{
-        char bytecount[10];
-        int datcount = 0;
-        int t;
-        int c = 0;
-        int blocksize = 0;
-        char *result = NULL;
-        for (c = 0; c <= number; c++) {
-                for (t = datcount; t<datcount+4 ; t++) {
-                        bytecount[t-datcount]=data[t];
-                }
-                bytecount[4]='\0';
-                blocksize = (int) common_myatoi(bytecount);
-                if (blocksize == 0) {
-			return NULL;
-		}
-                if ( c == number) {
-                        result = talloc_array(ctx,char, blocksize +1);
-                        datcount = datcount + 4;
-                        for (t = datcount; t<datcount + blocksize; t++) {
-                                result[t-datcount] = data[t];
-                        }
-                        result[blocksize]='\0';
-                        datcount = datcount + blocksize +1;
-                        break;
-                } else datcount = datcount + 4 + blocksize ; /* FIXME!!!! */
-        }
-        return result;
-}
-
-
-
-
 int interpreter_get_result_rows( char *data, int columns)
 {
 
@@ -549,6 +622,10 @@ char *non_db_simple_identify( TALLOC_CTX *ctx,
 	int qtype)
 {
 	char *retstr = NULL;
+	if (qtype == 0) {
+		retstr = talloc_asprintf(ctx, "and 1=1 ");
+		return retstr;
+	}
 	switch(Type) {
 	case INT_OBJ_USER:
 		retstr = talloc_asprintf(ctx,
@@ -589,7 +666,6 @@ char *common_identify( TALLOC_CTX *ctx,
         int cols = 0;
 
 	if (config->identify == 0) {
-		printf("Identification is shut down, just generating pattern...\n");
 		retstr = non_db_simple_identify(ctx,Type,data,config,qtype);
 		return retstr;
 	}

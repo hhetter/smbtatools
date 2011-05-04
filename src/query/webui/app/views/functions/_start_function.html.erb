@@ -1,0 +1,7 @@
+<div id="<%=@divname%>" class ="defined_function">
+  <%=image_tag('function-refresh.png', :id=> "refresh_function_" + @divname, :class => "refresh_function",:onmouseover => "highlightRefresh('#{@divname}')", :onmouseout => "resetRefresh('#{@divname}')",  :onclick => "refreshFunction('#{@divname}')")%>
+  <%=image_tag('function-close.png', :id=> "close_function_" + @divname, :class => "close_function",:onmouseover => "highlightClose('#{@divname}')", :onmouseout => "resetClose('#{@divname}')",  :onclick => "closeFunction('#{@divname}')")%>
+  <div id="spinner_function_<%=@divname%>" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <%= @output %>
+  <%=hidden_field_tag "function_"+@divname, @cmd%>
+</div>

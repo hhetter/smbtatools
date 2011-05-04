@@ -88,7 +88,7 @@ void configuration_define_defaults( struct configuration_data *c )
 void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
-        char *f = talloc_asprintf(ctx,"%s/.smbtatools/rrddriver.config",a);
+        char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
         FILE * fi = fopen(f,"r");
         if (fi != NULL) {
                 fclose(fi);
@@ -105,10 +105,10 @@ int configuration_load_config_file( struct configuration_data *c)
 
         if ( Mydict == NULL ) return -1;
 
-        cc = iniparser_getstring( Mydict, "network:port_number",NULL);
+        cc = iniparser_getstring( Mydict, "network:smbta_port_number",NULL);
         if (cc != NULL) c->port = (int) common_myatoi(cc);
 
-        cc = iniparser_getstring( Mydict, "network:host_name",NULL);
+        cc = iniparser_getstring( Mydict, "network:smbta_host_name",NULL);
         if (cc != NULL) c->host = strdup(cc);
         cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
         if (cc != NULL) {

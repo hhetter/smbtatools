@@ -1,0 +1,10 @@
+<div id="domains" style="position:relative; float: left;">
+  <table>
+    <tr><th>Domains</th></tr>
+    <tr><td><%= select_tag "domainlist", options_for_select(@domains, @domain), :selected => nil,  :size => 5, :onclick => "domOnClickChange()" %></td>
+      <td><%=image_tag('arrow.png', :alt => "List shares and users", :title => "List shares and users")%></td></tr>
+  </table>
+  <div id="spinner_domains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <div id="dom_diff" class="diff"><%=image_tag('diff.png')%></div>
+  <div id="spinner_getshares" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+</div>

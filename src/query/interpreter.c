@@ -489,7 +489,11 @@ char *percent(TALLOC_CTX *ctx,
 	unsigned long int length)
 {
 	char *ret;
-	long double percent = total / 100;
+	if (length == 0) {
+		ret = talloc_asprintf(ctx,"0.00");
+		return ret;
+	}
+	long double percent = (long double) total / 100;
 	long double erg = (long double) length / percent;
 	ret = talloc_asprintf(ctx, "%10.2Lf", erg);
 	return ret;
@@ -503,7 +507,7 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 	char *timestamp = NULL;
 	char *query = NULL;
 	char *qdat = NULL;
-	unsigned long int thrput = 0;
+	unsigned long long thrput = 0;
 	if (command_data->argument_count != 3) {
 		printf("ERROR: The throughput function expects 3 arguments.\n");
 		exit(1);
@@ -532,7 +536,8 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 			"select sum(length) from write where timestamp > '%s' and %s;",
 			timestamp,obj_struct->sql);
 		qdat = sql_query(ctx,config,query);
-		thrput = atol( result_get_element(ctx,0,qdat));
+		thrput = strtoull(result_get_element(ctx,0,qdat),
+				NULL,0);
 		talloc_free(query);
 		query = talloc_asprintf(ctx,
 			"select sum(length) from read where timestamp > '%s' and %s;",
@@ -542,8 +547,8 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 		exit(1);
 	}
 	qdat = sql_query(ctx,config,query);
-	// we me add in case of rw.
-	thrput = thrput + atol( result_get_element(ctx,0,qdat));
+	// we add in case of rw.
+	thrput = thrput + strtoull(result_get_element(ctx,0,qdat),NULL,0);
 
 	// very short xml, do this inline
 	if (config->xml_handle != NULL) {
@@ -571,7 +576,12 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	char *qdat;
 	char *xmlstr, *xmlstr2  = NULL;
 	int hour;
-       	unsigned long int total,bytes;
+       	unsigned long long total,bytes;
+
+	interpreter_xml_begin_function(config, "usage");
+	xmlstr = talloc_asprintf(ctx, "24 hours average usage %s",
+		obj_struct->output_term);
+
 
 	interpreter_xml_begin_function(config, "usage");
 	xmlstr = talloc_asprintf(ctx, "24 hours average usage %s",
@@ -585,7 +595,7 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 				"select sum(length) from read where %s;",
                                 obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
-                        total = atol(result_get_element(ctx,0,qtotal));
+                        total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else if (strcmp(command_data->arguments[0],"w")==0) {
 			xmlstr2 = talloc_asprintf(ctx,"%s by write access.",
 				xmlstr);
@@ -593,7 +603,7 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
                                 "select sum(length) from write where %s;",
                                 obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
-                        total = atol(result_get_element(ctx,0,qtotal));
+                        total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else if (strcmp(command_data->arguments[0],"rw")==0) {
 			xmlstr2 = talloc_asprintf(ctx,"%s by read-write access.",
 				xmlstr);
@@ -601,12 +611,12 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
                                 "select sum(length) from read where %s;",
                                 obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
-                        total = atol(result_get_element(ctx,0,qtotal));
+                        total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
                         query2 = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s;",
                                 obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
-                        total = total + atol(result_get_element(ctx,0,qtotal));
+                        total = total + strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else {
 		printf("ERROR: unable to find the total value.\n");
 		exit(1);
@@ -615,34 +625,30 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 		if (strcmp(command_data->arguments[0],"r")==0) {
 			query = talloc_asprintf(ctx,
 				"select sum(length) from read where %s"
-				" and time(timestamp) > time('%02i:00') and"
-				" time(timestamp) < time('%02i:00');",
-				obj_struct->sql,hour,hour+1);
+				" and extract(hour from \"timestamp\") = %i",
+				obj_struct->sql,hour);
 			qdat = sql_query(ctx,config,query);
-			bytes = atol(result_get_element(ctx,0,qdat));
+			bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
 		} else if (strcmp(command_data->arguments[0],"w")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s"
-                                " and time(timestamp) > time('%02i:00') and"
-                                " time(timestamp) < time('%02i:00');",
-                                obj_struct->sql,hour,hour+1);
+                                " and extract(hour from \"timestamp\") = %i",
+                                obj_struct->sql,hour);
                         qdat = sql_query(ctx,config,query);
-                        bytes = atol(result_get_element(ctx,0,qdat));
+                        bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
 		} else if (strcmp(command_data->arguments[0],"rw")==0) {
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from read where %s"
-                                " and time(timestamp) > time('%02i:00') and"
-                                " time(timestamp) < time('%02i:00');",
-                                obj_struct->sql,hour,hour+1);
+                                " and extract(hour from \"timestamp\") = %i",
+                                obj_struct->sql,hour);
                         qdat = sql_query(ctx,config,query);
-                        bytes = atol(result_get_element(ctx,0,qdat));
+                        bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
                         query = talloc_asprintf(ctx,
                                 "select sum(length) from write where %s"
-                                " and time(timestamp) > time('%02i:00') and"
-                                " time(timestamp) < time('%02i:00');",
-                                obj_struct->sql,hour,hour+1);
+                                " and extract(hour from \"timestamp\") = %i",
+                                obj_struct->sql,hour);
                         qdat = sql_query(ctx,config,query);
-                        bytes = bytes + atol(result_get_element(ctx,0,qdat));
+                        bytes = bytes + strtoull(result_get_element(ctx,0,qdat),NULL,0);
 
 		} else {
 			printf("ERROR: usage expects r,w, or rw.\n");
@@ -953,7 +959,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		struct configuration_data *config)
 {
 	char *query = NULL;
-	char *qdat = NULL;
+	dbi_result qdat;
 	char *xmldata = NULL;
 	const char *str = NULL;
 	const char *str2 = NULL;
@@ -981,7 +987,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
 				"select %s from "
-				"write where %s GLOB '%s' and %s;",
+				"write where %s LIKE '%s' and %s;",
 				 rules[t],
 				 rows[t], command_data->arguments[0], obj_struct->sql);
 			qdat = sql_query(ctx,config,query);
@@ -1067,8 +1073,22 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	char *qdat = NULL;
 	char *qdat2 = NULL;
 	char *xmldata = NULL;
-	if (command_data->argument_count != 3) {
-		printf("ERROR: the top function expects 3 arguments.\n");
+	char *order = NULL;
+	if (command_data->argument_count > 4) {
+		printf("ERROR: the top function expects 4 arguments.\n");
+		exit(1);
+	}
+	if (command_data->argument_count ==3) {
+		/**
+		 * desc or asc is not given, so we
+		 * default to desc
+		 */
+		order = talloc_strdup(ctx,"desc");
+	} else if ( strcmp(command_data->arguments[3],"desc") == 0 ||
+		strcmp(command_data->arguments[3],"asc") ==0) {
+			order = talloc_strdup(ctx,command_data->arguments[3]);
+	} else {
+		printf("ERROR: the 3rd argument to top is either desc or asc.\n");
 		exit(1);
 	}
 	int limit = (int) common_myatoi(command_data->arguments[0]);
@@ -1076,35 +1096,35 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		printf("ERROR: top command syntax error.\n");
 		exit(1);
 	}
-	unsigned long int length[limit + 1];
+	unsigned long long length[limit + 1];
 	if (strcmp(command_data->arguments[1],"users")==0) {
 		if (strcmp(command_data->arguments[2],"r")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain from read"
-				" where %s order by SUM(length) desc"
+				"select distinct username, domain,sum(length) over (Partition by username) from read"
+				" where %s order by sum(length) over (Partition by username) %s"
 				" limit %i;",
-				obj_struct->sql,limit);
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by write access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain from write "
-				"where %s order by sum(length) desc "
+				"select distinct username, domain, sum(length) over (Partition by username) from write "
+				"where %s order by sum(length) over (Partition by username)  %s "
 				"limit %i;",
-				obj_struct->sql,limit);
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain from "
+				"select distinct username, domain,sum(length) over (Partition by username)  from "
 				"( select * from read UNION select * "
-				"from write) where %s order by "
-				"SUM(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"from write) as subrequest where %s order by "
+				"sum(length) over (Partition by username) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"shares")==0) {
@@ -1112,26 +1132,26 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain from read where"
-				" %s order by sum(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct share, domain,sum(length) over (Partition by share) from read where"
+				" %s order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain from write where"
-				" %s order by sum(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct share, domain, sum(length) over (Partition by share) from write where"
+				" %s order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain from ( select * from"
-				" read UNION select * from write) where %s"
-				" order by SUM(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct share, domain, sum(length) over (Partition by share) from ( select * from"
+				" read UNION select * from write) as subrequest where %s"
+				" order by sum(length) over (Partition by share) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"files")==0) {
@@ -1139,27 +1159,54 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain from read where"
-				" %s order by sum(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct filename, share, domain, sum(length) over (Partition by filename) from read where"
+				" %s order by sum(length) over (Partition by filename) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain from write where"
-				" %s order by sum(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct filename, share, domain, sum(length) over (Partition by filename) from write where"
+				" %s order by sum(length) over (Partition by filename)  %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain from ( select *"
-				" from read UNION select * from write) where"
-				" %s order by sum(length) desc limit %i;",
-				obj_struct->sql,limit);
+				"select distinct filename, share, domain, sum(length) over (Partition by filename)  from ( select *"
+				" from read UNION select * from write) as subrequest where"
+				" %s order by sum(length) over (Partition by filename) %s limit %i;",
+				obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
+		}
+	} else if (strcmp(command_data->arguments[1],"domains")==0) {
+		if (strcmp(command_data->arguments[2],"r")==0) {
+			xmldata=talloc_asprintf(ctx,"Top %i domains %s by read access.",
+				limit,obj_struct->output_term);
+			query1 = talloc_asprintf(ctx,
+				"select distinct domain, sum(length) over (Partition by domain) from read where"
+				" %s order by sum(length) over (Partition by domain) %s limit %i;",
+				obj_struct->sql,order,limit);
+			qdat = sql_query(ctx,config,query1);
+		} else if (strcmp(command_data->arguments[2],"w")==0) {
+			xmldata = talloc_asprintf(ctx,"Top %i domains %s by write access.",
+				limit,obj_struct->output_term);
+			query1= talloc_asprintf(ctx,
+				"select distinct domain, sum(length) over (Partition by domain)  from write where"
+				" %s order by sum(length) over (Partition by domain) %s limit %i;",
+				obj_struct->sql,order,limit);
+			qdat = sql_query(ctx,config,query1);
+		} else if (strcmp(command_data->arguments[2],"rw")==0) {
+			xmldata = talloc_asprintf(ctx,"Top %i domains %s by read-write access.",
+				limit,obj_struct->output_term);
+			query1=talloc_asprintf(ctx,
+				"select distinct domain, sum(length) over (Partition by domain)  from ( select *"
+				"from read UNION selec t* from write ) as subrequest where"
+				" %s order by sum(length) over (Partition by domain)  %s limit %i;",
+				obj_struct->sql,order,limit);
+			qdat=sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"domains")==0) {
 		if (strcmp(command_data->arguments[2],"r")==0) {
@@ -1201,121 +1248,121 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from read where"
-					" username=\"%s\" and %s;",
+					" username='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where "
-					"username=\"%s\" and %s;",
+					"username='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from ( select * from "
-					"read UNION select * from write) where "
-					"username=\"%s\" and %s;",
+					"read UNION select * from write) as subrequest  where "
+					"username='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			}
 		} else if (strcmp(command_data->arguments[1],"domains")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from read where"
-					" domain=\"%s\" and %s;",
+					" domain='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l++;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l +2;
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
-					" domain=\"%s\" and %s;",
+					" domain='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l++;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l +2;
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from ( select * from "
-					"read UNION select * from write) where "
-					"domain=\"%s\" and %s;",
+					"read UNION select * from write) as subrequest where "
+					"domain='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l++;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 2;
 			}
 		} else if (strcmp(command_data->arguments[1],"shares")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from read"
-					" where share=\"%s\" and %s;",
+					" where share='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
-					" share=\"%s\" and %s;",
+					" share='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from (select * from "
-					"read UNION select * from write) where "
-					"share=\"%s\" and %s;",
+					"read UNION select * from write) as subrequest where "
+					"share='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 2;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 3;
 			}
 		} else if (strcmp(command_data->arguments[1],"files")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from read where"
-					" filename=\"%s\" and %s;",
+					" filename='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 3;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 4;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from write where"
-					" filename=\"%s\" and %s;",
+					" filename='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 3;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 4;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
 					"select sum(length) from (select * from"
-					" read UNION select * from write) where "
-					"filename=\"%s\" and %s;",
+					" read UNION select * from write) as subrequest where "
+					"filename='%s' and %s;",
 					el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
-				length[i]=atol(result_get_element(ctx,0,qdat2));
-				l = l + 3;
+				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
+				l = l + 4;
 			}
 		}
 		i++;
@@ -1349,9 +1396,9 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		}
 		if (el == NULL) break;
 		interpreter_xml_toprow(config,num, outstr,common_make_human_readable(ctx,length[l]));
-		if (strcmp(command_data->arguments[1],"files")==0) i = i + 3;
-		else if (strcmp(command_data->arguments[1],"shares")==0) i = i + 2;
-		else if (strcmp(command_data->arguments[1],"users")==0) i= i + 2;
+		if (strcmp(command_data->arguments[1],"files")==0) i = i + 4;
+		else if (strcmp(command_data->arguments[1],"shares")==0) i = i + 3;
+		else if (strcmp(command_data->arguments[1],"users")==0) i= i + 3;
 		else i++;
 		l++;
 	}
@@ -1439,8 +1486,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct configuration_data *config)
 {
 	char *query1, *query2, *xmldata = NULL;
-	char *qdat;
-	unsigned long int sum;
+	dbi_result qdat;
+	unsigned long long sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
@@ -1457,9 +1504,13 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 
 		qdat = sql_query(ctx, config,query1);
-		sum = atol( result_get_element(ctx,0,qdat));
+		sum = strtoull( result_get_element(ctx,0,qdat),
+				NULL, 0);
+		const char *errf;
+		dbi_conn_error(config->DBIconn, &errf);
 		qdat = sql_query(ctx, config, query2);
-		sum = sum + atol( result_get_element(ctx,0,qdat));
+		sum = sum + strtoull(result_get_element(ctx,0,qdat),
+				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes transfered %s.",
 			obj_struct->output_term);
@@ -1473,7 +1524,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		
-		sum = atol( result_get_element(ctx,0,qdat));
+		sum = strtoull(result_get_element(ctx,0,qdat),
+				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes read %s.",
 			obj_struct->output_term);
@@ -1486,7 +1538,8 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(length) from write where %s;",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
-		sum = atol( result_get_element(ctx,0,qdat));
+		sum = strtoull(result_get_element(ctx,0,qdat),
+				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes written %s.",
 			obj_struct->output_term);
@@ -1893,18 +1946,18 @@ void interpreter_command_help()
 		"				domain DOMAIN\n");
 	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
-	printf("total 	[rw][r][w]		Get the total read(r),\n"
+	printf("total 	[r][w][rw]		Get the total read(r),\n"
 		"				write(w)\n");
 	printf("				or read-write values of\n"
 		"				the object.\n");
-	printf("list 	[shares][users]\n");
-	printf("     	[files]			Lists all shares, all\n"
+	printf("list 	[domains][shares]\n");
+	printf("     	[users][files]		Lists all shares, all\n"
 		"				users, all files on an\n");
 	printf("				object.\n");
 	printf("top 	[num] [shares]\n");
-	printf("    	[users] [rw][r][w]	List the top NUM shares,\n"
-		"				users or files on the\n");
-	printf("				object.\n");
+	printf( "    	[users][files]	 	List the top NUM shares,\n"
+		"	[r][w][rw]		users or files on the\n");
+	printf( "	[desc] [asc]		object.\n");
         printf("last_activity [num]\n");
         printf("            			List the last NUM \n"
 		"				activities from the \n");

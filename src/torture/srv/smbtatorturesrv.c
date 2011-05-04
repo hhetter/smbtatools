@@ -31,10 +31,7 @@
 #include <syslog.h>
 #include <sys/select.h>
 #include <dlfcn.h>
-
-
-
-#define SMBTATORTURESRV_VERSION "1.2.2"
+#include "../../../include/version.h"
 
 struct configuration {
 	int port;
@@ -425,6 +422,7 @@ int main(int argc, char *argv[])
 		case 'V':
 			printf("smbtatorturesrv %s\n",SMBTATORTURESRV_VERSION);
 			printf("(C) 2011 Holger Hetterich\n");
+			exit(0);
 			break;
 		case 'v':
 			config.verbose = 1;

@@ -2,7 +2,7 @@
 #
 #
 #
-
+#
 
 # Check the minimum required cmake version for this project
 cmake_minimum_required(VERSION 2.6)
@@ -18,6 +18,21 @@ SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #
+<<<<<<< HEAD
+=======
+# check for libdbi
+#
+include(FindLibDBI.cmake)
+FIND_PACKAGE(LibDBI)
+if (NOT LIBDBI_INCLUDE_DIR)
+	        MESSAGE( FATAL_ERROR "ERROR: you will need the libdbi development files installed.")
+	ENDIF()
+	if (LIBDBI_INCLUDE_DIR)
+		        INCLUDE_DIRECTORIES(${LIBDBI_INCLUDE_DIR})
+		ENDIF()
+
+#
+>>>>>>> devel
 # check for sqlite3
 #
 include(FindSqlite.cmake)
@@ -102,9 +117,10 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/configuration.c
 	src/query/interpreter.c
 	src/query/network.c
+	src/query/convert.c
 	)
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}
@@ -118,7 +134,7 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/visual.c
 	src/monitor/backlog.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 SET(CurrentExe "smbtatorture")
 ADD_EXECUTABLE(${CurrentExe}
@@ -126,13 +142,11 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
 
-
 SET(CurrentExe "smbtatorturesrv")
 ADD_EXECUTABLE(${CurrentExe}
 	src/torture/srv/smbtatorturesrv.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe})
-
 
 SET(CurrentExe "rrddriver")
 ADD_EXECUTABLE(${CurrentExe}
@@ -144,7 +158,8 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/webmon/rrddriver/network.c
 	src/webmon/rrddriver/monitor-list.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
