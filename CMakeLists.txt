@@ -18,8 +18,6 @@ SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #
-<<<<<<< HEAD
-=======
 # check for libdbi
 #
 include(FindLibDBI.cmake)
@@ -32,7 +30,6 @@ if (NOT LIBDBI_INCLUDE_DIR)
 		ENDIF()
 
 #
->>>>>>> devel
 # check for sqlite3
 #
 include(FindSqlite.cmake)
