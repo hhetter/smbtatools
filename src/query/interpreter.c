@@ -583,11 +583,6 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 		obj_struct->output_term);
 
 
-	interpreter_xml_begin_function(config, "usage");
-	xmlstr = talloc_asprintf(ctx, "24 hours average usage %s",
-		obj_struct->output_term);
-
-
 	if (strcmp(command_data->arguments[0],"r")==0) {
 			xmlstr2 = talloc_asprintf(ctx,"%s by read access.",
 				xmlstr);
