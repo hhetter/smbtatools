@@ -289,15 +289,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "dbhost",1,NULL,'H'},
 			{ "dbpassword",1,NULL,'P'},
 			{ "convert",0,NULL,'C'},
+			{ "version",0,NULL,'v'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"CM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
+			"vCM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
 		switch (i) {
+			case 'v':
+				printf("%s\n",SMBTAQUERY_VERSION);
+				exit(0);
 			case 'C':
 				smbta_convert();
 				exit(0);
