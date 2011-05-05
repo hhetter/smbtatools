@@ -294,6 +294,7 @@ function start_function(){
             search: $("input#search").attr('value'),
             object:  $("#objectlist_" + func + " option:selected").val(),
             mode:   $("#modelist_" + func + " option:selected").val(),
+            sort:      $("#sortlist_" + func + " option:selected").val(),
             number:$("#number_" + func).val(),
             timemode: $("select#timelist option:selected").val(),
             func:     $("select#global_function option:selected").val()
