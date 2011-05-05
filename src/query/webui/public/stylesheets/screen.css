@@ -140,7 +140,7 @@ select {
     width: 200px;
     background-color: #DCDCDC;
 }
-select.modelist, select.objectlist{
+select.modelist, select.objectlist, select.sortlist{
     width:auto;
 }
 select#filelist {

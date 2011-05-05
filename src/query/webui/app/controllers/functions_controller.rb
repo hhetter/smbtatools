@@ -87,6 +87,12 @@ class FunctionsController < ApplicationController
     @object = params[:object]
     @number = params[:number]
     @timemode = params[:timemode]
+    if params[:sort] == "descending"
+      @sort = "desc"
+    end
+    if params[:sort] == "ascending"
+      @sort = "asc"
+    end
     @cmd += @function
     if @function == "total" || @function == "usage"
       @cmd += " " + @mode + ";'"
@@ -95,7 +101,7 @@ class FunctionsController < ApplicationController
       @cmd += " " + @object + ";'"
     end
     if @function == "top"
-      @cmd += " " + @number + " " + @object + " " + @mode +  ";'"
+      @cmd += " " + @number + " " + @object + " " + @mode +  " " + @sort + ";'"
     end
     if @function == "last_activity"
       @cmd += " " + @number + ";'"
@@ -122,6 +128,7 @@ class FunctionsController < ApplicationController
     @divname << @mode
     @divname << @object
     @divname << @number
+    @divname << @sort
     @divname = @divname.to_s
     @divname = Digest::MD5.hexdigest(@divname)
   end
