@@ -165,6 +165,7 @@ input.number{
     position:relative;
     float:left;
     width:500px;
+    min-height: 20px;
     max-height:500px;
     overflow:auto;
     border: solid 1px;

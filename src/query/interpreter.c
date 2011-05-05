@@ -1069,10 +1069,11 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	char *qdat2 = NULL;
 	char *xmldata = NULL;
 	char *order = NULL;
-	if (command_data->argument_count > 4) {
+	if (command_data->argument_count > 4 || command_data->argument_count <= 2) {
 		printf("ERROR: the top function expects 4 arguments.\n");
 		exit(1);
 	}
+
 	if (command_data->argument_count ==3) {
 		/**
 		 * desc or asc is not given, so we
