@@ -138,64 +138,6 @@ If you want to install the package to a different prefix, you use:
 make DESTDIR=/$YOUR/$DESTINATION install
 ------------------------------------------
 
-A short HOWTO
--------------
-
-The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".
-
-TIP: For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( http://xmlsoft.org/XSLT/ ).
-
-Setting up the Samba Server
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Suppose you have this share defined on the server:
-------------------------------------------
-[ExampleShare]
-        path = /space
-        read only = no
-------------------------------------------
-
-then add the following lines to your share definition:
-
---------------------------------------------------------
-	vfs objects = smb_traffic_analyzer
-	smb_traffic_analyzer:protocol_version = V2
-	smb_traffic_analyzer:mode = unix_domain_socket
---------------------------------------------------------
-
-Starting smbtad
-~~~~~~~~~~~~~~~
-
-As superuser, start smbtad on the same machine:
-
----------------------------------------------
-$ smbtad -u -n
----------------------------------------------
-
-This command will start smbtad with unix domain socket configuration.
-
-Produce some traffic
-~~~~~~~~~~~~~~~~~~~~
-
-For a test, fire up smbclient and produce some traffic:
-------------------------------------------------
-$ smbclient //localhost/ExampleShare
-------------------------------------------------
-
-Make sure you copy something from and back to the share.
-
-Run smbtaquery
-~~~~~~~~~~~~~~
-
-Now run smbtaquery on the same machine with a query for the totally transfered bytes:
----------------------------------------------
-$ smbtaquery -u -q 'global, total rw;'
----------------------------------------------
-
-This will run smbtaquery set up for a unix domain socket for communication and request the number of globally written and read bytes. If this command returns a number, your installation works, and you can start to adapt or change it to your needs. The next chapter will go in detail of the available options in setting up SMBTA.
-
-If something does not work, check your syslog messages file for error messages from smbtad, and your samba logs.
-
 Setting up SMBTA
 ----------------
 
@@ -1153,6 +1095,9 @@ Running function on selected objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you have succesfully chosen an object with the object selector, you can run one of smbtaqueries functions on it.
+Supported are all functions that *SMBTAquery* does support, as described in the smbtaquery chapter.
+
+
 
 smbtamonitor
 ~~~~~~~~~~~~
