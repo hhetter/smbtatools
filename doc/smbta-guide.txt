@@ -1050,7 +1050,7 @@ Syntax:
 *search [term]*
 
 The search function allows a fuzzy search for [term] over the whole database. It allows
-unix-style wildcards like '*' and '?'. If the function finds data that matches the search string,
+SQL-style wildcards like '%*'. If the function finds data that matches the search string,
 it will identify the object and shows related data. For example, if it finds a user name that
 matches to [term], it will identify it as a user, and additionally prints the domain the user is
 belonging to.
@@ -1059,7 +1059,7 @@ belonging to.
 ====================================================
 Fuzzy search for the term disk12:
 -------------------------------------
-'global, search *disk12*;'
+'global, search %disk12%;'
 -------------------------------------
 =====================================================
 
@@ -1149,43 +1149,10 @@ Fourth data view, "files"
 If you have chosen a user or a share, or both, *webSMBTA* will automatically do a query on the database for the list of files that have been touched by the object that has been chosen so far. Clicking on one of the files in that selection, will make *webSMBTA* process all operations over this specific file.
 image:gfx/webSMBTA/main-screen.png[The main object selector screen of webSMBTA, including the file selection]
 
+Running function on selected objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-search
-++++++
-
-Syntax:
-*search [term]*
-
-The search function allows a fuzzy search for [term] over the whole database. It allows
-unix-style wildcards like '*' and '?'. If the function finds data that matches the search string,
-it will identify the object and shows related data. For example, if it finds a user name that
-matches to [term], it will identify it as a user, and additionally prints the domain the user is
-belonging to.
-
-.search function example:
-==========================================
-Fuzzy search for the term 'disk12':
------------------------------------
-'global, search *disk12*;'
------------------------------------
-===========================================
-
-throughput
-++++++++++
-
-Syntax:
-*throughput [num] [minutes|days|seconds|hours] [r|rw|w]*
-
-The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.
-
-.throughput function example:
-============================================
-Sum up the read-only throughput of the last 50 days on share "Fritzboxtest".
-------------------------------------
-'share Fritzboxtest, throughput 50 days r;'
-============================================
-
+If you have succesfully chosen an object with the object selector, you can run one of smbtaqueries functions on it.
 
 smbtamonitor
 ~~~~~~~~~~~~
