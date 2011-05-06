@@ -135,7 +135,7 @@ a img { border: none; }
 #top{
     display: none;
     position:absolute;
-    top:5px;
+    top:0;
 }
 select {
     width: 200px;
