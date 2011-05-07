@@ -141,6 +141,31 @@ make DESTDIR=/$YOUR/$DESTINATION install
 Setting up SMBTA
 ----------------
 
+About the database
+~~~~~~~~~~~~~~~~~~
+
+To run SMBTA, you'll need to setup a database. Current valid databases are:
+
+- *MySQL*, untested by the SMBTA development team, but supported by libDBI. Feedback is highly welcome!
+
+- *Postgresql*, tested succesfully by the SMBTA development team.
+
+- *sqlite3*, untested by the SMBTA development team, but supported by libDBI. Feedback is highly welcome!
+
+Furthermore, SMBTA will need the following information to access the database:
+
+- A name of a user that has access to the database
+
+- The users password
+
+- The hostname or IP adress of the system that is running the database
+
+- The name of the database to access.
+
+SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
+The smbtad component can then prepare an empty database on an initial run by using "smbtad -T", creating all required tables. See the chapter on smbtad for more about this.
+
+
 Activating the VFS module on Samba Servers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -173,7 +198,7 @@ VFS module, SMBTA logging for this service can be activated:
 
 IMPORTANT: By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
-use protocol version 2.
+use protocol version 2. *This documentation is only refering to protocol version 2.*
 
 The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect

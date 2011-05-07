@@ -651,58 +651,53 @@ make install</tt></pre>
 <pre><tt>make DESTDIR=/$YOUR/$DESTINATION install</tt></pre>
 </div></div>
 </div>
-<h2 id="_a_short_howto">3. A short HOWTO</h2>
+<h2 id="_setting_up_smbta">3. Setting up SMBTA</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The purpose of this section is to do an example installation of SMBTA step-by-step. It is meant to be the simplest setup with which SMBTA can be run, on which you can build on and adapt to your scenario. All options of the setup process and more detailed information on features are described in the next chapter, "Setting up SMBTA".</p></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Tip</div>
-</td>
-<td class="content">For this HOWTO to work, you will need to have the xsltproc XSLT processor installed, it is part of the libxslt package. ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</td>
-</tr></table>
-</div>
-<h3 id="_setting_up_the_samba_server">3.1. Setting up the Samba Server</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Suppose you have this share defined on the server:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>[ExampleShare]
-        path = /space
-        read only = no</tt></pre>
-</div></div>
-<div class="paragraph"><p>then add the following lines to your share definition:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>        vfs objects = smb_traffic_analyzer
-        smb_traffic_analyzer:protocol_version = V2
-        smb_traffic_analyzer:mode = unix_domain_socket</tt></pre>
-</div></div>
-<h3 id="_starting_smbtad">3.2. Starting smbtad</h3><div style="clear:left"></div>
-<div class="paragraph"><p>As superuser, start smbtad on the same machine:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ smbtad -u -n</tt></pre>
-</div></div>
-<div class="paragraph"><p>This command will start smbtad with unix domain socket configuration.</p></div>
-<h3 id="_produce_some_traffic">3.3. Produce some traffic</h3><div style="clear:left"></div>
-<div class="paragraph"><p>For a test, fire up smbclient and produce some traffic:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ smbclient //localhost/ExampleShare</tt></pre>
-</div></div>
-<div class="paragraph"><p>Make sure you copy something from and back to the share.</p></div>
-<h3 id="_run_smbtaquery">3.4. Run smbtaquery</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Now run smbtaquery on the same machine with a query for the totally transfered bytes:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ smbtaquery -u -q 'global, total rw;'</tt></pre>
-</div></div>
-<div class="paragraph"><p>This will run smbtaquery set up for a unix domain socket for communication and request the number of globally written and read bytes. If this command returns a number, your installation works, and you can start to adapt or change it to your needs. The next chapter will go in detail of the available options in setting up SMBTA.</p></div>
-<div class="paragraph"><p>If something does not work, check your syslog messages file for error messages from smbtad, and your samba logs.</p></div>
-</div>
-<h2 id="_setting_up_smbta">4. Setting up SMBTA</h2>
-<div class="sectionbody">
-<h3 id="_activating_the_vfs_module_on_samba_servers">4.1. Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
+<h3 id="_about_the_database">3.1. About the database</h3><div style="clear:left"></div>
+<div class="paragraph"><p>To run SMBTA, you&#8217;ll need to setup a database. Current valid databases are:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>MySQL</strong>, untested by the SMBTA development team, but supported by libDBI. Feedback is highly welcome!
+</p>
+</li>
+<li>
+<p>
+<strong>Postgresql</strong>, tested succesfully by the SMBTA development team.
+</p>
+</li>
+<li>
+<p>
+<strong>sqlite3</strong>, untested by the SMBTA development team, but supported by libDBI. Feedback is highly welcome!
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Furthermore, SMBTA will need the following information to access the database:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+A name of a user that has access to the database
+</p>
+</li>
+<li>
+<p>
+The users password
+</p>
+</li>
+<li>
+<p>
+The hostname or IP adress of the system that is running the database
+</p>
+</li>
+<li>
+<p>
+The name of the database to access.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
+The smbtad component can then prepare an empty database on an initial run by using "smbtad -T", creating all required tables. See the chapter on smbtad for more about this.</p></div>
+<h3 id="_activating_the_vfs_module_on_samba_servers">3.2. Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
 <div class="paragraph"><p>In general, the Samba CIFS server is configured via smb.conf, it&#8217;s main
 configuration file. A typical service definition would look like this:</p></div>
 <div class="listingblock">
@@ -713,7 +708,7 @@ configuration file. A typical service definition would look like this:</p></div>
 </div></div>
 <div class="paragraph"><p>Defining the share "ExampleShare" as a CIFS service, refering to the
 path /space on the servers storage.</p></div>
-<h4 id="_internet_socket">4.1.1. Internet socket</h4>
+<h4 id="_internet_socket">3.2.1. Internet socket</h4>
 <div class="paragraph"><p>By extending the share definition with the commands to load the SMBTA
 VFS module, SMBTA logging for this service can be activated:</p></div>
 <div class="listingblock">
@@ -733,13 +728,13 @@ VFS module, SMBTA logging for this service can be activated:</p></div>
 </td>
 <td class="content">By default, SMBTA will use protocol version 1, to not break any existing
 installations. Only if the version parameter is given, it will be forced to
-use protocol version 2.</td>
+use protocol version 2. <strong>This documentation is only refering to protocol version 2.</strong></td>
 </tr></table>
 </div>
 <div class="paragraph"><p>The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.</p></div>
-<h4 id="_unix_domain_socket">4.1.2. Unix domain socket</h4>
+<h4 id="_unix_domain_socket">3.2.2. Unix domain socket</h4>
 <div class="paragraph"><p>The module can also run using a unix domain socket, which is useful if you
 want to connect smbtad on the same system as the Samba server. In this case
 The share definition would look like this:</p></div>
@@ -754,7 +749,7 @@ The share definition would look like this:</p></div>
 </div></div>
 <div class="paragraph"><p>The mode parameter set to "unix_domain_socket" then will use a unix domain
 socket at /var/tmp/stadsocket.</p></div>
-<h4 id="_anonymization">4.1.3. Anonymization</h4>
+<h4 id="_anonymization">3.2.3. Anonymization</h4>
 <div class="paragraph"><p>Anonymization of user related information can be enabled in the VFS module. There are two modes of anonymization possible.</p></div>
 <div class="paragraph"><p>The first method is created by generating a hash number out of the username, and add the number to a given prefix in the configuration. Such, a user called "holger" might become "user123", if "user" was the given prefix.</p></div>
 <div class="listingblock">
@@ -781,7 +776,7 @@ socket at /var/tmp/stadsocket.</p></div>
         smb_traffic_analyzer:anonymize_prefix = user
         smb_traffic_analyzer:total_anonymization = yes</tt></pre>
 </div></div>
-<h3 id="_setting_up_smbtad">4.2. Setting up smbtad</h3><div style="clear:left"></div>
+<h3 id="_setting_up_smbtad">3.3. Setting up smbtad</h3><div style="clear:left"></div>
 <div class="paragraph"><p>On the target host of the module, the program smbtad is running. It&#8217;s task
 is mainly to feed a SQL storage out of the data it receives from the module,
 maintain the storage and accept requests from clients.</p></div>
@@ -792,7 +787,7 @@ maintain the storage and accept requests from clients.</p></div>
 <div class="paragraph"><p>smbtad is a daemon program that can be run by any user. By default, it creates a directory $HOME/.smbtad/ where it stores it&#8217;s database. The above call makes smbtad to listen to the VFS modules connections on port 3490, and listen to client connections on port 3491.</p></div>
 <div class="paragraph"><p>By default, smbtad creates a database as $HOME/.smbtad/staddb. If the database
 already exists, it will use the existing database.</p></div>
-<h4 id="_the_command_line_options_of_smbtad">4.2.1. The command line options of smbtad</h4>
+<h4 id="_the_command_line_options_of_smbtad">3.3.1. The command line options of smbtad</h4>
 <div class="paragraph"><p>Any option you give that smbtad doesn&#8217;t understand will lead to print out it&#8217;s list of processed commands. Such as if the user calls:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -889,7 +884,7 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
 <div class="paragraph"><p>As of <strong>version 1.2.4 of smbtad</strong>, the database to use is connected via libDBI. The -N argument specifies the name of the database to be used for the database connection.</p></div>
 <h5 id="_t_setup">-T --setup</h5>
 <div class="paragraph"><p>As of <strong>version 1.2.4 of smbtad</strong>, the database needs to be setup by the -T --setup switch. This will access the database, and create the initial tables and structure of the database. smbtad will not daemonize after this call, just return normally.</p></div>
-<h4 id="_using_a_configuration_file_with_smbtad">4.2.2. Using a configuration file with smbtad</h4>
+<h4 id="_using_a_configuration_file_with_smbtad">3.3.2. Using a configuration file with smbtad</h4>
 <div class="paragraph"><p>All the options mentioned in the paragraph before can be configured with a configuration file. The configuration file has the same format as ini-Files, known from the Windows platform. An example configuration file is included in the smbtad package, in the /dist directory. We will go through a complete configuration file in this chapter, descriping all the options. The configuration file is separated by chapters, such as "general" or "network". Line beginning with # are considered comments.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -914,57 +909,40 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
         # Default is 1.
         use_db = 1
 [network]
-        # The port_number option defines the internet socket port
-        # to be used for listening for data from the VFS module.
-        port_number = 3490
         # The query_port option defines the internet socket port
-        # to be used for talking to clients such as smbtaquery or
+        # to be used for talking to clients such as
         # smbtamonitor.
-        # ATTENTION: from version 1.2.4 on, the query_port will only
-        # be used for smbtamonitor connections
         query_port = 3491
         # The unix_domain_socket option specifies wether a unix domain
         # socket is used for the connection to the VFS module.
         # It's arguments are either yes, or no.
         unix_domain_socket = no
         # The unix_domain_socket_clients option specifies wether a unix
-        # domain socket is used for the connection for the clients
-        # ATTENTION: from version 1.2.4 on, the unix_domain_socket_clients
-        # option is only used for smbtamonitor
+        # domain socket is used for the connection to real-time clients
         unix_domain_socket_clients = no
 
 
 [database]
-        # Currently, smbtad is employing sqlite3 for it's database
-        # tasks. A data file to be used (with full path) can be specified.
-        # ATTENTION: this option is only used on smbtad &lt;= 1.2.3
-        sqlite_filename = /tmp/database.db
-        #
         # The "name" option specifies the name of the database to be used
         # for smbtad. The database must have been prepared by using
         # smbta -T.
-        # ATTENTION: for smbtad &gt;= 1.2.4 ONLY!
         name = dbname
         #
         # The "host" option specifies the name or IP adress of the system
         # running the database
-        # ATTENTION: for smbtad &gt;= 1.2.4 ONLY!
         host = examplehost.test.ex
         #
         # The "driver" option specifies the name of the database driver
         # to use to access the database. Valid values are
         # pgsql (postgresql), mysql (mysql), or sqlite3 (sqlite)
-        # ATTENTION: for smbtad &gt;= 1.2.4 ONLY!
         driver = pgsql
         #
         # The "user" option specifies the name of the user to use to
         # access the database.
-        # ATTENTION: for smbtad &gt;= 1.2.4 ONLY!
         user = testuser
         #
         # The "password" option specifies the password of the user given
         # with the "user" option.
-        # ATTENTION: for smbtad &gt;= 1.2.4 ONLY!
         password = testpassword
 
 [maintenance]
@@ -984,7 +962,7 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
         # is older than 2 hours, would be 0,02:00:00 as parameter.
         config = 01,00:00:00</tt></pre>
 </div></div>
-<h4 id="_controlling_smbtad_through_the_rcsmbtad_script">4.2.3. Controlling smbtad through the rcsmbtad script</h4>
+<h4 id="_controlling_smbtad_through_the_rcsmbtad_script">3.3.3. Controlling smbtad through the rcsmbtad script</h4>
 <div class="paragraph"><p>The smbtad distribution includes LSB compliant start/stop scripts, as well
 as to check the availability of the service. Provided you have a configuration
 file setup for smbtad in /etc/smbtad.conf, the scripts will use this as the
@@ -1015,7 +993,7 @@ and checked for availability with:
 <div class="content">
 <pre><tt>rcsmbtad status</tt></pre>
 </div></div>
-<h3 id="_checking_the_installation">4.3. Checking the installation</h3><div style="clear:left"></div>
+<h3 id="_checking_the_installation">3.4. Checking the installation</h3><div style="clear:left"></div>
 <div class="paragraph"><p>When everything is set up, move some data on the shares you have activated
 the VFS module on. For example, if you write a file to a share,
 you can check the installation by looking into the database
@@ -1029,9 +1007,9 @@ $ select * from write;</tt></pre>
 the transfer with. If this works, your SMBTA installation works fine
 und you can start pointing more shares to it.</p></div>
 </div>
-<h2 id="_using_the_client_programs">5. Using the client programs</h2>
+<h2 id="_using_the_client_programs">4. Using the client programs</h2>
 <div class="sectionbody">
-<h3 id="_using_a_configuration_file_with_the_client_programs">5.1. Using a configuration file with the client programs</h3><div style="clear:left"></div>
+<h3 id="_using_a_configuration_file_with_the_client_programs">4.1. Using a configuration file with the client programs</h3><div style="clear:left"></div>
 <div class="paragraph"><p>All client programs described in the following sections can make use of a configuration file. Since any of the tools have quite similar options and parameters, a single configuration file can be used by default which is located in</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1046,7 +1024,6 @@ und you can start pointing more shares to it.</p></div>
 # debug_level = 10
 
 [network]
-
 # The "smbta_port_number" option is used for all real-time
 # programs that are using a direct connection to smbtad,
 # such as smbtamonitor or rrddriver.
@@ -1096,9 +1073,9 @@ driver = pgsql
 # to connect to.
 name = smbta-database</tt></pre>
 </div></div>
-<h3 id="_smbtaquery">5.2. smbtaquery</h3><div style="clear:left"></div>
+<h3 id="_smbtaquery">4.2. smbtaquery</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The possibilities to create statistical data out of the data set are quite wide ranged. Instead of querying the database directly via SQL, users may use smbtaquery. It is specialized on the setup of the database,and runs a lot of preconfigured queries to produce statistical and informational data. smbtaquery is utilizing a simplified language to operate on the users whish, translates the commands into SQL, and connects to the smbtad program to run the SQL query. The result is then printed out.</p></div>
-<h4 id="_requirements">5.2.1. Requirements</h4>
+<h4 id="_requirements">4.2.1. Requirements</h4>
 <div class="paragraph"><p>smbtaquery produces XML to represent it&#8217;s results. To convert the XML data to the desired output format, the <strong>xsltproc</strong> XSL processor is being used, and smbtaquery expects it on the system in /usr/bin/xsltproc. <strong>xsltproc</strong> is part of the libxslt package ( <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a> ).</p></div>
 <div class="paragraph"><p>smbtaquery comes with stylesheets telling the xsltproc program how to translate the XML raw data to other formats. It is expecting these stylesheets in the directory /usr/share/smbtatools/.</p></div>
 <div class="admonitionblock">
@@ -1133,7 +1110,7 @@ name = smbta-database</tt></pre>
 <td class="content">If you don&#8217;t intend to use the xsltproc program, don&#8217;t have it available, or want to use a different XSL processor, you can generate raw xml output by calling smbtaquery with the -x $FILE option. The resulting XML output will be written to $FILE. It can then be processed by a different XSL processor.</td>
 </tr></table>
 </div>
-<h4 id="_smbtaquery_command_line_arguments">5.2.2. smbtaquery command line arguments</h4>
+<h4 id="_smbtaquery_command_line_arguments">4.2.2. smbtaquery command line arguments</h4>
 <div class="paragraph"><p>If smbtaquery is called without enough arguments or wrong arguments, it&#8217;ll bring it&#8217;s list of available command line options as a reaction:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1234,7 +1211,7 @@ details on this function.</p></div>
 <div class="paragraph"><p>If this option is given, smbtaquery will not go into normal operation, but instead
 provides an interactive session with the aim to convert databases from one version
 to the current one.</p></div>
-<h4 id="_general_usage">5.2.3. General usage</h4>
+<h4 id="_general_usage">4.2.3. General usage</h4>
 <div class="paragraph"><p>Following is an example of a smbtaquery run:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1242,7 +1219,7 @@ to the current one.</p></div>
 </div></div>
 <div class="paragraph"><p>Telling smbtaquery to connect to a postgresql database as user dbuser with password dbpasswd, on host databasehost.example.ex.</p></div>
 <div class="paragraph"><p>Finally the command line option -q (or --query) provides the query to run for the build in interpreter of smbtaquery. More on this follows in the later chapters.</p></div>
-<h4 id="_output_modes_saving_of_results_to_a_file">5.2.4. Output modes, saving of results to a file</h4>
+<h4 id="_output_modes_saving_of_results_to_a_file">4.2.4. Output modes, saving of results to a file</h4>
 <div class="paragraph"><p>By default, smbtaquery prints it&#8217;s results to the terminal it is running on. To print the results to a file, redirect the output to a file, such as:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1251,10 +1228,10 @@ to the current one.</p></div>
 <div class="paragraph"><p>smbtaquery is able to produce different output formats. Currently, <strong>ascii</strong> text output (which is the default setting) and <strong>HTML</strong> is implemented. The output format can be specified with the -o $FORMAT option:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>smbtaquery -q 'global, usage rw;' -o html &gt; test.html</tt></pre>
+<pre><tt>smbtaquery -u -q 'global, usage rw;' -o html &gt; test.html</tt></pre>
 </div></div>
 <div class="paragraph"><p>The generated file "test.html" can then be loaded into a webbrowser for viewing.</p></div>
-<h4 id="_the_smbtaquery_interpreter">5.2.5. The smbtaquery interpreter</h4>
+<h4 id="_the_smbtaquery_interpreter">4.2.5. The smbtaquery interpreter</h4>
 <div class="paragraph"><p>To ease the usage of the database, smbtaquery implements a simplified language to query the database. It is specialized for SMBTA. There are two ways to run the buildin interpreter of smbtaquery. Either by using the -q switch on the command line, and run a single line of commands, or by specifying a file containing the commands to run.</p></div>
 <div class="paragraph"><p>In the following example of an smbtaquery call, the -q parameter is used:</p></div>
 <div class="listingblock">
@@ -1345,9 +1322,9 @@ $DATE-$TIME in the fowolling format:
 <strong>MM-DD-YYYY HH:MM:SS</strong></p></div>
 <div class="paragraph"><p>Also, there are the following keywords making the time specification easier:
 <strong>yesterday</strong>, <strong>today</strong> and <strong>now</strong>.</p></div>
-<h4 id="_object_identification">5.2.6. Object Identification</h4>
+<h4 id="_object_identification">4.2.6. Object Identification</h4>
 <div class="paragraph"><p>SMBTA will try to identify the objects that given by searching through it&#8217;s database. For example, the user "holger" could exist more than once. User "holger" could be coming from two or more domains, each of these listing user "holger" with a different SID. Therefore SMBTA will look up the known SIDs of user "holger" and will present a dialog to choose the right user in case more than one user "holger" exists. As a consequence, shares are checked for domains, and files are checked for the share and the domain.</p></div>
-<h4 id="_the_functions">5.2.7. The functions</h4>
+<h4 id="_the_functions">4.2.7. The functions</h4>
 <h5 id="_total">total</h5>
 <div class="paragraph"><p>Syntax:
 <strong>total [RW] [R] [W]</strong></p></div>
@@ -1387,9 +1364,9 @@ with the object.
 </div></div>
 <h5 id="_top">top</h5>
 <div class="paragraph"><p>Syntax:
-<strong>top [number] [files] [users] [shares] [rw] [r] [w]</strong></p></div>
+<strong>top [number] [files] [users] [shares] [rw] [r] [w] [asc][desc]</strong></p></div>
 <div class="paragraph"><p>The top function prints out a number of top files, users, or shares by
-read, write or read and write access.</p></div>
+read, write or read and write access. The "asc" and "desc" arguments are optional. The sort direction of the function can be changed by adding one of these arguments.</p></div>
 <div class="exampleblock">
 <div class="title">Top function example:</div>
 <div class="exampleblock-content">
@@ -1446,7 +1423,7 @@ a virtual day, listing 24 hours and showing the average data activity by percent
 <div class="paragraph"><p>Syntax:
 <strong>search [term]</strong></p></div>
 <div class="paragraph"><p>The search function allows a fuzzy search for [term] over the whole database. It allows
-unix-style wildcards like <em>*</em> and <em>?</em>. If the function finds data that matches the search string,
+SQL-style wildcards like <em>%*</em>. If the function finds data that matches the search string,
 it will identify the object and shows related data. For example, if it finds a user name that
 matches to [term], it will identify it as a user, and additionally prints the domain the user is
 belonging to.</p></div>
@@ -1456,7 +1433,7 @@ belonging to.</p></div>
 <div class="paragraph"><p>Fuzzy search for the term disk12:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>'global, search *disk12*;'</tt></pre>
+<pre><tt>'global, search %disk12%;'</tt></pre>
 </div></div>
 </div></div>
 <h5 id="_throughput">throughput</h5>
@@ -1472,18 +1449,18 @@ belonging to.</p></div>
 <pre><tt>'share Fritzboxtest, throughput 50 days r;'</tt></pre>
 </div></div>
 </div></div>
-<h3 id="_websmbta">5.3. webSMBTA</h3><div style="clear:left"></div>
+<h3 id="_websmbta">4.3. webSMBTA</h3><div style="clear:left"></div>
 <div class="paragraph"><p><strong>webSMBTA</strong> is a web interface for SMB Traffic Analyzer. It is using the <strong>smbtaquery</strong> program as a data provider and presents a modern, intuitive, rails based web application.</p></div>
-<h4 id="_requirements_2">5.3.1. Requirements</h4>
+<h4 id="_requirements_2">4.3.1. Requirements</h4>
 <div class="paragraph"><p><strong>webSMBTA</strong> relies on a fully working SMBTA setup, including a working database, and the <strong>smbtaquery</strong> program installed in system paths. If you can run a query like <em>global, total rw;</em> via smbtaquery, all should be fine.</p></div>
-<h4 id="_installation">5.3.2. Installation</h4>
+<h4 id="_installation">4.3.2. Installation</h4>
 <div class="paragraph"><p>Currently <strong>webSMBTA</strong> is in BETA, as it has not yet been employed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use <strong>webSMBTA</strong> is to start it with the rails integrated webserver:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>cd query/webui/
 rails server</tt></pre>
 </div></div>
-<h4 id="_first_startup">5.3.3. First startup</h4>
+<h4 id="_first_startup">4.3.3. First startup</h4>
 <div class="paragraph"><p>At first startup, webSMBTA will show a configuration dialog like this:
 <span class="image">
 <img src="gfx/webSMBTA/configuration.png" alt="gfx/webSMBTA/configuration.png" />
@@ -1497,34 +1474,37 @@ The field <strong>DB-driver</strong> is a select box and let&#8217;s you choose 
 The field <strong>DB-user</strong> takes the username of the user that has access to the database specified in <strong>DB-name</strong>.
 The field <strong>DB-password</strong> takes the password of the user specified in <strong>DB-user</strong>.</p></div>
 <div class="paragraph"><p>Click the button <strong>Commit settings</strong> to let webSMBTA connect to the database and initiate the first data view.</p></div>
-<h4 id="_first_data_view_global">5.3.4. First data view, "global"</h4>
+<h4 id="_first_data_view_global">4.3.4. First data view, "global"</h4>
 <div class="paragraph"><p>After committing the configuration settings, <strong>webSMBTA</strong> will jump into the first data view that looks like this:
 <span class="image">
 <img src="gfx/webSMBTA/startup.png" alt="gfx/webSMBTA/startup.png" />
 </span></p></div>
 <div class="paragraph"><p>As you can see, the view is called "Global", which means that the program is operating over the whole database, not taking any special SMB related objects into account. Like <strong>smbtaquery</strong>, <strong>webSMBTA</strong> is works based on objects, and the "Global" object is special in the way that it runs over the whole database.</p></div>
 <div class="paragraph"><p>You surely notice the arrow to the right, showing that there is more to explore. By clicking on the "global" entry in the selection field, the next data view will appear.</p></div>
-<h4 id="_second_data_view_domains">5.3.5. Second data view, "domains"</h4>
+<h4 id="_second_data_view_domains">4.3.5. Second data view, "domains"</h4>
 <div class="paragraph"><p>After clicking the "global" selection, <strong>webSMBTA</strong> will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about.</p></div>
 <div class="paragraph"><p>If you click on on of the domains in the selection area, this domain will be chosen as an object to work with, and from now on <strong>webSMBTA</strong> will bound all it&#8217;s results to this domain.</p></div>
 <div class="paragraph"><p>As you can see, the first entry in the selection area is "(All)", which you can use to de-select a domain. If you click this selection, <strong>webSMBTA</strong> will operate with "Global" as the object (see previous section).</p></div>
-<h4 id="_third_data_view_shares_and_users">5.3.6. Third data view, "shares and users"</h4>
+<h4 id="_third_data_view_shares_and_users">4.3.6. Third data view, "shares and users"</h4>
 <div class="paragraph"><p>After choosing an object in the "domains" selection, <strong>webSMBTA</strong> will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.
 <span class="image">
 <img src="gfx/webSMBTA/shares_users.png" alt="gfx/webSMBTA/shares_users.png" />
 </span></p></div>
 <div class="paragraph"><p>This view is special, as it allows you to select one share, one user, or one user and one share. In the example picture shown above, user "Hettich" is selected, and share "trigger". This means that <strong>webSMBTA</strong> will run any operations belonging to the user "Hettich" on the share "trigger". For example, if you de-select the share "trigger" by clicking on "(All)" in the share-selection, <strong>webSMBTA</strong> will run operations belonging to the user "Hettich" on the selection domain, but not limited to the share "trigger".</p></div>
-<h4 id="_fourth_data_view_files">5.3.7. Fourth data view, "files"</h4>
+<h4 id="_fourth_data_view_files">4.3.7. Fourth data view, "files"</h4>
 <div class="paragraph"><p>If you have chosen a user or a share, or both, <strong>webSMBTA</strong> will automatically do a query on the database for the list of files that have been touched by the object that has been chosen so far. Clicking on one of the files in that selection, will make <strong>webSMBTA</strong> process all operations over this specific file.
 <span class="image">
 <img src="gfx/webSMBTA/main-screen.png" alt="gfx/webSMBTA/main-screen.png" />
 </span></p></div>
-<h3 id="_smbtamonitor">5.4. smbtamonitor</h3><div style="clear:left"></div>
+<h4 id="_running_function_on_selected_objects">4.3.8. Running function on selected objects</h4>
+<div class="paragraph"><p>If you have succesfully chosen an object with the object selector, you can run one of smbtaqueries functions on it.
+Supported are all functions that <strong>SMBTAquery</strong> does support, as described in the smbtaquery chapter.</p></div>
+<h3 id="_smbtamonitor">4.4. smbtamonitor</h3><div style="clear:left"></div>
 <div class="paragraph"><p>smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.</p></div>
 <div class="paragraph"><p>This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.</p></div>
 <div class="paragraph"><p>For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.</p></div>
 <div class="paragraph"><p>Any smbtamonitor instance is bound to an object ( a user, a file, a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.</p></div>
-<h4 id="_smbtamonitor_startup">5.4.1. smbtamonitor startup</h4>
+<h4 id="_smbtamonitor_startup">4.4.1. smbtamonitor startup</h4>
 <div class="paragraph"><p>To start a monitor, use the same arguments for the host and internet port to connect to as with smbtaquery:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1548,11 +1528,11 @@ The field <strong>DB-password</strong> takes the password of the user specified 
 <div class="paragraph"><p>will run a monitor displaying real time information about the file named
 "README".</p></div>
 <div class="paragraph"><p>After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it&#8217;s display. smbtamonitor runs 80x25 display size fixed at the moment. The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them. Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them. The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.</p></div>
-<h4 id="_running_smbtamonitor_without_identification">5.4.2. Running smbtamonitor without identification</h4>
+<h4 id="_running_smbtamonitor_without_identification">4.4.2. Running smbtamonitor without identification</h4>
 <div class="paragraph"><p>By default, smbtamonitor runs an identification process, that queries the database of smbtad. However the database handling of smbtad can be shut down by the administrator, if SMBTA is only to be used with rrddriver or smbtamonitor. Therefore the -I --identify command line switch can be used to shut down identification at startup of smbtamonitor. If this parameter is set to 0, identification will be ommited.</p></div>
-<h3 id="_rrddriver">5.5. rrddriver</h3><div style="clear:left"></div>
+<h3 id="_rrddriver">4.5. rrddriver</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The round robin database rrdtool is famous for it&#8217;s ease of use and robustness (see <a href="http://www.mrtg.org/rrdtool/">http://www.mrtg.org/rrdtool/</a> ). With rrdtool, graphics on the throughput of the data can easily be created. rrddriver is a SMBTA component that acts as an interface to rrdtool. The user can, networked or unix-domain socket driven, connect to smbtad, receive real time data on read and write processes of or on objects and build a round robin database out of it by employing rrddriver. Please note that rrdtool must be installed on the machine you run rrddriver. The user can run more rrddriver instances, each of them feeding it&#8217;s own database.</p></div>
-<h4 id="_rrddriver_command_line_arguments">5.5.1. rrddriver command line arguments</h4>
+<h4 id="_rrddriver_command_line_arguments">4.5.1. rrddriver command line arguments</h4>
 <div class="listingblock">
 <div class="content">
 <pre><tt>holger@linux-xnjq:~/t/smbtatools/run&gt; ./rrddriver
@@ -1621,7 +1601,7 @@ DS:write:GAUGE:10:U:U</tt></pre>
 <h5 id="_i_identify_lt_num_gt">-I --identify &lt;num&gt;</h5>
 <div class="paragraph"><p>By default, rrddriver runs an identification process, that queries the database of smbtad. However the database handling of smbtad can be shut down by the administrator, if SMBTA is only to be used with rrddriver or smbtamonitor. Ther
 efore the -I --identify command line switch can be used to shut down identification at startup of rrddriver. If this parameter is set to 0, identification will be ommited.</p></div>
-<h4 id="_rrddriver_usage_examples">5.5.2. rrddriver usage examples</h4>
+<h4 id="_rrddriver_usage_examples">4.5.2. rrddriver usage examples</h4>
 <div class="paragraph"><p>All of the following examples will use the database file "myrrd", as given with the -b parameter.</p></div>
 <div class="paragraph"><p>To start rrddriver, use the same arguments for the host and internet port to connect to as with smbtaquery:</p></div>
 <div class="listingblock">
@@ -1650,10 +1630,10 @@ efore the -I --identify command line switch can be used to shut down identificat
 <pre><tt>rrdtool graph packets.png -s 1290772099 -S 1  --title "Throughput on share 'pool1'" DEF:read_in=testdb:read:AVERAGE DEF:write_in=testdb:write:AVERAGE "AREA:write_in#AA0000:Write" "STACK:read_in#AA9999:Read"</tt></pre>
 </div></div>
 <div class="paragraph"><p>This line will create a PNG graphic showing a diagram, titled "Troughput on share <em>pool1</em>, showing the read and write traffic, stacked, from the unix time format you gave with the -s parameter. Please consult the rrdtool documentation for more details.</p></div>
-<h3 id="_smbtatorture">5.6. smbtatorture</h3><div style="clear:left"></div>
+<h3 id="_smbtatorture">4.6. smbtatorture</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The smbtatorture program is a small test suite for SMBTA. It&#8217;s being used mainly by SMBTA developers to do long time tests checking the stability of the software chain, and how it reacts on large amounts of data. Also it is being used to do performance measurement when SMBTA is involved in Samba traffic. smbtatorture can mimic "usual" office traffic loads, or continuous stress testing by making defined pauses while creating traffic. It is able to measure the time it needs for it&#8217;s own run, and is also able to record and playback it&#8217;s own run, so that software defects can be reproduced in other setups, and performance measurement can be done. Basically a single smbtatorture instance connects to the samba server as one user, and operates on two shares. It then copies a defined set of files from and to the share. To connect to a CIFS server, smbtatorture is utilizing the libsmbclient library.</p></div>
 <div class="paragraph"><p>Several smbtatorture processes can be run in parallel, accessing the same set of shares on a Samba server. The processes shall not use the same files. To prevent this situation, smbtatorture can optionally connect to smbtatorturesrv, which distributes unique filenames to any smbtatorture process it has a connection to.</p></div>
-<h4 id="_smbtatorture_command_line_arguments">5.6.1. smbtatorture command line arguments</h4>
+<h4 id="_smbtatorture_command_line_arguments">4.6.1. smbtatorture command line arguments</h4>
 <div class="listingblock">
 <div class="content">
 <pre><tt>holger@linux-xnjq:~/t/smbtatools/run&gt; ./smbtatorture
@@ -1723,7 +1703,7 @@ The default is : WORKGROUP</p></div>
 <div class="paragraph"><p>If given, smbtatorture will be more verbose on what it is doing.</p></div>
 <h5 id="_e_replay">-e --replay</h5>
 <div class="paragraph"><p>Specify a file saved by the -r option, to replay the exact same run.</p></div>
-<h4 id="_running_smbtatorture_networked_and_in_parallel">5.6.2. Running smbtatorture networked and in parallel</h4>
+<h4 id="_running_smbtatorture_networked_and_in_parallel">4.6.2. Running smbtatorture networked and in parallel</h4>
 <div class="paragraph"><p>Some more complex testing environments feature more users, more shares, and more connections for Samba and smbtad to handle. If more than a single smbtatorture process is running, those should not touch the same files at the same time. Therefore, a program called <strong>smbtatorturesrv</strong> is available, which is distributing unique filenames to the processes. The <strong>smbtatorture</strong> program is optionally connecting through an internet socket to this program, to fetch filenames from smbtatorturesrv. To run smbtatorture connected to smbtatorturesrv involves the <strong>-P</strong> and <strong>-H</strong> parameters. <strong>-P</strong> defines the port number to connect to, and <strong>-H</strong> specifies the hostname of the system that is running smbtatorturesrv.</p></div>
 <div class="paragraph"><p>For Example:</p></div>
 <div class="listingblock">
@@ -1746,7 +1726,7 @@ The default is : WORKGROUP</p></div>
 <div class="content">
 <pre><tt>smbtatorturesrv -p 3493</tt></pre>
 </div></div>
-<h4 id="_smbtatorture_usage_examples">5.6.3. smbtatorture usage examples</h4>
+<h4 id="_smbtatorture_usage_examples">4.6.3. smbtatorture usage examples</h4>
 <div class="paragraph"><p>The following example will create 20 files on each shares "pool1" and "pool2", connects as user "holger" with password "the_password". During the run, smbtatorture will output message, being verbose.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1763,17 +1743,17 @@ The default is : WORKGROUP</p></div>
 <pre><tt>smbtatorture -v -e testrun.txt -1 smb://localhost/pool1/ -2 smb://localhost/pool2/</tt></pre>
 </div></div>
 </div>
-<h2 id="_the_smbta_stresstest_appliance">6. The SMBTA Stresstest appliance</h2>
+<h2 id="_the_smbta_stresstest_appliance">5. The SMBTA Stresstest appliance</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The <strong>SMBTA Stresstest</strong> appliance is a self contained linux distribution based on <strong>openSUSE</strong>. It comes with a preconfigured Samba server that is configured with SMBTA on it&#8217;s shares, and it is running several instances of the <strong>smbtatorture</strong> program on these shares, for several users, resulting in producing an continous flow of traffic on this shares. The appliance is completely self-running, starting the smbtatorture processes directly after booting. Because of this, the SMBTA Stresstest appliance makes an ideal tool for two things: first is to develop SMBTA, and second it is an easy way to give SMBTA a quick test in a safe environment.</p></div>
 <div class="paragraph"><p>In <strong>SMBTA Stresstest</strong>, the <strong>smbtad</strong> daemon program is configured for port 3491 to listen for client connections. If you setup the virtual machine in a way that it&#8217;s reachable for the host system, you can run the smbtatools directly against it.</p></div>
 <div class="paragraph"><p><strong>SMBTA Stresstest</strong> is available from SUSE Studio at:
 <a href="http://susegallery.com/a/HkqPEE/smbta-stresstest">http://susegallery.com/a/HkqPEE/smbta-stresstest</a></p></div>
 </div>
-<h2 id="_setting_up_encryption">7. Setting up encryption</h2>
+<h2 id="_setting_up_encryption">6. Setting up encryption</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>As of version 1.2.2 of SMB Traffic Analyzer, any component can optionally encrypt the data it is processing over the network. SMBTA is encrypting by employing the 128 bit AES algorithm. The encryption is administrator based. In general, a keyfile is created and placed on the filesystem with access rights set so that only the involved program can access. SMBTA is using two keys, one is used for encryption from the VFS module to the smbtad component, the other is used between the smbtautils programs (smbtaquery, smbtamonitor, rrdriver etc).</p></div>
-<h3 id="_encryption_setup_for_the_vfs_module">7.1. Encryption setup for the VFS module</h3><div style="clear:left"></div>
+<h3 id="_encryption_setup_for_the_vfs_module">6.1. Encryption setup for the VFS module</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The samba server on which the VFS module is running, needs to know the key. The easiest way to do this is to generate the key on the samba server by using "smbta-util", a program that is delivered with Samba &gt;= 3.6.0.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1786,7 +1766,7 @@ The default is : WORKGROUP</p></div>
 <pre><tt>smbta-util -u</tt></pre>
 </div></div>
 <div class="paragraph"><p>This command will uninstall the key from the Samba server, and deactivate encryption.</p></div>
-<h3 id="_encryption_setup_for_the_smbtad_component">7.2. Encryption setup for the smbtad component</h3><div style="clear:left"></div>
+<h3 id="_encryption_setup_for_the_smbtad_component">6.2. Encryption setup for the smbtad component</h3><div style="clear:left"></div>
 <div class="paragraph"><p>To setup the encryption key used for communication with the VFS module, the file generated by the "smbta-util" program can be used (see section before). Place it at a restricted place, and make sure only the user that is running smbtad have read access to it.</p></div>
 <div class="paragraph"><p>On the command line, smbtad can be setup for this key by using this command:</p></div>
 <div class="listingblock">
@@ -1817,7 +1797,7 @@ keyfile = /your/path/to/the/key/keyfilename
 keyfile_clients = /your/path/to/the/key/keyfilename</tt></pre>
 </div></div>
 <div class="paragraph"><p>Note that you don&#8217;t have to give both key. If a keyfile for either the VFS module or the clients is not given, smbtad just doesn&#8217;t encrypt in this direction.</p></div>
-<h3 id="_encryption_setup_for_the_smbtatools_programs">7.3. Encryption setup for the smbtatools programs</h3><div style="clear:left"></div>
+<h3 id="_encryption_setup_for_the_smbtatools_programs">6.3. Encryption setup for the smbtatools programs</h3><div style="clear:left"></div>
 <div class="paragraph"><p>With the smbtaquery program, the user can create a key to be used from the tools to the smbtad componend. If is created by running:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1836,7 +1816,7 @@ keyfile_clients = /your/path/to/the/key/keyfilename</tt></pre>
 keyfile = /your/path/to/keyfile/filename</tt></pre>
 </div></div>
 </div>
-<h2 id="_reporting_problems_bugs_contacting_the_authors">8. Reporting Problems, bugs, contacting the Authors</h2>
+<h2 id="_reporting_problems_bugs_contacting_the_authors">7. Reporting Problems, bugs, contacting the Authors</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>To find the latest news and versions of SMBTA, check out it&#8217;s homepage:</p></div>
 <div class="listingblock">
@@ -1845,14 +1825,14 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 </div></div>
 <div class="paragraph"><p>If you can reproduce an error situation, do not hestitate to open a bug on <a href="http://bugzilla.novell.com">http://bugzilla.novell.com</a>, set "Samba" as component, and begin the Bug subject with [SMBTA]. If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich &lt;<a href="mailto:ozzy@metal-district.de">ozzy@metal-district.de</a>&gt;.</p></div>
 </div>
-<h2 id="_project_outlook_and_version_history">9. Project outlook and version history</h2>
+<h2 id="_project_outlook_and_version_history">8. Project outlook and version history</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>We&#8217;re too lazy to maintain such a list of planned ideas and features in this document. Check out the projects homepage to get the latest news, or contact the team to discuss ideas. There&#8217;s a channel #smbta on freenode, feel free to join. In General it can be said that smbtatools goes to XML, the web, and will get a gui and graphics.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.4<br />
-Last updated 2011-05-01 22:45:12 CEST
+Last updated 2011-05-07 11:12:29 CEST
 </div>
 </div>
 </body>
