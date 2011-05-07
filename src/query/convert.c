@@ -19,6 +19,8 @@
  */
 
 #include "include/configuration.h"
+#include "../webmon/rrddriver/include/vfs_smb_traffic_analyzer.h"
+#include <dbi.h>
 
 struct confdata {
 	char dbiuser[50];
@@ -29,6 +31,28 @@ struct confdata {
 	int entered;
 	char sqlite_filename[255];
 	dbi_conn DBIconn;
+};
+
+struct db_entry {
+	char *data;
+	int length;
+
+
+	char *username;
+	char *domain;
+	char *share;
+	char *timestamp;
+	char *usersid;
+	char *filename;
+	char *mode;
+	char *path;
+	char *result;
+	char *destination;
+	char *mondata;
+	unsigned long int len;
+	char *vfs_id;
+	char *source;
+	int vfs_op;
 };
 
 static void enter_data( struct confdata *c)
@@ -106,9 +130,97 @@ static int convert_database_connect( struct confdata *conf )
         return 0;
 }
 
+static char *create_database_string(TALLOC_CTX *ctx,struct db_entry *entry)
+{
+	/*
+	 * create a database string from the given metadata in a cache entry
+	 */
+	char *retstr=NULL;
+	switch( entry->vfs_op ) {
+        case vfs_id_rename: ;
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "source, destination, result) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s','%s',%s);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->source,entry->destination,entry->result);
+		break;
+        case vfs_id_close: ;
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "filename, result) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%s);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->filename,entry->result);
+                break;
+        case vfs_id_open: ;
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "filename, mode, result) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%s,%s);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->filename,entry->mode,entry->result);
+                break;
+        case vfs_id_chdir: ;
+                retstr = talloc_asprintf( ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "path, result) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%s);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->path,entry->result);
+                break;
+        case vfs_id_mkdir: ;
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "path, mode, result) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%s,%s);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->path, entry->mode, entry->result);
+                break;
+        case vfs_id_write:
+        case vfs_id_pwrite: ;
+                if (entry->len == 0) {
+                        retstr=NULL;
+                        break;
+                }
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "filename, length) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%lu);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->filename,entry->len);
+                break;	
+        case vfs_id_read:
+        case vfs_id_pread: ;
+                if (entry->len == 0) {
+                        retstr=NULL;
+                        break;
+                }
+                retstr = talloc_asprintf(ctx, "INSERT INTO %s ("
+                        "username, usersid, share, domain, timestamp,"
+                        "filename, length) VALUES ("
+                        "'%s','%s','%s','%s','%s',"
+                        "'%s',%lu);",
+                        entry->vfs_id,entry->username,entry->usersid,entry->share,entry->domain,entry->timestamp,
+                        entry->filename,entry->len);
+                break;
+	default: ;
+	}	
+	return retstr;
+}
+
+
 
 static void _1_2_3_to_1_2_4(struct confdata *c)
 {
+	TALLOC_CTX *ctx = NULL;
+	struct db_entry *entry = (struct db_entry *) malloc(sizeof(struct db_entry));
 	printf("\n");
 	printf("-> Upgrading database from version 1.0 - 1.2.3 to version 1.2.4.\n");
 	printf("----------------------------------------------------------------\n");
@@ -135,17 +247,113 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 		exit(1);
 	}
 
-	char *tables[] = { "read", "write", "mkdir", "rmdir", "close", "rename", "open", "chdir", NULL };
-	int rownums[] = {   6+2,    6+2,     6+3,    6+3,     6+2,     6+3,      6+3,    6+2 };
+	char *tables[] = { "read", "write", "mkdir",  "close", "rename", "open", "chdir", NULL };
 
 	/* go through every table, and copy the contents to the remote database */
 	int cc = 0;
 	while (tables[cc] != NULL) {
-		dbi_result res;
 		printf("Processing table '%s'...\n", tables[cc]);
-
+		#define CREATE_COMMONS "vfs_id integer,username varchar,usersid varchar,share varchar,domain varchar,timestamp timestamp,"
+		/**
+		 * Get all the common values out of sqlite3
+		 */
+		sqlite3_stmt **ppStmt = NULL;
+		printf("Receiving all contents of table '%s'...\n",tables[cc]);
+		char *query = talloc_asprintf(NULL,"select * from %s;",tables[cc]);
+		sqlite3_prepare(  db, query, -1,ppStmt, NULL);
+		talloc_free(query);
+		printf("Processing content...\n");
+		int result;
+		do {
+			
+			result=sqlite3_step(*ppStmt);
+			if (result==SQLITE_ROW){
+				/**
+				 * process common data
+				 */
+				entry->username = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt, 1));
+				entry->usersid = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,2));
+				entry->share = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,3));
+				entry->domain = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,4));
+				entry->timestamp = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,5));
+				/**
+				 * process table specifics
+				 */
+				switch(cc) {
+	
+				case 0: ;
+					entry->vfs_op = vfs_id_read;
+					entry->filename = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->len = sqlite3_column_int(*ppStmt, 7);
+					break;
+				case 1: ;
+					entry->vfs_op = vfs_id_write;
+					entry->filename = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->len = sqlite3_column_int(*ppStmt,7);
+					break;
+				case 2: ;
+					entry->vfs_op = vfs_id_mkdir;
+					entry->path = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->mode = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,8));
+					break;
+				case 3: ;
+					entry->vfs_op = vfs_id_close;
+					entry->filename = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					break;
+				case 4: ;
+					entry->vfs_op = vfs_id_rename;
+					entry->source = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->destination = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,8));
+					break;
+				case 5: ;
+					entry->vfs_op = vfs_id_chdir;
+					entry->path = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					break;
+				case 6: ;
+					entry->vfs_op = vfs_id_open;
+					entry->filename = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->mode = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,8));
+					break;
+				case 7: ;
+					entry->vfs_op = vfs_id_chdir;
+					entry->path = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,6));
+					entry->result = talloc_asprintf(ctx,"%s",sqlite3_column_text(*ppStmt,7));
+					break;
+				default:
+					;
+					printf("Error: Unkown VFS identifier.\n");
+					exit(1);
+				}
+				/**
+				 * create an insertion string and push through DBI
+				 */
+				char *insert = create_database_string(ctx, entry);
+				if (insert == NULL) {
+					printf("ERROR creating database string.\n");
+					talloc_free(ctx);
+					exit(1);
+				}
+				dbi_result rs = dbi_conn_query(c->DBIconn, insert);
+				if (rs == NULL) {
+					printf("DBI ERROR.\n");
+					talloc_free(ctx);
+					exit(1);
+				}
+				TALLOC_FREE(ctx);
+				dbi_result_free(rs);
+			}
+		} while (result == SQLITE_ROW);
+		sqlite3_finalize(*ppStmt);
+		/* next table */
 		cc++;
 	}
+
+	free(entry);
 }
 
 
