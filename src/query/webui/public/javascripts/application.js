@@ -202,6 +202,7 @@ function configureFunction(){
         $("#search_help").fadeOut();
         $("#throughput").fadeOut();
         $("#list_func").fadeIn();
+        $("#list_help").fadeIn();
     }
     else if (selected == "usage"){
         $("#help").fadeOut();
