@@ -986,7 +986,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 				 rules[t],
 				 rows[t], command_data->arguments[0], obj_struct->sql);
 			qdat = sql_query(ctx,config,query);
-			if (strcmp(result_get_element(ctx,0,qdat),"No Results.") != 0) {
+			if (result_get_element(ctx,0,qdat) != NULL) {
 				switch (t) {
 				case 0: ;
 					n = 0;
