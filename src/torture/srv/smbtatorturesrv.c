@@ -212,9 +212,14 @@ char *get_random_filename() {
         FILE *fnames = fopen("/usr/share/smbtatools/filenames.txt","r");
         FILE *dnames = fopen("/usr/share/smbtatools/directories.txt","r");
         if (fnames == NULL || dnames == NULL) {
-                printf("ERROR:  cannot open filename list and/or\n");
-                printf("        directory list. Exiting.\n");
-        }
+		fnames = fopen("/usr/local/share/smbtatools/filenames.txt","r");
+		dnames = fopen("/usr/local/share/smbtatools/directories.txt","r");
+		if (fnames == NULL || dnames == NULL) {
+                	printf("ERROR:  cannot open filename list and/or\n");
+                	printf("        directory list. Exiting.\n");
+			exit(1);
+        	}
+	}
         while ( !feof(fnames) ) {
                 fscanf(fnames, "%ms\n", &strdat);
                 max_filenames = max_filenames + 1;
