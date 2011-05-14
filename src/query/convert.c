@@ -215,7 +215,43 @@ static char *create_database_string(TALLOC_CTX *ctx,struct db_entry *entry)
 	return retstr;
 }
 
+static void convert_check_dbi_res( dbi_result rs)
+{
+	if (rs == NULL) {
+		printf("DBI ERROR.\n");
+		exit(1);
+	}
+}
 
+static void _1_2_4_to_1_2_5(struct confdata *c)
+{
+	int ch=0;
+	printf("\n");
+	printf("-> Upgrading database from version 1.2.4 to 1.2.5.\n");
+	printf("-------------------------------------------------------------\n");
+	printf("\n");
+	enter_data(c);
+	ch = convert_database_connect(c);
+	printf("Updating tables...\n");
+	dbi_result rs = dbi_conn_query(c->DBIconn,
+		"ALTER TABLE mkdir ALTER COLUMN result TYPE bigint;" );
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"ALTER TABLE chdir ALTER COLUMN result TYPE bigint;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"ALTER TABLE rmdir ALTER COLUMN result TYPE bigint;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"ALTER TABLE rename ALTER COLUMN result TYPE bigint;");
+	convert_check_dbi_res(rs);
+
+	printf("Database update to SMBTA version 1.2.5.\n");
+	exit(0);
+}
 
 static void _1_2_3_to_1_2_4(struct confdata *c)
 {
@@ -370,20 +406,27 @@ void smbta_convert()
 	c.entered = 0;
 	printf("\n");
 	printf("Select the SMBTA version you are coming from.\n");
-	printf("1) 1.0 - 1.2.3\n");
+	printf("1) 1.0, 1.1, 1.2.0, 1.2.1, 1.2.2, 1.2.3:\n");
 	printf("	Allows to convert a sqlite3 based database created\n");
-	printf("	with the SMBTA 1.0 - 1.2.3 releases to a new 1.2.4\n");
-	printf("	based database, that has been already setup with\n");
+	printf("	with the SMBTA 1.0 - 1.2.3 releases to current \n");
+	printf("	database, that has been already setup with\n");
 	printf("	'smbta -T'.\n");
-	printf("2) Quit program\n");
+	printf("2) 1.2.4:\n");
+	printf("	Converts a database to the current format when you\n");
+	printf("	are coming from a 1.2.4 version.\n");
+	printf("3) Quit program\n");
 	printf("\n");
 	printf("Enter Number:\n");
 	scanf("%d",&chose);
 	switch (chose) {
 		case 1:
 			_1_2_3_to_1_2_4(&c);
+			_1_2_4_to_1_2_5(&c);
 			break;
 		case 2:
+			_1_2_4_to_1_2_5(&c);
+			break;
+		case 3:
 			printf("Exiting.\n");
 			exit(0);
 			break;
