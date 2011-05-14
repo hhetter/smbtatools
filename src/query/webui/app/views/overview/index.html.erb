@@ -19,7 +19,7 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
-    <div id="search_help" class="function_help"><i>The search function allows a fulltext search over an object<br/>It supports unix like wildcars (*,?).</i></div>
+    <div id="search_help" class="function_help"><i>The search function allows a fulltext search over an object<br/>It supports SQL wildcars (*,?).</i></div>
   </div>
   <div id="list_func" class="function_dialog">
     <table>
@@ -28,8 +28,8 @@
       <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onclick => "start_function()"%></td>
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
     </table>
+    <div id="list_help" class="function_help"><i>The list function creates a list of objects that are involved with the selected object.</i></div>
   </div>
-  <div id="list_help" class="function_help"><i>The list function creates a list of objects that are involved with the selected object.</i></div>
   <div id="usage" class="function_dialog">
     <table>
       <tr><td>Choose a mode:</td>
