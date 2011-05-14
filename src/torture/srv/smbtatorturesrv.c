@@ -234,7 +234,9 @@ char *get_random_filename() {
         rewind(dnames);
         nfilename = rand() % max_filenames;
         ndirectory = rand() % max_directories;
-        while ( z < ndirectory ) {
+	if (nfilename > 0) nfilename--;
+	if (ndirectory > 0) ndirectory--;
+	while ( z < ndirectory ) {
                 z++;
                 fscanf(dnames, "%ms\n", &strdat);
                 if (strdat != NULL) free(strdat);
