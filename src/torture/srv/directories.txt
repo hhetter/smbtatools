@@ -2,7 +2,7 @@
 /users/shared
 /users/shared/doc
 /users/shared/images
-/srv1/
+/srv1
 /homespace/all
 /office_space/media
 /office_space/transfer/bss
@@ -17,7 +17,7 @@
 /shared/logged
 /shared/appdata
 /shared/programs
-/shared/persons/flat_data/
+/shared/persons/flat_data
 /shared/bindings/office-2.1.1
 /srv1/work
 /srv1/work/all
