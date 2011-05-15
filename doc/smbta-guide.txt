@@ -141,6 +141,21 @@ make DESTDIR=/$YOUR/$DESTINATION install
 Setting up SMBTA
 ----------------
 
+Upgrading from a former version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SMBTA provides an update path to convert databases used with former versions to the current one.
+
+IMPORTANT: If you are upgrading SMBTA from an older version, it is necessary to run this conversion process!
+
+The smbtaquery program includes a command line option *"-C --convert"*:
+
+------------------------------------------------------
+smbtaquery -M $DB-DRIVER -N $DATABASE-NAME -S $DATABASE-USER -H $DATABASE-HOST  -C
+------------------------------------------------------
+
+This process is self explaining. Basically it presents a menu to choose the version of SMBTA you are coming from. Please consult the chapter about the smbtaquery program to read more about the arguments to the -M, -N, -S and -H options. 
+
 About the database
 ~~~~~~~~~~~~~~~~~~
 
@@ -162,7 +177,12 @@ Furthermore, SMBTA will need the following information to access the database:
 
 - The name of the database to access.
 
-SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
+Initial setup of the database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+IMPORTANT: This step is *required* if you install SMBTA for the first time!
+
+If you are installing SMBTA for the first time, SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
 The smbtad component can then prepare an empty database on an initial run by using "smbtad -T", creating all required tables. See the chapter on smbtad for more about this.
 
 

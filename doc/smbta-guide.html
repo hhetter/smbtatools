@@ -653,7 +653,23 @@ make install</tt></pre>
 </div>
 <h2 id="_setting_up_smbta">3. Setting up SMBTA</h2>
 <div class="sectionbody">
-<h3 id="_about_the_database">3.1. About the database</h3><div style="clear:left"></div>
+<h3 id="_upgrading_from_a_former_version">3.1. Upgrading from a former version</h3><div style="clear:left"></div>
+<div class="paragraph"><p>SMBTA provides an update path to convert databases used with former versions to the current one.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">If you are upgrading SMBTA from an older version, it is necessary to run this conversion process!</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>The smbtaquery program includes a command line option <strong>"-C --convert"</strong>:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>smbtaquery -M $DB-DRIVER -N $DATABASE-NAME -S $DATABASE-USER -H $DATABASE-HOST  -C</tt></pre>
+</div></div>
+<div class="paragraph"><p>This process is self explaining. Basically it presents a menu to choose the version of SMBTA you are coming from. Please consult the chapter about the smbtaquery program to read more about the arguments to the -M, -N, -S and -H options.</p></div>
+<h3 id="_about_the_database">3.2. About the database</h3><div style="clear:left"></div>
 <div class="paragraph"><p>To run SMBTA, you&#8217;ll need to setup a database. Current valid databases are:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -695,9 +711,18 @@ The name of the database to access.
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
+<h3 id="_initial_setup_of_the_database">3.3. Initial setup of the database</h3><div style="clear:left"></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">This step is <strong>required</strong> if you install SMBTA for the first time!</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>If you are installing SMBTA for the first time, SMBTA assumes that the administrator has setup an empty database, with a user that has access to it.
 The smbtad component can then prepare an empty database on an initial run by using "smbtad -T", creating all required tables. See the chapter on smbtad for more about this.</p></div>
-<h3 id="_activating_the_vfs_module_on_samba_servers">3.2. Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
+<h3 id="_activating_the_vfs_module_on_samba_servers">3.4. Activating the VFS module on Samba Servers</h3><div style="clear:left"></div>
 <div class="paragraph"><p>In general, the Samba CIFS server is configured via smb.conf, it&#8217;s main
 configuration file. A typical service definition would look like this:</p></div>
 <div class="listingblock">
@@ -708,7 +733,7 @@ configuration file. A typical service definition would look like this:</p></div>
 </div></div>
 <div class="paragraph"><p>Defining the share "ExampleShare" as a CIFS service, refering to the
 path /space on the servers storage.</p></div>
-<h4 id="_internet_socket">3.2.1. Internet socket</h4>
+<h4 id="_internet_socket">3.4.1. Internet socket</h4>
 <div class="paragraph"><p>By extending the share definition with the commands to load the SMBTA
 VFS module, SMBTA logging for this service can be activated:</p></div>
 <div class="listingblock">
@@ -734,7 +759,7 @@ use protocol version 2. <strong>This documentation is only refering to protocol 
 <div class="paragraph"><p>The host and port parameters define the hostname of the system that will be
 used as the target for the VFS modules data to send. It will try to connect
 to the port number given with the parameter port.</p></div>
-<h4 id="_unix_domain_socket">3.2.2. Unix domain socket</h4>
+<h4 id="_unix_domain_socket">3.4.2. Unix domain socket</h4>
 <div class="paragraph"><p>The module can also run using a unix domain socket, which is useful if you
 want to connect smbtad on the same system as the Samba server. In this case
 The share definition would look like this:</p></div>
@@ -749,7 +774,7 @@ The share definition would look like this:</p></div>
 </div></div>
 <div class="paragraph"><p>The mode parameter set to "unix_domain_socket" then will use a unix domain
 socket at /var/tmp/stadsocket.</p></div>
-<h4 id="_anonymization">3.2.3. Anonymization</h4>
+<h4 id="_anonymization">3.4.3. Anonymization</h4>
 <div class="paragraph"><p>Anonymization of user related information can be enabled in the VFS module. There are two modes of anonymization possible.</p></div>
 <div class="paragraph"><p>The first method is created by generating a hash number out of the username, and add the number to a given prefix in the configuration. Such, a user called "holger" might become "user123", if "user" was the given prefix.</p></div>
 <div class="listingblock">
@@ -776,7 +801,7 @@ socket at /var/tmp/stadsocket.</p></div>
         smb_traffic_analyzer:anonymize_prefix = user
         smb_traffic_analyzer:total_anonymization = yes</tt></pre>
 </div></div>
-<h3 id="_setting_up_smbtad">3.3. Setting up smbtad</h3><div style="clear:left"></div>
+<h3 id="_setting_up_smbtad">3.5. Setting up smbtad</h3><div style="clear:left"></div>
 <div class="paragraph"><p>On the target host of the module, the program smbtad is running. It&#8217;s task
 is mainly to feed a SQL storage out of the data it receives from the module,
 maintain the storage and accept requests from clients.</p></div>
@@ -787,7 +812,7 @@ maintain the storage and accept requests from clients.</p></div>
 <div class="paragraph"><p>smbtad is a daemon program that can be run by any user. By default, it creates a directory $HOME/.smbtad/ where it stores it&#8217;s database. The above call makes smbtad to listen to the VFS modules connections on port 3490, and listen to client connections on port 3491.</p></div>
 <div class="paragraph"><p>By default, smbtad creates a database as $HOME/.smbtad/staddb. If the database
 already exists, it will use the existing database.</p></div>
-<h4 id="_the_command_line_options_of_smbtad">3.3.1. The command line options of smbtad</h4>
+<h4 id="_the_command_line_options_of_smbtad">3.5.1. The command line options of smbtad</h4>
 <div class="paragraph"><p>Any option you give that smbtad doesn&#8217;t understand will lead to print out it&#8217;s list of processed commands. Such as if the user calls:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -884,7 +909,7 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
 <div class="paragraph"><p>As of <strong>version 1.2.4 of smbtad</strong>, the database to use is connected via libDBI. The -N argument specifies the name of the database to be used for the database connection.</p></div>
 <h5 id="_t_setup">-T --setup</h5>
 <div class="paragraph"><p>As of <strong>version 1.2.4 of smbtad</strong>, the database needs to be setup by the -T --setup switch. This will access the database, and create the initial tables and structure of the database. smbtad will not daemonize after this call, just return normally.</p></div>
-<h4 id="_using_a_configuration_file_with_smbtad">3.3.2. Using a configuration file with smbtad</h4>
+<h4 id="_using_a_configuration_file_with_smbtad">3.5.2. Using a configuration file with smbtad</h4>
 <div class="paragraph"><p>All the options mentioned in the paragraph before can be configured with a configuration file. The configuration file has the same format as ini-Files, known from the Windows platform. An example configuration file is included in the smbtad package, in the /dist directory. We will go through a complete configuration file in this chapter, descriping all the options. The configuration file is separated by chapters, such as "general" or "network". Line beginning with # are considered comments.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -962,7 +987,7 @@ License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&
         # is older than 2 hours, would be 0,02:00:00 as parameter.
         config = 01,00:00:00</tt></pre>
 </div></div>
-<h4 id="_controlling_smbtad_through_the_rcsmbtad_script">3.3.3. Controlling smbtad through the rcsmbtad script</h4>
+<h4 id="_controlling_smbtad_through_the_rcsmbtad_script">3.5.3. Controlling smbtad through the rcsmbtad script</h4>
 <div class="paragraph"><p>The smbtad distribution includes LSB compliant start/stop scripts, as well
 as to check the availability of the service. Provided you have a configuration
 file setup for smbtad in /etc/smbtad.conf, the scripts will use this as the
@@ -993,7 +1018,7 @@ and checked for availability with:
 <div class="content">
 <pre><tt>rcsmbtad status</tt></pre>
 </div></div>
-<h3 id="_checking_the_installation">3.4. Checking the installation</h3><div style="clear:left"></div>
+<h3 id="_checking_the_installation">3.6. Checking the installation</h3><div style="clear:left"></div>
 <div class="paragraph"><p>When everything is set up, move some data on the shares you have activated
 the VFS module on. For example, if you write a file to a share,
 you can check the installation by looking into the database
@@ -1832,7 +1857,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.4<br />
-Last updated 2011-05-08 08:58:33 CEST
+Last updated 2011-05-16 01:13:35 CEST
 </div>
 </div>
 </body>
