@@ -1,19 +1,19 @@
 class ConfigController < ApplicationController
   def general
     @dbdrivers = ["pgsql", "mysql", "sqlite"]
-    $dbdriver = ""
-    $dbname = ""
-    $dbuser = ""
-    $dbhost = ""
-    $dbpassword = ""
+    session[:dbdriver] = ""
+    session[:dbname] = ""
+    session[:dbuser] = ""
+    session[:dbhost] = ""
+    session[:dbpassword] = ""
   end
 
   def save
-    $dbdriver = params[:dbdriver]
-    $dbname = params[:dbname]
-    $dbuser = params[:dbuser]
-    $dbhost = params[:dbhost]
-    $dbpassword = params[:dbpassword]
+    session[:dbdriver] = params[:dbdriver]
+    session[:dbname] = params[:dbname]
+    session[:dbuser] = params[:dbuser]
+    session[:dbhost] = params[:dbhost]
+    session[:dbpassword] = params[:dbpassword]
     redirect_to :controller => "overview", :action => "index"
   end
 end

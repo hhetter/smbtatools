@@ -177,7 +177,7 @@ class OverviewController < ApplicationController
   private
 
   def required_config
-    if $dbdriver.blank? || $dbname.blank? || $dbuser.blank? || $dbhost.blank?
+    if session[:dbdriver].blank? || session[:dbname].blank? || session[:dbuser].blank? || session[:dbhost].blank?
       redirect_to :root, :flash => {:error => "Please check your configuration."}
     end
   end
