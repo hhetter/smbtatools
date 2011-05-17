@@ -365,6 +365,27 @@ function inspect_functionsettings(){
         }
     }
 }
+function validNumber(field){
+    var d=field.attr('numeric');
+        var value=$().val("vaule");
+        var orignalValue=value;
+        val=val.replace(/[0-9]*/g, "");
+
+       	var msg="Only Integer Values allowed.";
+
+       	if (d=='decimal'){
+       	  value=value.replace(/\./, "");
+          msg="Only Numeric Values allowed.";
+          }
+
+        if (val!=''){
+        orignalValue=orignalValue.replace(/([^0-9].*)/g, "")
+        $(this).val(orignalValue);
+        alert(msg);
+        }
+
+    }
+
 function highlightClose(divname){
     $('#close_function_' + divname).css({'opacity' : '1',  'filter':'alpha(opacity=100)'});
 }
@@ -397,7 +418,7 @@ function refreshFunction(divname){
 
 var i = 0;
 $(document).ready(function(){
-
+$(".number").numeric({ decimal: false, negative: false }, function() { alert("Positive integers only"); this.value = ""; this.focus(); });
     setInterval(function()
     {
             if (($("#domains").length) && (i == 0)) {
