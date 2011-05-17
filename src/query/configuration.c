@@ -385,7 +385,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	pid_t pid;
 	pid = getpid();
 	char *tempff= NULL;
-	tempff = talloc_asprintf(runtime_mem,"tmp_xml-%d.xml",pid);
+	tempff = talloc_asprintf(runtime_mem,"/tmp/tmp_xml-%d.xml",pid);
 	if (c->query_xmlfile == NULL)
 		c->query_xmlfile=tempff;
 	interpreter_open_xml_file(c);
