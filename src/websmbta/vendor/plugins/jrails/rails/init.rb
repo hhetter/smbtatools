@@ -11,6 +11,6 @@
 # ActionView::Helpers::PrototypeHelper::DISABLE_JQUERY_FORGERY_PROTECTION = true
 
 ActionView::Helpers::AssetTagHelper::JAVASCRIPT_DEFAULT_SOURCES = ['jquery','jquery-ui','jrails']
-#ActionView::Helpers::AssetTagHelper::reset_javascript_include_default
+ActionView::Helpers::AssetTagHelper::reset_javascript_include_default
 require 'jrails'
 require 'jquery_selector_assertions' if RAILS_ENV == 'test'
