@@ -162,6 +162,12 @@ input.number{
     opacity: 0.5;
     filter:alpha(opacity=50);
 }
+.printview_function{
+    position:absolute;
+    right:34px;
+    opacity: 0.5;
+    filter:alpha(apacity=50);
+}
 .defined_function{
     position:relative;
     float:left;

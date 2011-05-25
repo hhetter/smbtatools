@@ -415,6 +415,21 @@ function refreshFunction(divname){
         }
     })
 }
+function highlightPrintview(divname){
+    $('#printview_function_' + divname).css({'opacity': '1', 'filter':'alpha(opacity=100)'});
+}
+function resetPrintview(divname){
+   $('#printview_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
+}
+function openPrintview(divname){
+    $.ajax({
+        url: "../functions/printview_function",
+        type: "get",
+        data: {
+            func: $("input#function_" + divname).val()
+        }
+    })
+}
 
 var i = 0;
 $(document).ready(function(){
