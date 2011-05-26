@@ -1585,7 +1585,7 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 		return timestr;
 	/* only a date */
 	} else if (strptime(timestr,"%Y-%m-%d",&tmp2) != NULL) {
-		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
+		strftime(outstr,199,"%Y-%m-%d 00:00:00",&tmp2);
 		return outstr;
 	/* only a time, assume the todays date */
 	} else if (strptime(timestr,"%T",&tmp2) != NULL ||
