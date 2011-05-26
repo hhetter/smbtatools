@@ -893,7 +893,7 @@ Any functions that are called on objects can make use of time modifiers, that al
 
 .Example for FROM-TO:
 ==================================
-'global from 10-10-2010 to today, total rw;'
+'global from 2011-05-25 to today, total rw;'
 ==================================
 
 .Example for SINCE:
@@ -903,7 +903,7 @@ Any functions that are called on objects can make use of time modifiers, that al
 
 Allowed keywords for time specification are:
 $DATE-$TIME in the fowolling format:
-*MM-DD-YYYY HH:MM:SS*
+*YYYY-MM-DD HH:MM:SS*
 
 Also, there are the following keywords making the time specification easier:
 *yesterday*, *today* and *now*.
