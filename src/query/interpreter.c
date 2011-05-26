@@ -1773,7 +1773,6 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 {
 	char *go = go_through;
 	char *bn, *backup;
-	char *lv = NULL;
 	int dif;
 	char *en = strstr(go,",");
 	if (strlen(go_through) == 0) return NULL;
@@ -1792,10 +1791,7 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 	en = en + 1;
 	bn = en;
 	while (en != NULL) {
-		lv = strstr(bn, "'");
-		if (lv == NULL) en = strstr(bn," ");
-		else en = strstr(bn,"'");
-		
+		en = strstr(bn, " ");
 		if (en == NULL) {
 			en = strstr(bn,",");
 			if (en == NULL) {
