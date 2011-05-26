@@ -1791,6 +1791,22 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 	en = en + 1;
 	bn = en;
 	while (en != NULL) {
+		en = strstr(bn, "\'");
+		if (en != NULL && en == bn) {
+			/**
+			 * oh no, a qoute has been found
+			 */
+			bn = bn + 1;
+			en = strstr(bn,"\'");
+			dif = en-bn;
+			command_data->arguments[command_data->argument_count] =
+				talloc_strndup(ctx,bn,dif);
+			command_data->argument_count=
+				command_data->argument_count + 1;
+			en = en +1;
+			bn = en;
+			continue;
+		}
 		en = strstr(bn, " ");
 		if (en == NULL) {
 			en = strstr(bn,",");
