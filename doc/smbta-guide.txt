@@ -1079,7 +1079,7 @@ Requirements
 Installation
 ^^^^^^^^^^^^
 
-Currently *webSMBTA* is in BETA, as it has not yet been employed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use *webSMBTA* is to start it with the rails integrated webserver:
+Currently *webSMBTA* is in BETA, as it has not yet been deployed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use *webSMBTA* is to start it with the rails integrated webserver:
 
 -----------------------------------------------
 cd query/webui/
@@ -1088,6 +1088,11 @@ rails server
 
 First startup
 ^^^^^^^^^^^^^
+You can connect to webSMBTA per entering the hostname and the port where your rails server is running (default 3000) e.g.
+-----------------------------------------------
+localhost:3000
+-----------------------------------------------
+Tested Browser are Mozilla Firefox, Internet Explorer, Chromium and Safari.
 
 At first startup, webSMBTA will show a configuration dialog like this:
 image:gfx/webSMBTA/configuration.png[webSMBTA configuration dialog appearing at the first startup of the application]
@@ -1116,9 +1121,11 @@ You surely notice the arrow to the right, showing that there is more to explore.
 Second data view, "domains"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After clicking the "global" selection, *webSMBTA* will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about. 
+After clicking the "global" selection, *webSMBTA* will do a query on the database automatically to find out 
+image:gfx/webSMBTA/domains.png[webSMBTA's second data view, showing the domains in the database] +
+the list of domains that the SMBTA installation knows about. 
 
-If you click on on of the domains in the selection area, this domain will be chosen as an object to work with, and from now on *webSMBTA* will bound all it's results to this domain.
+If you click on one of the domains in the selection area, this domain will be chosen as an object to work with, and from now on *webSMBTA* will bound all it's results to this domain.
 
 As you can see, the first entry in the selection area is "(All)", which you can use to de-select a domain. If you click this selection, *webSMBTA* will operate with "Global" as the object (see previous section).
 
@@ -1141,8 +1148,101 @@ Running function on selected objects
 
 If you have succesfully chosen an object with the object selector, you can run one of smbtaqueries functions on it.
 Supported are all functions that *SMBTAquery* does support, as described in the smbtaquery chapter.
+image:gfx/webSMBTA/functions.png[The function selection]
 
+search
+++++++
 
+image:gfx/webSMBTA/fn_search.png[Helptext and parameters for search function] +
+The search function allows a fuzzy search for [term] over the whole database or an object. It allows
+SQL-style wildcards like '%*'. If the function finds data that matches the search string,
+it will identify the object and shows related data. For example, if it finds a user name that
+matches to [term], it will identify it as a user, and additionally prints the domain the user is
+belonging to.
+
+Needed parameters: search string
+
+list
+++++
+
+image:gfx/webSMBTA/fn_list.png[Helptext and parameters for list function] +
+The list function prints a list of objects related to the given object.
+
+"list users" will print out the list of known users working or involved
+with the object. +
+"list files" will print out the list of known files involved with the object.
+
+needed parameters: object
+
+total
++++++
+
+image:gfx/webSMBTA/fn_total.png[Helptext and parameters for total function] +
+The total function prints out the sum of bytes transferred by an object.
+
+"total r" will compute the sum of bytes read. +
+"total w" will compute the sum of bytes written. +
+"total rw" will compute the sum of bytes transferred (read and write access).
+
+needed parameters: mode
+
+top
++++
+
+image:gfx/webSMBTA/fn_top.png[Helptext and parameters for top function] +
+The top function prints out a number of top files, users, or shares by read, write or read and write access. +
+The "asc" and "desc" arguments are optional. The sort direction of the function can be changed by adding one of these arguments.
+
+needed parameters: object, mode, number of listed objects +
+optional parameter: sort-mode
+
+usage
++++++
+
+image:gfx/webSMBTA/fn_usage.png[Helptext and parameters for usage function] +
+The usage function sums up the usage or activity of an object by creating a virtual day, listing 24 hours and showing the average data activity by percentage.
+
+needed parameters: mode
+
+last_activity
++++++++++++++
+
+image:gfx/webSMBTA/fn_last_activity.png[Helptext and parameters for last_activity function] +
+The last_activity function prints out a list of actions an object has been
+involved in.
+
+needed parameters: number of last activities
+
+throughput
+++++++++++
+
+image:gfx/webSMBTA/fn_throughput.png[Helptext and parameters for throughput function] +
+The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.
+
+needed parameters: time periode (number and unit), mode
+
+Printview, Refresh, Remove
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Every rendered functions has three icons on the top right side.
+
+Printview
++++++++++
+
+image:gfx/webSMBTA/function-printview.png[printview-button] +
+Opens the specific function in a new tab or window.
+
+Refresh
++++++++
+
+image:gfx/webSMBTA/function-refresh.png[refresh-button] +
+Refresh the specific function with the current data from the database.
+
+Remove
+++++++
+
+image:gfx/webSMBTA/function-close.png[remove-button] +
+Removes the specific function, when it isn't needed anymore.
 
 smbtamonitor
 ~~~~~~~~~~~~

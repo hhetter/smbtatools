@@ -1479,13 +1479,19 @@ belonging to.</p></div>
 <h4 id="_requirements_2">4.3.1. Requirements</h4>
 <div class="paragraph"><p><strong>webSMBTA</strong> relies on a fully working SMBTA setup, including a working database, and the <strong>smbtaquery</strong> program installed in system paths. If you can run a query like <em>global, total rw;</em> via smbtaquery, all should be fine.</p></div>
 <h4 id="_installation">4.3.2. Installation</h4>
-<div class="paragraph"><p>Currently <strong>webSMBTA</strong> is in BETA, as it has not yet been employed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use <strong>webSMBTA</strong> is to start it with the rails integrated webserver:</p></div>
+<div class="paragraph"><p>Currently <strong>webSMBTA</strong> is in BETA, as it has not yet been deployed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use <strong>webSMBTA</strong> is to start it with the rails integrated webserver:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>cd query/webui/
 rails server</tt></pre>
 </div></div>
 <h4 id="_first_startup">4.3.3. First startup</h4>
+<div class="paragraph"><p>You can connect to webSMBTA per entering the hostname and the port where your rails server is running (default 3000) e.g.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>localhost:3000</tt></pre>
+</div></div>
+<div class="paragraph"><p>Tested Browser are Mozilla Firefox, Internet Explorer, Chromium and Safari.</p></div>
 <div class="paragraph"><p>At first startup, webSMBTA will show a configuration dialog like this:
 <span class="image">
 <img src="gfx/webSMBTA/configuration.png" alt="gfx/webSMBTA/configuration.png" />
@@ -1507,8 +1513,12 @@ The field <strong>DB-password</strong> takes the password of the user specified 
 <div class="paragraph"><p>As you can see, the view is called "Global", which means that the program is operating over the whole database, not taking any special SMB related objects into account. Like <strong>smbtaquery</strong>, <strong>webSMBTA</strong> is works based on objects, and the "Global" object is special in the way that it runs over the whole database.</p></div>
 <div class="paragraph"><p>You surely notice the arrow to the right, showing that there is more to explore. By clicking on the "global" entry in the selection field, the next data view will appear.</p></div>
 <h4 id="_second_data_view_domains">4.3.5. Second data view, "domains"</h4>
-<div class="paragraph"><p>After clicking the "global" selection, <strong>webSMBTA</strong> will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about.</p></div>
-<div class="paragraph"><p>If you click on on of the domains in the selection area, this domain will be chosen as an object to work with, and from now on <strong>webSMBTA</strong> will bound all it&#8217;s results to this domain.</p></div>
+<div class="paragraph"><p>After clicking the "global" selection, <strong>webSMBTA</strong> will do a query on the database automatically to find out
+<span class="image">
+<img src="gfx/webSMBTA/domains.png" alt="gfx/webSMBTA/domains.png" />
+</span><br />
+the list of domains that the SMBTA installation knows about.</p></div>
+<div class="paragraph"><p>If you click on one of the domains in the selection area, this domain will be chosen as an object to work with, and from now on <strong>webSMBTA</strong> will bound all it&#8217;s results to this domain.</p></div>
 <div class="paragraph"><p>As you can see, the first entry in the selection area is "(All)", which you can use to de-select a domain. If you click this selection, <strong>webSMBTA</strong> will operate with "Global" as the object (see previous section).</p></div>
 <h4 id="_third_data_view_shares_and_users">4.3.6. Third data view, "shares and users"</h4>
 <div class="paragraph"><p>After choosing an object in the "domains" selection, <strong>webSMBTA</strong> will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.
@@ -1523,7 +1533,82 @@ The field <strong>DB-password</strong> takes the password of the user specified 
 </span></p></div>
 <h4 id="_running_function_on_selected_objects">4.3.8. Running function on selected objects</h4>
 <div class="paragraph"><p>If you have succesfully chosen an object with the object selector, you can run one of smbtaqueries functions on it.
-Supported are all functions that <strong>SMBTAquery</strong> does support, as described in the smbtaquery chapter.</p></div>
+Supported are all functions that <strong>SMBTAquery</strong> does support, as described in the smbtaquery chapter.
+<span class="image">
+<img src="gfx/webSMBTA/functions.png" alt="gfx/webSMBTA/functions.png" />
+</span></p></div>
+<h5 id="_search_2">search</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_search.png" alt="gfx/webSMBTA/fn_search.png" />
+</span><br />
+The search function allows a fuzzy search for [term] over the whole database or an object. It allows
+SQL-style wildcards like <em>%*</em>. If the function finds data that matches the search string,
+it will identify the object and shows related data. For example, if it finds a user name that
+matches to [term], it will identify it as a user, and additionally prints the domain the user is
+belonging to.</p></div>
+<div class="paragraph"><p>Needed parameters: search string</p></div>
+<h5 id="_list_2">list</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_list.png" alt="gfx/webSMBTA/fn_list.png" />
+</span><br />
+The list function prints a list of objects related to the given object.</p></div>
+<div class="paragraph"><p>"list users" will print out the list of known users working or involved
+with the object.<br />
+"list files" will print out the list of known files involved with the object.</p></div>
+<div class="paragraph"><p>needed parameters: object</p></div>
+<h5 id="_total_2">total</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_total.png" alt="gfx/webSMBTA/fn_total.png" />
+</span><br />
+The total function prints out the sum of bytes transferred by an object.</p></div>
+<div class="paragraph"><p>"total r" will compute the sum of bytes read.<br />
+"total w" will compute the sum of bytes written.<br />
+"total rw" will compute the sum of bytes transferred (read and write access).</p></div>
+<div class="paragraph"><p>needed parameters: mode</p></div>
+<h5 id="_top_2">top</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_top.png" alt="gfx/webSMBTA/fn_top.png" />
+</span><br />
+The top function prints out a number of top files, users, or shares by read, write or read and write access.<br />
+The "asc" and "desc" arguments are optional. The sort direction of the function can be changed by adding one of these arguments.</p></div>
+<div class="paragraph"><p>needed parameters: object, mode, number of listed objects<br />
+optional parameter: sort-mode</p></div>
+<h5 id="_usage_2">usage</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_usage.png" alt="gfx/webSMBTA/fn_usage.png" />
+</span><br />
+The usage function sums up the usage or activity of an object by creating a virtual day, listing 24 hours and showing the average data activity by percentage.</p></div>
+<div class="paragraph"><p>needed parameters: mode</p></div>
+<h5 id="_last_activity_2">last_activity</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_last_activity.png" alt="gfx/webSMBTA/fn_last_activity.png" />
+</span><br />
+The last_activity function prints out a list of actions an object has been
+involved in.</p></div>
+<div class="paragraph"><p>needed parameters: number of last activities</p></div>
+<h5 id="_throughput_2">throughput</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/fn_throughput.png" alt="gfx/webSMBTA/fn_throughput.png" />
+</span><br />
+The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.</p></div>
+<div class="paragraph"><p>needed parameters: time periode (number and unit), mode</p></div>
+<h4 id="_printview_refresh_remove">4.3.9. Printview, Refresh, Remove</h4>
+<div class="paragraph"><p>Every rendered functions has three icons on the top right side.</p></div>
+<h5 id="_printview">Printview</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/function-printview.png" alt="gfx/webSMBTA/function-printview.png" />
+</span><br />
+Opens the specific function in a new tab or window.</p></div>
+<h5 id="_refresh">Refresh</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/function-refresh.png" alt="gfx/webSMBTA/function-refresh.png" />
+</span><br />
+Refresh the specific function with the current data from the database.</p></div>
+<h5 id="_remove">Remove</h5>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/function-close.png" alt="gfx/webSMBTA/function-close.png" />
+</span><br />
+Removes the specific function, when it isn&#8217;t needed anymore.</p></div>
 <h3 id="_smbtamonitor">4.4. smbtamonitor</h3><div style="clear:left"></div>
 <div class="paragraph"><p>smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.</p></div>
 <div class="paragraph"><p>This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.</p></div>
@@ -1857,7 +1942,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.4<br />
-Last updated 2011-05-26 14:38:28 CEST
+Last updated 2011-05-27 11:09:10 CEST
 </div>
 </div>
 </body>
