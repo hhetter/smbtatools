@@ -1803,7 +1803,7 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 				talloc_strndup(ctx,bn,dif);
 			command_data->argument_count=
 				command_data->argument_count + 1;
-			en = en +1;
+			en = en +2;
 			bn = en;
 			continue;
 		}
