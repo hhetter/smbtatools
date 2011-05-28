@@ -1,7 +1,7 @@
 #
 # spec file for package smbtatools
 #
-# Copyright (c) 2010 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -19,12 +19,19 @@
 
 
 Name:           smbtatools
-BuildRequires:  cmake libtalloc-devel ncurses-devel libsmbclient-devel
-BuildRequires:  sqlite3-devel libiniparser-devel
-Requires:	sqlite3 ncurses
+BuildRequires:  cmake libsmbclient-devel libtalloc-devel ncurses-devel libdbi-devel 
+
+%if 0%{?suse_version}
+BuildRecommends:  libiniparser-devel sqlite3-devel
+%endif
+
+%if 0%{defined fedora}
+BuildRequires:  iniparser-devel
+%endif
+
 License:        GPLv3+
 Group:          Productivity/Networking/Samba
-Version:        1.1
+Version:        1.2.5
 Release:        1
 Summary:        Tools for configuration and query of SMB Traffic Analyzer
 Url:            http://github.com/hhetter/smbtatools
@@ -33,6 +40,17 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
 The smbtatools contain utility programs helping the end user to query the database that is created by the smbtad program. smbtatools is part of the SMB Traffic Analyzer project, which allows to create statistics about the data flow on a Samba network. For more information, please see: http://holger123.wordpress.com/smb-traffic-analyzer/
+
+%package websmbta
+Summary: 	Webfrontend for smbtaquery
+Requires:	rubygem-rails-3_0 rubygem-sqlite3 smbtatools
+
+%description websmbta
+A Ruby-on-Rails3 based webfrontend for smbtaquery.
+Authors:
+--------
+    Benjamin Brunner <bbrunner@suse.de>
+    
 
 %prep
 %setup -q
@@ -65,21 +83,35 @@ pushd build
 make DESTDIR=%{buildroot} install
 %endif
 popd build
+mkdir -p $RPM_BUILD_ROOT/srv/www/websmbta
 
+%__cp -r $RPM_BUILD_DIR/smbtatools-%{version}/src/websmbta $RPM_BUILD_ROOT/srv/www/websmbta
 
 %clean
 %__rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
+%dir /usr/share/smbtatools
 %{_bindir}/smbtaquery
 %{_bindir}/smbtamonitor
 %{_bindir}/smbtatorture
+%{_bindir}/rrddriver
+%{_bindir}/smbtatorturesrv
 
 %{_mandir}/man?/smbtaquery.*
 %{_mandir}/man?/smbtamonitor.*
 %{_mandir}/man?/smbtatorture.*
 
+/usr/share/smbtatools/*
+
 %doc doc/smbta-guide.html
+%doc doc/gfx/*.png
+%doc doc/gfx/webSMBTA/*.png
+
+%files websmbta
+%defattr(-,root,root)
+%dir /srv/www/websmbta
+/srv/www/websmbta/*
 
 %changelog
