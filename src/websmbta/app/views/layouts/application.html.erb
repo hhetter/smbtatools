@@ -11,21 +11,26 @@
     <title>Smbtaquery</title>
   </head>
   <body>
-    <div id="container">
-      <div id="header">
-        <div id="version"><i>Version <%=%x[smbtaquery --version]%></i></div>
-        <div id="logo"><%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index"%></div>
-        <div id="titel"><h1><i>web</i>SMBTA</h1></div>
-        <div id="hp_link" style="margin-left:10px; margin-top:10px;"><%=link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/"%>&nbsp;&nbsp;
-           <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %></div>
+    <% if @output == nil  %>
+      <div id="container">
+        <div id="header">
+          <div id="version"><i>Version <%=%x[smbtaquery --version]%></i></div>
+          <div id="logo"><%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index"%></div>
+          <div id="titel"><h1><i>web</i>SMBTA</h1></div>
+          <div id="hp_link" style="margin-left:10px; margin-top:10px;"><%=link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/"%>&nbsp;&nbsp;
+            <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %></div>
+        </div>
       </div>
-    </div>
-    <hr/>
-    <% flash.each do |key, value| %>
-      <div class="flash <%= key %>"><%= value %></div>
-    <% end %>
-    <div id="list" style="position:relative; width:2000px; height:350px;">
+      <hr/>
+      <% flash.each do |key, value| %>
+        <div class="flash <%= key %>"><%= value %></div>
+      <% end %>
+      <div id="list" style="position:relative; width:2000px; height:350px;">
+        <%= yield %>
+      </div>
+    <%else%>
       <%= yield %>
-    </div>
+    <%end%>
+
   </body>
 </html>

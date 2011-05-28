@@ -36,50 +36,12 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/times.h>
-#include <errno.h>
-#include <limits.h>
-
-#include <netdb.h>
-#include <stdlib.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <sys/un.h>
-#include <signal.h>
-#include <pthread.h>
-#include <getopt.h>
 #include <syslog.h>
-#include <sys/select.h>
-#include <dlfcn.h>
-#include <string.h>
-#include <stdio.h>
 #include <talloc.h>
+#include <time.h>
 #include <unistd.h>
-#include <errno.h>
-#include <limits.h>
-
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/un.h>
-#include <signal.h>
-#include <pthread.h>
-#include <getopt.h>
-#include <syslog.h>
-#include <sys/select.h>
-#include <dlfcn.h>
-
-
 
 
 struct configuration_data {

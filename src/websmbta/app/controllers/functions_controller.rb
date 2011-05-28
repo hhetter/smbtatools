@@ -9,6 +9,14 @@ class FunctionsController < ApplicationController
     end
   end
 
+  def printview
+    @cmd = params[:cmd]
+    `#{@cmd}`
+    @output = File.open("/tmp/function.html", "r")
+    @output = @output.readlines.to_s
+    @output = @output.html_safe
+    File.delete("/tmp/function.html")
+  end
   def get_objects
     initial_command
     @domain = params[:domain]

@@ -1612,7 +1612,7 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 		return timestr;
 	/* only a date */
 	} else if (strptime(timestr,"%Y-%m-%d",&tmp2) != NULL) {
-		strftime(outstr,199,"%Y-%m-%d 00:00:00",tmp);
+		strftime(outstr,199,"%Y-%m-%d 00:00:00",&tmp2);
 		return outstr;
 	/* only a time, assume the todays date */
 	} else if (strptime(timestr,"%T",&tmp2) != NULL ||
@@ -1818,6 +1818,22 @@ char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 	en = en + 1;
 	bn = en;
 	while (en != NULL) {
+		en = strstr(bn, "\'");
+		if (en != NULL && en == bn) {
+			/**
+			 * oh no, a qoute has been found
+			 */
+			bn = bn + 1;
+			en = strstr(bn,"\'");
+			dif = en-bn;
+			command_data->arguments[command_data->argument_count] =
+				talloc_strndup(ctx,bn,dif);
+			command_data->argument_count=
+				command_data->argument_count + 1;
+			en = en +2;
+			bn = en;
+			continue;
+		}
 		en = strstr(bn, " ");
 		if (en == NULL) {
 			en = strstr(bn,",");

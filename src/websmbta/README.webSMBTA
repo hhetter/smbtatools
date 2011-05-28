@@ -1,0 +1,20 @@
+webSMBTA is currently considered as BETA.
+
+It was not yet employed on webservers like apache.
+
+Beta-Install-Instructions
+-Enter the "websmbta"-directory (e.g. for git sources "smbtatools/src/query/webui/")
+if you use SUSE
+- add Ruby repository (e.g. http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/) to zypper
+- $zypper in ruby rubygems rubygem-rails-3_0 rubygem-sqlite3 sqlite3-devel
+- -webSMBTA can be started by running $rails server in this directory.
+- open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)
+else
+- rename Gemfile.old to Gemfile
+- run $sudo gem install rails --version >3.0.3 (installs rails3)
+- run $sudo bundle install (installs needed ruby gems for websmbta)
+- webSMBTA can be started by running $rails server in this directory.
+- open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)
+
+Tested Browsers are Firefox, Chromium, Internet Explorer, Safari
+
