@@ -36,30 +36,34 @@ char *common_make_human_readable( TALLOC_CTX *ctx, long long int kb )
 {
 	char kbstring[20];
 	char *output;
-	long long int result = 0;
+	long long int result = kb;
 	long long int rest = 0;
 	lldiv_t diff;
 	strcpy(kbstring,"Bytes");
-	if (kb >= 1024) { diff =  lldiv(kb, (long long) 1024); // kb
-			strcpy(kbstring,"KB");
-			result = diff.quot;
-			rest = diff.rem;
-			}
-	if (kb >= 1024) { diff = lldiv(kb,(long long) 1024*1024); // mb
-			strcpy(kbstring,"MB");
-			result = diff.quot;
-			rest = diff.rem;
-		}
-	if (kb >= 1024) {
-	                diff = lldiv(kb,(long long) 1024*1024*1024); // gb
-	                strcpy(kbstring,"GB");}
-			result = diff.quot;
-			rest = diff.rem;
-	if (kb >= 1024) {
-	                diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
-	                strcpy(kbstring,"TB");}
-			result = diff.quot;
-			rest = diff.rem;
+	if (kb >= (long long )1024*1024*1024*1024) {
+                diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
+                strcpy(kbstring,"TB");
+		result = diff.quot;
+		rest = diff.rem;
+	} else 
+	if (kb >= (long long )1024*1024*1024) {
+                diff = lldiv(kb,(long long) 1024*1024*1024); // gb
+                strcpy(kbstring,"GB");
+		result = diff.quot;
+		rest = diff.rem;
+	} else
+	if (kb >= (long long) 1024*1024) {
+		diff = lldiv(kb,(long long) 1024*1024); // mb
+		strcpy(kbstring,"MB");
+		result = diff.quot;
+		rest = diff.rem;
+	} else
+	if (kb >= 1024) { 
+		diff =  lldiv(kb, (long long) 1024); // kb
+		strcpy(kbstring,"KB");
+		result = diff.quot;
+		rest = diff.rem;
+	}
 	output = talloc_asprintf( ctx,"%lli.%lli %s",result,rest,kbstring);
 	return output;
 }
