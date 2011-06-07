@@ -32,35 +32,35 @@ void network_close_connection( int sockfd ) {
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( TALLOC_CTX *ctx, long long int k )
+char *common_make_human_readable( TALLOC_CTX *ctx, long long int kb )
 {
 	char kbstring[20];
 	char *output;
-	long long int kb =  (long long ) k;
+	long long int result = 0;
 	long long int rest = 0;
 	lldiv_t diff;
 	strcpy(kbstring,"Bytes");
-	if (kb >= 1024) { diff =  lldiv(kb, 1024); // kb
+	if (kb >= 1024) { diff =  lldiv(kb, (long long) 1024); // kb
 			strcpy(kbstring,"KB");
-			kb = diff.quot;
+			result = diff.quot;
 			rest = diff.rem;
 			}
-	if (kb >= 1024) { diff = lldiv(kb+rest, 1024); // mb
+	if (kb >= 1024) { diff = lldiv(kb,(long long) 1024*1024); // mb
 			strcpy(kbstring,"MB");
-			kb = diff.quot;
+			result = diff.quot;
 			rest = diff.rem;
 		}
 	if (kb >= 1024) {
-	                diff = lldiv(kb+rest,1024); // gb
-			kb = diff.quot;
-			rest = diff.rem;
+	                diff = lldiv(kb,(long long) 1024*1024*1024); // gb
 	                strcpy(kbstring,"GB");}
-	if (kb >= 1024) {
-	                diff = lldiv(kb+rest,1024); // tb
-			kb = diff.quot;
+			result = diff.quot;
 			rest = diff.rem;
+	if (kb >= 1024) {
+	                diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
 	                strcpy(kbstring,"TB");}
-	output = talloc_asprintf( ctx,"%lli.%lli %s",kb,rest,kbstring);
+			result = diff.quot;
+			rest = diff.rem;
+	output = talloc_asprintf( ctx,"%lli.%lli %s",result,rest,kbstring);
 	return output;
 }
 
