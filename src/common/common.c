@@ -32,11 +32,11 @@ void network_close_connection( int sockfd ) {
  * unsigned long int z    bytes.
  *
  */
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long k )
+char *common_make_human_readable( TALLOC_CTX *ctx, long long int k )
 {
 	char kbstring[20];
 	char *output;
-	long long kb =  (long long ) k;
+	long long int kb =  (long long ) k;
 	long long int rest = 0;
 	lldiv_t diff;
 	strcpy(kbstring,"Bytes");

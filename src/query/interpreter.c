@@ -1456,7 +1456,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 {
 	char *query1, *query2, *xmldata = NULL;
 	dbi_result qdat;
-	unsigned long long sum;
+	long long sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
@@ -1473,12 +1473,12 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 
 		qdat = sql_query(ctx, config,query1);
-		sum = strtoull( result_get_element(ctx,0,qdat),
+		sum = strtoll( result_get_element(ctx,0,qdat),
 				NULL, 0);
 		const char *errf;
 		dbi_conn_error(config->DBIconn, &errf);
 		qdat = sql_query(ctx, config, query2);
-		sum = sum + strtoull(result_get_element(ctx,0,qdat),
+		sum = sum + strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes transfered %s.",
@@ -1493,7 +1493,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
 		
-		sum = strtoull(result_get_element(ctx,0,qdat),
+		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes read %s.",
@@ -1507,7 +1507,7 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			"select SUM(length) from write where %s;",
 			obj_struct->sql);
 		qdat = sql_query(ctx, config,query1);
-		sum = strtoull(result_get_element(ctx,0,qdat),
+		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes written %s.",
