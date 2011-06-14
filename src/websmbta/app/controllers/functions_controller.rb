@@ -3,7 +3,6 @@ class FunctionsController < ApplicationController
 
   def start_function
     get_function
-    logger.debug @cmd
     render :update do |page|
       page.insert_html :after, "list", :partial => "start_function"
     end
@@ -17,6 +16,14 @@ class FunctionsController < ApplicationController
     @output = @output.html_safe
     File.delete("/tmp/function.html")
   end
+
+  def save_function
+    @cmd = params[:cmd]
+    @cmd.chomp!(" -o html > /tmp/function.html")
+    output = %x[#{@cmd}]
+    send_data(output, :filename => "function.txt", :type => 'text/plain')
+  end
+
   def get_objects
     initial_command
     @domain = params[:domain]

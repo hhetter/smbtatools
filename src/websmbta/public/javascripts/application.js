@@ -166,7 +166,18 @@ function shareOnClickChange(){
     $("input#share").val(selected1.val());
     $("input#user").val(selected2.val());
     getFiles();
+}
+function formatOnClickChange(divname){
 
+    var selected = $("#file_format_"+divname).val();
+    if (selected == "HTML"){
+        $("#save_function_" + divname).hide();
+        $("#printview_function_" + divname).show();
+    }
+    if (selected == "Text"){
+        $("#printview_function_" + divname).hide();
+        $("#save_function_" + divname).show();
+    }
 }
 function fileOnClickChange(){
     var selected = $("#filelist option:selected");
@@ -421,14 +432,11 @@ function highlightPrintview(divname){
 function resetPrintview(divname){
    $('#printview_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
 }
-function openPrintview(divname){
-    $.ajax({
-        url: "../functions/printview_function",
-        type: "get",
-        data: {
-            func: $("input#function_" + divname).val()
-        }
-    })
+function highlightSave(divname){
+    $('#save_function_' + divname).css({'opacity': '1', 'filter':'alpha(opacity=100)'});
+}
+function resetSave(divname){
+   $('#save_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
 }
 
 var i = 0;

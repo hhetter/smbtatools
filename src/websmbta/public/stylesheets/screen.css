@@ -164,9 +164,21 @@ input.number{
 }
 .printview_function{
     position:absolute;
-    right:34px;
+    right:40px;
     opacity: 0.5;
     filter:alpha(apacity=50);
+}
+.save_function{
+    display:none;
+    position:absolute;
+    right:40px;
+    opacity: 0.5;
+    filter:alpha(apacity=50);
+}
+select.file_format{
+    position:absolute;
+    right:55px;
+    width:auto;
 }
 .defined_function{
     position:relative;
