@@ -441,20 +441,27 @@ function resetSave(divname){
 
 var i = 0;
 $(document).ready(function(){
-$(".number").numeric({ decimal: false, negative: false }, function() { alert("Positive integers only"); this.value = ""; this.focus(); });
+    $(".number").numeric({
+        decimal: false,
+        negative: false
+    }, function() {
+        alert("Positive integers only");
+        this.value = "";
+        this.focus();
+    });
     setInterval(function()
     {
-            if (($("#domains").length) && (i == 0)) {
-                refreshDomains();
-            }
-            if (($("#shares").length) && (i==1)) {
-                refreshShares();
-            }
-            if (($("#files").length) && (i==2)) {
-                refreshFiles();
-            }
-            i = i+1;
-            if (i==3)
-                i = 0;
+        if (($("#domains").length) && (i == 0)) {
+            refreshDomains();
+        }
+        if (($("#shares").length) && (i==1)) {
+            refreshShares();
+        }
+        if (($("#files").length) && (i==2)) {
+            refreshFiles();
+        }
+        i = i+1;
+        if (i==3)
+            i = 0;
     }, 120000);
 });
