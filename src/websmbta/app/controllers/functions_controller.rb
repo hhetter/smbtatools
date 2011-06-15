@@ -21,7 +21,7 @@ class FunctionsController < ApplicationController
     @cmd = params[:cmd]
     @cmd.chomp!(" -o html > /tmp/function.html")
     output = %x[#{@cmd}]
-    send_data(output, :filename => "function.txt", :type => 'text/plain')
+    send_data(output, :filename => "function-" + Time.now.strftime("%Y-%m-%d-%H%M%S").to_s + ".txt", :type => 'text/plain')
   end
 
   def get_objects
