@@ -461,8 +461,8 @@ function generateToc(toclevels) {
 <h1>The SMB Traffic Analyzer Guide</h1>
 <span id="author">Holger Hetterich</span><br />
 <span id="email"><tt>&lt;<a href="mailto:ozzy@metal-district.de">ozzy@metal-district.de</a>&gt;</tt></span><br />
-<span id="revnumber">version 1.2.4,</span>
-<span id="revdate">Apr 2011</span>
+<span id="revnumber">version 1.2.5,</span>
+<span id="revdate">May 2011</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -1555,7 +1555,7 @@ The list function prints a list of objects related to the given object.</p></div
 <div class="paragraph"><p>"list users" will print out the list of known users working or involved
 with the object.<br />
 "list files" will print out the list of known files involved with the object.</p></div>
-<div class="paragraph"><p>needed parameters: object</p></div>
+<div class="paragraph"><p>Needed parameters: object (shares, users, files)</p></div>
 <h5 id="_total_2">total</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/fn_total.png" alt="gfx/webSMBTA/fn_total.png" />
@@ -1564,41 +1564,66 @@ The total function prints out the sum of bytes transferred by an object.</p></di
 <div class="paragraph"><p>"total r" will compute the sum of bytes read.<br />
 "total w" will compute the sum of bytes written.<br />
 "total rw" will compute the sum of bytes transferred (read and write access).</p></div>
-<div class="paragraph"><p>needed parameters: mode</p></div>
+<div class="paragraph"><p>Needed parameters: mode (read, write, read/write)</p></div>
 <h5 id="_top_2">top</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/fn_top.png" alt="gfx/webSMBTA/fn_top.png" />
 </span><br />
 The top function prints out a number of top files, users, or shares by read, write or read and write access.<br />
 The "asc" and "desc" arguments are optional. The sort direction of the function can be changed by adding one of these arguments.</p></div>
-<div class="paragraph"><p>needed parameters: object, mode, number of listed objects<br />
-optional parameter: sort-mode</p></div>
+<div class="paragraph"><p>Needed parameters: object (shares, users, files), mode (read, write, read/write), number of listed objects<br />
+Optional parameter: sort-mode (descending, ascending)</p></div>
 <h5 id="_usage_2">usage</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/fn_usage.png" alt="gfx/webSMBTA/fn_usage.png" />
 </span><br />
 The usage function sums up the usage or activity of an object by creating a virtual day, listing 24 hours and showing the average data activity by percentage.</p></div>
-<div class="paragraph"><p>needed parameters: mode</p></div>
+<div class="paragraph"><p>Needed parameters: mode (read, write, read/write)</p></div>
 <h5 id="_last_activity_2">last_activity</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/fn_last_activity.png" alt="gfx/webSMBTA/fn_last_activity.png" />
 </span><br />
 The last_activity function prints out a list of actions an object has been
 involved in.</p></div>
-<div class="paragraph"><p>needed parameters: number of last activities</p></div>
+<div class="paragraph"><p>Needed parameters: number of last activities</p></div>
 <h5 id="_throughput_2">throughput</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/fn_throughput.png" alt="gfx/webSMBTA/fn_throughput.png" />
 </span><br />
 The throughput function calculates the throughput of data of the last [num] minutes, day, seconds, or hours.</p></div>
-<div class="paragraph"><p>needed parameters: time periode (number and unit), mode</p></div>
+<div class="paragraph"><p>Needed parameters: time periode (number and unit), mode (read, write, read/write)</p></div>
+<h5 id="_time_modifiers_2">Time Modifiers</h5>
+<div class="paragraph"><p>Any functions that are called on objects can make use of time modifiers, that allow to specifiy a time range the function shall work on.<br />
+<span class="image">
+<img src="gfx/webSMBTA/time_from.png" alt="gfx/webSMBTA/time_from.png" />
+</span><br />
+<span class="image">
+<img src="gfx/webSMBTA/time_to.png" alt="gfx/webSMBTA/time_to.png" />
+</span><br /></p></div>
+<div class="paragraph"><p>It&#8217;s possible to type in the timestamp manually in the following format:<br />
+<strong>YYYY-MM-DD HH:MM:SS</strong><br />
+The second way is to select the time from a calendar<br />
+<span class="image">
+<img src="gfx/webSMBTA/time_calendar.png" alt="gfx/webSMBTA/time_calendar.png" />
+</span></p></div>
 <h4 id="_printview_refresh_remove">4.3.9. Printview, Refresh, Remove</h4>
 <div class="paragraph"><p>Every rendered functions has three icons on the top right side.</p></div>
 <h5 id="_printview">Printview</h5>
-<div class="paragraph"><p><span class="image">
+<div class="paragraph"><p>There are two options.<br />
+<span class="image">
+<img src="gfx/webSMBTA/html.png" alt="gfx/webSMBTA/html.png" />
+</span><br />
+<span class="image">
 <img src="gfx/webSMBTA/function-printview.png" alt="gfx/webSMBTA/function-printview.png" />
 </span><br />
-Opens the specific function in a new tab or window.</p></div>
+Opens the specific function in a new tab or window.<br />
+<span class="image">
+<img src="gfx/webSMBTA/text.png" alt="gfx/webSMBTA/text.png" />
+</span><br />
+<span class="image">
+<img src="gfx/webSMBTA/function-save.png" alt="gfx/webSMBTA/function-save.png" />
+</span><br />
+Offers a downloadable textfile with the specific function.</p></div>
 <h5 id="_refresh">Refresh</h5>
 <div class="paragraph"><p><span class="image">
 <img src="gfx/webSMBTA/function-refresh.png" alt="gfx/webSMBTA/function-refresh.png" />
@@ -1941,8 +1966,8 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.2.4<br />
-Last updated 2011-05-27 11:09:10 CEST
+Version 1.2.5<br />
+Last updated 2011-06-16 14:58:16 CEST
 </div>
 </div>
 </body>
