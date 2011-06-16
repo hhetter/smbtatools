@@ -1,6 +1,6 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
-
+var time_check = "false";
 function getDomains () {
     $("#spinner_getdomains").show();
     $.ajax({
@@ -190,6 +190,7 @@ function configureFunction(){
     $("select.modelist").val("");
     $("input.number").val("");
     $("input.search").val("");
+    $("input.datetime").val("");
     if (selected == "search"){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
@@ -309,7 +310,9 @@ function start_function(){
             sort:      $("#sortlist_" + func + " option:selected").val(),
             number:$("#number_" + func).val(),
             timemode: $("select#timelist option:selected").val(),
-            func:     $("select#global_function option:selected").val()
+            func:     $("select#global_function option:selected").val(),
+            from:     $("input#from_" + func).attr('value'),
+            to:        $("input#to_" + func).attr('value')
         }
     })
 }
@@ -318,67 +321,88 @@ function reset_functions(){
     $(".function").val("");
     $("#help").fadeIn();
 }
-function inspect_functionsettings(){
-    if($("div#search").css("display") != "none"){
-        if($("input#search").val().length != 0){
-            $(".start").removeAttr("disabled");
-        }
-        if($("input#search").val().length == 0){
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#list_func").css("display") != "none"){
-        if($("select#objectlist_list option:selected").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#total").css("display") != "none"){
-        if($("select#modelist_total option:selected").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#usage").css("display") != "none"){
-        if($("select#modelist_usage option:selected").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#top").css("display") != "none"){
-        if($("select#objectlist_top").val() != "" & $("select#modelist_top").val() != "" & $("input#number_top").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#last_activity").css("display") != "none"){
-        if($("input#number_last_activity").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
-    }
-    else if($("div#throughput").css("display") != "none"){
-        if($("input#number_throughput").val() != "" & $("select#timelist").val() != "" & $("select#modelist_throughput").val() != ""){
-            $(".start").removeAttr("disabled");
-        }
-        else{
-            $(".start").attr("disabled", "true");
-        }
+function check_time_func(){
+    if(($("input#from_" + $("#global_function").val()).val() == "" & $("input#to_" + $("#global_function").val()).val() == "") ||
+        ($("input#from_" + $("#global_function").val()).val() != "" & $("input#to_" + $("#global_function").val()).val() == "") ||
+        (($("input#from_" + $("#global_function").val()).val() != "" & $("input#to_" + $("#global_function").val()).val() != "") &
+            ($("input#from_" + $("#global_function").val()).val() < $("input#to_" + $("#global_function").val()).val())))
+    {
+        check_time = "true";
     }
 }
+function inspect_functionsettings(){
+    check_time_func();
+    if (check_time == "true")
+    {
+        if($("div#search").css("display") != "none"){
+            if($("input#search").val().length != 0){
+                $(".start").removeAttr("disabled");
+            }
+            else
+            //if($("input#search").val().length == 0)
+            {
+                $(".start").attr("disabled", "true");
+            }
+        }
+    
+        else if($("div#list_func").css("display") != "none"){
+            if($("select#objectlist_list option:selected").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+        else if($("div#total").css("display") != "none"){
+            if($("select#modelist_total option:selected").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+        else if($("div#usage").css("display") != "none"){
+            if($("select#modelist_usage option:selected").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+        else if($("div#top").css("display") != "none"){
+            if($("select#objectlist_top").val() != "" & $("select#modelist_top").val() != "" & $("input#number_top").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+        else if($("div#last_activity").css("display") != "none"){
+            if($("input#number_last_activity").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+        else if($("div#throughput").css("display") != "none"){
+            if($("input#number_throughput").val() != "" & $("select#timelist").val() != "" & $("select#modelist_throughput").val() != ""){
+                $(".start").removeAttr("disabled");
+            }
+            else{
+                $(".start").attr("disabled", "true");
+            }
+        }
+    }
+    else{
+        $(".start").attr("disabled", "true");
+    }
+    check_time = "false";
+}
+
 function validNumber(field){
     var d=field.attr('numeric');
-        var value=$().val("vaule");
+        var value=$().val("value");
         var orignalValue=value;
         val=val.replace(/[0-9]*/g, "");
 
@@ -438,9 +462,17 @@ function highlightSave(divname){
 function resetSave(divname){
    $('#save_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
 }
-
 var i = 0;
+$(function() {
+    $(".datetime").datetimepicker({
+        showSecond: true,
+	timeFormat: 'hh:mm:ss',
+        dateFormat: 'yy-mm-dd'
+     });
+});
+
 $(document).ready(function(){
+
     $(".number").numeric({
         decimal: false,
         negative: false

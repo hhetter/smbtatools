@@ -4,7 +4,8 @@
   <%=link_to image_tag("function-save.png", :id => "save_function_" + @divname, :class => "save_function", :onmouseover => "highlightSave('#{@divname}')", :onmouseout => "resetSave('#{@divname}')"), {:controller => "functions", :action => "save_function", :cmd => @cmd} %>
   <%=image_tag('function-refresh.png', :id=> "refresh_function_" + @divname, :class => "refresh_function",:onmouseover => "highlightRefresh('#{@divname}')", :onmouseout => "resetRefresh('#{@divname}')",  :onclick => "refreshFunction('#{@divname}')")%>
   <%=image_tag('function-close.png', :id=> "close_function_" + @divname, :class => "close_function",:onmouseover => "highlightClose('#{@divname}')", :onmouseout => "resetClose('#{@divname}')",  :onclick => "closeFunction('#{@divname}')")%>
-  <div id="spinner_function_<%=@divname%>" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <div id="spinner_function_<%=@divname%>" class="spinner" style="top: 19px; right: 0px;"><%=image_tag('spinner.gif')%>  </div>
+  <br/>
   <%= @output %>
   <%=hidden_field_tag "function_" + @divname, @cmd%>
 </div>

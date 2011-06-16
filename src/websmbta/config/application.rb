@@ -31,7 +31,7 @@ module Smbtaquery
     # config.i18n.default_locale = :de
 
     # JavaScript files you want as :defaults (application.js is always included).
-    config.action_view.javascript_expansions[:defaults] = %w(jquery jquery.ui.min jquery.timepicker rails jquery.cookie jquery.timers jquery.md5 jquery.numeric)
+    config.action_view.javascript_expansions[:defaults] = %w(jquery rails jquery.cookie jquery.timers jquery.md5 jquery.numeric jquery-ui-1.7.2.custom.min timepicker)
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
