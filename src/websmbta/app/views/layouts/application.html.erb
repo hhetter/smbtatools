@@ -17,9 +17,24 @@
           <div id="version"><i>Version <%=%x[smbtaquery --version]%></i></div>
           <div id="logo"><%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index"%></div>
           <div id="titel"><h1><i>web</i>SMBTA</h1></div>
-          <div id="hp_link" style="margin-left:10px; margin-top:10px;"><%=link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/"%>&nbsp;&nbsp;
-            <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %></div>
-        </div>
+          <div id="hp_link" style="margin-left:10px; margin-top:10px;">
+              <% if current_user %>
+                Logged in as <%= current_user.username %>.
+                <%= link_to "Log out", log_out_path %>
+              <% else %>
+                <%= link_to "Sign up", sign_up_path %> or
+                <%= link_to "log in", log_in_path %>
+              <% end %>&nbsp;&nbsp;
+              <% if current_user && current_user.admin == true%>
+                <%= link_to "Create new user", sign_up_path %>
+              <%end%>
+              <%=link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/"%>&nbsp;&nbsp;
+              <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %>
+            </div>
+            <% flash.each do |name, msg| %>
+              <%= content_tag :div, msg, :id => "flash_#{name}" %>
+            <% end %>
+          </div>
       </div>
       <hr/>
       <% flash.each do |key, value| %>

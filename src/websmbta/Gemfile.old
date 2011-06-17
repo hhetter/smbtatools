@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-
+gem "bcrypt-ruby" #, :require => "bcrypt"
 gem 'rails', '3.0.3'
 gem 'ruby-debug'
 gem 'jquery-rails'

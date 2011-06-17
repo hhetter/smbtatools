@@ -25,8 +25,13 @@ body {
     height: 150px;
 }
 
-h1{ font-family: Verdana, Tahoms, sans-serfi;
+h1{
+    font-family: Verdana, Tahoms, sans-serfi;
     color: white;
+}
+h2{
+     font-family: Verdana, Tahoms, sans-serfi;
+    color: black;
 }
 
 #version {

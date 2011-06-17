@@ -1,4 +1,8 @@
 Smbtaquery::Application.routes.draw do
+  get "sessions/new"
+
+  get "users/new"
+
   get "functions/start_function"
   get "functions/refresh_function"
   get "functions/printview_function"
@@ -14,6 +18,12 @@ Smbtaquery::Application.routes.draw do
   get "config/general"
   post "config/save"
 
+  get "log_out" => "sessions#destroy", :as => "log_out"
+	get "log_in" => "sessions#new", :as => "log_in"
+	get "sign_up" => "users#new", :as => "sign_up" 
+  #root :to => "sessions#new"
+	resources :users
+	resources :sessions
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
