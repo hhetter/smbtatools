@@ -23,5 +23,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def is_admin
+    if session[:user_id] != nil && !User.find_by_id(session[:user_id]).admin
+      redirect_to :controller => "overview", :action => "index"
+    end
+
+  end
+
 
 end

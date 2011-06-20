@@ -1,5 +1,4 @@
 class SessionsController < ApplicationController
-    before_filter :check_user, :except => [:new, :create]
   def new
     if User.count == 0
       redirect_to :controller => "users", :action => "new"
