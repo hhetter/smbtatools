@@ -5,6 +5,7 @@
   <th>Created at: </th>
   <th>Updated at: </th>
   <th>Edit User: </th>
+  <% if @all_users %>
   <% @all_users.each do |user| %>
   <tr><td><%=user.id%></td>
     <td><%=user.username%></td>
@@ -12,7 +13,9 @@
     <td><%=user.created_at%></td>
     <td><%=user.updated_at%></td>
     <td><%=link_to image_tag('edit_user.png', :title => "Edit User"), :controller => "users", :action => "edit_user", :id => user.id%>
-    <%=link_to image_tag('delete_user.png', :title => "Delete User"), :controller => "users", :action => "delete", :id => user.id%></td>
+    <%=link_to image_tag('delete_user.png', :title => "Delete User"), {:controller => "users", :action => "delete", :id => user.id}, :confirm => "Do you really want to remove user #{user.username}?"%></td>
   </tr>
+  <%end%>
 <%end%>
   </table>
+<%=button_to "Add new User", sign_up_url %>

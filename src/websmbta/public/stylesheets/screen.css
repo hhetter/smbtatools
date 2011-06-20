@@ -74,6 +74,11 @@ a img { border: none; }
     background: #ffc0cb;
 }
 
+.flash.notice {
+    border: thin solid #00008B;
+    background: #439539;
+}
+
 .spinner {
     display: none;
     position:absolute;

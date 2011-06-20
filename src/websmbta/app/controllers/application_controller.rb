@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+
   protect_from_forgery
   def initial_command
     if session[:dbpassword] != ""
@@ -14,6 +15,13 @@ class ApplicationController < ActionController::Base
 	def current_user
 	  @current_user ||= User.find(session[:user_id]) if session[:user_id]
 	end
+
+  def check_user
+    if !session[:user_id]
+      flash[:error] = "Please log in or contact your administrator!"
+      redirect_to log_in_url
+    end
+  end
 
 
 end

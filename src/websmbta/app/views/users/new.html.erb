@@ -5,12 +5,12 @@
 <% else %>
 <h2>New user</h2>
 <%end%>
-<%= form_for @user do |f| %>
-<% if @user.errors.any? %>
+<%= form_for @new_user do |f| %>
+<% if @new_user.errors.any? %>
   <div class="error_messages">
     <h2>Form is invalid</h2>
     <ul>
-      <% for message in @user.errors.full_messages %>
+      <% for message in @new_user.errors.full_messages %>
         <li><%= message %></li>
       <% end %>
     </ul>
@@ -28,7 +28,7 @@
   <%= f.label :password_confirmation %><br />
   <%= f.password_field :password_confirmation %>
 </p>
-<% if (current_user && current_user.admin == true) || User.count == 0  %>
+<% if (current_user && current_user.admin == true) %>
 <p>
   <%= f.label :admin %><br/>
   <%= f.check_box :admin %>

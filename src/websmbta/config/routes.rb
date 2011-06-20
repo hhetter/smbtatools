@@ -15,15 +15,17 @@ Smbtaquery::Application.routes.draw do
   get "overview/get_shares_and_users"
   get "overview/get_files"
   get "overview/refresh_files"
-  get "config/general"
+  get "config" => "config#general", :as => "config"
   get "users/show"
   get "users/edit_user"
+  get "users/edit_settings"
   get "users/delete"
+  #get "users/new"
   post "config/save"
 
   get "log_out" => "sessions#destroy", :as => "log_out"
 	get "log_in" => "sessions#new", :as => "log_in"
-	get "sign_up" => "users#new", :as => "sign_up" 
+	post "sign_up" => "users#new", :as => "sign_up"
   root :to => "sessions#new"
 	resources :users
 	resources :sessions

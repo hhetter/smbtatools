@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+    before_filter :check_user, :except => [:new, :create]
   def new
     if User.count == 0
       redirect_to :controller => "users", :action => "new"
@@ -10,7 +11,7 @@ class SessionsController < ApplicationController
 	    session[:user_id] = user.id
 	    redirect_to :controller => "config", :action => "general", :notice => "Logged in!"
 	  else
-	    flash.now.alert = "Invalid username or password"
+      flash[:error] = "Invalid username or password"
 	    render "new"
 	  end
 	end

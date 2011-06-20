@@ -1,5 +1,6 @@
 class OverviewController < ApplicationController
-  before_filter :required_config
+
+  before_filter :required_config, :check_user
   require "rexml/document"
   include REXML
   def index
@@ -178,7 +179,7 @@ class OverviewController < ApplicationController
 
   def required_config
     if session[:dbdriver].blank? || session[:dbname].blank? || session[:dbuser].blank? || session[:dbhost].blank?
-      redirect_to :root, :flash => {:error => "Please check your configuration."}
+      redirect_to config_url, :flash => {:error => "Please check your configuration."}
     end
   end
 

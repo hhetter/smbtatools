@@ -1,5 +1,6 @@
 class FunctionsController < ApplicationController
   require 'digest/md5'
+  before_filter :check_user
 
   def start_function
     get_objects
