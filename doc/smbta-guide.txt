@@ -1124,24 +1124,29 @@ You can connect to webSMBTA per entering the hostname and the port where your ra
 localhost:3000
 -----------------------------------------------
 
-At first startup, webSMBTA will show a configuration dialog like this:
-image:gfx/webSMBTA/configuration.png[webSMBTA configuration dialog appearing at the first startup of the application]
+At first startup, webSMBTA will show a sign up dialog like this: +
+image:gfx/webSMBTA/first_start.png[webSMBTA first startup to create an admin account] +
+You have to create an first account, which is automatically an administrator account. +
 
-The field *DB-host* takes the hostname of the system that is running the database, or the ip-address of that system.
-The field *DB-name* takes the name of the database on the system specified by *DB-host*.
-The field *DB-driver* is a select box and let's you choose the database driver to use to access the database.
-- *pgsql* is a PostgreSQL database.
-- *mysql* is a MySQL database.
-- *sqlite* is a Sqlite3 based database.
-The field *DB-user* takes the username of the user that has access to the database specified in *DB-name*.
-The field *DB-password* takes the password of the user specified in *DB-user*.
+
+After you have created your account you have to log in and configure the connection to the smbta database: +
+image:gfx/webSMBTA/configuration.png[webSMBTA configuration dialog appearing at the first startup of the application] +
+
+The field *DB-host* takes the hostname of the system that is running the database, or the ip-address of that system. +
+The field *DB-name* takes the name of the database on the system specified by *DB-host*. +
+The field *DB-driver* is a select box and let's you choose the database driver to use to access the database. +
+- *pgsql* is a PostgreSQL database. +
+- *mysql* is a MySQL database. +
+- *sqlite* is a Sqlite3 based database. +
+The field *DB-user* takes the username of the user that has access to the database specified in *DB-name*. +
+The field *DB-password* takes the password of the user specified in *DB-user*. +
 
 Click the button *Commit settings* to let webSMBTA connect to the database and initiate the first data view.
 
 First data view, "global"
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After committing the configuration settings, *webSMBTA* will jump into the first data view that looks like this:
+After committing the configuration settings, *webSMBTA* will jump into the first data view that looks like this: +
 image:gfx/webSMBTA/startup.png[webSMBTA data view on the first level]
 
 As you can see, the view is called "Global", which means that the program is operating over the whole database, not taking any special SMB related objects into account. Like *smbtaquery*, *webSMBTA* is works based on objects, and the "Global" object is special in the way that it runs over the whole database.
@@ -1151,9 +1156,8 @@ You surely notice the arrow to the right, showing that there is more to explore.
 Second data view, "domains"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After clicking the "global" selection, *webSMBTA* will do a query on the database automatically to find out 
+After clicking the "global" selection, *webSMBTA* will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about. + 
 image:gfx/webSMBTA/domains.png[webSMBTA's second data view, showing the domains in the database] +
-the list of domains that the SMBTA installation knows about. 
 
 If you click on one of the domains in the selection area, this domain will be chosen as an object to work with, and from now on *webSMBTA* will bound all it's results to this domain.
 
@@ -1162,7 +1166,7 @@ As you can see, the first entry in the selection area is "(All)", which you can 
 Third data view, "shares and users"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After choosing an object in the "domains" selection, *webSMBTA* will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.
+After choosing an object in the "domains" selection, *webSMBTA* will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain. +
 image:gfx/webSMBTA/shares_users.png[webSMBTA's third data view, showing the shares and users belonging to a chosen domain]
 
 This view is special, as it allows you to select one share, one user, or one user and one share. In the example picture shown above, user "Hettich" is selected, and share "trigger". This means that *webSMBTA* will run any operations belonging to the user "Hettich" on the share "trigger". For example, if you de-select the share "trigger" by clicking on "(All)" in the share-selection, *webSMBTA* will run operations belonging to the user "Hettich" on the selection domain, but not limited to the share "trigger".
@@ -1289,6 +1293,20 @@ Remove
 
 image:gfx/webSMBTA/function-close.png[remove-button] +
 Removes the specific function, when it isn't needed anymore.
+
+User administration
+^^^^^^^^^^^^^^^^^^^
+
+*Administrator* +
+The administrator can create new user-accounts, change passwords and usernames for each user and remove accounts. +
+image:gfx/webSMBTA/userlist.png[Userlist and options] +
+
+*Normal user* +
+A regular user only can change his username and password. For removing the account, please contact the administrator. +
+
+image:gfx/webSMBTA/edituser.png[Change user settings] +
+
+
 
 smbtamonitor
 ~~~~~~~~~~~~

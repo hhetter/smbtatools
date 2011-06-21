@@ -1516,37 +1516,40 @@ belonging to.</p></div>
 <div class="content">
 <pre><tt>localhost:3000</tt></pre>
 </div></div>
-<div class="paragraph"><p>Tested Browser are Mozilla Firefox, Internet Explorer, Chromium and Safari.</p></div>
-<div class="paragraph"><p>At first startup, webSMBTA will show a configuration dialog like this:
+<div class="paragraph"><p>At first startup, webSMBTA will show a sign up dialog like this:<br />
+<span class="image">
+<img src="gfx/webSMBTA/first_start.png" alt="gfx/webSMBTA/first_start.png" />
+</span><br />
+You have to create an first account, which is automatically an administrator account.<br /></p></div>
+<div class="paragraph"><p>After you have created your account you have to log in and configure the connection to the smbta database:<br />
 <span class="image">
 <img src="gfx/webSMBTA/configuration.png" alt="gfx/webSMBTA/configuration.png" />
-</span></p></div>
-<div class="paragraph"><p>The field <strong>DB-host</strong> takes the hostname of the system that is running the database, or the ip-address of that system.
-The field <strong>DB-name</strong> takes the name of the database on the system specified by <strong>DB-host</strong>.
-The field <strong>DB-driver</strong> is a select box and let&#8217;s you choose the database driver to use to access the database.
-- <strong>pgsql</strong> is a PostgreSQL database.
-- <strong>mysql</strong> is a MySQL database.
-- <strong>sqlite</strong> is a Sqlite3 based database.
-The field <strong>DB-user</strong> takes the username of the user that has access to the database specified in <strong>DB-name</strong>.
-The field <strong>DB-password</strong> takes the password of the user specified in <strong>DB-user</strong>.</p></div>
+</span><br /></p></div>
+<div class="paragraph"><p>The field <strong>DB-host</strong> takes the hostname of the system that is running the database, or the ip-address of that system.<br />
+The field <strong>DB-name</strong> takes the name of the database on the system specified by <strong>DB-host</strong>.<br />
+The field <strong>DB-driver</strong> is a select box and let&#8217;s you choose the database driver to use to access the database.<br />
+- <strong>pgsql</strong> is a PostgreSQL database.<br />
+- <strong>mysql</strong> is a MySQL database.<br />
+- <strong>sqlite</strong> is a Sqlite3 based database.<br />
+The field <strong>DB-user</strong> takes the username of the user that has access to the database specified in <strong>DB-name</strong>.<br />
+The field <strong>DB-password</strong> takes the password of the user specified in <strong>DB-user</strong>.<br /></p></div>
 <div class="paragraph"><p>Click the button <strong>Commit settings</strong> to let webSMBTA connect to the database and initiate the first data view.</p></div>
 <h4 id="_first_data_view_global">4.3.4. First data view, "global"</h4>
-<div class="paragraph"><p>After committing the configuration settings, <strong>webSMBTA</strong> will jump into the first data view that looks like this:
+<div class="paragraph"><p>After committing the configuration settings, <strong>webSMBTA</strong> will jump into the first data view that looks like this:<br />
 <span class="image">
 <img src="gfx/webSMBTA/startup.png" alt="gfx/webSMBTA/startup.png" />
 </span></p></div>
 <div class="paragraph"><p>As you can see, the view is called "Global", which means that the program is operating over the whole database, not taking any special SMB related objects into account. Like <strong>smbtaquery</strong>, <strong>webSMBTA</strong> is works based on objects, and the "Global" object is special in the way that it runs over the whole database.</p></div>
 <div class="paragraph"><p>You surely notice the arrow to the right, showing that there is more to explore. By clicking on the "global" entry in the selection field, the next data view will appear.</p></div>
 <h4 id="_second_data_view_domains">4.3.5. Second data view, "domains"</h4>
-<div class="paragraph"><p>After clicking the "global" selection, <strong>webSMBTA</strong> will do a query on the database automatically to find out
+<div class="paragraph"><p>After clicking the "global" selection, <strong>webSMBTA</strong> will do a query on the database automatically to find out the list of domains that the SMBTA installation knows about.<br />
 <span class="image">
 <img src="gfx/webSMBTA/domains.png" alt="gfx/webSMBTA/domains.png" />
-</span><br />
-the list of domains that the SMBTA installation knows about.</p></div>
+</span><br /></p></div>
 <div class="paragraph"><p>If you click on one of the domains in the selection area, this domain will be chosen as an object to work with, and from now on <strong>webSMBTA</strong> will bound all it&#8217;s results to this domain.</p></div>
 <div class="paragraph"><p>As you can see, the first entry in the selection area is "(All)", which you can use to de-select a domain. If you click this selection, <strong>webSMBTA</strong> will operate with "Global" as the object (see previous section).</p></div>
 <h4 id="_third_data_view_shares_and_users">4.3.6. Third data view, "shares and users"</h4>
-<div class="paragraph"><p>After choosing an object in the "domains" selection, <strong>webSMBTA</strong> will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.
+<div class="paragraph"><p>After choosing an object in the "domains" selection, <strong>webSMBTA</strong> will automatically do a query on the database to find out the list of shares and the list of users on the domain you have selected. Two selection areas will appear, one for the shares under this domain and one for the users that have been involved with data transfers on the chosen domain.<br />
 <span class="image">
 <img src="gfx/webSMBTA/shares_users.png" alt="gfx/webSMBTA/shares_users.png" />
 </span></p></div>
@@ -1659,6 +1662,17 @@ Refresh the specific function with the current data from the database.</p></div>
 <img src="gfx/webSMBTA/function-close.png" alt="gfx/webSMBTA/function-close.png" />
 </span><br />
 Removes the specific function, when it isn&#8217;t needed anymore.</p></div>
+<h4 id="_user_administration">4.3.10. User administration</h4>
+<div class="paragraph"><p><strong>Administrator</strong><br />
+The administrator can create new user-accounts, change passwords and usernames for each user and remove accounts.<br />
+<span class="image">
+<img src="gfx/webSMBTA/userlist.png" alt="gfx/webSMBTA/userlist.png" />
+</span><br /></p></div>
+<div class="paragraph"><p><strong>Normal user</strong><br />
+A regular user only can change his username and password. For removing the account, please contact the administrator.<br /></p></div>
+<div class="paragraph"><p><span class="image">
+<img src="gfx/webSMBTA/edituser.png" alt="gfx/webSMBTA/edituser.png" />
+</span><br /></p></div>
 <h3 id="_smbtamonitor">4.4. smbtamonitor</h3><div style="clear:left"></div>
 <div class="paragraph"><p>smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.</p></div>
 <div class="paragraph"><p>This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.</p></div>
@@ -1992,7 +2006,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.5<br />
-Last updated 2011-06-21 11:18:19 CEST
+Last updated 2011-06-21 12:31:02 CEST
 </div>
 </div>
 </body>
