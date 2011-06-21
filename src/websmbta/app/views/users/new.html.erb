@@ -1,10 +1,9 @@
-<!-- users/new.html.erb -->
 <% if User.count == 0 %>
   <h2>First Startup</h2>
   Please create your admin account.
 <% else %>
 <h2>New user</h2>
-<%end%>
+<% end %>
 <%= form_for @new_user do |f| %>
 <% if @new_user.errors.any? %>
   <div class="error_messages">
@@ -33,6 +32,6 @@
   <%= f.label :admin %><br/>
   <%= f.check_box :admin %>
 </p>
-<%end%>
+<% end %>
 <p class="button"><%= f.submit %></p>
 <% end %>

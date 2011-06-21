@@ -1,18 +1,30 @@
 <%= form_tag :action => "save"  do %>
-  
   <table>
     <tr>
-      <td>DB-host: </td><td><%=text_field_tag 'dbhost', session[:dbhost]%></td></tr>
-    <tr><td>DB-name: </td><td><%= text_field_tag 'dbname', session[:dbname] %></td></tr>
-        <tr><td>DB-driver: </td>
+      <td>DB-host:</td>
+      <td><%= text_field_tag 'dbhost', session[:dbhost] %></td>
+    </tr>
+    <tr>
+      <td>DB-name:</td>
+      <td><%= text_field_tag 'dbname', session[:dbname] %></td>
+    </tr>
+    <tr>
+      <td>DB-driver:</td>
       <td><% options = Array.new
-        @dbdrivers.each {|d| options << "#{d.to_s}"}%>
-        <%=  select_tag "dbdriver", options_for_select(options, session[:dbdriver])%></td></tr>
-        <tr><td>DB-user: </td>
-          <td><%=text_field_tag "dbuser", session[:dbuser]%></td></tr>
-        <tr><td>DB-password: </td>
-          <td><%=password_field_tag "dbpassword", session[:dbpassword]%></td></tr>
+        @dbdrivers.each {|d| options << "#{d.to_s}"} %>
+        <%= select_tag "dbdriver", options_for_select(options, session[:dbdriver]) %></td>
+    </tr>
+    <tr>
+      <td>DB-user:</td>
+      <td><%= text_field_tag "dbuser", session[:dbuser] %></td>
+    </tr>
+    <tr>
+      <td>DB-password:</td>
+      <td><%= password_field_tag "dbpassword", session[:dbpassword] %></td>
+    </tr>
 
-    <tr><td><%=submit_tag "Commit settings"%></td></tr>
+    <tr>
+      <td><%= submit_tag "Commit settings" %></td>
+    </tr>
   </table>
-<%end%>
+<% end %>

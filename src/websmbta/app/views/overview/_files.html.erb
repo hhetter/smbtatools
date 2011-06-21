@@ -1,8 +1,18 @@
-<div id="files" style="position: relative; float:left;">
+<div id="files">
   <table>
-    <tr><th>Files</th></tr>
-    <tr><td><%= select_tag "filelist", options_for_select(@files, @file), :size => 15, :onclick => "fileOnClickChange()" %></td></tr>
+    <tr>
+      <th>Files</th>
+    </tr>
+    <tr>
+      <td>
+        <%= select_tag "filelist", options_for_select(@files, @file), :size => 15, :onclick => "fileOnClickChange()" %>
+      </td>
+    </tr>
   </table>
-  <div id="spinner_files" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <div id="file_diff" class="diff"><%=image_tag('diff.png')%></div>
+  <div id="spinner_files" class="spinner">
+    <%= image_tag('spinner.gif') %>
+  </div>
+  <div id="file_diff" class="diff">
+    <%= image_tag('diff.png') %>
+  </div>
 </div>

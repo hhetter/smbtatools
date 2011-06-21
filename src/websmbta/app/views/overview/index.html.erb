@@ -1,109 +1,242 @@
-<div id="global" style="position:relative; float:left;">
+<div id="global">
   <table>
-    <tr><th>Global</th></tr>
-    <tr><td><%=select_tag "globallist", options_for_select(["global"]), :size => 5, :onclick => "globalOnSelectChange()" %></td>
-      <td><%=image_tag('arrow.png', :alt => "List domains", :title => "List domains")%></td></tr>
+    <tr>
+      <th>Global</th>
+    </tr>
+    <tr>
+      <td>
+        <%= select_tag "globallist", options_for_select(["global"]), :size => 5, :onclick => "globalOnSelectChange()" %>
+      </td>
+      <td><%= image_tag('arrow.png', :alt => "List domains", :title => "List domains") %></td>
+    </tr>
   </table>
-  <div id="spinner_getdomains" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <b>Function:</b> <%= select_tag "global_function", options_for_select(["","search", "list", "total", "top","usage", "last_activity", "throughput"]), :class => "function", :onchange => "configureFunction()"%>
+  <div id="spinner_getdomains" class="spinner">
+    <%=image_tag('spinner.gif')%>
+  </div>
+  <b>Function:</b>
+  <%= select_tag "global_function",
+    options_for_select(["","search", "list", "total", "top","usage", "last_activity", "throughput"]),
+    :class => "function", :onchange => "configureFunction()" %>
 </div>
 
 <div id="dialog">
 
-  <div id="help"><b>Choose an object from the tables above,<br/> and select a function</b></div>
+  <div id="help">
+    <b>Choose an object from the tables above,<br/> and select a function</b>
+  </div>
 
   <div id="search" class="function_dialog">
     <table>
-      <tr><td>Enter a search string:</td>
-        <td><%=text_field_tag "search", @search, :class => "search", :onkeyup => "inspect_functionsettings()" %></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_search", @from, :class => "datetime" , :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()"%></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_search", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Enter a search string:</td>
+        <td><%= text_field_tag "search", @search, :class => "search", :onkeyup => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_search", @from, :class => "datetime" , :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To: </td>
+        <td><%= text_field_tag "to_search", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td>
+      </tr>
     </table>
-    <div id="search_help" class="function_help"><i>The search function allows a fulltext search over an object<br/>It supports SQL wildcars (*,?).</i></div>
+    <div id="search_help" class="function_help">
+      <i>The search function allows a fulltext search over an object<br/>It supports SQL wildcars (*,?).</i>
+    </div>
   </div>
   <div id="list_func" class="function_dialog">
     <table>
-      <tr><td>Choose Object</td>
-        <td><%=select_tag "objectlist_list", options_for_select(["", "shares", "users", "files"], @object), :class => "objectlist", :onchange => "inspect_functionsettings()" %></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_list", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_list", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Choose Object</td>
+        <td><%= select_tag "objectlist_list", options_for_select(["", "shares", "users", "files"], @object),
+            :class => "objectlist", :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_list", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To:</td>
+        <td><%=  text_field_tag "to_list", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()"%></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td>
+      </tr>
     </table>
-    <div id="list_help" class="function_help"><i>The list function creates a list of objects that are involved with the selected object.</i></div>
+    <div id="list_help" class="function_help">
+      <i>The list function creates a list of objects that are involved with the selected object.</i>
+    </div>
   </div>
   <div id="usage" class="function_dialog">
     <table>
-      <tr><td>Choose a mode:</td>
-        <td><%=select_tag "modelist_usage", options_for_select(["", "r", "w", "rw"], @mode), :class=> "modelist", :onchange =>"inspect_functionsettings()" %></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_usage", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_usage", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Choose a mode:</td>
+        <td><%= select_tag "modelist_usage", options_for_select(["", "r", "w", "rw"], @mode), :class=> "modelist",
+            :onchange =>"inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_usage", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To:</td>
+        <td><%= text_field_tag "to_usage", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
+      </tr>
     </table>
-    <div id="usage_help" class="function_help"><i>The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i></div>
+    <div id="usage_help" class="function_help">
+      <i>The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i>
+    </div>
   </div>
 
   <div id="total" class="function_dialog">
     <table>
-      <tr><td>Choose a mode:</td>
-        <td><%=select_tag "modelist_total", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_total", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()"  %></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_total", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()"  %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Choose a mode:</td>
+        <td><%= select_tag "modelist_total", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist",
+            :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_total", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To:</td>
+        <td><%= text_field_tag "to_total", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
+      </tr>
     </table>
-    <div id="total_help" class="function_help"><i>The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</i></div>
+    <div id="total_help" class="function_help">
+      <i>The Total function calculates the sum of the transferred bytes, optionally filters the sum for r/w or rw.</i>
+    </div>
   </div>
 
   <div id="last_activity" class="function_dialog">
     <table>
-      <tr><td>Choose number:</td>
-        <td><%=text_field_tag "number_last_activity", @number, :class => "number", :onkeyup => "inspect_functionsettings()" %></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_last_activity", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_last_activity", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()"  %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Choose number:</td>
+        <td><%= text_field_tag "number_last_activity", @number, :class => "number",
+            :onkeyup => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_last_activity", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To:</td>
+        <td><%= text_field_tag "to_last_activity", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
+      </tr>
     </table>
-    <div id="last_activity_help" class="function_help"><i>The last_activity function shows the last [num] activities in the VFS layer on an object.</i></div>
+    <div id="last_activity_help" class="function_help">
+      <i>The last_activity function shows the last [num] activities in the VFS layer on an object.</i>
+    </div>
   </div>
 
   <div id="top" class="function_dialog">
     <table>
-      <tr><td>Choose Object:</td>
-        <td><%=select_tag "objectlist_top", options_for_select(["", "shares", "users", "files"], @object), :class => "objectlist", :onchange => "inspect_functionsettings()" %></td></tr>
-      <tr><td>Choose a mode:</td>
-        <td><%=select_tag "modelist_top", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
-      <tr><td>Choose number:</td>
-        <td><%=text_field_tag "number_top", "", :class => "number", :onkeyup => "inspect_functionsettings()" %></td>
-     <td>From:</td><td><%=text_field_tag "from_top", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td> </tr>
-      <tr><td>Sorting:</td>
-        <td><%=select_tag "sortlist_top", options_for_select(["descending", "ascending"], @sort), :class => "sortlist", :onchange => "inspect_functionsettings()"%></td>
-      <td>To: </td><td><%=text_field_tag "to_top", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Choose Object:</td>
+        <td><%= select_tag "objectlist_top", options_for_select(["", "shares", "users", "files"], @object),
+            :class => "objectlist", :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>Choose a mode:</td>
+        <td><%= select_tag "modelist_top", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist",
+            :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>Choose number:</td>
+        <td><%= text_field_tag "number_top", "", :class => "number", :onkeyup => "inspect_functionsettings()" %></td>
+        <td>From:</td>
+        <td><%= text_field_tag "from_top", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>Sorting:</td>
+        <td><%= select_tag "sortlist_top", options_for_select(["descending", "ascending"], @sort), :class => "sortlist",
+            :onchange => "inspect_functionsettings()" %></td>
+        <td>To:</td>
+        <td><%= text_field_tag "to_top", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
+      </tr>
     </table>
-    <div id="top_help" class="function_help"><i>The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</i></div>
+    <div id="top_help" class="function_help">
+      <i>The Top function creates a list of the top [number] objects [shares/users/files] seen on the chosen object</i>
+    </div>
   </div>
+
   <div id="throughput" class="function_dialog">
     <table>
-      <tr><td>Enter a time periode:</td>
-        <td><%=text_field_tag "number_throughput", "", :class => "number", :onkeyup => "inspect_functionsettings()" %>
-        <%=select_tag "timelist", options_for_select(["seconds", "minutes", "hours", "days"], @timemode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
-      <tr><td>Choose a mode:</td>
-        <td><%=select_tag "modelist_throughput", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist", :onchange => "inspect_functionsettings()"%></td></tr>
-      <tr><td>From:</td><td><%=text_field_tag "from_throughput", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td>To: </td><td><%=text_field_tag "to_throughput", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()", :onclick => "inspect_functionsettings()" %></td></tr>
-      <tr><td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()"%></td>
-        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td></tr>
+      <tr>
+        <td>Enter a time periode:</td>
+        <td><%= text_field_tag "number_throughput", "", :class => "number", :onkeyup => "inspect_functionsettings()" %>
+          <%=select_tag "timelist", options_for_select(["seconds", "minutes", "hours", "days"], @timemode),
+            :class => "modelist", :onchange => "inspect_functionsettings()"%></td>
+      </tr>
+      <tr>
+        <td>Choose a mode:</td>
+        <td><%= select_tag "modelist_throughput", options_for_select(["", "r", "w", "rw"], @mode), :class => "modelist",
+            :onchange => "inspect_functionsettings()"%></td>
+      </tr>
+      <tr>
+        <td>From:</td>
+        <td><%= text_field_tag "from_throughput", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td>To:</td>
+        <td><%= text_field_tag "to_throughput", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+            :onclick => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()",
+            :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
+      </tr>
     </table>
-    <div id="throughput_help" class="function_help"><i>The throughput function calculates the data throughput of an object over a given time and differs between read, write, or rw access.</i></div>
+    <div id="throughput_help" class="function_help">
+      <i>The throughput function calculates the data throughput of an object over a given time and differs between read, write,
+        or rw access.</i></div>
   </div>
-  <div id="spinner_functions" class="spinner"><%=image_tag('spinner.gif')%>  </div>
+  <div id="spinner_functions" class="spinner">
+    <%= image_tag('spinner.gif') %>
+  </div>
 </div>
- <%= hidden_field_tag "domain", @domain %>
- <%= hidden_field_tag "share", @share %>
- <%= hidden_field_tag "user", @user %>
- <%= hidden_field_tag "file", @file %>
+<%= hidden_field_tag "domain", @domain %>
+<%= hidden_field_tag "share", @share %>
+<%= hidden_field_tag "user", @user %>
+<%= hidden_field_tag "file", @file %>
