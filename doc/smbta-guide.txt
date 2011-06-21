@@ -1076,15 +1076,46 @@ Requirements
 
 *webSMBTA* relies on a fully working SMBTA setup, including a working database, and the *smbtaquery* program installed in system paths. If you can run a query like 'global, total rw;' via smbtaquery, all should be fine.
 
-Installation
-^^^^^^^^^^^^
+Beta-Install-Instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Enter the "websmbta"-directory (e.g. for git sources "smbtatools/src/query/webui/")
 
-Currently *webSMBTA* is in BETA, as it has not yet been deployed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use *webSMBTA* is to start it with the rails integrated webserver:
+*if you use SUSE* +
+- add Ruby repository (e.g. http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/) to zypper
 
------------------------------------------------
-cd query/webui/
+--------------------------------------------
+zypper ar http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/ Ruby
+--------------------------------------------
+
+-install the needed packages
+
+--------------------------------------------
+zypper in ruby rubygems rubygem-rails-3_0 rubygem-sqlite3 rubygem-bcrypt-ruby sqlite3-devel
+--------------------------------------------
+
+-create the initial database
+
+--------------------------------------------
+rake db:migrate
+--------------------------------------------
+
+-webSMBTA can be started by running $rails server in this directory.
+
+--------------------------------------------
 rails server
------------------------------------------------
+--------------------------------------------
+
+-open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)
+
+*else* +
+- rename Gemfile.old to Gemfile +
+- install ruby and ruby-gems +
+- run $sudo gem install rails --version >3.0.3 (installs rails3) +
+- run $sudo bundle install (installs needed ruby gems for websmbta) +
+- webSMBTA can be started by running $rails server in this directory. +
+- open a Browser and enter the URL hostname:3000 (e.g. localhost:3000) +
+
+Tested Browsers are *Mozilla Firefox*, *Chromium*, *Internet Explorer*, *Safari*
 
 First startup
 ^^^^^^^^^^^^^
@@ -1092,7 +1123,6 @@ You can connect to webSMBTA per entering the hostname and the port where your ra
 -----------------------------------------------
 localhost:3000
 -----------------------------------------------
-Tested Browser are Mozilla Firefox, Internet Explorer, Chromium and Safari.
 
 At first startup, webSMBTA will show a configuration dialog like this:
 image:gfx/webSMBTA/configuration.png[webSMBTA configuration dialog appearing at the first startup of the application]

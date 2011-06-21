@@ -1478,13 +1478,38 @@ belonging to.</p></div>
 <div class="paragraph"><p><strong>webSMBTA</strong> is a web interface for SMB Traffic Analyzer. It is using the <strong>smbtaquery</strong> program as a data provider and presents a modern, intuitive, rails based web application.</p></div>
 <h4 id="_requirements_2">4.3.1. Requirements</h4>
 <div class="paragraph"><p><strong>webSMBTA</strong> relies on a fully working SMBTA setup, including a working database, and the <strong>smbtaquery</strong> program installed in system paths. If you can run a query like <em>global, total rw;</em> via smbtaquery, all should be fine.</p></div>
-<h4 id="_installation">4.3.2. Installation</h4>
-<div class="paragraph"><p>Currently <strong>webSMBTA</strong> is in BETA, as it has not yet been deployed with a full webserver by the developers, as because of that no "installation" guide exists currently. At the moment, the way to use <strong>webSMBTA</strong> is to start it with the rails integrated webserver:</p></div>
+<h4 id="_beta_install_instructions">4.3.2. Beta-Install-Instructions</h4>
+<div class="paragraph"><p>Enter the "websmbta"-directory (e.g. for git sources "smbtatools/src/query/webui/")</p></div>
+<div class="paragraph"><p><strong>if you use SUSE</strong><br />
+- add Ruby repository (e.g. <a href="http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/">http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/</a>) to zypper</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>cd query/webui/
-rails server</tt></pre>
+<pre><tt>zypper ar http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/SLE_11/x86_64/ Ruby</tt></pre>
 </div></div>
+<div class="paragraph"><p>-install the needed packages</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>zypper in ruby rubygems rubygem-rails-3_0 rubygem-sqlite3 rubygem-bcrypt-ruby sqlite3-devel</tt></pre>
+</div></div>
+<div class="paragraph"><p>-create the initial database</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rake db:migrate</tt></pre>
+</div></div>
+<div class="paragraph"><p>-webSMBTA can be started by running $rails server in this directory.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rails server</tt></pre>
+</div></div>
+<div class="paragraph"><p>-open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)</p></div>
+<div class="paragraph"><p><strong>else</strong><br />
+- rename Gemfile.old to Gemfile<br />
+- install ruby and ruby-gems<br />
+- run $sudo gem install rails --version &gt;3.0.3 (installs rails3)<br />
+- run $sudo bundle install (installs needed ruby gems for websmbta)<br />
+- webSMBTA can be started by running $rails server in this directory.<br />
+- open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)<br /></p></div>
+<div class="paragraph"><p>Tested Browsers are <strong>Mozilla Firefox</strong>, <strong>Chromium</strong>, <strong>Internet Explorer</strong>, <strong>Safari</strong></p></div>
 <h4 id="_first_startup">4.3.3. First startup</h4>
 <div class="paragraph"><p>You can connect to webSMBTA per entering the hostname and the port where your rails server is running (default 3000) e.g.</p></div>
 <div class="listingblock">
@@ -1967,7 +1992,7 @@ keyfile = /your/path/to/keyfile/filename</tt></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.2.5<br />
-Last updated 2011-06-16 14:58:16 CEST
+Last updated 2011-06-21 11:18:19 CEST
 </div>
 </div>
 </body>
