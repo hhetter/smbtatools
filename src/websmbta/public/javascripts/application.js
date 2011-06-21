@@ -6,7 +6,9 @@ function getDomains () {
     $.ajax({
         url: "get_domains",
         type: "get",
-        complete: function(){$("#spinner_getdomains").hide();}
+        complete: function(){
+            $("#spinner_getdomains").hide();
+        }
     });
 }
 function refreshDomains() {
@@ -40,10 +42,12 @@ function getShares() {
     $.ajax({
         url: "get_shares_and_users",
         type: "get",
-        complete: function(){$("#spinner_getshares").hide();},
+        complete: function(){
+            $("#spinner_getshares").hide();
+        },
         data: {
             domain : $("#domain").attr('value')
-            }
+        }
     });
 }
 function getFiles(){
@@ -51,7 +55,9 @@ function getFiles(){
     $.ajax({
         url: "get_files",
         type: "get",
-        complete: function(){$("#spinner_getfiles").hide();},
+        complete: function(){
+            $("#spinner_getfiles").hide();
+        },
         data: {
             domain: $("#domain").attr('value'),
             share: $("#share").attr('value'),
@@ -76,16 +82,17 @@ function refreshShares() {
     $.ajax({
         url: "refresh_shares_and_users",
         type: "get",
-        complete: function(){$("#spinner_shares").hide();
-        var new_checksum_shares;
-        var new_checksum_users;
+        complete: function(){
+            $("#spinner_shares").hide();
+            var new_checksum_shares;
+            var new_checksum_users;
             $('#sharelist option').each(function(){
                 new_checksum_shares += $(this).val();
             });
             new_checksum_shares = $.md5(new_checksum_shares);
             if (checksum_shares != new_checksum_shares)
                 $("#share_diff").show();
-       $('#userlist option').each(function(){
+            $('#userlist option').each(function(){
                 new_checksum_users += $(this).val();
             });
             new_checksum_users = $.md5(new_checksum_users);
@@ -96,21 +103,22 @@ function refreshShares() {
             domain : $("#domain").attr('value'),
             share:    $("#share").attr('value'),
             user:      $("#user").attr('value')
-            }
+        }
     });
 }
 function refreshFiles(){
     $("#spinner_files").show();
-     var checksum;
-     $('#filelist option').each(function(){
+    var checksum;
+    $('#filelist option').each(function(){
         checksum += $(this).val();
     });
     checksum = $.md5(checksum);
     $.ajax({
         url: "refresh_files",
         type: "get",
-        complete: function(){$("#spinner_files").hide();
-        var new_checksum;
+        complete: function(){
+            $("#spinner_files").hide();
+            var new_checksum;
             $('#filelist option').each(function(){
                 new_checksum += $(this).val();
             });
@@ -290,13 +298,14 @@ function configureFunction(){
     inspect_functionsettings();
 }
 function start_function(){
-     $("#spinner_functions").show();
-     $('input.start').attr('disabled', 'disabled');
+    $("#spinner_functions").show();
+    $('input.start').attr('disabled', 'disabled');
     var func = $("select#global_function option:selected").val();
     $.ajax({
         url: "../functions/start_function",
         type: "get",
-        complete: function(){$("#spinner_functions").hide();
+        complete: function(){
+            $("#spinner_functions").hide();
             reset_functions();
         },
         data: {
@@ -326,7 +335,7 @@ function check_time_func(){
         ($("input#from_" + $("#global_function").val()).val() != "" & $("input#to_" + $("#global_function").val()).val() == "") ||
         (($("input#from_" + $("#global_function").val()).val() != "" & $("input#to_" + $("#global_function").val()).val() != "") &
             ($("input#from_" + $("#global_function").val()).val() < $("input#to_" + $("#global_function").val()).val())))
-    {
+            {
         check_time = "true";
     }
 }
@@ -402,47 +411,60 @@ function inspect_functionsettings(){
 
 function validNumber(field){
     var d=field.attr('numeric');
-        var value=$().val("value");
-        var orignalValue=value;
-        val=val.replace(/[0-9]*/g, "");
+    var value=$().val("value");
+    var orignalValue=value;
+    val=val.replace(/[0-9]*/g, "");
 
-       	var msg="Only Integer Values allowed.";
+    var msg="Only Integer Values allowed.";
 
-       	if (d=='decimal'){
-       	  value=value.replace(/\./, "");
-          msg="Only Numeric Values allowed.";
-          }
+    if (d=='decimal'){
+        value=value.replace(/\./, "");
+        msg="Only Numeric Values allowed.";
+    }
 
-        if (val!=''){
+    if (val!=''){
         orignalValue=orignalValue.replace(/([^0-9].*)/g, "")
         $(this).val(orignalValue);
         alert(msg);
-        }
-
     }
 
+}
+
 function highlightClose(divname){
-    $('#close_function_' + divname).css({'opacity' : '1',  'filter':'alpha(opacity=100)'});
+    $('#close_function_' + divname).css({
+        'opacity' : '1',
+        'filter':'alpha(opacity=100)'
+    });
 }
 function resetClose(divname){
-    $('#close_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
+    $('#close_function_' + divname).css({
+        'opacity' : '0.5',
+        'filter':'alpha(opacity=50)'
+    });
 }
 function closeFunction(divname){
     $('div#' + divname).remove();
 }
 
 function highlightRefresh(divname){
-    $('#refresh_function_' + divname).css({'opacity' : '1', 'filter':'alpha(opacity=100)'});
+    $('#refresh_function_' + divname).css({
+        'opacity' : '1',
+        'filter':'alpha(opacity=100)'
+    });
 }
 function resetRefresh(divname){
-    $('#refresh_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
+    $('#refresh_function_' + divname).css({
+        'opacity' : '0.5',
+        'filter':'alpha(opacity=50)'
+    });
 }
 function refreshFunction(divname){
-  $("#spinner_function_" + divname).show();
-  $.ajax({
+    $("#spinner_function_" + divname).show();
+    $.ajax({
         url: "../functions/refresh_function",
         type: "get",
-        complete: function(){$("#spinner_function_" + divname).hide();
+        complete: function(){
+            $("#spinner_function_" + divname).hide();
         },
         data: {
             divname: divname,
@@ -451,24 +473,36 @@ function refreshFunction(divname){
     })
 }
 function highlightPrintview(divname){
-    $('#printview_function_' + divname).css({'opacity': '1', 'filter':'alpha(opacity=100)'});
+    $('#printview_function_' + divname).css({
+        'opacity': '1',
+        'filter':'alpha(opacity=100)'
+    });
 }
 function resetPrintview(divname){
-   $('#printview_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
+    $('#printview_function_' + divname).css({
+        'opacity' : '0.5',
+        'filter':'alpha(opacity=50)'
+    });
 }
 function highlightSave(divname){
-    $('#save_function_' + divname).css({'opacity': '1', 'filter':'alpha(opacity=100)'});
+    $('#save_function_' + divname).css({
+        'opacity': '1',
+        'filter':'alpha(opacity=100)'
+    });
 }
 function resetSave(divname){
-   $('#save_function_' + divname).css({'opacity' : '0.5', 'filter':'alpha(opacity=50)'});
+    $('#save_function_' + divname).css({
+        'opacity' : '0.5',
+        'filter':'alpha(opacity=50)'
+    });
 }
 var i = 0;
 $(function() {
     $(".datetime").datetimepicker({
         showSecond: true,
-	timeFormat: 'hh:mm:ss',
+        timeFormat: 'hh:mm:ss',
         dateFormat: 'yy-mm-dd'
-     });
+    });
 });
 
 $(document).ready(function(){
