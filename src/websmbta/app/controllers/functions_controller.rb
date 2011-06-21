@@ -1,5 +1,5 @@
 class FunctionsController < ApplicationController
-  require 'digest/md5'
+  require "digest/md5"
   before_filter :check_user
 
   def start_function
@@ -7,7 +7,6 @@ class FunctionsController < ApplicationController
     get_time_modifiers
     get_function
     creat_file_and_divname
-    logger.debug @cmd
     render :update do |page|
       page.insert_html :after, "list", :partial => "start_function"
     end
@@ -165,7 +164,8 @@ class FunctionsController < ApplicationController
     @cmd = params[:cmd]
     @cmd.chomp!(" -o html > /tmp/function.html")
     output = %x[#{@cmd}]
-    send_data(output, :filename => "function-" + Time.now.strftime("%Y-%m-%d-%H%M%S").to_s + ".txt", :type => 'text/plain')
+    send_data(output, :filename => "function-" + Time.now.strftime("%Y-%m-%d-%H%M%S").to_s + ".txt",
+      :type => 'text/plain')
   end
 
   def refresh_function
@@ -180,4 +180,5 @@ class FunctionsController < ApplicationController
       page.replace @divname, :partial => "start_function"
     end
   end
+
 end

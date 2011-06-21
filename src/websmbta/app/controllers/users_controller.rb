@@ -1,17 +1,17 @@
 class UsersController < ApplicationController
-    before_filter :check_user, :except => [:create, :new]
-    before_filter :is_admin, :only => [:create, :new]
+  before_filter :check_user, :except => [:create, :new]
+  before_filter :is_admin, :only => [:create, :new]
 
   def new
-	  @new_user = User.new
-	end
+    @new_user = User.new
+  end
 
-	def create
-	  @new_user = User.new(params[:user])
+  def create
+    @new_user = User.new(params[:user])
     if User.count == 0
       @new_user.admin = true
     end
-	  if @new_user.save
+    if @new_user.save
       if User.count == 0
         redirect_to log_in_url
       else
@@ -20,15 +20,15 @@ class UsersController < ApplicationController
     else
       render "new"
     end
-	end
+  end
 
   def update
-    @user = User.update(params[:id],params[:user])
-	  if @user.save
-	    redirect_to :controller => "config", :action => "general" , :notice => "Signed up!"
-	  else
-	    render "new"
-	  end
+    @user = User.update(params[:id], params[:user])
+    if @user.save
+        redirect_to :controller => "config", :action => "general" , :notice => "Signed up!"
+    else
+      render "new"
+    end
   end
 
   def delete
@@ -38,7 +38,7 @@ class UsersController < ApplicationController
       redirect_to :controller => "users", :action => "show"
     else
       flash[:error] = "You can't remove your current user or the last user in the database!"
-	    redirect_to :action => "show"
+      redirect_to :action => "show"
     end
   end
 
@@ -56,4 +56,5 @@ class UsersController < ApplicationController
   def show
     @all_users = User.find(:all)
   end
+
 end

@@ -79,7 +79,7 @@ class OverviewController < ApplicationController
 
   def initialize_domains
     initial_command
-    cmd=@cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
+    cmd = @cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
     @domains = Array.new
     @domains << "(All)"
@@ -96,9 +96,9 @@ class OverviewController < ApplicationController
     @domain = params[:domain]
     initial_command
     if @domain == "(All)"
-      cmd= @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
+      cmd = @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
     else
-      cmd= @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
+      cmd = @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
     end
     `#{cmd}`
     @shares = Array.new
@@ -116,9 +116,9 @@ class OverviewController < ApplicationController
     @domain = params[:domain]
     initial_command
     if @domain == "(All)"
-      cmd= @cmd + " -q 'global, list users;' -x /tmp/users.xml"
+      cmd = @cmd + " -q 'global, list users;' -x /tmp/users.xml"
     else
-      cmd= @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
+      cmd = @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
     end
     `#{cmd}`
     @users = Array.new
