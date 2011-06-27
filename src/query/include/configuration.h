@@ -46,7 +46,6 @@
 #endif
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
-
 int configuration_check_configuration( struct configuration_data *c );
 int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );
 

@@ -257,6 +257,7 @@ int configuration_database_connect( struct configuration_data *conf )
 int configuration_parse_cmdline( struct configuration_data *c,
 	int argc, char *argv[] )
 {
+	int SMBTA_CONVERT = 0;
 	int i;
 	TALLOC_CTX *runtime_mem = NULL;
 	configuration_define_defaults( c );
@@ -303,8 +304,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				printf("%s\n",SMBTAQUERY_VERSION);
 				exit(0);
 			case 'C':
-				smbta_convert();
-				exit(0);
+				/**
+				 * set SMBTA_CONVERT to 1, run all other cmd line options,
+				 * and run the smbta_convert() function later.
+				 */
+				SMBTA_CONVERT=1;
+				break;
 			case 'M':
 				c->dbdriver = strdup( optarg );
 				break;
@@ -366,6 +371,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	if (c->config_file != NULL)
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
+
+
+	/**
+	 * if convert (-C --convert) was called, run it now
+	 */
+	if (SMBTA_CONVERT==1) {
+		smbta_convert(c);
+		exit(0);
+	}
 
 	/* create a local sqlite database as a helper */
 	c->db=create_db();

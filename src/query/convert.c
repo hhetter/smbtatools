@@ -22,6 +22,9 @@
 #include "../webmon/rrddriver/include/vfs_smb_traffic_analyzer.h"
 #include <dbi.h>
 
+#define CREATE_COMMONS "vfs_id integer,username varchar,usersid varchar,share varchar,domain varchar,timestamp timestamp,"
+
+
 struct confdata {
 	char dbiuser[50];
 	char dbihost[50];
@@ -249,8 +252,76 @@ static void _1_2_4_to_1_2_5(struct confdata *c)
 		"ALTER TABLE rename ALTER COLUMN result TYPE bigint;");
 	convert_check_dbi_res(rs);
 
-	printf("Database update to SMBTA version 1.2.5.\n");
-	exit(0);
+	printf("Database updated to SMBTA version 1.2.5.\n");
+}
+
+static void _1_2_5_to_1_2_6(struct confdata *c)
+{
+	int ch=0;
+	printf("\n");
+	printf("-> Upgrading database from version 1.2.5 to 1.2.6.\n");
+	printf("-------------------------------------------------------------\n");
+	printf("\n");
+	enter_data(c);
+	ch = convert_database_connect(c);
+	printf("Creating new base table...\n");
+	dbi_result rs = dbi_conn_query(c->DBIconn,
+			"CREATE TABLE data ("
+			CREATE_COMMONS
+			"string1 varchar, length integer, result bigint, string2 varchar);");
+	convert_check_dbi_res(rs);
+	printf("Populating table...\n");
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result)  SELECT * from rename ( 6, username, usersid, share, domain, timestamp, source, destination, result);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE rename;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from close ( 9, username, usersid, share, domain, timestamp, filename, result);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE close;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result) SELECT * from open ( 8, username, usersid, share, domain, timestamp, filename, mode, result);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE open;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from chdir ( 7, username, usersid, share, domain, timestamp, path, result);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE chdir;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain,timestamp, string1, string2, result) SELECT * from mkdir (4, username, usersid, share, domain, timestamp, path, mode, result);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE mkdir;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from write (2, username, usersid, share, domain, timestamp, filename, length);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE write;");
+	convert_check_dbi_res(rs);
+
+	rs = dbi_conn_query(c->DBIconn,
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from read (0, username, usersid, share, domain, timestamp, filename, length);");
+	convert_check_dbi_res(rs);
+	rs = dbi_conn_query(c->DBIconn,
+		"DROP TABLE read;");
+	convert_check_dbi_res(rs);
+
+	printf("Database updated to SMBTA version 1.2.6.\n");
 }
 
 static void _1_2_3_to_1_2_4(struct confdata *c)
@@ -289,7 +360,6 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 	int cc = 0;
 	while (tables[cc] != NULL) {
 		printf("Processing table '%s'...\n", tables[cc]);
-		#define CREATE_COMMONS "vfs_id integer,username varchar,usersid varchar,share varchar,domain varchar,timestamp timestamp,"
 		/**
 		 * Get all the common values out of sqlite3
 		 */
@@ -390,6 +460,7 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 	}
 
 	free(entry);
+	printf("Database updated to version 1.2.4.\n");
 }
 
 
@@ -399,11 +470,33 @@ static void _1_2_3_to_1_2_4(struct confdata *c)
 
 
 
-void smbta_convert()
+void smbta_convert(struct configuration_data *conf)
 {
 	int chose = 0;
 	struct confdata c;
 	c.entered = 0;
+	/**
+	 * copy database connection details from the configuration_data
+	 * structure into confdata.
+	 * we can use this info later in the functions.
+	 */
+	strncpy(c.dbihost,conf->dbhost,50);
+	strncpy(c.dbiuser,conf->dbuser,50);
+	strncpy(c.dbidbname,conf->dbname,50);
+	strncpy(c.dbipassword,conf->dbpassword,50);
+	strncpy(c.dbidriver,conf->dbdriver,50);
+
+	printf("\n");
+	printf("*********************************************************\n");
+	printf("NOTE: try to keep the following procedure to run this\n");
+	printf("      conversion process:\n\n");
+	printf("- shutdown your Samba services.\n");
+	printf("- shutdown smbtad.\n");
+	printf("- install the latest version of smbtad.\n");
+	printf("- run THIS conversion process.\n");
+	printf("- start smbtad.\n");
+	printf("- restart your Samba services.\n");
+	printf("*********************************************************\n");
 	printf("\n");
 	printf("Select the SMBTA version you are coming from.\n");
 	printf("1) 1.0, 1.1, 1.2.0, 1.2.1, 1.2.2, 1.2.3:\n");
@@ -414,19 +507,32 @@ void smbta_convert()
 	printf("2) 1.2.4:\n");
 	printf("	Converts a database to the current format when you\n");
 	printf("	are coming from a 1.2.4 version.\n");
-	printf("3) Quit program\n");
+	printf("3) 1.2.5:\n");
+	printf("	Converts a database to the current format when you\n");
+	printf("	are coming from a 1.2.5 version.\n");
+	printf("4) Quit program\n");
 	printf("\n");
 	printf("Enter Number:\n");
 	scanf("%d",&chose);
 	switch (chose) {
+		/**
+		 * to provide a way to update from whichever version someone is
+		 * coming from, just add the very latest conversion function to
+		 * all older versions!
+		 */
 		case 1:
 			_1_2_3_to_1_2_4(&c);
 			_1_2_4_to_1_2_5(&c);
+			_1_2_5_to_1_2_6(&c);
 			break;
 		case 2:
 			_1_2_4_to_1_2_5(&c);
+			_1_2_5_to_1_2_6(&c);
 			break;
 		case 3:
+			_1_2_5_to_1_2_6(&c);
+			break;
+		case 4:
 			printf("Exiting.\n");
 			exit(0);
 			break;
