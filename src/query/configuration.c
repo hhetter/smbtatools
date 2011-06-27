@@ -26,7 +26,7 @@
 
 /* creates a local sqlite database that smbtaquery uses while in */
 /* operation */
-sqlite3 *create_db()
+static sqlite3 *create_db()
 {
 	char *a=getenv("HOME");
 	char path[255];
@@ -61,7 +61,7 @@ int configuration_check_configuration( struct configuration_data *c );
 /**
  * Initialize default values of the configuration.
  */
-void configuration_define_defaults( struct configuration_data *c )
+static void configuration_define_defaults( struct configuration_data *c )
 {
 	c->port = 3390;
 	c->host = NULL;
@@ -85,7 +85,7 @@ void configuration_define_defaults( struct configuration_data *c )
 }
 
 /* load $HOME/.smbtatools/query.config */
-void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
+static void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
         char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
@@ -98,7 +98,7 @@ void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 }
 
 
-int configuration_load_config_file( struct configuration_data *c)
+static int configuration_load_config_file( struct configuration_data *c)
 {
 	dictionary *Mydict;
 	Mydict=iniparser_load( c->config_file);
@@ -134,7 +134,7 @@ int configuration_load_config_file( struct configuration_data *c)
 	return 0;
 }
 
-void configuration_show_help()
+static void configuration_show_help()
 {
 	printf("smbtaquery version %s\n", SMBTAQUERY_VERSION);
 	printf("(C)opyright 2011 by Benjamin Brunner\n");
@@ -170,7 +170,7 @@ void configuration_show_help()
 	printf("\n");
 }
 
-void configuration_set_output( struct configuration_data *c,
+static void configuration_set_output( struct configuration_data *c,
 	char *fmt)
 {
 	if (c->query_xmlfile != NULL) {
@@ -189,7 +189,7 @@ void configuration_set_output( struct configuration_data *c,
 	}
 }
 
-void configuration_create_key( char *filename )
+static void configuration_create_key( char *filename )
 {
         int f;
 	FILE *keyfile;
@@ -214,7 +214,7 @@ void configuration_create_key( char *filename )
  *  * Create a database connection and setup the required tables
  *   * returns 0 if fine, 1 on error
  *    */
-int configuration_database_connect( struct configuration_data *conf )
+static int configuration_database_connect( struct configuration_data *conf )
 {
 	int rc;
 	const char *dberror;

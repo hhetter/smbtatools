@@ -61,7 +61,7 @@ struct xml_last_activity_data{
 	char *value;
 };
 
-void interpreter_xml_begin_search(
+static void interpreter_xml_begin_search(
 	struct configuration_data *c,
 	char *title)
 {
@@ -76,7 +76,7 @@ void interpreter_xml_begin_search(
 	talloc_free(ctx);
 }
 
-void interpreter_xml_end_search(
+static void interpreter_xml_end_search(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
@@ -84,7 +84,7 @@ void interpreter_xml_end_search(
 		"</search>\n");
 }
 	
-void interpreter_xml_search_result_file(
+static void interpreter_xml_search_result_file(
 		struct configuration_data *c,
 		char *name,
 		char *share,
@@ -104,7 +104,7 @@ void interpreter_xml_search_result_file(
 		domain);
 }
 
-void interpreter_xml_search_result_domain(
+static void interpreter_xml_search_result_domain(
 		struct configuration_data *c,
 		char *name)
 {
@@ -118,7 +118,7 @@ void interpreter_xml_search_result_domain(
 		name);
 }
 
-void interpreter_xml_search_result_sid(
+static void interpreter_xml_search_result_sid(
 		struct configuration_data *c,
 		char *sid,
 		char *user,
@@ -136,7 +136,7 @@ void interpreter_xml_search_result_sid(
 		sid,user,domain);
 }
 
-void interpreter_xml_search_result_user(
+static void interpreter_xml_search_result_user(
 		struct configuration_data *c,
 		char *name,
 		char *domain)
@@ -153,7 +153,7 @@ void interpreter_xml_search_result_user(
 		domain);
 }
 
-void interpreter_xml_footer(
+static void interpreter_xml_footer(
 	struct configuration_data *c)
 {
 	char *ctx = talloc(NULL, char);
@@ -179,7 +179,7 @@ void interpreter_close_xml_file(
         fclose(c->xml_handle);
 }
 
-void interpreter_xml_create_header(
+static void interpreter_xml_create_header(
 	struct configuration_data *c)
 {
 	fprintf( c->xml_handle,
@@ -200,7 +200,7 @@ void interpreter_open_xml_file(
         }
 }
 
-void interpreter_xml_begin_function(
+static void interpreter_xml_begin_function(
 	struct configuration_data *c,
 	char *funcname)
 {
@@ -209,7 +209,7 @@ void interpreter_xml_begin_function(
 		"<%s>\n", funcname);
 }
 
-void interpreter_xml_close_function(
+static void interpreter_xml_close_function(
 	struct configuration_data *c,
 	char *funcname)
 {
@@ -218,7 +218,7 @@ void interpreter_xml_close_function(
 		"</%s>\n", funcname);
 }
 
-void interpreter_xml_description(
+static void interpreter_xml_description(
 	struct configuration_data *c,
 	char *description_str)
 {
@@ -228,7 +228,7 @@ void interpreter_xml_description(
 		description_str);
 }
 
-void interpreter_xml_value(
+static void interpreter_xml_value(
 	struct configuration_data *c,
 	unsigned long int value)
 {
@@ -238,7 +238,7 @@ void interpreter_xml_value(
 		value);
 }
 
-void interpreter_xml_totalrow(
+static void interpreter_xml_totalrow(
 	struct configuration_data *c,
 	char *value)
 {
@@ -248,7 +248,7 @@ void interpreter_xml_totalrow(
 		value);
 }
 
-void interpreter_xml_usageentry(
+static void interpreter_xml_usageentry(
 	struct configuration_data *c,
 	char *timestr,
 	unsigned long int value,
@@ -261,7 +261,7 @@ void interpreter_xml_usageentry(
 		timestr, value, conv_str, percent);
 }
 
-void interpreter_xml_last_activityentry(
+static void interpreter_xml_last_activityentry(
 	struct configuration_data *c,
 	struct xml_last_activity_data *entry,
 	char *vfs_function)
@@ -286,7 +286,7 @@ void interpreter_xml_last_activityentry(
 		entry->value);
 }
 
-void interpreter_xml_toprow(
+static void interpreter_xml_toprow(
 	struct configuration_data *c,
 	int num,
 	char *obj,
@@ -300,17 +300,7 @@ void interpreter_xml_toprow(
 		val);
 }
 	
-void interpreter_xml_objname(
-	struct configuration_data *c,
-	char *str)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<objname>%s</objname>\n",
-		str);
-}
-
-void interpreter_xml_begin_table(
+static void interpreter_xml_begin_table(
 	struct configuration_data *c,
 	int columns)
 {
@@ -319,7 +309,7 @@ void interpreter_xml_begin_table(
 		"<table_columns>%i</table_columns>\n",columns);
 }
 
-void interpreter_xml_begin_table_row(
+static void interpreter_xml_begin_table_row(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
@@ -327,7 +317,7 @@ void interpreter_xml_begin_table_row(
 		"<table_row>");
 }
 
-void interpreter_xml_table_named_row(
+static void interpreter_xml_table_named_row(
 	struct configuration_data *c,
 	char *named_row, char *res)
 {
@@ -337,23 +327,14 @@ void interpreter_xml_table_named_row(
 			named_row,res);
 }
 
-void interpreter_xml_close_table_row(
+static void interpreter_xml_close_table_row(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
 		"</table_row>");
 }
-
-void interpreter_xml_begin_table_header(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<table_header>");
-}
-
-void interpreter_xml_table_header_element(
+static void interpreter_xml_table_header_element(
 	struct configuration_data *c,
 	char *element)
 {
@@ -363,23 +344,7 @@ void interpreter_xml_table_header_element(
 		element);
 }
 
-void interpreter_xml_end_table_header(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table_header>");
-}
-
-void interpreter_xml_begin_table_content(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<table_content>");
-}
-
-void interpreter_xml_table_content(
+static void interpreter_xml_table_content(
 	struct configuration_data *c,
 	char *res)
 {
@@ -389,34 +354,7 @@ void interpreter_xml_table_content(
 		res);
 }
 
-void interpreter_xml_end_table_content(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table_content>");
-}
-
-void interpreter_xml_end_table(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table>\n");
-}
-	
-void interpreter_xml_strvalue(
-	struct configuration_data *c,
-	char *str)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<value>%s</value>\n",
-		str);
-}
-
-
-char *interpreter_prepare_statement(TALLOC_CTX *ctx,
+static char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
 {
 	int t = strlen(data);
@@ -436,7 +374,7 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 
-void interpreter_print_table( TALLOC_CTX *ctx,
+static void interpreter_print_table( TALLOC_CTX *ctx,
 		struct configuration_data *c,
 		char *named_row,
 		int columns,char *data, ...)
@@ -473,18 +411,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	interpreter_xml_close_table_row(c);
 }
 
-void bar(unsigned long int total, unsigned long int length) {
-	long double percent= total / 100;
-	float barpercent= 0.5;
-	int x;
-	long double erg = (long double) length / percent;
-	int barlength = erg *barpercent;
-	printf("%10.2Lf%% ", erg);
-	for (x=0;x<barlength;x++) { printf("#"); }
-	printf("\n");
-}
-
-char *percent(TALLOC_CTX *ctx,
+static char *percent(TALLOC_CTX *ctx,
 	unsigned long int total,
 	unsigned long int length)
 {
@@ -499,7 +426,7 @@ char *percent(TALLOC_CTX *ctx,
 	return ret;
 }
 
-void interpreter_fn_throughput( TALLOC_CTX *ctx,
+static void interpreter_fn_throughput( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -565,7 +492,7 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 	}
 }
 
-void interpreter_fn_usage( TALLOC_CTX *ctx,
+static void interpreter_fn_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -659,7 +586,7 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 }
 
 
-void interpreter_fn_last_activity( TALLOC_CTX *ctx,
+static void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 struct interpreter_command *command_data,
                 struct interpreter_object *obj_struct,
                 struct configuration_data *config)
@@ -948,7 +875,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	TALLOC_FREE(temp);
 }
 
-void interpreter_fn_search( TALLOC_CTX *ctx,
+static void interpreter_fn_search( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1059,7 +986,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	interpreter_xml_end_search(config);
 }
 
-void interpreter_fn_top_list( TALLOC_CTX *ctx,
+static void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1377,7 +1304,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	
 
 
-void interpreter_fn_list( TALLOC_CTX *ctx,
+static void interpreter_fn_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1449,7 +1376,7 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 }
 
-void interpreter_fn_total( TALLOC_CTX *ctx,
+static void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1548,7 +1475,7 @@ char *interpreter_return_timestamp_now_minus_sec(TALLOC_CTX *ctx,
         return outstr;
 }
 
-char *interpreter_return_timestamp(TALLOC_CTX *ctx,
+static char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	char *timestr)
 {
 	char *ret;
@@ -1600,7 +1527,7 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	exit(1);
 }	
 
-void interpreter_make_times( TALLOC_CTX *ctx,
+static void interpreter_make_times( TALLOC_CTX *ctx,
 	struct interpreter_object *obj_struct,
 	struct interpreter_command *command_data)
 {
@@ -1647,7 +1574,7 @@ void interpreter_make_times( TALLOC_CTX *ctx,
 }
 
 
-void interpreter_run_command( TALLOC_CTX *ctx,
+static void interpreter_run_command( TALLOC_CTX *ctx,
 	struct interpreter_command *command_data,
 	struct interpreter_object *obj_struct,
 	struct configuration_data *config)
@@ -1747,7 +1674,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	}
 }
 
-int interpreter_translate_command(const char *cmd)
+static int interpreter_translate_command(const char *cmd)
 {
 	/* commands */
 	if (strcmp(cmd, "total") == 0) return INT_OBJ_TOTAL;
@@ -1767,7 +1694,7 @@ int interpreter_translate_command(const char *cmd)
 }
 
 
-char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
+static char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 		struct interpreter_command *command_data,
 		struct configuration_data *config)
 {
