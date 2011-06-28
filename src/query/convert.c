@@ -480,12 +480,12 @@ void smbta_convert(struct configuration_data *conf)
 	 * structure into confdata.
 	 * we can use this info later in the functions.
 	 */
-	strncpy(c.dbihost,conf->dbhost,50);
+/*	strncpy(c.dbihost,conf->dbhost,50);
 	strncpy(c.dbiuser,conf->dbuser,50);
 	strncpy(c.dbidbname,conf->dbname,50);
 	strncpy(c.dbipassword,conf->dbpassword,50);
 	strncpy(c.dbidriver,conf->dbdriver,50);
-
+*/
 	printf("\n");
 	printf("*********************************************************\n");
 	printf("NOTE: try to keep the following procedure to run this\n");
