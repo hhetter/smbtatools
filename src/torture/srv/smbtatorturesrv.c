@@ -56,7 +56,7 @@ struct conn_list {
 struct conn_list *conn_list_begin = NULL;
 struct conn_list *conn_list_end = NULL;
 
-void add_conn( int socket)
+static void add_conn( int socket)
 {
         struct conn_list *entry = malloc(sizeof(struct conn_list));
         entry->sockfd=socket;
@@ -71,7 +71,7 @@ void add_conn( int socket)
 }
 
 
-void delete_conn(int socket)
+static void delete_conn(int socket)
 {
         struct conn_list *Searcher = conn_list_begin;
         struct conn_list *Prev = NULL;
@@ -98,7 +98,7 @@ void delete_conn(int socket)
 }
 
 
-void recreate_fd_sets(  fd_set *active_read_fd_set,
+static void recreate_fd_sets(  fd_set *active_read_fd_set,
                                         fd_set *active_write_fd_set)
 {
         FD_ZERO(active_read_fd_set);
@@ -114,7 +114,7 @@ void recreate_fd_sets(  fd_set *active_read_fd_set,
 
 
 
-int conn_list_max()
+static int conn_list_max()
 {
 	struct conn_list *entry = conn_list_begin;
 	int max=0;
@@ -125,7 +125,7 @@ int conn_list_max()
 	return max;
 }
 
-void add_filename( char *fname,int socket)
+static void add_filename( char *fname,int socket)
 {
 	struct file_element *entry = malloc(sizeof(struct file_element));
 	entry->filename=fname;
@@ -139,28 +139,7 @@ void add_filename( char *fname,int socket)
 		fnamelist_end=entry;
 	}
 }
-
-void delete_filename( char *fname )
-{
-	struct file_element *entry = fnamelist_begin;
-	struct file_element *backup = fnamelist_begin;
-	while (entry != NULL) {
-		if ( strcmp(fname,entry->filename) == 0) {
-			free(entry->filename);
-			if (fnamelist_begin==entry) {
-				fnamelist_begin=entry->next;
-				if (fnamelist_end==fnamelist_begin)
-					fnamelist_end=entry->next;
-			} else 	backup->next=entry->next;
-			free(entry);
-			return;
-			}
-		backup=entry;
-		entry=entry->next;
-	}
-}
-
-void delete_all_filenames_of_sock( int sockfd )
+static void delete_all_filenames_of_sock( int sockfd )
 {
         struct file_element *entry = fnamelist_begin;
         struct file_element *backup = fnamelist_begin;
@@ -180,7 +159,7 @@ void delete_all_filenames_of_sock( int sockfd )
         }
 }
 
-void print_filename_list()
+static void print_filename_list()
 {
 	struct file_element *entry= fnamelist_begin;
 	while (entry != NULL) {
@@ -189,7 +168,7 @@ void print_filename_list()
 }
 
 // return 1 if the filename does already exist
-int check_if_filename_exists( char *fname)
+static int check_if_filename_exists( char *fname)
 {
 	struct file_element *entry = fnamelist_begin;
 	while (entry!= NULL) {
@@ -200,7 +179,7 @@ int check_if_filename_exists( char *fname)
 	return 0;
 }
 
-char *get_random_filename() {
+static char *get_random_filename() {
         int max_filenames = 1;
         int max_directories = 1;
         int nfilename = 0;
@@ -260,7 +239,7 @@ char *get_random_filename() {
         return retstr;
 }
 
-void send_data(char *str,int sock)
+static void send_data(char *str,int sock)
 {
 	int h=strlen(str);
 	char *tosend=(char *) malloc(sizeof(char)*strlen(str)+10);
@@ -273,7 +252,7 @@ void send_data(char *str,int sock)
 	free(tosend);
 }
 
-void handle_data(int sock, struct configuration *config)
+static void handle_data(int sock, struct configuration *config)
 {
 	char prefix[5];
 	char *inp=NULL;
@@ -315,7 +294,7 @@ void handle_data(int sock, struct configuration *config)
 
 		
 
-void handle_network( struct configuration *config )
+static void handle_network( struct configuration *config )
 {
 	int maxconn=0;
 	socklen_t t = sizeof(struct sockaddr_in);
@@ -355,7 +334,7 @@ void handle_network( struct configuration *config )
 * Create a listening internet socket on a port.
  * int port             The port-number.
  */
-int network_create_socket( int port )
+static int network_create_socket( int port )
 {
         int sock_fd;
         struct sockaddr_in6 my_addr;
