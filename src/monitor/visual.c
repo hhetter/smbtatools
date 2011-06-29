@@ -13,9 +13,9 @@ int monitor_timer_flag = 0;
 pthread_mutex_t monitor_timer_lock;
 pthread_t thread2;
 
-void monitor_timer( void *var);
+static void monitor_timer( void *var);
 
-void visual_list_initial_draw();
+static void visual_list_initial_draw();
 
 void visual_init(char *title)
 {
@@ -29,7 +29,7 @@ void visual_init(char *title)
 }
 
 
-void monitor_timer( void *var)
+static void monitor_timer( void *var)
 {
         pthread_detach(pthread_self());
         unsigned long int micro = 1000*1000; /* microseconds */
@@ -46,7 +46,7 @@ void monitor_timer( void *var)
 /**
  * draw the monitors initially after being initialized
  */
-void visual_list_initial_draw()
+static void visual_list_initial_draw()
 {
         struct monitor_item *entry = monlist_start;
         while (entry != NULL) {

@@ -52,15 +52,3 @@ int backlog_add_str(char *data, struct monitor_item *item)
         return 0;
 }
 
-void backlog_clear(struct backlog_list *list)
-{
-	struct backlog_item *entry = list->begin;
-	struct backlog_item *backup = list->begin;
-	while(entry != NULL) {
-		backup=entry->next;
-		free(entry->data);
-		free(entry);
-		entry = backup;
-	}
-}
-

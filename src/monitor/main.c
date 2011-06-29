@@ -19,15 +19,6 @@
  */
 
 #include "include/includes.h"
-void monitor_shutdown(void)
-{
-	endwin();
-	system("clear");
-	curs_set(1);
-	fprintf(stdout, "smbtamonitor %s by Michael Haefner\n", SMBTAMONITOR_VERSION);
-	exit(0);
-}
-
 int main(int argc, char *argv[])
 {
 	/* main configuration structure */

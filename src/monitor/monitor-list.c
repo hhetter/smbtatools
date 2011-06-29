@@ -10,7 +10,7 @@ pthread_mutex_t monitor_list_lock;
  */
 
 pthread_t thread3;
-void monitor_list_timer( void *var);
+static void monitor_list_timer( void *var);
 
 /*
  * init the monitor system */
@@ -19,7 +19,7 @@ void monitor_list_init( ) {
 	pthread_create(&thread3,NULL,(void *)&monitor_list_timer,NULL);
 }
 
-void monitor_list_timer( void *var)
+static void monitor_list_timer( void *var)
 {
         pthread_detach(pthread_self());
 	struct monitor_item *entry = monlist_start;
@@ -201,7 +201,7 @@ void monitor_list_initial_draw()
 	}
 	pthread_mutex_unlock(&monitor_list_lock);
 }
-void monitor_list_trigger_partners( struct monitor_item *request )
+static void monitor_list_trigger_partners( struct monitor_item *request )
 {
 	struct monitor_item *entry = monlist_start;
 	while (entry != NULL) {
