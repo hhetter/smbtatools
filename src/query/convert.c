@@ -273,49 +273,49 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 	printf("Populating table...\n");
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result)  SELECT * from rename ( 6, username, usersid, share, domain, timestamp, source, destination, result);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result)  SELECT '6', username, usersid, share, domain, timestamp, source, destination, result FROM rename;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE rename;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from close ( 9, username, usersid, share, domain, timestamp, filename, result);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '9', username, usersid, share, domain, timestamp, filename, result) FROM close;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE close;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result) SELECT * from open ( 8, username, usersid, share, domain, timestamp, filename, mode, result);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result) SELECT '8', username, usersid, share, domain, timestamp, filename, mode, result) FROM open;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE open;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from chdir ( 7, username, usersid, share, domain, timestamp, path, result);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '7', username, usersid, share, domain, timestamp, path, result) FROM chdir;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE chdir;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain,timestamp, string1, string2, result) SELECT * from mkdir (4, username, usersid, share, domain, timestamp, path, mode, result);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain,timestamp, string1, string2, result) SELECT '4', username, usersid, share, domain, timestamp, path, mode, result) FROM mkdir;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE mkdir;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from write (2, username, usersid, share, domain, timestamp, filename, length);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '2', username, usersid, share, domain, timestamp, filename, length) FROM write;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE write;");
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT * from read (0, username, usersid, share, domain, timestamp, filename, length);");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '0', username, usersid, share, domain, timestamp, filename, length) FROM read;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE read;");
