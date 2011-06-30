@@ -280,7 +280,7 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 	convert_check_dbi_res(rs);
 
 	rs = dbi_conn_query(c->DBIconn,
-		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '9', username, usersid, share, domain, timestamp, filename, result) FROM close;");
+		"INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, result) SELECT '9', username, usersid, share, domain, timestamp, filename, result FROM close;");
 	convert_check_dbi_res(rs);
 	rs = dbi_conn_query(c->DBIconn,
 		"DROP TABLE close;");
