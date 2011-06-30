@@ -321,6 +321,14 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 		"DROP TABLE read;");
 	convert_check_dbi_res(rs);
 
+        rs = dbi_conn_query(c->DBIconn,
+                "INSERT INTO data (vfs_id, username, usersid, share, domain, timestamp, string1, string2, result) SELECT '5', username, usersid, share, domain, timestamp, path, mode, result FROM rmdir;");
+        convert_check_dbi_res(rs);
+        rs = dbi_conn_query(c->DBIconn,
+                "DROP TABLE rmdir;");
+        convert_check_dbi_res(rs);
+
+
 	printf("Database updated to SMBTA version 1.2.6.\n");
 }
 
