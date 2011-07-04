@@ -328,6 +328,53 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
                 "DROP TABLE rmdir;");
         convert_check_dbi_res(rs);
 
+	/**
+	 * create a table with version information
+	 * and configuration status
+	 */
+	rs = dbi_conn_query( c->DBIconn,
+		"CREATE TABLE status ("
+		"smbtad_control_entry varchar,"
+		"smbtad_version varchar,"
+		"smbtad_database_version varchar,"
+		"smbtad_client_port integer,"
+		"smbtad_unix_socket_clients integer,"
+		"smbtad_dbname varchar,"
+		"smbtad_dbhost varchar,"
+		"smbtad_dbuser varchar,"
+		"smbtad_dbdriver varchar,"
+		"smbtad_maintenance_timer_str varchar,"
+		"smbtad_maintenance_run_time integer,"
+		"smbtad_debug_level integer,"
+		"smbtad_precision integer,"
+		"smbtad_daemon integer,"
+		"smbtad_use_db integer,"
+		"smbtad_config_file varchar);");
+	convert_check_dbi_res(rs);
+	/**
+	 * fill in initial data
+	 */
+	rs = dbi_conn_query( c->DBIconn,
+		"INSERT INTO status ("
+		"smbtad_control_entry,"
+		"smbtad_database_version)"
+		"VALUES ("
+		"'SMBTAD',"
+		"'1.2.6'"
+		");");
+	convert_check_dbi_res(rs);
+	/**
+	 * create a table for version information on
+	 * modules
+	 */
+	rs = dbi_conn_query( c->DBIconn,
+		"CREATE TABLE modules ("
+		"module_subrelease_number integer,"
+		"module_common_blocks_overflow integer,"
+		"module_ip_address varchar);");
+	convert_check_dbi_res(rs);
+
+
 
 	printf("Database updated to SMBTA version 1.2.6.\n");
 }
