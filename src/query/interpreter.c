@@ -118,6 +118,22 @@ static void interpreter_xml_search_result_domain(
 		name);
 }
 
+static void interpreter_xml_search_result_share(
+                struct configuration_data *c,
+		char *name,
+		char *domain)
+{
+        if (c->xml_handle == NULL) return;
+        fprintf(c->xml_handle,
+                "<result>\n"
+                "       <share>\n"
+                "               <name>%s</name>\n"
+		"		<domain>%s</domain>\n"
+                "       </share>\n"
+                "</result>\n",
+                name, domain);
+}
+
 static void interpreter_xml_search_result_sid(
 		struct configuration_data *c,
 		char *sid,
@@ -961,6 +977,20 @@ static void interpreter_fn_search( TALLOC_CTX *ctx,
 								result_get_element(ctx,n,qdat)); // domain
 						}
 						n = n + 1;
+					}
+					break;
+				case 4: ;
+					n = 0;
+					res = "\0";
+					while (res != NULL) {
+						res = result_get_element(ctx,n,qdat);
+						if (res != NULL) {
+							interpreter_xml_search_result_share(
+								config,
+								result_get_element(ctx,n+0,qdat),  //doamin
+								result_get_element(ctx,n+1,qdat)); //share
+						}
+						n = n + 2;
 					}
 					break;
 				default: break ;
