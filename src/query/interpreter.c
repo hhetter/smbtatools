@@ -61,6 +61,16 @@ struct xml_last_activity_data{
 	char *value;
 };
 
+static void interpreter_xml_print(
+		struct configuration_data *c,
+		char *text)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		text);
+}
+
+
 static void interpreter_xml_begin_search(
 	struct configuration_data *c,
 	char *title)
@@ -1399,6 +1409,102 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 }
 
+static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query;
+	dbi_result qdat;
+	if (command_data->argument_count != 1) {
+		printf("ERROR: 	smbtad-report requires one argument\n");
+		exit(1);
+	}
+	interpreter_xml_begin_function(config,"smbtad-report");
+	query = talloc_asprintf(ctx,
+			"SELECT * status;");
+	qdat = dbi_conn_query( config->DBIconn,
+			query);
+	dbi_result_first_row(qdat);
+
+	query = talloc_asprintf(ctx,
+			"	<smbtad_version>%s</smbtad_version>\n",
+			dbi_result_get_string_idx(qdat,2));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<database_version>%s</database_version>\n",
+			dbi_result_get_string_idx(qdat,3));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<client_port>%i</client_port)\n",
+			dbi_result_get_int_idx(qdat,4));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<unix_socket_clients>%i</unix_socket_clients>\n",
+			dbi_result_get_int_idx(qdat,5));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbname>%s</dbname>\n",
+			dbi_result_get_string_idx(qdat,6));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbhost>%s</dbhost>\n",
+			dbi_result_get_string_idx(qdat,7));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbuser>%s</dbuser>\n",
+			dbi_result_get_string_idx(qdat,8));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbdriver>%s</dbdriver>\n",
+			dbi_result_get_string_idx(qdat,9));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<maintenance_timer_str>%s</maintenance_timer_str>\n",
+			dbi_result_get_string_idx(qdat,10));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<maintenance_run_time>%s</maintenance_run_time>\n",
+			dbi_result_get_string_idx(qdat,11));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<debug_level>%i</debug_level>\n",
+			dbi_result_get_int_idx(qdat,12));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<precision>%i</precision>\n",
+			dbi_result_get_int_idx(qdat,13));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<daemon>%i</daemon>\n",
+			dbi_result_get_int_idx(qdat,14));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<use_db>%i</use_db>\n",
+			dbi_result_get_int_idx(qdat,15));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<config_file>%s</config_file>\n",
+			dbi_result_get_string_idx(qdat,16));
+	interpreter_xml_print(config,query);
+        interpreter_xml_close_function(config,"smbtad-report");
+}
+
+
 static void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -1471,6 +1577,8 @@ static void interpreter_fn_total( TALLOC_CTX *ctx,
 
 	interpreter_xml_close_function(config,"total");
 }
+
+
 
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
 {
@@ -1670,6 +1778,12 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->output_term = talloc_asprintf(ctx, "globally");
 		interpreter_make_times(ctx,obj_struct, command_data);
 		break;
+	case INT_OBJ_SYSTEM:
+		obj_struct->object = INT_OBJ_SYSTEM;
+		obj_struct->name = talloc_strdup(ctx,"system");
+		obj_struct->sql = talloc_asprintf(ctx," 1= 1 ");
+		obj_struct->output_term = talloc_asprintf(ctx, "system");
+		break;
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
 		break;
@@ -1691,6 +1805,9 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_THROUGHPUT:
 		interpreter_fn_throughput(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_SMBTAD_REPORT:
+		interpreter_fn_smbtad_report(ctx, command_data, obj_struct, config);
+		break;
 	}
 }
 
@@ -1704,12 +1821,14 @@ static int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
 	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
 	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
+	if (strcmp(cmd, "smbtad-report") == 0) return INT_OBJ_SMBTAD_REPORT;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
 	if (strcmp(cmd, "domain") == 0) return INT_OBJ_DOMAIN;
 	if (strncmp(cmd, "global",6) == 0) return INT_OBJ_GLOBAL;
+	if (strncmp(cmd, "system",6) == 0) return INT_OBJ_SYSTEM;
 	return -1;
 }
 
@@ -1876,6 +1995,7 @@ void interpreter_command_help()
 		"				file FILE.\n");
 	printf("domain	DOMAIN			Run a query over the\n"
 		"				domain DOMAIN\n");
+	printf("system				Run a system command.\n");
 	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
 	printf("total 	[r][w][rw]		Get the total read(r),\n"
@@ -1903,5 +2023,9 @@ void interpreter_command_help()
 	printf("	[r][w][rw]\n		Calculates the data throughput\n");
 	printf("				of the given object of the last\n");
 	printf("				[num] seconds, minutes, or days.\n");
+	printf("----------------------------------------------------------\n");
+	printf("smbtad-report			print a report of smbtads\n");
+	printf("				configuration.\n");
+
 
 };
