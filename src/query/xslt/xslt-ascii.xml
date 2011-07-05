@@ -53,6 +53,64 @@ Comment
         
 </xsl:template>
 
+<xsl:template match="smbtad-report">
+---------------------------------------------------------------------
+Your smbtad version is at <xsl:value-of select="smbtad_version"/>.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The internal database version is at <xsl:value-of select="database_version"/>.
+
+If the database version is lower then the smbtad version, it is required
+to run smbtaquery -C in versions of SMB Traffic Analyzer up to 1.2.6, to
+bring the database version up to the level of the installed smbtad version.
+
+Releases of smbtad newer then 1.2.6 will fully automatically convert the
+database if they detect an older version.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+smbtad is listening on port <xsl:value-of select="client_port"/> for communication with real-time clients such as rrddriver and smbtamonitor.
+
+If the client port number is 0, no port is open for communication with these programs.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The value of unix_socket_clients is <xsl:value-of select="unix_socket_clients"/>.
+
+This parameter is used for real-time clients such as rrddriver and smbtamonitor. If this value is 0, no unix domain socket is used to communicate with these programs.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The name of the database smbtad is using is called <xsl:value-of select="dbname"/> on host <xsl:value-of select="dbhost"/>. To access the database, smbtad is using the <xsl:value-of select="dbdriver"/> driver. It is using user <xsl:value-of select="dbuser"/> to access the database.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+smbtad is configured for a maintenance timer string as <xsl:value-of select="maintenance_timer_str"/>. For example, a maintenance timer string such as 01,00:00:00 means 'delete everything that is older than one day'. And smbtad will run this procedure every <xsl:value-of select="maint_run_time_str"/>.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+smbtad is configured for a debug level of <xsl:value-of select="debug_level"/>, whereas 0 is the default (only fatal errors), or 10, full debugging. Note that setting the debug level to 10 results in a performance penalty.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The cache subsystem of smbtad is configured for a precision value of <xsl:value-of select="precision"/>. The precision value is the number of seconds smbtad will be caching data from the VFS module in the systems ram. A higher precision value will make smbtad slighty faster, but results in more memory consumption. The default value for this value is 5 seconds.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The value for daemon is <xsl:value-of select="daemon"/>. If this value is 1, smbtad is running as a daemon, otherwise it will stay an interactive program.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+The value for use_db is <xsl:value-of select="use-db"/>. If this value is 1, smbtad will use the database. If the user only wants to run real-time programs with smbtad, use_db can be set to 0, resulting in not handling a database at all.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+smbtad is configured to read it's configuration from a file called <xsl:value-of select="config_file"/>.
+---------------------------------------------------------------------
+</xsl:template> 
+
+
 <xsl:template match="search">
 <xsl:value-of select="title"/> at <xsl:value-of select="timestamp"/>
 ------------------------------------------------------------------------------
