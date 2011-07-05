@@ -19,7 +19,7 @@
  */
 
 #include "../../include/common.h"
-
+#include "../webmon/rrddriver/include/vfs_smb_traffic_analyzer.h"
 
 void network_close_connection( int sockfd ) {
 // fixme , do something.
@@ -678,11 +678,13 @@ char *common_identify( TALLOC_CTX *ctx,
         if (Type==INT_OBJ_USER) {
                 /* identify users by SID */
                 query = talloc_asprintf(ctx,
-                        "select distinct(usersid), username, "
-                        "domain from read where username = '%s' "
-                        "UNION select distinct(usersid), username,"
-                        "domain from write where username = '%s';",
-                        data,data);
+                        "SELECT distinct(usersid), username, "
+                        "domain FROM data WHERE vfs_id = '%i' "
+			"AND username = '%s' "
+                        "UNION SELECT distinct(usersid), username, "
+                        "domain FROM data WHERE vfs_id = '%i' "
+			"AND username = '%s';",
+                        vfs_id_read, data, vfs_id_write, data);
                 qdat = sql_query(
                         ctx,
                         config,
@@ -691,10 +693,11 @@ char *common_identify( TALLOC_CTX *ctx,
         } else if (Type==INT_OBJ_SHARE) {
                 /* identify shares by domain */
                 query = talloc_asprintf(ctx,
-                        "select distinct(domain), share from read "
-                        "where share = '%s' UNION select "
-                        "distinct(domain), share from write where "
-                        "share = '%s';", data,data);
+                        "SELECT distinct(domain), share FROM data "
+                        "WHERE vfs_id = '%i' AND share = '%s' "
+			"UNION SELECT distinct(domain), share "
+			"FROM data WHERE vfs_id = '%i' AND share = '%s';", 
+			vfs_id_read, data,vfs_id_write, data);
                 qdat = sql_query(
                         ctx,
                         config,
@@ -703,10 +706,11 @@ char *common_identify( TALLOC_CTX *ctx,
         } else if (Type==INT_OBJ_FILE) {
                 /* identify files by share */
                 query = talloc_asprintf(ctx,
-                        "select distinct(share), filename "
-                        "from read where filename = '%s' "
-                        "UNION select distinct(share), filename "
-                        "from write where filename = '%s';",data,data);
+                        "SELECT distinct(share), string1 "
+                        "FROM data WHERE vfs_id = '%i' AND string1 = '%s' "
+                        "UNION SELECT distinct(share), string1 "
+                        "FROM data WHERE vfs_id = '%i' AND string1 = '%s';",
+			vfs_id_read, data,vfs_id_write, data);
                 qdat = sql_query(
                         ctx,
                         config,
@@ -715,10 +719,11 @@ char *common_identify( TALLOC_CTX *ctx,
 	} else if (Type==INT_OBJ_DOMAIN) {
 		/* identify domains */
 		query = talloc_asprintf(ctx,
-			"select distinct(domain) from read "
-			"where domain = '%s' "
-			"UNION select distinct(domain) from write "
-			"where domain = '%s';",data,data);
+			"SELECT distinct(domain) FROM data "
+			"WHERE vfs_id = '%i' AND domain = '%s' "
+			"UNION SELECT distinct(domain) FROM data "
+			"WHERE vfs_id = '%i' AND domain = '%s';",
+			vfs_id_read, data,vfs_id_write, data);
 		qdat = sql_query(
 			ctx,
 			config,

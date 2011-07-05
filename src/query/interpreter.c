@@ -1305,8 +1305,12 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata= talloc_asprintf(ctx,"List of users %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"SELECT username,usersid FROM data WHERE %s;",
-			obj_struct->sql);
+			"SELECT username,usersid FROM data " 
+			"WHERE vfs_id = '%i' AND %s UNION "
+			"SELECT username,usersid FROM data "
+			"WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql, 
+			vfs_id_write, obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1316,10 +1320,11 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata = talloc_asprintf(ctx,"List of domains %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"SELECT domain FROM read WHERE "
-			"%s union select domain"
-			" from write where %s;",
-			obj_struct->sql, obj_struct->sql);
+			"SELECT domain FROM data WHERE vfs_id = '%i' AND "
+			"%s UNION SELECT domain"
+			" FROM data WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql, 
+			vfs_id_write, obj_struct->sql);
 		qdat=sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1329,9 +1334,12 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata=talloc_asprintf(ctx,"List of shares %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select share,domain from read where %s "
-			"union select share,domain from write where %s;",
-			obj_struct->sql,obj_struct->sql);
+			"SELECT share,domain FROM data WHERE "
+			"vfs_id = '%i' AND %s "
+			"UNION SELECT share,domain FROM data "
+			"WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql,
+			vfs_id_write, obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1341,9 +1349,12 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata=talloc_asprintf(ctx,"List of files %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select filename,share from read where %s union"
-			" select filename,share from write where %s;",
-			obj_struct->sql,obj_struct->sql);
+			"SELECT string1,share FROM data WHERE "
+			"vfs_id = '%i' AND %s "
+			"UNION SELECT string1,share FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql,
+			vfs_id_write, obj_struct->sql);
 
 		qdat = sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
@@ -1363,7 +1374,7 @@ static void interpreter_fn_total( TALLOC_CTX *ctx,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
 {
-	char *query1, *query2, *xmldata = NULL;
+	char *query, *xmldata = NULL;
 	dbi_result qdat;
 	long long sum;
 	if (command_data->argument_count != 1) {
@@ -1374,21 +1385,16 @@ static void interpreter_fn_total( TALLOC_CTX *ctx,
 	interpreter_xml_begin_function(config,"total");
 
 	if (strcmp(command_data->arguments[0],"rw") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from read where %s;",
-			obj_struct->sql);
-		query2 = talloc_asprintf(ctx,
-			"select SUM(length) from write where %s;",
-			obj_struct->sql);
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"(vfs_id = '%i' OR vfs_id = '%i') AND %s;",
+			vfs_id_read, vfs_id_write, obj_struct->sql);
 
-		qdat = sql_query(ctx, config,query1);
+		qdat = sql_query(ctx, config,query);
 		sum = strtoll( result_get_element(ctx,0,qdat),
 				NULL, 0);
 		const char *errf;
 		dbi_conn_error(config->DBIconn, &errf);
-		qdat = sql_query(ctx, config, query2);
-		sum = sum + strtoll(result_get_element(ctx,0,qdat),
-				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes transfered %s.",
 			obj_struct->output_term);
@@ -1397,10 +1403,11 @@ static void interpreter_fn_total( TALLOC_CTX *ctx,
 			common_make_human_readable(ctx,sum));
 		
 	} else if (strcmp(command_data->arguments[0],"r") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from read where %s;",
-			obj_struct->sql);
-		qdat = sql_query(ctx, config,query1);
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql);
+		qdat = sql_query(ctx, config,query);
 		
 		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
@@ -1412,10 +1419,11 @@ static void interpreter_fn_total( TALLOC_CTX *ctx,
 			common_make_human_readable(ctx,sum));
 
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from write where %s;",
-			obj_struct->sql);
-		qdat = sql_query(ctx, config,query1);
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_write, obj_struct->sql);
+		qdat = sql_query(ctx, config,query);
 		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
@@ -1569,7 +1577,7 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		interpreter_make_times(ctx,obj_struct, command_data);
-		obj_struct->sql = talloc_asprintf(ctx,"%s and filename='%s' and "
+		obj_struct->sql = talloc_asprintf(ctx,"%s and string1='%s' and "
 			"%s and %s %s",
 					obj_struct->sql,
 					command_data->arguments[0],
