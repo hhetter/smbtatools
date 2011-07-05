@@ -1422,7 +1422,7 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 	}
 	interpreter_xml_begin_function(config,"smbtad-report");
 	query = talloc_asprintf(ctx,
-			"SELECT * status;");
+			"SELECT * FROM status;");
 	qdat = dbi_conn_query( config->DBIconn,
 			query);
 	dbi_result_first_row(qdat);
@@ -1438,7 +1438,7 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 	interpreter_xml_print(config, query);
 
 	query = talloc_asprintf(ctx,
-			"	<client_port>%i</client_port)\n",
+			"	<client_port>%i</client_port>\n",
 			dbi_result_get_int_idx(qdat,4));
 	interpreter_xml_print(config, query);
 
