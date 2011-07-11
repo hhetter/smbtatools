@@ -20,6 +20,8 @@ Smbtaquery::Application.routes.draw do
   get "users/edit_user"
   get "users/edit_settings"
   get "users/delete"
+  get "functions/global_search"
+  get "functions/global_search_refresh"
   #get "users/new"
   post "config/save"
 

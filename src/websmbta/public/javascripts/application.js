@@ -1,6 +1,33 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 var time_check = "false";
+
+function global_search(){
+   // $('input#global_search').attr('disabled', 'disabled');
+    if ($("#global_search").attr("value") == "" && $("#search_results").length > 0){
+            $("div#search_results").remove();
+    }
+    if ($("#global_search").attr("value") != "%" && $("#global_search").attr("value") != ""){
+        if ($("#search_results").length == 0){
+            $.ajax({
+                url: "../functions/global_search",
+                type: "get",
+                data:{
+                    search_string: $("#global_search").attr("value")
+                }
+            });
+        }
+        if ($("#search_results").length > 0){
+            $.ajax({
+                url: "../functions/global_search_refresh",
+                type: "get",
+                data:{
+                    search_string: $("#global_search").attr("value")
+                }
+            });
+        }
+    }
+}
 function getDomains () {
     $("#spinner_getdomains").show();
     $.ajax({

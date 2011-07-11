@@ -12,6 +12,42 @@ class FunctionsController < ApplicationController
     end
   end
 
+  def global_search
+    initial_command
+    @search_string  = params[:search_string]
+    @cmd += "-q \"global, search " + @search_string + ";\""
+    @divname = "search_results"
+    @cmd += " -o html > /tmp/function.html"
+    `#{@cmd}`
+    @output = File.open("/tmp/function.html", "r")
+    @output = @output.readlines.to_s
+    @output = @output.html_safe
+    File.delete("/tmp/function.html")
+
+    render :update do |page|
+      page << "if (!$('div#search_results').length)"
+      page.insert_html :after, "list", :partial => "start_function"
+    end
+    logger.debug @cmd
+  end
+
+  def global_search_refresh
+    initial_command
+    @search_string  = params[:search_string]
+    @cmd += "-q \"global, search " + @search_string + ";\""
+    @divname = "search_results"
+    @cmd += " -o html > /tmp/function.html"
+    `#{@cmd}`
+    @output = File.open("/tmp/function.html", "r")
+    @output = @output.readlines.to_s
+    @output = @output.html_safe
+    File.delete("/tmp/function.html")
+    render :update do |page|
+      page.replace "search_results", :partial => "start_function"
+    end
+    logger.debug @cmd
+  end
+
   def get_objects
     initial_command
     @domain = params[:domain]
