@@ -279,6 +279,18 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: please specify an object to monitor.\n");
 		return -1;
 	}
+	/**
+	 * make sure, if we need to run identify, we check for
+	 * database connection data
+	 */
+	if (c->identify == 1) {
+		if (c->dbhost == NULL || c->dbname == NULL || c->dbuser == NULL) {
+			printf("ERROR: please specifiy all database connection\n");
+			printf("       options, or shut down identification\n");
+			printf("       ( -I 0 ).\n");
+			return -1;
+		}
+	}
         return 0;
 }
 
