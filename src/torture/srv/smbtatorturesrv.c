@@ -1,37 +1,33 @@
-#ifdef SOLARIS
-    #define _XOPEN_SOURCE 500
-#else
-    #define _XOPEN_SOURCE
-#endif
-
 #define __EXTENSIONS__
 
 #define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
 #define _GNU_SOURCE
 
-#ifdef SOLARIS
-        #include <netinet/in.h>
-        #include <sys/ddi.h>
-#endif
-
-
+#include "../../../include/version.h"
+#include <arpa/inet.h>
+#include <dlfcn.h>
+#include <errno.h>
+#include <getopt.h>
+#include <libsmbclient.h>
+#include <limits.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/un.h>
-#include <signal.h>
-#include <pthread.h>
-#include <getopt.h>
-#include <syslog.h>
 #include <sys/select.h>
-#include <dlfcn.h>
-#include "../../../include/version.h"
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <syslog.h>
+#include <talloc.h>
+#include <time.h>
+#include <unistd.h>
+
 
 struct configuration {
 	int port;
