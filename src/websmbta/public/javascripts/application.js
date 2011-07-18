@@ -3,11 +3,10 @@
 var time_check = "false";
 
 function global_search(){
-   // $('input#global_search').attr('disabled', 'disabled');
     if ($("#global_search").attr("value") == "" && $("#search_results").length > 0){
             $("div#search_results").remove();
     }
-    if ($("#global_search").attr("value") != "%" && $("#global_search").attr("value") != ""){
+    else if ($("#global_search").attr("value") != "%" && $("#global_search").attr("value") != ""){
         if ($("#search_results").length == 0){
             $.ajax({
                 url: "../functions/global_search",
@@ -28,6 +27,110 @@ function global_search(){
         }
     }
 }
+function select_searched(search_data1, search_data2, search_data3, object){
+    if(object == "domain"){
+        domOnClickChange();
+            $.ajax({
+                url: "get_domains",
+                type: "get",
+                complete: function(){domOnClickChange()},
+                data:{
+                    domain: search_data1
+                }
+            });
+    }
+    if(object == "share"){
+        domOnClickChange();
+        $.ajax({
+            url: "get_domains",
+            type: "get",
+            complete: function(){
+                domOnClickChange();
+                $.ajax({
+                    url: "get_shares_and_users",
+                    type: "get",
+                    complete: function(){
+                        shareOnClickChange();
+                    },
+                    data:{
+                        domain: search_data2,
+                        share: search_data1
+                    }
+                });
+            },
+            data:{
+                domain: search_data2
+            }
+        });
+    }
+    if(object == "user"){
+        domOnClickChange();
+        $.ajax({
+            url: "get_domains",
+            type: "get",
+            complete: function(){
+                domOnClickChange();
+                $.ajax({
+                    url: "get_shares_and_users",
+                    type: "get",
+                    complete: function(){
+                        shareOnClickChange();
+                    },
+                    data:{
+                        domain: search_data2,
+                        user: search_data1
+                    }
+                });
+            },
+            data:{
+                domain: search_data2
+            }
+        });
+        
+    }
+    if(object == "file"){
+        domOnClickChange();
+        $.ajax({
+            url: "get_domains",
+            type: "get",
+            complete: function(){
+                domOnClickChange();
+                $.ajax({
+                    url: "get_shares_and_users",
+                    type: "get",
+                    complete: function(){
+                        shareOnClickChange();
+                        $.ajax({
+                            url: "get_files",
+                            type: "get",
+                            complete: function(){
+                                //fileOnClickChange();
+                                $("input#file").val(search_data1);
+                            },
+                            data:{
+                                domain: search_data3,
+                                share: search_data2,
+                                user: "(All)",
+                                file: search_data1
+                            }
+                        })
+                    },
+                    data:{
+                        domain: search_data3,
+                        share: search_data2,
+                        file: search_data1
+                    }
+                });
+            },
+            data:{
+                domain: search_data3,
+                share: search_data2,
+                file: search_data1
+            }
+        });  
+    }
+}
+
 function getDomains () {
     $("#spinner_getdomains").show();
     $.ajax({
@@ -202,6 +305,11 @@ function shareOnClickChange(){
     $("input#user").val(selected2.val());
     getFiles();
 }
+function fileOnClickChange(){
+    var selected = $("#filelist option:selected");
+    $("#file_diff").hide();
+    $("input#file").val(selected.val());
+}
 function formatOnClickChange(divname){
 
     var selected = $("#file_format_"+divname).val();
@@ -213,11 +321,6 @@ function formatOnClickChange(divname){
         $("#printview_function_" + divname).hide();
         $("#save_function_" + divname).show();
     }
-}
-function fileOnClickChange(){
-    var selected = $("#filelist option:selected");
-    $("#file_diff").hide();
-    $("input#file").val(selected.val());
 }
 function configureFunction(){
     var selected = $(".function option:selected").val();

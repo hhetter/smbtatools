@@ -154,23 +154,23 @@
 </xsl:template>
 
 <xsl:template match="smbtad-report">
-	<table border=2>
+	<table border="2">
 		<tr>
 			<th>smbtad configuration values</th>
 		</tr>
-		<td>Your smbtad version is at <b><xsl:value-of select="smbtad_version"/></b>.</td>
-		<td>The internal database version is at <b><xsl:value-of select="database_version"/></b>.<br>
-				If the database version is lower then the smbtad version, it is required to run smbtaquery -C in versions of SMB Traffic Analyzer up to 1.2.6, to bring the database version up to the level of the installed smbtad version.<br><b>Releases of smbtad newer then 1.2.6 will fully automatically convert the database if they detect an older version.</b></td>
-		<td>smbtad is listening on port <b><xsl:value-of select="client_port"/></b> for communication with real-time clients such as <i>rrddriver</i> and <i>smbtamonitor</i>.<br>If the client port number is 0, no port is open for communication with these programs.</td>
-			<td>The value of unix_socket_clients is <b><xsl:value-of select="unix_socket_clients"/></b>.<br>This parameter is used for real-time clients such as <i>rrddriver</i> and <i>smbtamonitor</i>. If this value is 0, no unix domain socket is used to communicate with these programs.</td>
-		<td>The name of the database smbtad is using is called <xsl:value-of select="dbname"/> on host <b><xsl:value-of select="dbhost"/></b>. To access the database, smbtad is using the <b><xsl:value-of select="dbdriver"/></b> driver. It is using user <b><xsl:value-of select="dbuser"/></b> to access the database.</td>
-		<td>smbtad is configured for a maintenance timer string as <b><xsl:value-of select="maintenance_timer_str"/></b>. For example, a maintenance timer string such as <i>01,00:00:00</i> means 'delete everything that is older than one day'. And smbtad will run this procedure every <b><xsl:value-of select="maint_run_time_str"/></b>.</td>
+		<tr><td>Your smbtad version is at <b><xsl:value-of select="smbtad_version"/></b>.</td></tr>
+		<tr><td>The internal database version is at <b><xsl:value-of select="database_version"/></b>.<br/>
+				If the database version is lower then the smbtad version, it is required to run smbtaquery -C in versions of SMB Traffic Analyzer up to 1.2.6, to bring the database version up to the level of the installed smbtad version.<br/><b>Releases of smbtad newer then 1.2.6 will fully automatically convert the database if they detect an older version.</b></td></tr>
+		<tr><td>smbtad is listening on port <b><xsl:value-of select="client_port"/></b> for communication with real-time clients such as <i>rrddriver</i> and <i>smbtamonitor</i>.<br/>If the client port number is 0, no port is open for communication with these programs.</td></tr>
+			<tr><td>The value of unix_socket_clients is <b><xsl:value-of select="unix_socket_clients"/></b>.<br/>This parameter is used for real-time clients such as <i>rrddriver</i> and <i>smbtamonitor</i>. If this value is 0, no unix domain socket is used to communicate with these programs.</td></tr>
+		<tr><td>The name of the database smbtad is using is called <xsl:value-of select="dbname"/> on host <b><xsl:value-of select="dbhost"/></b>. To access the database, smbtad is using the <b><xsl:value-of select="dbdriver"/></b> driver. It is using user <b><xsl:value-of select="dbuser"/></b> to access the database.</td></tr>
+		<tr><td>smbtad is configured for a maintenance timer string as <b><xsl:value-of select="maintenance_timer_str"/></b>. For example, a maintenance timer string such as <i>01,00:00:00</i> means 'delete everything that is older than one day'. And smbtad will run this procedure every <b><xsl:value-of select="maint_run_time_str"/></b>.</td></tr>
 
-		<td>smbtad is configured for a debug level of <b><xsl:value-of select="debug_level"/></b>, whereas 0 is the default (only fatal errors), or 10, full debugging. Note that setting the debug level to 10 results in a performance penalty.</td>
-		<td>The cache subsystem of smbtad is configured for a precision value of <b><xsl:value-of select="precision"/></b>. The precision value is the number of seconds smbtad will be caching data from the VFS module in the systems ram. A higher precision value will make smbtad slighty faster, but results in more memory consumption. The default value for this value is 5 seconds.</td>
-		<td>The value for daemon is <b><xsl:value-of select="daemon"/></b>. If this value is 1, smbtad is running as a daemon, otherwise it will stay an interactive program.</td>
-		<td>The value for use_db is <b><xsl:value-of select="use-db"/></b>. If this value is 1, smbtad will use the database. If the user only wants to run real-time programs with smbtad, use_db can be set to 0, resulting in not handling a database at all.</td>
-		<td>smbtad is configured to read it's configuration from a file called <b><xsl:value-of select="config_file"/></b>.</td>
+		<tr><td>smbtad is configured for a debug level of <b><xsl:value-of select="debug_level"/></b>, whereas 0 is the default (only fatal errors), or 10, full debugging. Note that setting the debug level to 10 results in a performance penalty.</td></tr>
+		<tr><td>The cache subsystem of smbtad is configured for a precision value of <b><xsl:value-of select="precision"/></b>. The precision value is the number of seconds smbtad will be caching data from the VFS module in the systems ram. A higher precision value will make smbtad slighty faster, but results in more memory consumption. The default value for this value is 5 seconds.</td></tr>
+		<tr><td>The value for daemon is <b><xsl:value-of select="daemon"/></b>. If this value is 1, smbtad is running as a daemon, otherwise it will stay an interactive program.</td></tr>
+		<tr><td>The value for use_db is <b><xsl:value-of select="use-db"/></b>. If this value is 1, smbtad will use the database. If the user only wants to run real-time programs with smbtad, use_db can be set to 0, resulting in not handling a database at all.</td></tr>
+		<tr><td>smbtad is configured to read it's configuration from a file called <b><xsl:value-of select="config_file"/></b>.</td></tr>
 	</table>
 </xsl:template>
 

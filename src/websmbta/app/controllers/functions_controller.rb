@@ -1,5 +1,7 @@
 class FunctionsController < ApplicationController
   require "digest/md5"
+  require "rexml/document"
+  include REXML
   before_filter :check_user
 
   def start_function
@@ -14,38 +16,79 @@ class FunctionsController < ApplicationController
 
   def global_search
     initial_command
-    @search_string  = params[:search_string]
-    @cmd += "-q \"global, search " + @search_string + ";\""
-    @divname = "search_results"
-    @cmd += " -o html > /tmp/function.html"
-    `#{@cmd}`
-    @output = File.open("/tmp/function.html", "r")
-    @output = @output.readlines.to_s
-    @output = @output.html_safe
-    File.delete("/tmp/function.html")
-
+    search
     render :update do |page|
       page << "if (!$('div#search_results').length)"
-      page.insert_html :after, "list", :partial => "start_function"
+      page.insert_html :after, "list", :partial => "search"
     end
     logger.debug @cmd
   end
 
   def global_search_refresh
     initial_command
-    @search_string  = params[:search_string]
-    @cmd += "-q \"global, search " + @search_string + ";\""
-    @divname = "search_results"
-    @cmd += " -o html > /tmp/function.html"
-    `#{@cmd}`
-    @output = File.open("/tmp/function.html", "r")
-    @output = @output.readlines.to_s
-    @output = @output.html_safe
-    File.delete("/tmp/function.html")
+    search
     render :update do |page|
-      page.replace "search_results", :partial => "start_function"
+      page.replace "search_results", :partial => "search"
     end
     logger.debug @cmd
+  end
+
+  def search
+    @search_string = "%" + params[:search_string] + "%"
+    @cmd += "-q \"global, search " + @search_string + ";\""
+    @cmd = @cmd + " -x /tmp/compare.xml"
+
+    `#{@cmd}`
+    @output = File.open("/tmp/compare.xml", "r")
+    file = File.new( "/tmp/compare.xml" )
+    doc = Document.new file
+    @search_result_domains = Array.new
+    @search_result_shares = Array.new
+    @search_result_users = Array.new
+    @search_result_files = Array.new
+    @buffer_search_result = Array.new
+    doc.elements.each("smbta_output/search/result"){
+
+      |object| object.elements.each("domain/name"){
+        |domain| @search_result_domains << domain.text
+      }
+     
+      object.elements.each("share"){
+        |all_shares| all_shares.elements.each("name"){
+          |share| @buffer_search_result << share.text
+        }
+        all_shares.elements.each("domain"){
+          |domain| @buffer_search_result << domain.text
+        }
+        @search_result_shares << @buffer_search_result
+        @buffer_search_result = []
+      }
+      object.elements.each("user"){
+        |all_users| all_users.elements.each("name"){
+          |user| @buffer_search_result << user.text
+        }
+        all_users.elements.each("domain"){
+          |domain| @buffer_search_result << domain.text
+        }
+        @search_result_users << @buffer_search_result
+        @buffer_search_result =[]
+      }
+      object.elements.each("file"){
+        |all_files| all_files.elements.each("name"){
+          |f| @buffer_search_result << f.text
+        }
+        all_files.elements.each("share"){
+          |share| @buffer_search_result << share.text
+        }
+        all_files.elements.each("domain"){
+          |domain| @buffer_search_result << domain.text
+        }
+        @search_result_files << @buffer_search_result
+        @buffer_search_result =[]
+      }
+    }
+    logger.debug @compare_shares
+    File.delete("/tmp/compare.xml")
   end
 
   def get_objects

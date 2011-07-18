@@ -9,6 +9,9 @@ class OverviewController < ApplicationController
   def get_domains
     initial_command
     initialize_domains
+    if params[:domain]
+      @domain = params[:domain]
+    end
     render :update do |page|
       page << "if (!$('div#domains').length)"
       page.insert_html :after, "global", :partial => "domains"
@@ -27,10 +30,18 @@ class OverviewController < ApplicationController
   end
 
   def get_shares_and_users
+   
     initial_command
     initialize_shares
     initialize_users
-    @domain = params[:domain]
+     if params[:share] 
+      @share = params[:share]
+    end
+    if params[:user] 
+      @user = params[:user]
+    end
+    logger.debug @cmd
+    #@domain = params[:domain]
     render :update do |page|
       page << "if (!$('div#shares_and_users').length)"
       page.insert_html :after, "domains", :partial => "shares"     
@@ -57,6 +68,9 @@ class OverviewController < ApplicationController
     @user = params[:user]
     initial_command
     initialize_files
+    if params[:file]
+      @file = params[:file]
+    end
     render :update do |page|
       page << "if (!$('div#files').length)"
       page.insert_html :after, "shares_and_users", :partial => "files"
@@ -137,6 +151,7 @@ class OverviewController < ApplicationController
     @share = params[:share]
     @user = params[:user]
     initial_command
+    
     if @domain == "(All)"
       if @user == "(All)" and @share == "(All)"
         cmd = @cmd + " -q 'global, list files;' -x /tmp/files.xml"
