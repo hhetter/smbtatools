@@ -1,0 +1,23 @@
+<div id="search_results" class="defined_function">
+  <%= image_tag('function-close.png', :id=> "close_function_search_results", :class => "close_function",
+    :onmouseover => "highlightClose('search_results')", :onmouseout => "resetClose('search_results')",
+    :onclick => "closeFunction('search_results')") %>
+  <br/>
+  <h2>Fuzzy search for '<%=@search_string%>' globally. at <%=Time.now.strftime("%Y-%m-%d %H:%M:%S")%></h2>
+  <%@search_result_domains.each do |domain|%>
+    <%= link_to_function domain, :onclick => "select_searched('#{domain}', '', '', 'domain')" %> is a domain. <br/>
+  <%end%>
+  <%@search_result_shares.each do |share|%>
+    <%= link_to_function share[0], :onclick => "select_searched('#{share[0]}', '#{share[1]}', '', 'share')" %> is a share, in domain <%= share[1] %>.<br/>
+  <%end%>
+  <%@search_result_users.each do |user|%>
+    <%= link_to_function user[0], :onclick => "select_searched('#{user[0]}', '#{user[1]}', '', 'user')" %> is a user, in domain <%= user[1] %>.<br/>
+    <%= hidden_field_tag "object[]", user, :id => user %>
+  <%end%>
+  <%@search_result_files.each do |f|%>
+    <%= link_to_function f[0], :onclick => "select_searched('#{f[0]}', '#{f[1]}', '#{f[2]}', 'file')" %> is a file, on share <%= f[1] %> in domain <%= f[2] %>.<br/>
+  <%end%>
+  <hr/>
+  <p  align="right"><a href="http://holger123.wordpress.com/smb-traffic-analyzer/">SMB Traffic Analyzer</a> Version
+    <%=%x[smbtaquery --version]%>, <%=Time.now.strftime("%Y-%m-%d %H:%M:%S")%></p>
+</div>

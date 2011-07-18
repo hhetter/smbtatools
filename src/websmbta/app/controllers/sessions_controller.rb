@@ -18,6 +18,11 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
+    session[:dbdriver] = nil
+    session[:dbname] = nil
+    session[:dbuser] = nil
+    session[:dbhost] = nil
+    session[:dbpassword] = nil
     redirect_to root_url, :notice => "Logged out!"
   end
 
