@@ -38,7 +38,8 @@
             <% end %>
             <%= link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/" %>&nbsp;&nbsp;
             <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %>
-            <%  if session[:dbdriver] && session[:dbname] && session[:dbuser] %>
+            <%  if !session[:dbdriver].empty? && !session[:dbname].empty? && !session[:dbuser].empty? %>
+          
               <%= text_field_tag "global_search", @search_string, :onkeyup => "global_search();" %>
             <% end %>
           </div>
