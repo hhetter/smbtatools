@@ -371,7 +371,7 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 		"CREATE TABLE modules ("
 		"module_subrelease_number integer,"
 		"module_common_blocks_overflow integer,"
-		"module_ip_address varchar);");
+		"module_ip_address varchar UNIQUE);");
 	convert_check_dbi_res(rs);
 
 
