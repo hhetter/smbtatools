@@ -1177,6 +1177,11 @@ Fourth data view, "files"
 If you have chosen a user or a share, or both, *webSMBTA* will automatically do a query on the database for the list of files that have been touched by the object that has been chosen so far. Clicking on one of the files in that selection, will make *webSMBTA* process all operations over this specific file.
 image:gfx/webSMBTA/main-screen.png[The main object selector screen of webSMBTA, including the file selection]
 
+Global search
+^^^^^^^^^^^^^
+It's possible to search an object in the database. If you type in the search-string you get a self-refreshed list of objects, where you can select the needed one. *webSMBTA* selects the object itself in the objectselector.
+image:gfx/webSMBTA/global_search.png[Global search with automatic selection of objects]
+
 Running function on selected objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
