@@ -53,7 +53,25 @@ Comment
         
 </xsl:template>
 
-<xsl:template match="smbtad-report">
+<xsl:template match="smbtad-report-short">
+	smbtad version: <xsl:value-of select="smbtad_version"/>
+	database version: <xsl:value-of select="database_version"/>
+	client port: <xsl:value-of select="client_port"/>
+	unix_socket_clients: <xsl:value-of select="unix_socket_clients"/>
+	database name: <xsl:value-of select="dbname"/>
+	database host: <xsl:value-of select="dbhost"/>
+	database driver: <xsl:value-of select="dbdriver"/>
+	database user: <xsl:value-of select="dbuser"/>
+	maintenance timer: <xsl:value-of select="maintenance_timer_str"/>
+	run maintenance every: <xsl:value-of select="maint_run_time_str"/>
+	debug level: <xsl:value-of select="debug_level"/>
+	precision: <xsl:value-of select="precision"/>
+	daemon: <xsl:value-of select="daemon"/>
+	use-db: <xsl:value-of select="use-db"/>
+	config file: <xsl:value-of select="config_file"/>
+</xsl:template>
+
+<xsl:template match="smbtad-report-full">
 ---------------------------------------------------------------------
 Your smbtad version is at <xsl:value-of select="smbtad_version"/>.
 ---------------------------------------------------------------------

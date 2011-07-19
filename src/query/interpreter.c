@@ -1420,7 +1420,17 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 		printf("ERROR: 	smbtad-report requires one argument\n");
 		exit(1);
 	}
+
 	interpreter_xml_begin_function(config,"smbtad-report");
+	if ( strcmp(command_data->arguments[0],"full")==0) {
+		interpreter_xml_begin_function(config,"smbtad-report-full");
+	} else if ( strcmp(command_data->arguments[0],"short")==0) {
+		interpreter_xml_begin_function(config,"smbtad-report-short");
+	} else {
+		printf("ERROR: smbtad-report accepts either 'full' or\n");
+		printf("	'short' as arguments.\n");
+		exit(1);
+	}
 	query = talloc_asprintf(ctx,
 			"SELECT * FROM status;");
 	qdat = dbi_conn_query( config->DBIconn,
@@ -1501,7 +1511,11 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 			"	<config_file>%s</config_file>\n",
 			dbi_result_get_string_idx(qdat,16));
 	interpreter_xml_print(config,query);
-        interpreter_xml_close_function(config,"smbtad-report");
+	if ( strcmp(command_data->arguments[0],"full")==0) {
+		interpreter_xml_close_function(config,"smbtad-report-full");
+	} else if ( strcmp(command_data->arguments[0],"short")==0) {
+		interpreter_xml_close_function(config,"smbtad-report-short");
+	} 
 }
 
 
@@ -2024,8 +2038,11 @@ void interpreter_command_help()
 	printf("				of the given object of the last\n");
 	printf("				[num] seconds, minutes, or days.\n");
 	printf("----------------------------------------------------------\n");
-	printf("smbtad-report			print a report of smbtads\n");
-	printf("				configuration.\n");
+	printf("smbtad-report [full] [short]	print a report of smbtads\n");
+	printf("				configuration, either a 'full'\n");
+	printf("				report or a 'short' report to\n");
+	printf("				be used for developers in bugs.\n");
+
 
 
 };

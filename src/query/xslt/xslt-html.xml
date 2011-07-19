@@ -153,7 +153,7 @@
 <br/>
 </xsl:template>
 
-<xsl:template match="smbtad-report">
+<xsl:template match="smbtad-report-full">
 	<table border="2">
 		<tr>
 			<th>smbtad configuration values</th>
