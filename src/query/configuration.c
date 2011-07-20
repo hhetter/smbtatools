@@ -82,6 +82,7 @@ static void configuration_define_defaults( struct configuration_data *c )
 	c->dbuser = NULL;
 	c->dbdriver = NULL;
 	c->dbpassword = NULL;
+	c->dbpath = NULL;
 }
 
 /* load $HOME/.smbtatools/query.config */
@@ -130,7 +131,8 @@ static int configuration_load_config_file( struct configuration_data *c)
 	cc = iniparser_getstring(Mydict,"database:password",NULL);
 	if (cc != NULL) c->dbpassword = strdup(cc);
 
-
+	cc = iniparser_getstring(Mydict,"database:dbpath",NULL);
+	if (cc != NULL) c->dbpath = strdup(cc);
 	return 0;
 }
 
@@ -239,6 +241,21 @@ static int configuration_database_connect( struct configuration_data *conf )
 		printf("DBI: %s\n",dberror);
 		return 1;
 		}
+	/**
+	 * if sqlite is used, we set the dbpath parameter
+	 */
+	if (strcmp(conf->dbdriver,"sqlite") == 0) {
+		dbi_conn_set_option(conf->DBIconn, "sqlite_dbdir",
+				conf->dbpath);
+		dbi_conn_set_option_numeric(conf->DBIconn, "sqlite_timeout",
+				10000);
+	} else if (strcmp(conf->dbdriver,"sqlite3") == 0) {
+		dbi_conn_set_option(conf->DBIconn, "sqlite3_dbdir",
+				conf->dbpath);
+		dbi_conn_set_option_numeric(conf->DBIconn, "sqlite3_timeout",
+				10000);
+	}
+
 	dbi_conn_set_option(conf->DBIconn, "host", conf->dbhost);
 	dbi_conn_set_option(conf->DBIconn, "username", conf->dbuser);
 	dbi_conn_set_option(conf->DBIconn, "password", conf->dbpassword);

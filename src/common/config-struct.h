@@ -58,6 +58,10 @@ struct configuration_data {
 	char *dbdriver;
 	/* password of the user */
 	char *dbpassword;
+
+	/* for SQLITE support by DBI */
+	char *dbpath;
+
 	/* DBI connection */
 	dbi_conn DBIconn;
 
