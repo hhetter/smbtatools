@@ -17,6 +17,16 @@ SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+# compile on SunOS
+if (CMAKE_SYSTEM_NAME STREQUAL "SunOS" )
+	ADD_DEFINITIONS(-DSOLARIS)
+        SET(Libraries
+            ${Libraries}
+	    socket
+	    nsl)
+endif()
+
+
 #
 # check for libdbi
 #
@@ -143,7 +153,7 @@ SET(CurrentExe "smbtatorturesrv")
 ADD_EXECUTABLE(${CurrentExe}
 	src/torture/srv/smbtatorturesrv.c
 	)
-TARGET_LINK_LIBRARIES(${CurrentExe})
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
 SET(CurrentExe "rrddriver")
 ADD_EXECUTABLE(${CurrentExe}
