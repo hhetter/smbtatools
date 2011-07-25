@@ -926,9 +926,9 @@ static void interpreter_fn_search( TALLOC_CTX *ctx,
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
 				"SELECT %s FROM data"
-				" WHERE %s LIKE '%s' and %s;",
+				" WHERE %s LIKE '%s' and %s and (vfs_id = %i or vfs_id = %i);",
 				 rules[t],
-				 rows[t], command_data->arguments[0], obj_struct->sql);
+				 rows[t], command_data->arguments[0], obj_struct->sql, vfs_id_read, vfs_id_write);
 			qdat = sql_query(ctx,config,query);
 			if (result_get_element(ctx,0,qdat) != NULL) {
 				switch (t) {
