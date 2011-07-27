@@ -427,6 +427,11 @@ As of *version 1.2.4 of smbtad*, the database to use is connected via libDBI. Th
 +++++++++++
 As of *version 1.2.4 of smbtad*, the database needs to be setup by the -T --setup switch. This will access the database, and create the initial tables and structure of the database. smbtad will not daemonize after this call, just return normally.
 
+-I --ip
++++++++
+This command line switch specifies the interface or network address to bind smbtad to when in network operation. It can either be a IPv4 address, a IPv6 address, or a fully qualified hostname which will be resolved by smbtad. If this option is not given, it'll default to "localhost".
+
+
 Using a configuration file with smbtad
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -446,6 +451,7 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# If you think you've found a bug, and try to reproduce it,
 	# please run smbtad with debug_level = 10.
 	debug_level = 0
+
 	# use_db is the equivalent to the -U --use-db command line
 	# argument.
 	# if use_db is 0, any handling of the database will not be
@@ -454,15 +460,33 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# or smbtamonitor, and thus only relies on real time data.
 	# Default is 1.
 	use_db = 1
+
 [network]
+	# The smbtad_ip option the network address / interface that
+	# smbtad should bind to for network operations.
+	# it can either be:
+	# A full IPv4 Address, such as:
+	# smbtad_ip = 192.168.178.23
+	# A full IPv6 Address, such as:
+	# smbtad_ip = ::ffff:192.168.178.31
+	# Or a full hostname, such as:
+	# smbtad_ip = smbtad.host.de
+	# (In this case smbtad will check the host for it's ip address and
+	#  uses this.)
+	#
+	# If the option is not given, it will default to "localhost"
+	smbtad_ip = localhost
+
 	# The query_port option defines the internet socket port
 	# to be used for talking to clients such as 
 	# smbtamonitor.
 	query_port = 3491
+
 	# The unix_domain_socket option specifies wether a unix domain
 	# socket is used for the connection to the VFS module.
 	# It's arguments are either yes, or no.
 	unix_domain_socket = no
+
 	# The unix_domain_socket_clients option specifies wether a unix
 	# domain socket is used for the connection to real-time clients
 	unix_domain_socket_clients = no
@@ -473,19 +497,23 @@ All the options mentioned in the paragraph before can be configured with a confi
 	# for smbtad. The database must have been prepared by using
 	# smbta -T.
 	name = dbname
+
 	# 
 	# The "host" option specifies the name or IP adress of the system
 	# running the database
 	host = examplehost.test.ex
+
 	#
 	# The "driver" option specifies the name of the database driver
 	# to use to access the database. Valid values are 
 	# pgsql (postgresql), mysql (mysql), or sqlite3 (sqlite)
 	driver = pgsql
+
 	#
 	# The "user" option specifies the name of the user to use to
 	# access the database.
 	user = testuser
+
 	#
 	# The "password" option specifies the password of the user given
 	# with the "user" option.
