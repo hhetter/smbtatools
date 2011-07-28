@@ -1511,6 +1511,9 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 			"	<config_file>%s</config_file>\n",
 			dbi_result_get_string_idx(qdat,16));
 	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<smbtad_ip>%s</smbtad_ip>\n");
 	if ( strcmp(command_data->arguments[0],"full")==0) {
 		interpreter_xml_close_function(config,"smbtad-report-full");
 	} else if ( strcmp(command_data->arguments[0],"short")==0) {

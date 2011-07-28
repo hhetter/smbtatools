@@ -159,6 +159,7 @@
 			<th>smbtad configuration values</th>
 		</tr>
 		<tr><td>Your smbtad version is at <b><xsl:value-of select="smbtad_version"/></b>.</td></tr>
+		<tr><td>smbtad is running bound against <b><xsl:value-of select="smbtad_ip"/></b>.</td></tr>
 		<tr><td>The internal database version is at <b><xsl:value-of select="database_version"/></b>.<br/>
 				If the database version is lower then the smbtad version, it is required to run smbtaquery -C in versions of SMB Traffic Analyzer up to 1.2.6, to bring the database version up to the level of the installed smbtad version.<br/><b>Releases of smbtad newer then 1.2.6 will fully automatically convert the database if they detect an older version.</b></td></tr>
 		<tr><td>smbtad is listening on port <b><xsl:value-of select="client_port"/></b> for communication with real-time clients such as <i>rrddriver</i> and <i>smbtamonitor</i>.<br/>If the client port number is 0, no port is open for communication with these programs.</td></tr>

@@ -69,11 +69,16 @@ Comment
 	daemon: <xsl:value-of select="daemon"/>
 	use-db: <xsl:value-of select="use-db"/>
 	config file: <xsl:value-of select="config_file"/>
+	smbtad_ip: <xsl:value-of select="smbtad_ip"/>
 </xsl:template>
 
 <xsl:template match="smbtad-report-full">
 ---------------------------------------------------------------------
 Your smbtad version is at <xsl:value-of select="smbtad_version"/>.
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+smbtad is running bound to <xsl:value-of select="smbtad_ip"/>.
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
