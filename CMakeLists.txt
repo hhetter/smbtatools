@@ -16,6 +16,16 @@ INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+#
+# check for libcurl
+#
+FIND_PACKAGE(CURL)
+if (NOT CURL_INCLUDE_DIRS)
+	                MESSAGE( FATAL_ERROR "ERROR: you will need curl development files installed.")
+		ENDIF()
+		if (CURL_INCLUDE_DIRS)
+			        INCLUDE_DIRECTORIES($CURL_INCLUDE_DIRS)
+			ENDIF()
 
 # compile on SunOS
 if (CMAKE_SYSTEM_NAME STREQUAL "SunOS" )
