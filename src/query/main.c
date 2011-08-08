@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
 {
 	/* main configuration structure */
 	struct configuration_data conf;
-
+	/* initialize curl */
+	curl_global_init(CURL_GLOBAL_ALL);
 	/* parse command line, and process */
 	if ( configuration_parse_cmdline( &conf, argc, argv ) <0 ) exit(1);
 

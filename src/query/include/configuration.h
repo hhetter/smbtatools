@@ -39,6 +39,7 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
+#include <curl/curl.h>
 #ifndef SQLITE_FOUND
 	#include "../sqlite/sqlite3.h"
 #else

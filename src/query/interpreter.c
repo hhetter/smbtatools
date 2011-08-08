@@ -41,6 +41,11 @@ struct interpreter_object {
 
 };
 
+struct curl_memory {
+	char *memory;
+	size_t size;
+};
+
 
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx);
 char *interpreter_return_timestamp_now_minus_sec(TALLOC_CTX *ctx,unsigned int seconds);
@@ -1409,6 +1414,116 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 }
 
+static void interpreter_versions_compare( unsigned int *first,
+		unsigned int *second,
+		char *firstsmaller,
+		char *equal,
+		char *firstlarger)
+{
+	int res[3];
+	res[0] = (first[0] > second[0]);
+	res[1] = (first[1] > second[1]);
+	res[2] = (first[2] > second[2]);
+	if (res[0] == 1 ||
+		(res[0] == 0 && res[1] == 1) ||
+		(res[0] == 0 && res[1] == 0 && res[2] ==1)) {
+			/**
+			 * First is a higher version number
+			 */
+	}
+	res[0] = (first[0] == second[0]);
+	res[1] = (first[1] == second[1]);
+	res[2] = (first[2] == second[2]);
+	if (res[0] == 1 && res[1] == 1 && res[2] == 1) {
+			/**
+			 * Versions are the same
+			 */
+	}
+	/**
+	 * anything else is a lower version number
+	 */
+}
+	
+
+static size_t curl_callback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+	  size_t realsize = size * nmemb;
+	    struct curl_memory *mem = (struct curl_memory *)data;
+	     
+	      mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+	        if (mem->memory == NULL) {
+			    /* out of memory! */ 
+			    printf("not enough memory (realloc returned NULL)\n");
+			        exit(EXIT_FAILURE);
+				  }
+		 
+		  memcpy(&(mem->memory[mem->size]), ptr, realsize);
+		    mem->size += realsize;
+		      mem->memory[mem->size] = 0;
+		       
+		        return realsize;
+}
+
+
+static void interpreter_fn_self_check( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	CURL *handle;
+	unsigned int smbtad_version[3];
+	unsigned int smbtatools_version[3];
+	unsigned int database_version[3];
+	unsigned int smbtad_upstream_version[3];
+	unsigned int smbtatools_upstream_version[3];
+	struct curl_memory upstream_data;
+	dbi_result qdat = NULL;
+	upstream_data.memory = malloc(1);
+	upstream_data.size = 0;
+	int rc = 0;
+	interpreter_xml_begin_function(config,"self-check");
+	qdat = sql_query(ctx,config,"SELECT smbtad_version FROM status;");
+	smbtad_version[0] = atoi(qdat); // major
+	smbtad_version[1] = atoi(qdat+2); // minor
+	smbtad_version[2] = atoi(qdat+4); // release number
+	qdat = sql_query(ctx,config, "SELECT database_version FROM status;");
+	database_version[0] = atoi(qdat);
+	database_version[1] = atoi(qdat+2);
+	database_version[2] = atoi(qdat+4);
+
+	/**
+	 * if we are allowed to go online, fetch the current
+	 * release numbers from there.
+	 */
+	if (strcmp(command_data->arguments[0],"online") == 0) {
+		/**
+		 * We have the files
+		 * CURRENT_SMBTATOOLS_RELEASE and
+		 * CURRENT_SMBTAD_RELEASE hosted on
+		 * morelias, ascii files that just contain
+		 * the current released version of SMBTA,
+		 * download that by CURL.
+		 */
+		/**
+		 * get a curl easy handle
+		 */
+		handle = curl_easy_init();
+		curl_easy_setopt(handle, CURLOPT_URL, "http://www.morelias.org/smbta/CURRENT_SMBTAD_VERSION");
+		curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curl_callback);
+		curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void *) &upstream_data);
+		curl_easy_setopt(handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+		curl_easy_perform(handle);
+		curl_easy_cleanup(handle);
+		smbtad_upstream_version[0]=atoi(upstream_data.memory);
+		smbtad_upstream_version[1]=atoi(upstream_data.memory+2);
+		smbtad_upstream_version[2]=atoi(upstream_data.memory+4);
+		printf("Upstream smbtad version is: %i.%i.%i",smbtad_upstream_version[0],
+				smbtad_upstream_version[1],
+				smbtad_upstream_version[2]);
+
+	}
+
+}
 static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
@@ -1513,7 +1628,8 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 	interpreter_xml_print(config,query);
 
 	query = talloc_asprintf(ctx,
-			"	<smbtad_ip>%s</smbtad_ip>\n");
+			"	<smbtad_ip>%s</smbtad_ip>\n",
+			dbi_result_get_string_idx(qdat,17));
 	if ( strcmp(command_data->arguments[0],"full")==0) {
 		interpreter_xml_close_function(config,"smbtad-report-full");
 	} else if ( strcmp(command_data->arguments[0],"short")==0) {
@@ -1825,6 +1941,10 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_SMBTAD_REPORT:
 		interpreter_fn_smbtad_report(ctx, command_data, obj_struct, config);
 		break;
+	case INT_OBJ_SELF_CHECK:
+		interpreter_fn_self_check(ctx, command_data, obj_struct, config);
+		break;
+
 	}
 }
 
@@ -1839,6 +1959,7 @@ static int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
 	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
 	if (strcmp(cmd, "smbtad-report") == 0) return INT_OBJ_SMBTAD_REPORT;
+	if (strcmp(cmd, "self-check") == 0) return INT_OBJ_SELF_CHECK;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
@@ -2041,10 +2162,15 @@ void interpreter_command_help()
 	printf("				of the given object of the last\n");
 	printf("				[num] seconds, minutes, or days.\n");
 	printf("----------------------------------------------------------\n");
-	printf("smbtad-report [full] [short]	print a report of smbtads\n");
+	printf("Commands to be run with 'system' as object:\n");
+	printf("smbtad-report [full|short]	print a report of smbtads\n");
 	printf("				configuration, either a 'full'\n");
 	printf("				report or a 'short' report to\n");
 	printf("				be used for developers in bugs.\n");
+	printf("self-check [online|offline]	run a self-check function, \n");
+	printf("				when online, use online resources\n");
+	printf("				to check wether a new version of\n");
+	printf("				SMBTA is available.\n");
 
 
 
