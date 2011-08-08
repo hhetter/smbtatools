@@ -1536,7 +1536,6 @@ static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 		exit(1);
 	}
 
-	interpreter_xml_begin_function(config,"smbtad-report");
 	if ( strcmp(command_data->arguments[0],"full")==0) {
 		interpreter_xml_begin_function(config,"smbtad-report-full");
 	} else if ( strcmp(command_data->arguments[0],"short")==0) {
