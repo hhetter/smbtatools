@@ -349,7 +349,7 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 		"smbtad_precision integer,"
 		"smbtad_daemon integer,"
 		"smbtad_use_db integer,"
-		"smbtad_ip varchar",
+		"smbtad_ip varchar,"
 		"smbtad_config_file varchar);");
 	convert_check_dbi_res(rs);
 	/**

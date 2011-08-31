@@ -1477,7 +1477,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 	unsigned int smbtad_upstream_version[3];
 	unsigned int smbtatools_upstream_version[3];
 	struct curl_memory upstream_data;
-	dbi_result qdat = NULL;
+	dbi_result qdat;
 	upstream_data.memory = malloc(1);
 	upstream_data.size = 0;
 	int rc = 0;
@@ -1486,7 +1486,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 	smbtad_version[0] = atoi(qdat); // major
 	smbtad_version[1] = atoi(qdat+2); // minor
 	smbtad_version[2] = atoi(qdat+4); // release number
-	qdat = sql_query(ctx,config, "SELECT database_version FROM status;");
+	qdat = sql_query(ctx,config, "SELECT smbtad_database_version FROM status;");
 	database_version[0] = atoi(qdat);
 	database_version[1] = atoi(qdat+2);
 	database_version[2] = atoi(qdat+4);
@@ -1522,7 +1522,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 				smbtad_upstream_version[2]);
 
 	}
-
+	interpreter_xml_close_function(config,"self-check");
 }
 static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
