@@ -1418,7 +1418,8 @@ static void interpreter_versions_compare( unsigned int *first,
 		unsigned int *second,
 		char *firstsmaller,
 		char *equal,
-		char *firstlarger)
+		char *firstlarger,
+		struct configuration_data *config)
 {
 	int res[3];
 	res[0] = (first[0] > second[0]);
@@ -1430,6 +1431,10 @@ static void interpreter_versions_compare( unsigned int *first,
 			/**
 			 * First is a higher version number
 			 */
+			interpreter_xml_print(config,
+					firstlarger);
+			return;
+			
 	}
 	res[0] = (first[0] == second[0]);
 	res[1] = (first[1] == second[1]);
@@ -1438,10 +1443,14 @@ static void interpreter_versions_compare( unsigned int *first,
 			/**
 			 * Versions are the same
 			 */
+			interpreter_xml_print(config,
+					equal);
+			return;
 	}
 	/**
 	 * anything else is a lower version number
 	 */
+	interpreter_xml_print(config,firstsmaller);
 }
 	
 
@@ -1471,6 +1480,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 		struct configuration_data *config)
 {
 	CURL *handle;
+	char *query;
 	unsigned int smbtad_version[3];
 	unsigned int smbtatools_version[3];
 	unsigned int database_version[3];
@@ -1483,14 +1493,21 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 	int rc = 0;
 	interpreter_xml_begin_function(config,"self-check");
 	qdat = sql_query(ctx,config,"SELECT smbtad_version FROM status;");
-	smbtad_version[0] = atoi(qdat); // major
-	smbtad_version[1] = atoi(qdat+2); // minor
-	smbtad_version[2] = atoi(qdat+4); // release number
-	qdat = sql_query(ctx,config, "SELECT smbtad_database_version FROM status;");
-	database_version[0] = atoi(qdat);
-	database_version[1] = atoi(qdat+2);
-	database_version[2] = atoi(qdat+4);
+	dbi_result_first_row(qdat);
 
+	smbtad_version[0] = atoi( dbi_result_get_string_idx(qdat,1)); // major
+	smbtad_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2); // minor
+	smbtad_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4); // release number
+	dbi_result_free(qdat);
+	qdat = sql_query(ctx,config, "SELECT smbtad_database_version FROM status;");
+	dbi_result_first_row(qdat);
+	database_version[0] = atoi( dbi_result_get_string_idx(qdat,1));
+	database_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2);
+	database_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4);
+	qdat = sql_query(ctx,config, "SELECT smbtatools_version FROM status;");
+	smbtatools_version[0] = atoi( SMBTAQUERY_VERSION );
+	smbtatools_version[1] = atoi( SMBTAQUERY_VERSION + 2);
+	smbtatools_version[2] = atoi( SMBTAQUERY_VERSION + 4);
 	/**
 	 * if we are allowed to go online, fetch the current
 	 * release numbers from there.
@@ -1508,21 +1525,60 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 		 * get a curl easy handle
 		 */
 		handle = curl_easy_init();
-		curl_easy_setopt(handle, CURLOPT_URL, "http://www.morelias.org/smbta/CURRENT_SMBTAD_VERSION");
+		curl_easy_setopt(handle, CURLOPT_URL, "http://www.morelias.org/smbta/CURRENT_SMBTA_VERSION");
 		curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curl_callback);
 		curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void *) &upstream_data);
 		curl_easy_setopt(handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 		curl_easy_perform(handle);
-		curl_easy_cleanup(handle);
+
 		smbtad_upstream_version[0]=atoi(upstream_data.memory);
 		smbtad_upstream_version[1]=atoi(upstream_data.memory+2);
 		smbtad_upstream_version[2]=atoi(upstream_data.memory+4);
-		printf("Upstream smbtad version is: %i.%i.%i",smbtad_upstream_version[0],
-				smbtad_upstream_version[1],
-				smbtad_upstream_version[2]);
-
+		smbtatools_upstream_version[0]=atoi(upstream_data.memory+ 6);
+		smbtatools_upstream_version[1]=atoi(upstream_data.memory +8);
+		smbtatools_upstream_version[2]=atoi(upstream_data.memory +10);
+		free(upstream_data.memory);
+		curl_global_cleanup();
+	} else {
+		// offline mode, set the upstream version numbers to 0
+		int i;
+		for (i = 0; i < 3 ; i++) {
+			smbtad_upstream_version[i] = 0;
+			smbtatools_upstream_version[i] = 0;
+		}
+		free(upstream_data.memory);
 	}
+	query = talloc_asprintf(ctx, "<smbtad_version>%i.%i.%i</smbtad_version>",
+			smbtad_version[0],
+			smbtad_version[1],
+			smbtad_version[2]);
+	interpreter_xml_print(config,query);
+	query = talloc_asprintf(ctx, "<smbtatools_version>%i.%i.%i</smbtatools_version>",
+			smbtatools_version[0],
+			smbtatools_version[1],
+			smbtatools_version[2]);
+	interpreter_xml_print(config,query);
+	interpreter_versions_compare( smbtad_upstream_version,
+			smbtad_version,
+			"<smbtad_comment>ERROR.</smbtad_comment>",
+			"<smbtad_comment>"
+			"Versions are ok. You have the latest released smbtad version installed."
+			"</smbtad_comment>",
+			"<smbtad_comment>"
+			"Attention: there is a newer version of smbtad available at "
+			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/"
+			"</smbtad_comment>",
+			config);
+	interpreter_versions_compare( smbtatools_upstream_version,
+			smbtatools_version,
+			"<smbtatools_comment>ERROR.</smbtatools_comment>",
+			"<smbtatools_comment>Versions are ok. You have the latest released smbtatools version installed.</smbtatools_comment>",
+			"<smbtatools_comment>Attention: there is a newer version of smbtatools available at "
+			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/</smbtadtools_comment>",
+			config);
+
 	interpreter_xml_close_function(config,"self-check");
+
 }
 static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
@@ -1717,6 +1773,7 @@ char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
 	struct tm *tmp;
 	time_t now;
 	char *outstr = talloc_array(ctx,char,200);
+	if (outstr == NULL) printf("ERROR!");
 	now = time(NULL);
 	tmp = localtime(&now);
 	strftime(outstr,199,"%Y-%m-%d %T",tmp);
