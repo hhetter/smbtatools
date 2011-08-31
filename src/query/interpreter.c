@@ -1419,8 +1419,14 @@ static void interpreter_versions_compare( unsigned int *first,
 		char *firstsmaller,
 		char *equal,
 		char *firstlarger,
+		char *offline,
 		struct configuration_data *config)
 {
+	if (first[0] + first[1] + first[2]  == 0) {
+		// no results in the upstream version
+		// numbers, offline mode !!
+		interpreter_xml_print(config,offline);
+	}
 	int res[3];
 	res[0] = (first[0] > second[0]);
 	res[1] = (first[1] > second[1]);
@@ -1568,6 +1574,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 			"Attention: there is a newer version of smbtad available at "
 			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/"
 			"</smbtad_comment>",
+			"<smbtad_comment>No version update checking is performed, as the function has been run in offline mode.</smbtad_comment>",
 			config);
 	interpreter_versions_compare( smbtatools_upstream_version,
 			smbtatools_version,
@@ -1575,6 +1582,7 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 			"<smbtatools_comment>Versions are ok. You have the latest released smbtatools version installed.</smbtatools_comment>",
 			"<smbtatools_comment>Attention: there is a newer version of smbtatools available at "
 			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/</smbtadtools_comment>",
+			"<smbtatools_comment>No version update checking is performed, as the function has been run in offline mode.</smbtatools_comment>",
 			config);
 
 	interpreter_xml_close_function(config,"self-check");
