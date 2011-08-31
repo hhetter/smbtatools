@@ -1500,12 +1500,12 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 	interpreter_xml_begin_function(config,"self-check");
 	qdat = sql_query(ctx,config,"SELECT smbtad_version FROM status;");
 	dbi_result_first_row(qdat);
-
-	smbtad_version[0] = atoi( dbi_result_get_string_idx(qdat,1)); // major
-	smbtad_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2); // minor
-	smbtad_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4); // release number
+	smbtad_version[0] = atoi( dbi_result_get_string_idx(qdat,1));
+	smbtad_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2);
+	smbtad_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4);
 	dbi_result_free(qdat);
-	qdat = sql_query(ctx,config, "SELECT smbtad_database_version FROM status;");
+	qdat = sql_query(ctx,config,
+			"SELECT smbtad_database_version FROM status;");
 	dbi_result_first_row(qdat);
 	database_version[0] = atoi( dbi_result_get_string_idx(qdat,1));
 	database_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2);
@@ -1531,10 +1531,14 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 		 * get a curl easy handle
 		 */
 		handle = curl_easy_init();
-		curl_easy_setopt(handle, CURLOPT_URL, "http://www.morelias.org/smbta/CURRENT_SMBTA_VERSION");
+		curl_easy_setopt(handle, CURLOPT_URL,
+				"http://www.morelias.org/smbta/CURRENT_SMBTA_VERSION");
 		curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curl_callback);
-		curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void *) &upstream_data);
-		curl_easy_setopt(handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+		curl_easy_setopt(handle,
+				CURLOPT_WRITEDATA,
+				(void *) &upstream_data);
+		curl_easy_setopt(handle,
+				CURLOPT_USERAGENT, "libcurl-agent/1.0");
 		curl_easy_perform(handle);
 
 		smbtad_upstream_version[0]=atoi(upstream_data.memory);
@@ -1554,37 +1558,68 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 		}
 		free(upstream_data.memory);
 	}
-	query = talloc_asprintf(ctx, "<smbtad_version>%i.%i.%i</smbtad_version>",
+	query = talloc_asprintf(ctx,
+			"<smbtad_version>%i.%i.%i</smbtad_version>",
 			smbtad_version[0],
 			smbtad_version[1],
 			smbtad_version[2]);
 	interpreter_xml_print(config,query);
-	query = talloc_asprintf(ctx, "<smbtatools_version>%i.%i.%i</smbtatools_version>",
+	query = talloc_asprintf(ctx,
+			"<smbtatools_version>%i.%i.%i</smbtatools_version>",
 			smbtatools_version[0],
 			smbtatools_version[1],
 			smbtatools_version[2]);
+	interpreter_xml_print(config,query);
+	query = talloc_asprintf(ctx,
+			"<database_version>%i.%i.%i</database_version>",
+			database_version[0],
+			database_version[1],
+			database_version[2]);
 	interpreter_xml_print(config,query);
 	interpreter_versions_compare( smbtad_upstream_version,
 			smbtad_version,
 			"<smbtad_comment>ERROR.</smbtad_comment>",
 			"<smbtad_comment>"
-			"Versions are ok. You have the latest released smbtad version installed."
+			"Versions are ok. You have the latest "
+			"released smbtad version installed."
 			"</smbtad_comment>",
 			"<smbtad_comment>"
-			"Attention: there is a newer version of smbtad available at "
+			"Attention: there is a newer version of "
+			"smbtad available at "
 			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/"
 			"</smbtad_comment>",
-			"<smbtad_comment>No version update checking is performed, as the function has been run in offline mode.</smbtad_comment>",
+			"<smbtad_comment>No version update checking "
+			"is performed, as the function has been run"
+		        " in offline mode.</smbtad_comment>",
 			config);
 	interpreter_versions_compare( smbtatools_upstream_version,
 			smbtatools_version,
 			"<smbtatools_comment>ERROR.</smbtatools_comment>",
-			"<smbtatools_comment>Versions are ok. You have the latest released smbtatools version installed.</smbtatools_comment>",
-			"<smbtatools_comment>Attention: there is a newer version of smbtatools available at "
+			"<smbtatools_comment>Versions are ok. You have"
+		        " the latest released smbtatools version installed."
+			"</smbtatools_comment>",
+			"<smbtatools_comment>Attention: there is a"
+		        " newer version of smbtatools available at "
 			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/</smbtadtools_comment>",
-			"<smbtatools_comment>No version update checking is performed, as the function has been run in offline mode.</smbtatools_comment>",
+			"<smbtatools_comment>No version update checking "
+			"is performed, as the function has been run in "
+			"offline mode.</smbtatools_comment>",
 			config);
-
+	interpreter_versions_compare( smbtad_version, database_version,
+			"<database_comment>ERROR.</database_comment>",
+			"<database_comment>Database status is ok. The "
+			"database is up to date, and"
+			" matches the installed smbtad version."
+			"</database_comment>",
+			"<database_comment>Attention: Your database "
+			"is outdated and needs to be"
+			" converted by running 'smbtaquery -C'. "
+			"Please check the documentation"
+			" for details.</database_comment>",
+			"<database_comment>Error: unable to check the "
+			"database version, please check "
+			"your installation.</database_comment>",
+			config);
 	interpreter_xml_close_function(config,"self-check");
 
 }
