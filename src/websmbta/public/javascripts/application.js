@@ -1,6 +1,6 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
-var time_check = "false";
+var check_time = "false";
 
 function global_search(){
     if ($("#global_search").attr("value") == "" && $("#search_results").length > 0){
@@ -329,7 +329,39 @@ function configureFunction(){
     $("input.number").val("");
     $("input.search").val("");
     $("input.datetime").val("");
-    if (selected == "search"){
+    if (selected == "smbtad-report"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#top").fadeOut();
+        $("#usage").fadeOut();
+        $("#search").fadeOut();
+        $("#search_help").fadeOut();
+        $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeIn();
+        $("#report_help").fadeIn();
+    }
+    else if(selected == "self-check"){
+        $("#help").fadeOut();
+        $(".function_help").fadeOut();
+        $("#total").fadeOut();
+        $("#last_activity").fadeOut();
+        $("#top").fadeOut();
+        $("#usage").fadeOut();
+        $("#search").fadeOut();
+        $("#search_help").fadeOut();
+        $("#throughput").fadeOut();
+        $("#list_func").fadeOut();
+        $("#report_func").fadeOut();
+        $("#selfcheck_func").fadeIn();
+        $("#selfcheck_help").fadeIn();
+    }
+    else if (selected == "search"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#total").fadeOut();
@@ -342,6 +374,8 @@ function configureFunction(){
         $("#list_func").fadeOut();
     }
     else if (selected == "list"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#total").fadeOut();
@@ -355,6 +389,8 @@ function configureFunction(){
         $("#list_help").fadeIn();
     }
     else if (selected == "usage"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#search").fadeOut();
@@ -367,6 +403,8 @@ function configureFunction(){
         $("#list_func").fadeOut();
     }
     else if (selected == "total"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#search").fadeOut();
@@ -379,6 +417,8 @@ function configureFunction(){
         $("#list_func").fadeOut();
     }
     else if (selected == "last_activity"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $(".function_help").fadeOut();
         $("#help").fadeOut();
         $("#search").fadeOut();
@@ -391,6 +431,8 @@ function configureFunction(){
         $("#list_func").fadeOut();
     }
     else if (selected == "top"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $(".function_help").fadeOut();
         $("#help").fadeOut();
         $("#search").fadeOut();
@@ -403,6 +445,8 @@ function configureFunction(){
         $("#list_func").fadeOut();
     }
     else if (selected == "throughput"){
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $(".function_help").fadeOut();
         $("#help").fadeOut();
         $("#search").fadeOut();
@@ -417,6 +461,8 @@ function configureFunction(){
 
     else{
         $("#help").fadeIn();
+        $("#selfcheck_func").fadeOut();
+        $("#report_func").fadeOut();
         $("#search").fadeOut();
         $("#usage").fadeOut();
         $("#total").fadeOut();
@@ -450,6 +496,8 @@ function start_function(){
             number:$("#number_" + func).val(),
             timemode: $("select#timelist option:selected").val(),
             func:     $("select#global_function option:selected").val(),
+            report:   $("select#report_list option:selected").val(),
+            self_check: $("select#selfcheck_list option:selected").val(),
             from:     $("input#from_" + func).attr('value'),
             to:        $("input#to_" + func).attr('value')
         }
@@ -470,9 +518,28 @@ function check_time_func(){
     }
 }
 function inspect_functionsettings(){
+    if($("div#report_func").css("display") != "none"){
+        if($("select#report_list").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else if ($("div#selfcheck_func").css("display") != "none"){
+        if($("select#selfcheck_list").val() != ""){
+            $(".start").removeAttr("disabled");
+        }
+        else{
+            $(".start").attr("disabled", "true");
+        }
+    }
+    else{
     check_time_func();
+
     if (check_time == "true")
     {
+        
         if($("div#search").css("display") != "none"){
             if($("input#search").val().length != 0){
                 $(".start").removeAttr("disabled");
@@ -537,6 +604,7 @@ function inspect_functionsettings(){
         $(".start").attr("disabled", "true");
     }
     check_time = "false";
+    }
 }
 
 function validNumber(field){

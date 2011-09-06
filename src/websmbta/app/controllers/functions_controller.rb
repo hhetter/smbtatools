@@ -5,10 +5,15 @@ class FunctionsController < ApplicationController
   before_filter :check_user
 
   def start_function
-    get_objects
-    get_time_modifiers
-    get_function
-    creat_file_and_divname
+   
+    if params[:func] == "smbtad-report" || params[:func] == "self-check"
+      get_system_info
+    else
+      get_objects
+      get_time_modifiers
+      get_function
+    end
+    create_file_and_divname
     render :update do |page|
       page.insert_html :after, "list", :partial => "start_function"
     end
@@ -21,7 +26,6 @@ class FunctionsController < ApplicationController
       page << "if (!$('div#search_results').length)"
       page.insert_html :after, "list", :partial => "search"
     end
-    logger.debug @cmd
   end
 
   def global_search_refresh
@@ -30,7 +34,6 @@ class FunctionsController < ApplicationController
     render :update do |page|
       page.replace "search_results", :partial => "search"
     end
-    logger.debug @cmd
   end
 
   def search
@@ -87,7 +90,6 @@ class FunctionsController < ApplicationController
         @buffer_search_result =[]
       }
     }
-    logger.debug @compare_shares
     File.delete("/tmp/compare.xml")
   end
 
@@ -208,7 +210,21 @@ class FunctionsController < ApplicationController
     end
   end
 
-  def creat_file_and_divname
+  def get_system_info
+    initial_command
+    @info = params[:func]
+    if @info == "smbtad-report"
+      @report = params[:report]
+      @cmd += "-q \"system, " + @info + " " + @report + ";\""
+    end
+    if @info == "self-check"
+      @self_check = params[:self_check]
+      @cmd += "-q \"system, " + @info + " " + @self_check + ";\""
+    end
+    create_file_and_divname
+  end
+
+  def create_file_and_divname
     @cmd += " -o html > /tmp/function.html"
     `#{@cmd}`
     @output = File.open("/tmp/function.html", "r")
@@ -226,6 +242,8 @@ class FunctionsController < ApplicationController
     @divname << @object
     @divname << @number
     @divname << @sort
+    @divname << @report
+    @divname << @self_check
     @divname = @divname.to_s
     @divname = Digest::MD5.hexdigest(@divname)
   end

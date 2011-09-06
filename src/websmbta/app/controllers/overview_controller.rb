@@ -95,6 +95,7 @@ class OverviewController < ApplicationController
     initial_command
     cmd = @cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
+    logger.debug cmd
     @domains = Array.new
     @domains << "(All)"
     @domain = "(All)"
@@ -114,6 +115,7 @@ class OverviewController < ApplicationController
     else
       cmd = @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
     end
+    logger.debug cmd
     `#{cmd}`
     @shares = Array.new
     @shares << "(All)"

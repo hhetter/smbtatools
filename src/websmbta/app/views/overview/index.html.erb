@@ -14,9 +14,16 @@
     <%=image_tag('spinner.gif')%>
   </div>
   <b>Function:</b>
+  <%if !current_user.admin%>
   <%= select_tag "global_function",
     options_for_select(["","search", "list", "total", "top","usage", "last_activity", "throughput"]),
     :class => "function", :onchange => "configureFunction()" %>
+  <%end%>
+  <%if current_user.admin%>
+  <%= select_tag "global_function",
+    options_for_select(["","smbtad-report", "self-check", "search", "list", "total", "top","usage", "last_activity", "throughput"]),
+    :class => "function", :onchange => "configureFunction()" %>
+  <%end%>
 </div>
 
 <div id="dialog">
@@ -24,6 +31,40 @@
   <div id="help">
     <b>Choose an object from the tables above,<br/> and select a function</b>
   </div>
+  <div id="report_func" class="function_dialog">
+    <table>
+      <tr>
+        <td>Choose the report length:</td>
+        <td><%= select_tag "report_list", options_for_select(["", "full", "short"], @report_length),
+            :class => "objectlist", :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td>
+      </tr>
+    </table>
+    <div id="report_help" class="function_help">
+      <i>The report function prints a report of smbtads configuration, either a 'full' report or a 'short' report to be used for developers in bugs.</i>
+    </div>
+  </div>
+  <div id="selfcheck_func" class="function_dialog">
+    <table>
+      <tr>
+        <td>Choose the self-check mode:</td>
+        <td><%= select_tag "selfcheck_list", options_for_select(["", "online", "offline"], @report_length),
+            :class => "objectlist", :onchange => "inspect_functionsettings()" %></td>
+      </tr>
+      <tr>
+        <td><%= submit_tag "Go", :class => "start", :disabled=> true, :onmouseover => "inspect_functionsettings()", :onclick => "start_function()" %></td>
+        <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()"%></td>
+      </tr>
+    </table>
+    <div id="selfcheck_help" class="function_help">
+      <i>The self-check function runs a self-check, when online, use online resources to check wether a new version of SMBTA is available.</i>
+    </div>
+  </div>
+
+
 
   <div id="search" class="function_dialog">
     <table>
