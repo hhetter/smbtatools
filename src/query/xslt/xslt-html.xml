@@ -108,7 +108,7 @@
 	<h2>
 	<xsl:value-of select="description"/>
 	</h2>
-	<table border="1" with="100%">
+	<table border="1" width="100%">
 	<tr>
 	<xsl:for-each select="header_element">
 	<th><xsl:value-of select="."/></th>
@@ -122,6 +122,40 @@
 		</xsl:for-each>
 		</tr>
 	</xsl:for-each>
+	</table>
+</xsl:template>
+
+
+<xsl:template match="self-check">
+<h2>Self check</h2>
+<table border="1" width="100%">
+	<tr><th>Component</th><th>Version</th><th>Comment</th>
+	</tr>
+	<tr><td>smbtad</td><td><xsl:value-of select="smbtad_version"/></td><td><xsl:value-of select="smbtad_comment"/></td></tr>
+	<tr><td>smbtatools</td><td><xsl:value-of select="smbtatools_version"/></td><td><xsl:value-of select="smbtatools_comment"/></td></tr>
+	<tr><td>database</td><td><xsl:value-of select="database_version"/></td><td><xsl:value-of select="database_comment"/></td></tr>
+</table>
+<h3>Samba Servers seen by SMBTA:</h3>
+<br/><xsl:value-of select="error"/>
+
+	<table border="1" width="100%">
+		<tr><th>IP Adress of Server</th><th>Protocol subrelease version number</th><th>Data overflow</th><th>Comment</th></tr>
+
+	<xsl:for-each select="module">
+		<tr>
+			<td>
+				<xsl:value-of select="ip"/>
+			</td>
+			<td>
+				<xsl:value-of select="subrelease"/>
+			</td>
+			<td>
+				<xsl:value-of select="overflow"/>
+			</td>
+			<td><xsl:value-of select="comment"/>
+			</td>
+		</tr>
+	</xsl:for-each>		
 	</table>
 </xsl:template>
 
