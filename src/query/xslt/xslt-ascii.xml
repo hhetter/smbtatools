@@ -147,6 +147,25 @@ Your installed smbtatools version is <xsl:value-of select="smbtatools_version"/>
 The version of the database is <xsl:value-of select="database_version"/>.
 
 <xsl:value-of select="database_comment"/>
+------------------------------------------------------------------------------
+
+Seen Samba servers by SMBTA:
+
+
+<xsl:value-of select="error"/>
+<xsl:for-each select="module">
+Server IP	: <xsl:value-of select="ip"/>
+Protocol version: <xsl:value-of select="subrelease"/>
+Overflow data	: <xsl:value-of select="overflow"/>
+Comment: <xsl:value-of select="comment"/>
+--------------------------------------------------------
+
+
+</xsl:for-each>
+		
+	
+
+
 
 </xsl:template>
 
