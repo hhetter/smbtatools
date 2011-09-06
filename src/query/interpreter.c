@@ -1620,6 +1620,56 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 			"database version, please check "
 			"your installation.</database_comment>",
 			config);
+	qdat = dbi_conn_query(config->DBIconn, "select * from modules;");
+	if (dbi_result_first_row(qdat) == 0) {
+		interpreter_xml_print(config,"<module_table><error>"
+				"No servers running VFS modules have been seen"
+				" by smbtad. Either you have not yet configured"
+				" any Samba servers to run SMBTA against smbtad,"
+				" or you did not yet produce any traffic on the"
+				" mentioned services. Please check your configuration."
+				"<error></module_table>");
+	} else {
+		/**
+	 	* go through the list of heard modules (servers)
+	 	* and post comments accordingly
+	 	*/
+		interpreter_xml_print(config,"<module_table>");
+		int check = 1;
+		while (check != 1) {
+			const char *ip = dbi_result_get_string_idx(qdat,3);
+			int sub = dbi_result_get_int_idx(qdat,1);
+			int overflow = dbi_result_get_int_idx(qdat,2);
+			char *cmt = talloc_asprintf(ctx,
+					"<module><ip>%s</ip><overflow>%i</overflow>"
+					"<subrelease>%i</subrelease>",
+					ip,overflow,sub);
+			interpreter_xml_print(config,cmt);
+			interpreter_xml_print(config,"<comment>");
+			if (sub > 0) interpreter_xml_print(config,
+					"ERROR: The subrelease number of the protocol this "
+					"Samba server uses is higher than that what smbtad "
+					"does support. This means that the SMBTA software suite"
+					" needs to be updated, otherwise smbtad will ignore"
+					" the packets from this server.");
+			if (overflow == 0 ) interpreter_xml_print(config,
+					"OK -> This server does transfer exactly the same amount"
+					"of data that the receiver smbtad requires. It is "
+					"a perfect fit for your installation. ");
+			else if (overflow > 0 ) interpreter_xml_print(config,
+					"OK -> This server does transfer more data than is required"
+					" by your SMBTA installation. This is fine, as the overflow"
+					" data will be ignored by smbtad, so it does not harm your "
+					"installation. The additional data might be a feature that"
+					" is currently in development and the SMBTA software suite"
+					" will be updated accordingly at a later point in time.");
+			interpreter_xml_print(config,"</comment>");
+			interpreter_xml_print(config,"</module>");
+			check = dbi_result_next_row(qdat);
+		}
+	}
+	interpreter_xml_print(config,"</module_table>");
+
 	interpreter_xml_close_function(config,"self-check");
 
 }
