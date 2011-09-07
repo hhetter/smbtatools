@@ -169,6 +169,8 @@ static void configuration_show_help()
 	printf("-C	--convert		run an interactive conversion/update\n");
 	printf("				process to convert an older database\n");
 	printf("				to this version of SMBTA.\n");
+	printf("-t	--test-db		Only try to connect to the database\n");
+	printf("				and return the result.\n");
 	printf("\n");
 }
 
@@ -274,7 +276,14 @@ static int configuration_database_connect( struct configuration_data *conf )
 int configuration_parse_cmdline( struct configuration_data *c,
 	int argc, char *argv[] )
 {
+	/**
+	 * SMBTA_CONVERT is used as a flag to run the
+	 * conversion function.
+	 * SMBTA_DRY_RUN is used as a flag to run the
+	 * -t --test-db function
+	 */
 	int SMBTA_CONVERT = 0;
+	int SMBTA_DRY_RUN = 0;
 	int i;
 	TALLOC_CTX *runtime_mem = NULL;
 	configuration_define_defaults( c );
@@ -308,11 +317,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "dbpassword",1,NULL,'P'},
 			{ "convert",0,NULL,'C'},
 			{ "version",0,NULL,'v'},
+			{ "test-db",0,NULL,'t'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"vCM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
+			"vCM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:t", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -377,6 +387,14 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'I': ;
 				c->identify = (int) common_myatoi( optarg );
 				break;
+			case 't': ;
+				  /**
+				   * dry run: only test if the database
+				   * connection can be established and
+				   * return the result on the terminal.
+				   */
+				SMBTA_DRY_RUN = 1;
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -388,7 +406,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	if (c->config_file != NULL)
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
-
 
 	/**
 	 * if convert (-C --convert) was called, run it now
@@ -405,6 +422,11 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* Build up the connection to the database */
 	if (configuration_database_connect(c) == 1) {
 		printf("\nError on database connect.\n");
+		talloc_free(runtime_mem);
+		exit(1);
+	}
+	if (SMBTA_DRY_RUN == 1) {
+		printf("\nDatabase connection succesful.\n");
 		talloc_free(runtime_mem);
 		exit(1);
 	}
