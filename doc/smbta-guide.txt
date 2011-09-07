@@ -712,6 +712,9 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 -C	--convert		run an interactive conversion/update
 				process to convert an older database
 				to this version of SMBTA.
+-t 	--test-db		Dry run; only try to connect to
+				the database and report the result
+				to the terminal.
 
 --------------------------------------------------------------
 
@@ -805,6 +808,10 @@ If this option is given, smbtaquery will not go into normal operation, but inste
 provides an interactive session with the aim to convert databases from one version
 to the current one. 
 
+-t --test-db
+++++++++++++
+If this option is given, smbtaquery tries to connect to the database, reports the
+result and exits. It can be used to quickly check if the configuration is fine.
 
 General usage
 ^^^^^^^^^^^^^
