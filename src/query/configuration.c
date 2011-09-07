@@ -530,5 +530,15 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: debug level has to be between 0 and 10.\n");
 		return -1;
 	}
+        if (strcmp(c->dbdriver,"pgsql") != 0 &&
+                strcmp(c->dbdriver,"mysql")!=0 &&
+                strcmp(c->dbdriver,"sqlite3")!=0) {
+	                printf("ERROR: please specifiy a correct database driver.\n");
+	                printf("pgsql   -> postgresql\n");
+	                printf("mysql   -> MySQL\n");
+	                printf("sqlite3 -> sqlite3\n");
+	                return -1;
+        }
+		
 	return 0;
 }
