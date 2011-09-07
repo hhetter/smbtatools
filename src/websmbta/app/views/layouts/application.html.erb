@@ -26,7 +26,8 @@
           <div id="hp_link">
             <% if current_user %>
               Logged in as <%= current_user.username %>.
-              <%= link_to "Log out", log_out_path %>
+              <%= link_to "Log out", log_out_path %>&nbsp;&nbsp;
+              <%= link_to "Smbtad Configuration", :controller => "config", :action => "general" %>&nbsp;&nbsp;
             <% else %>
               <%= link_to "log in", log_in_path %>
             <% end %>&nbsp;&nbsp;
