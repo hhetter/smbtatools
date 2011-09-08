@@ -516,7 +516,7 @@ static void interpreter_fn_throughput( TALLOC_CTX *ctx,
 	}
 }
 
-static void interpreter_fn_usage( TALLOC_CTX *ctx,
+static void interpreter_fn_24h_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -2075,8 +2075,8 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
         case INT_OBJ_LAST:
                 interpreter_fn_last_activity(ctx, command_data, obj_struct,config);
                 break;
-	case INT_OBJ_USAGE:
-		interpreter_fn_usage(ctx, command_data, obj_struct,config);
+	case INT_OBJ_24H_USAGE:
+		interpreter_fn_24h_usage(ctx, command_data, obj_struct,config);
 		break;
 	case INT_OBJ_SEARCH:
 		interpreter_fn_search(ctx, command_data, obj_struct,config);
@@ -2101,7 +2101,7 @@ static int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "list") == 0) return INT_OBJ_LIST;
 	if (strcmp(cmd, "top") == 0) return INT_OBJ_TOP;
         if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
-	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
+	if (strcmp(cmd, "24h_usage") == 0) return INT_OBJ_24H_USAGE;
 	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
 	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
 	if (strcmp(cmd, "smbtad-report") == 0) return INT_OBJ_SMBTAD_REPORT;
@@ -2298,8 +2298,9 @@ void interpreter_command_help()
         printf("            			List the last NUM \n"
 		"				activities from the \n");
         printf("                                specified object.\n");
-	printf("usage	[r][w][rw]		Show usage statistics\n"
+	printf("24husage	[r][w][rw]	Show usage statistics\n"
 		"				on an object\n");
+	printf("				by creating a virtual day.\n");
 	printf("search 	[string]		Does a search for STRING\n");
 	printf("				over the whole database.\n");
 	printf("throughput 	[num]\n");
