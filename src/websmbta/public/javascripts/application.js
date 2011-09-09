@@ -335,7 +335,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#search").fadeOut();
         $("#search_help").fadeOut();
         $("#throughput").fadeOut();
@@ -350,7 +350,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#search").fadeOut();
         $("#search_help").fadeOut();
         $("#throughput").fadeOut();
@@ -367,7 +367,7 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#search").fadeIn();
         $("#search_help").fadeIn();
         $("#throughput").fadeOut();
@@ -381,14 +381,14 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#search").fadeOut();
         $("#search_help").fadeOut();
         $("#throughput").fadeOut();
         $("#list_func").fadeIn();
         $("#list_help").fadeIn();
     }
-    else if (selected == "usage"){
+    else if (selected == "24h_usage"){
         $("#selfcheck_func").fadeOut();
         $("#report_func").fadeOut();
         $("#help").fadeOut();
@@ -397,8 +397,8 @@ function configureFunction(){
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#top").fadeOut();
-        $("#usage").fadeIn();
-        $("#usage_help").fadeIn();
+        $("#24h_usage").fadeIn();
+        $("#24h_usage_help").fadeIn();
         $("#throughput").fadeOut();
         $("#list_func").fadeOut();
     }
@@ -408,7 +408,7 @@ function configureFunction(){
         $("#help").fadeOut();
         $(".function_help").fadeOut();
         $("#search").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
         $("#total").fadeIn();
@@ -424,7 +424,7 @@ function configureFunction(){
         $("#search").fadeOut();
         $("#last_activity").fadeIn();
         $("#last_activity_help").fadeIn();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#total").fadeOut();
         $("#top").fadeOut();
         $("#throughput").fadeOut();
@@ -438,7 +438,7 @@ function configureFunction(){
         $("#search").fadeOut();
         $("#top").fadeIn();
         $("#top_help").fadeIn();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#total").fadeOut();
         $("#last_activity").fadeOut();
         $("#throughput").fadeOut();
@@ -451,7 +451,7 @@ function configureFunction(){
         $("#help").fadeOut();
         $("#search").fadeOut();
         $("#last_activity").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#total").fadeOut();
         $("#top").fadeOut();
         $("#throughput").fadeIn();
@@ -464,7 +464,7 @@ function configureFunction(){
         $("#selfcheck_func").fadeOut();
         $("#report_func").fadeOut();
         $("#search").fadeOut();
-        $("#usage").fadeOut();
+        $("#24h_usage").fadeOut();
         $("#total").fadeOut();
         $("#top").fadeOut();
         $("#last_activity").fadeOut();
@@ -567,8 +567,8 @@ function inspect_functionsettings(){
                 $(".start").attr("disabled", "true");
             }
         }
-        else if($("div#usage").css("display") != "none"){
-            if($("select#modelist_usage option:selected").val() != ""){
+        else if($("div#24h_usage").css("display") != "none"){
+            if($("select#modelist_24h_usage option:selected").val() != ""){
                 $(".start").removeAttr("disabled");
             }
             else{

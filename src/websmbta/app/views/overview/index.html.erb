@@ -16,12 +16,12 @@
   <b>Function:</b>
   <%if !current_user.admin%>
   <%= select_tag "global_function",
-    options_for_select(["","search", "list", "total", "top","usage", "last_activity", "throughput"]),
+    options_for_select(["","search", "list", "total", "top","24h_usage", "last_activity", "throughput"]),
     :class => "function", :onchange => "configureFunction()" %>
   <%end%>
   <%if current_user.admin%>
   <%= select_tag "global_function",
-    options_for_select(["","smbtad-report", "self-check", "search", "list", "total", "top","usage", "last_activity", "throughput"]),
+    options_for_select(["","smbtad-report", "self-check", "search", "list", "total", "top","24h_usage", "last_activity", "throughput"]),
     :class => "function", :onchange => "configureFunction()" %>
   <%end%>
 </div>
@@ -118,21 +118,21 @@
       <i>The list function creates a list of objects that are involved with the selected object.</i>
     </div>
   </div>
-  <div id="usage" class="function_dialog">
+  <div id="24h_usage" class="function_dialog">
     <table>
       <tr>
         <td>Choose a mode:</td>
-        <td><%= select_tag "modelist_usage", options_for_select(["", "r", "w", "rw"], @mode), :class=> "modelist",
+        <td><%= select_tag "modelist_24h_usage", options_for_select(["", "r", "w", "rw"], @mode), :class=> "modelist",
             :onchange =>"inspect_functionsettings()" %></td>
       </tr>
       <tr>
         <td>From:</td>
-        <td><%= text_field_tag "from_usage", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+        <td><%= text_field_tag "from_24h_usage", @from, :class => "datetime", :onkeyup => "inspect_functionsettings()",
             :onclick => "inspect_functionsettings()" %></td>
       </tr>
       <tr>
         <td>To:</td>
-        <td><%= text_field_tag "to_usage", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
+        <td><%= text_field_tag "to_24h_usage", @to, :class => "datetime", :onkeyup => "inspect_functionsettings()",
             :onclick => "inspect_functionsettings()" %></td>
       </tr>
       <tr>
@@ -141,8 +141,8 @@
         <td><%= link_to_function "Cancel", :class => "cancel", :onclick => "reset_functions()" %></td>
       </tr>
     </table>
-    <div id="usage_help" class="function_help">
-      <i>The usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i>
+    <div id="24h_usage_help" class="function_help">
+      <i>The 24h_usage function shows the average usage of an object throughout the day, and filters for r/w or rw.</i>
     </div>
   </div>
 
