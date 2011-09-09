@@ -1474,6 +1474,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			yaxis_r[z] = dbi_result_get_long_idx(res,1);
 			if (maximum < yaxis_r[z]) maximum = yaxis_r[z];
 			talloc_free(query);
+			type = SMBTA_GFX_R;
 
 		} else if (strcmp(command_data->arguments[2],"w") == 0) {
 			query = talloc_asprintf(ctx,
@@ -1485,6 +1486,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			yaxis_w[z] = dbi_result_get_long_idx(res,1);
 			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
 			talloc_free(query);
+			type = SMBTA_GFX_W;
 		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
 			query = talloc_asprintf(ctx,
 				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
@@ -1504,13 +1506,19 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 				maximum = yaxis_r[z] + yaxis_w[z];
 			talloc_free(query);
 			tallof_free(query2);
-
+			type = SMBTA_GFX_RW;
 
 		} else {
 			printf("ERROR: usage: please use either r, rw, or w.\n");
 			exit(1);
 		}
 
+	smbta_gfx_simple_diagram( imgwidth,
+			imgheight,
+			yaxis_r,
+			yaxis_w,
+			type,
+			maximum);
 
 
 

@@ -25,4 +25,42 @@
  * SMBTA.
  */
 
+void smbta_gfx_simple_diagram(
+		int imgwidth,
+		int imgheight,
+		unsigned long int *yaxis_r,
+		unsigned long int *yaxis_w,
+		int type,
+		unsigned long int maximum)
+{
+	int x;
+	cairo_surface *surface = cairo_svg_surface_create(
+			"test",
+			imgwidth,
+			imgheight);
+	cairo_t *cr = cairo_create(surface);
+	/* black background */
+	cairo_set_source_rgb(cr,0,0,0);
+	cairo_paint(cr);
+	cairo_scale(cr, maximum, imgwidth);
+	cairo_set_line_width(cr,0.1);
+	cairo_move_to(cr,1,0.1);
+	for (x = 0;x < imgwidth;x++) {
+		if (type == SMBTA_GFX_RW) {
+			cairo_move_to(cr, x, 0.1);
+			cairo_line_to (cr, x, yaxis_r[x]);
+			cairo_move_to(cr, x, yaxis_r[x]);
+			cairo_line_to (cr, x, yaxis_w[x]);
+		} else if (type == SMBTA_GFX_R) {
+			cairo_move_to(cr, x, 0.1);
+			cairo_line_to(cr, x, yaxis_r[x]);
+		} else if (type == SMBTA_GFX_W) {
+			cairo_move_to(cr, x, 0.1);
+			cairo_line_to(cr, x, yaxis_w[x]);
+		}
+	}
+	cairo_stroke(cr);
+	cairo_surface_flush(cr);
+	cairo_surface_destroy(cr);
+}
 
