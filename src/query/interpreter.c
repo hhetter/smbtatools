@@ -2298,7 +2298,7 @@ void interpreter_command_help()
         printf("            			List the last NUM \n"
 		"				activities from the \n");
         printf("                                specified object.\n");
-	printf("24husage	[r][w][rw]	Show usage statistics\n"
+	printf("24h_usage	[r][w][rw]	Show usage statistics\n"
 		"				on an object\n");
 	printf("				by creating a virtual day.\n");
 	printf("search 	[string]		Does a search for STRING\n");

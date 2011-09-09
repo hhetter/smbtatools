@@ -190,7 +190,7 @@ class FunctionsController < ApplicationController
       @sort = "asc"
     end
     @cmd += @function
-    if @function == "total" || @function == "usage"
+    if @function == "total" || @function == "24h_usage"
       @cmd += " " + @mode + ";\""
     end
     if @function == "list"
