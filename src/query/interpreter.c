@@ -39,6 +39,14 @@ struct interpreter_object {
 	char *from;
 	char *to;
 
+	/**
+	 * from_t and to_t are a copie of
+	 * the from and to times provided
+	 * and are converted in time_t
+	 */
+	time_t from_t;
+	time_t to_t;
+
 };
 
 struct curl_memory {
@@ -1414,6 +1422,99 @@ static void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 }
 
+static void interpreter_fn_usage(TALLOC_CTX *ctx,
+	struct interpreter_command *command_data,
+	struct interpreter_object *obj_struct,
+	struct configuration_data *config)
+{
+	/**
+	 * usage [imgwidth] [imgheight] [r][rw][w] from $TIME to $TIME
+	 */
+	unsigned long int *yaxis_r;
+	unsigned long int *yaxir_w;
+	unsigned long int maximum = 0;
+	time_t diff = obj_struct->to_t - obj_struct from_t;
+	time_t go = obj_struct->from_t;
+	int steps; 
+	int z;
+	char *query;
+	char timestr1[200];
+	char timestr2[200];
+	struct tm tmp;
+	/**
+	 * get the arguments
+	 */
+	imgwidth = atoi(command_data->arguments[0]);
+	imgheight = atoi(command_data->arguments[1]);
+	if (imgwidth == 0 || imgheight == 0) {
+		printf("ERROR: usage: incorrect height or width for"
+			"the diagram.\n");
+		exit(1);
+	}
+
+	steps = diff / imgwidth;
+
+	/** create the arrays
+	 */
+	yaxis_r = talloc_array( ctx, unsigned long int, imgwidth);
+	yaxis_w = talloc_array( ctx, unsigned long int, imgwidth);
+
+	for (z = 0; z < imgwidth; z++) {
+		tmp = localtime( go );
+		strftime(timestr1,199,"%Y-%m-%d %T",tmp);
+		tmp = localtime( go + steps );
+		strftime(timestr2,199,"%Y-%m-%d %T",tmp);
+		if (strcmp( command_data->arguments[2], "r") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
+				"timestamp > %s AND timestamp < %s;",
+				vfs_fn_read,
+				timestr1,
+				timestr2);
+			yaxis_r[z] = dbi_result_get_long_idx(res,1);
+			if (maximum < yaxis_r[z]) maximum = yaxis_r[z];
+			talloc_free(query);
+
+		} else if (strcmp(command_data->arguments[2],"w") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
+				"timestamp > %s AND timestamp < %s;",
+				vfs_fn_write,
+				timestr1,
+				timestr2);
+			yaxis_w[z] = dbi_result_get_long_idx(res,1);
+			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
+			talloc_free(query);
+		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
+				"AND timestamp > %s AND timestamp < %s;",
+				vfs_fn_read,
+				timestr1,
+				timestr2);
+			query2 = talloc_arsprintf(ctx,
+				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
+				"AND timestamp > %s AND timestamp < %s;",
+				vfs_fn_write,
+				timestr1,
+				timestr2);
+			yaxis_r[z] = dbi_result_get_long_idx(res,1);
+			yaxis_w[z] = dbi_result_get_long_idx(res2,1);
+			if (maximum < yaxis_r[z] + yaxis_w[z])
+				maximum = yaxis_r[z] + yaxis_w[z];
+			talloc_free(query);
+			tallof_free(query2);
+
+
+		} else {
+			printf("ERROR: usage: please use either r, rw, or w.\n");
+			exit(1);
+		}
+
+
+
+
+
 static void interpreter_versions_compare( unsigned int *first,
 		unsigned int *second,
 		char *firstsmaller,
@@ -1938,6 +2039,9 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 	struct interpreter_object *obj_struct,
 	struct interpreter_command *command_data)
 {
+	struct tm tt;
+	char *tmpstr1;
+	char *tmpstr2;
 	int arg_flag=0;
 	if (command_data->argument_count < 2) {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
@@ -1958,22 +2062,39 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 
 
 	if (strcmp(command_data->arguments[0+arg_flag],"from")==0) {
+		tmpstr = interpreter_return_timestamp(
+				ctx,
+				command_data->arguments[1+arg_flag]);
+
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[1+arg_flag]));
+				tmpstr);
+		strptime( tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->from_t = mktime(&tt);
+
+		tmpstr = interpreter_return_timestamp(
+				ctx,
+				command_data->arguments[3+arg_flag]);
+
 		obj_struct->to = talloc_asprintf(ctx, "timestamp < '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[3+arg_flag]));
+				tmpstr);
+		strptime( tmpstr, "%Y-%m-%d %T",&tt);
+		obj_struct->to_t = mktime(&tt);
 	} else
 	if (strcmp(command_data->arguments[0+arg_flag],"since")==0) {
+		tmpstr = interpreter_return_timestamp(ctx,
+				command_data->arguments[1+arg_flag]);
+
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[1+arg_flag]));
+				tmpstr);
+		strptime(tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->from_t = mktime(&tt);
+
+		tmpstr = interpreter_return_timestamp_now(ctx);
+
 		obj_struct->to = talloc_asprintf(ctx,"timestamp < '%s'",
-			interpreter_return_timestamp_now(ctx));
+				tmpstr);
+		strptime(tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->to_t = mktime(&tt);
 	} else {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
 		obj_struct->to = talloc_asprintf(ctx,"1=1");
@@ -2078,6 +2199,9 @@ static void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_24H_USAGE:
 		interpreter_fn_24h_usage(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_USAGE:
+		interpreter_fn_usage(ctx, command_data, obj_struct,config);
+		break;
 	case INT_OBJ_SEARCH:
 		interpreter_fn_search(ctx, command_data, obj_struct,config);
 		break;
@@ -2106,6 +2230,7 @@ static int interpreter_translate_command(const char *cmd)
 	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
 	if (strcmp(cmd, "smbtad-report") == 0) return INT_OBJ_SMBTAD_REPORT;
 	if (strcmp(cmd, "self-check") == 0) return INT_OBJ_SELF_CHECK;
+	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
