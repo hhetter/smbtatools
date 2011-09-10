@@ -68,5 +68,6 @@ void smbta_gfx_simple_diagram(
 	cairo_stroke(cr);
 	cairo_surface_flush(surface);
 	cairo_surface_destroy(surface);
+	cairo_destroy(cr);
 }
 

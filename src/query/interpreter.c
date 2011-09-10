@@ -1455,7 +1455,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	imgheight = atoi(command_data->arguments[1]);
 	if (imgwidth == 0 || imgheight == 0) {
 		printf("ERROR: usage: incorrect height or width for"
-			"the diagram.\n");
+			" the diagram.\n");
 		exit(1);
 	}
 
@@ -1465,6 +1465,10 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	 */
 	yaxis_r = talloc_array( ctx, unsigned long int, imgwidth);
 	yaxis_w = talloc_array( ctx, unsigned long int, imgwidth);
+	for (z = 0; z < imgwidth; z++) {
+		yaxis_r[z]=0;
+		yaxis_w[z]=0;
+	}
 
 	for (z = 0; z < imgwidth; z++) {
 		end = go + steps;
@@ -1474,8 +1478,8 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		strftime(timestr2,199,"%Y-%m-%d %T",tmp);
 		if (strcmp( command_data->arguments[2], "r") == 0) {
 			query = talloc_asprintf(ctx,
-				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
-				"timestamp > %s AND timestamp < %s;",
+				"SELECT AVG(length) FROM data WHERE vfs_id = %i AND "
+				"timestamp > '%s' AND timestamp < '%s';",
 				vfs_id_read,
 				timestr1,
 				timestr2);
@@ -1489,8 +1493,8 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 
 		} else if (strcmp(command_data->arguments[2],"w") == 0) {
 			query = talloc_asprintf(ctx,
-				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
-				"timestamp > %s AND timestamp < %s;",
+				"SELECT AVG(length) FROM data WHERE vfs_id = %i AND "
+				"timestamp > '%s' AND timestamp < '%s';",
 				vfs_id_write,
 				timestr1,
 				timestr2);
@@ -1503,14 +1507,14 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			type = SMBTA_GFX_W;
 		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
 			query = talloc_asprintf(ctx,
-				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
-				"AND timestamp > %s AND timestamp < %s;",
+				"SELECT AVG(length) FROM data WHERE vfs_id = %i "
+				"AND timestamp > '%s' AND timestamp < '%s';",
 				vfs_id_read,
 				timestr1,
 				timestr2);
 			query2 = talloc_asprintf(ctx,
-				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
-				"AND timestamp > %s AND timestamp < %s;",
+				"SELECT AVG(length) FROM data WHERE vfs_id = %i "
+				"AND timestamp > '%s' AND timestamp < '%s';",
 				vfs_id_write,
 				timestr1,
 				timestr2);
