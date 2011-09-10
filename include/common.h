@@ -77,6 +77,11 @@ enum IntCommands {
 	INT_OBJ_SEARCH,
 	INT_OBJ_THROUGHPUT};
 
+enum GFXcommands {
+	SMBTA_GFX_R,
+	SMBTA_GFX_W,
+	SMBTA_GFX_RW};
+
 
 /*
  * return a string representation of z

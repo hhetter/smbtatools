@@ -25,6 +25,12 @@
  * SMBTA.
  */
 
+enum SMBTA_GFX {
+	SMBTA_GFX_R,
+	SMBTA_GFX_W,
+	SMBTA_GFX_RW};
+
+
 void smbta_gfx_simple_diagram(
 		int imgwidth,
 		int imgheight,
@@ -34,7 +40,7 @@ void smbta_gfx_simple_diagram(
 		unsigned long int maximum)
 {
 	int x;
-	cairo_surface *surface = cairo_svg_surface_create(
+	cairo_surface_t *surface = cairo_svg_surface_create(
 			"test",
 			imgwidth,
 			imgheight);
@@ -60,7 +66,7 @@ void smbta_gfx_simple_diagram(
 		}
 	}
 	cairo_stroke(cr);
-	cairo_surface_flush(cr);
-	cairo_surface_destroy(cr);
+	cairo_surface_flush(surface);
+	cairo_surface_destroy(surface);
 }
 

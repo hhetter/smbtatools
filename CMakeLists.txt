@@ -158,9 +158,10 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/query/interpreter.c
 	src/query/network.c
 	src/query/convert.c
+	src/query/graphics.c
 	)
 
-TARGET_LINK_LIBRARIES(${CurrentExe} ${CURL_LIBRARIES} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBCAIRO_LIBRARIES} ${CURL_LIBRARIES} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
 SET(CurrentExe "smbtamonitor")
 ADD_EXECUTABLE(${CurrentExe}

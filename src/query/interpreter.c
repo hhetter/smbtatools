@@ -23,6 +23,7 @@
 #include "../../include/version.h"
 #include <talloc.h>
 #include "../webmon/rrddriver/include/vfs_smb_traffic_analyzer.h"
+#include "include/graphics.h"
 struct interpreter_command {
 	int argument_count;
 	char *command;
@@ -1431,18 +1432,22 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	 * usage [imgwidth] [imgheight] [r][rw][w] from $TIME to $TIME
 	 */
 	unsigned long int *yaxis_r;
-	unsigned long int *yaxir_w;
+	unsigned long int *yaxis_w;
 	unsigned long int maximum = 0;
-	time_t diff = obj_struct->to_t - obj_struct from_t;
+	time_t diff = obj_struct->to_t - obj_struct->from_t;
 	time_t go = obj_struct->from_t;
+	time_t end;
 	int steps; 
 	int z;
-	char *query;
+	char *query,*query2;
 	char timestr1[200];
 	char timestr2[200];
-	struct tm tmp;
+	struct tm *tmp;
 	dbi_result res;
 	dbi_result res2;
+	int imgwidth;
+	int imgheight;
+	int type;
 	/**
 	 * get the arguments
 	 */
@@ -1462,19 +1467,21 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	yaxis_w = talloc_array( ctx, unsigned long int, imgwidth);
 
 	for (z = 0; z < imgwidth; z++) {
-		tmp = localtime( go );
+		end = go + steps;
+		tmp = localtime( &go );
 		strftime(timestr1,199,"%Y-%m-%d %T",tmp);
-		tmp = localtime( go + steps );
+		tmp = localtime( &end );
 		strftime(timestr2,199,"%Y-%m-%d %T",tmp);
 		if (strcmp( command_data->arguments[2], "r") == 0) {
 			query = talloc_asprintf(ctx,
 				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
 				"timestamp > %s AND timestamp < %s;",
-				vfs_fn_read,
+				vfs_id_read,
 				timestr1,
 				timestr2);
 			res = dbi_conn_query(config->DBIconn, query);
-			yaxis_r[z] = dbi_result_get_long_idx(res,1);
+			dbi_result_first_row(res);
+			yaxis_r[z] = dbi_result_get_int_idx(res,1);
 			if (maximum < yaxis_r[z]) maximum = yaxis_r[z];
 			talloc_free(query);
 			dbi_result_free(res);
@@ -1484,11 +1491,12 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			query = talloc_asprintf(ctx,
 				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i AND "
 				"timestamp > %s AND timestamp < %s;",
-				vfs_fn_write,
+				vfs_id_write,
 				timestr1,
 				timestr2);
 			res = dbi_conn_query(config->DBIconn, query);
-			yaxis_w[z] = dbi_result_get_long_idx(res,1);
+			dbi_result_first_row(res);
+			yaxis_w[z] = dbi_result_get_int_idx(res,1);
 			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
 			talloc_free(query);
 			dbi_result_free(res);
@@ -1497,23 +1505,26 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			query = talloc_asprintf(ctx,
 				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
 				"AND timestamp > %s AND timestamp < %s;",
-				vfs_fn_read,
+				vfs_id_read,
 				timestr1,
 				timestr2);
-			query2 = talloc_arsprintf(ctx,
+			query2 = talloc_asprintf(ctx,
 				"SELECT AVG(bytes) FROM data WHERE vfs_id = %i "
 				"AND timestamp > %s AND timestamp < %s;",
-				vfs_fn_write,
+				vfs_id_write,
 				timestr1,
 				timestr2);
 			res = dbi_conn_query(config->DBIconn, query);
 			res2 = dbi_conn_query(config->DBIconn, query2);
-			yaxis_r[z] = dbi_result_get_long_idx(res,1);
-			yaxis_w[z] = dbi_result_get_long_idx(res2,1);
+			dbi_result_first_row(res);
+			dbi_result_first_row(res2);
+
+			yaxis_r[z] = dbi_result_get_int_idx(res,1);
+			yaxis_w[z] = dbi_result_get_int_idx(res2,1);
 			if (maximum < yaxis_r[z] + yaxis_w[z])
 				maximum = yaxis_r[z] + yaxis_w[z];
 			talloc_free(query);
-			tallof_free(query2);
+			talloc_free(query2);
 			dbi_result_free(res);
 			dbi_result_free(res2);
 
@@ -1523,6 +1534,8 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			printf("ERROR: usage: please use either r, rw, or w.\n");
 			exit(1);
 		}
+	go = go + steps;
+	}
 
 	smbta_gfx_simple_diagram( imgwidth,
 			imgheight,
@@ -1530,7 +1543,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			yaxis_w,
 			type,
 			maximum);
-
+}
 
 
 
@@ -2059,8 +2072,7 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 	struct interpreter_command *command_data)
 {
 	struct tm tt;
-	char *tmpstr1;
-	char *tmpstr2;
+	char *tmpstr;
 	int arg_flag=0;
 	if (command_data->argument_count < 2) {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
