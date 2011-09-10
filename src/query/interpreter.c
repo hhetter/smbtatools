@@ -1441,6 +1441,8 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	char timestr1[200];
 	char timestr2[200];
 	struct tm tmp;
+	dbi_result res;
+	dbi_result res2;
 	/**
 	 * get the arguments
 	 */
@@ -1471,9 +1473,11 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 				vfs_fn_read,
 				timestr1,
 				timestr2);
+			res = dbi_conn_query(config->DBIconn, query);
 			yaxis_r[z] = dbi_result_get_long_idx(res,1);
 			if (maximum < yaxis_r[z]) maximum = yaxis_r[z];
 			talloc_free(query);
+			dbi_result_free(res);
 			type = SMBTA_GFX_R;
 
 		} else if (strcmp(command_data->arguments[2],"w") == 0) {
@@ -1483,9 +1487,11 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 				vfs_fn_write,
 				timestr1,
 				timestr2);
+			res = dbi_conn_query(config->DBIconn, query);
 			yaxis_w[z] = dbi_result_get_long_idx(res,1);
 			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
 			talloc_free(query);
+			dbi_result_free(res);
 			type = SMBTA_GFX_W;
 		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
 			query = talloc_asprintf(ctx,
@@ -1500,12 +1506,17 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 				vfs_fn_write,
 				timestr1,
 				timestr2);
+			res = dbi_conn_query(config->DBIconn, query);
+			res2 = dbi_conn_query(config->DBIconn, query2);
 			yaxis_r[z] = dbi_result_get_long_idx(res,1);
 			yaxis_w[z] = dbi_result_get_long_idx(res2,1);
 			if (maximum < yaxis_r[z] + yaxis_w[z])
 				maximum = yaxis_r[z] + yaxis_w[z];
 			talloc_free(query);
 			tallof_free(query2);
+			dbi_result_free(res);
+			dbi_result_free(res2);
+
 			type = SMBTA_GFX_RW;
 
 		} else {
