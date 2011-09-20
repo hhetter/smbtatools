@@ -19,14 +19,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _XOPEN_SOURCE
-#define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
-#define __EXTENSIONS__
+//#define _XOPEN_SOURCE
+//#define _SVID_SOURCE || _BSD_SOURCE || _XOPEN_SOURCE >= 500
+//#define __EXTENSIONS__
 #include <stdio.h>
 #include <stdlib.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-svg.h>
-
 
 
 void smbta_gfx_simple_diagram(
