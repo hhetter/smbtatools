@@ -103,39 +103,31 @@ void smbta_gfx_simple_diagram(
 {
 	int x;
 	char kbstring[20];
-	double max;
+	double per;
+	maximum = 0;
 	cairo_surface_t *surface = cairo_svg_surface_create(
 			"test",
 			imgwidth,
 			imgheight);
 	cairo_t *cr = cairo_create(surface);
 	/* black background */
-	/* for testing */
-	for (x = 0; x < imgwidth; x++) {
-		yaxis_r[x] = 1024*1024*10;
-		yaxis_w[x] = 1024*1024*120;
-	}
-	maximum = 1024*1024*512;
-	max=smbta_gfx_downscale_maximum(maximum,kbstring);
-	printf("%f",max);
+	per = (double) maximum / 100;
 	cairo_set_source_rgb(cr,0,0,0);
 	cairo_paint(cr);
-	cairo_scale(cr, maximum, imgwidth);
-	cairo_set_line_width(cr,2);
-	cairo_move_to(cr,1,0.1);
+	cairo_scale(cr, imgwidth,imgheight); // imgwidth
+	cairo_set_line_width(cr,0.01);
 	cairo_set_source_rgb(cr,0,1,0);
 	for (x = 0;x < imgwidth;x++) {
+		double xpos = ((double) x / ( (double) imgwidth / 100)) / 100;
+		cairo_move_to(cr, xpos, 1.0);
 		if (type == SMBTA_GFX_RW) {
-			cairo_move_to(cr, x, 0.1);
-			cairo_line_to (cr, x, yaxis_r[x]);
-			cairo_move_to(cr, x, yaxis_r[x]);
-			cairo_line_to (cr, x, yaxis_w[x]);
+			cairo_line_to (cr, x, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
+			cairo_move_to(cr, x, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
+			cairo_line_to (cr, x, 1- (double) (( double) (yaxis_w[x]/ per)/ 100));
 		} else if (type == SMBTA_GFX_R) {
-			cairo_move_to(cr, x, 0.1);
-			cairo_line_to(cr, x, yaxis_r[x]);
+			cairo_line_to(cr, xpos, 1 - (double) ( ( (double) yaxis_r[x]/per) / 100));
 		} else if (type == SMBTA_GFX_W) {
-			cairo_move_to(cr, x, 0.1);
-			cairo_line_to(cr, x, yaxis_w[x]);
+			cairo_line_to(cr, x, 1 - (double) ( ( (double) yaxis_w[x]/per) / 100));
 		}
 	}
 	cairo_stroke(cr);
