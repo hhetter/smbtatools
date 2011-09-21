@@ -1433,10 +1433,10 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	 */
 	unsigned long int *yaxis_r;
 	unsigned long int *yaxis_w;
-	unsigned long int maximum = 0;
 	time_t diff = obj_struct->to_t - obj_struct->from_t;
 	time_t go = obj_struct->from_t;
 	time_t end;
+	unsigned long int maximum = 0;
 	int steps; 
 	int z;
 	char *query,*query2;
@@ -1541,7 +1541,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		}
 	go = go + steps;
 	}
-
+	printf("MAX: %i",maximum);
 	smbta_gfx_simple_diagram( imgwidth,
 			imgheight,
 			yaxis_r,

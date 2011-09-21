@@ -104,7 +104,6 @@ void smbta_gfx_simple_diagram(
 	int x;
 	char kbstring[20];
 	double per;
-	maximum = 0;
 	cairo_surface_t *surface = cairo_svg_surface_create(
 			"test",
 			imgwidth,
@@ -112,6 +111,7 @@ void smbta_gfx_simple_diagram(
 	cairo_t *cr = cairo_create(surface);
 	/* black background */
 	per = (double) maximum / 100;
+	printf("MAX: %i,   per = %f",maximum, per);
 	cairo_set_source_rgb(cr,0,0,0);
 	cairo_paint(cr);
 	cairo_scale(cr, imgwidth,imgheight); // imgwidth
