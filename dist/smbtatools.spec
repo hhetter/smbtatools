@@ -25,6 +25,7 @@ BuildRequires:  cmake libsmbclient-devel libtalloc-devel ncurses-devel libdbi-de
 BuildRecommends:  libiniparser-devel sqlite3-devel
 %endif
 
+#test
 %if 0%{defined fedora}
 BuildRequires:  iniparser-devel
 %endif
