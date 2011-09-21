@@ -30,7 +30,7 @@ Summary:        Tools for configuration and query of SMB Traffic Analyzer
 Url:            http://github.com/hhetter/smbtatools
 Source0:        %{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-# test
+
 %description
 The smbtatools contain utility programs helping the end user to query the database that is created by the smbtad program. smbtatools is part of the SMB Traffic Analyzer project, which allows to create statistics about the data flow on a Samba network. For more information, please see: http://holger123.wordpress.com/smb-traffic-analyzer/
 
