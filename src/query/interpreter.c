@@ -1478,7 +1478,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		if (strcmp( command_data->arguments[2], "r") == 0) {
 			query = talloc_asprintf(ctx,
 				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i AND "
-				"timestamp > '%s' AND timestamp < '%s';",
+				"timestamp >= '%s' AND timestamp < '%s';",
 				vfs_id_read,
 				timestr1,
 				timestr2);
@@ -1493,7 +1493,7 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		} else if (strcmp(command_data->arguments[2],"w") == 0) {
 			query = talloc_asprintf(ctx,
 				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i AND "
-				"timestamp > '%s' AND timestamp < '%s';",
+				"timestamp >= '%s' AND timestamp < '%s';",
 				vfs_id_write,
 				timestr1,
 				timestr2);
@@ -1509,13 +1509,13 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
 			query = talloc_asprintf(ctx,
 				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i "
-				"AND timestamp > '%s' AND timestamp < '%s';",
+				"AND timestamp >= '%s' AND timestamp < '%s';",
 				vfs_id_read,
 				timestr1,
 				timestr2);
 			query2 = talloc_asprintf(ctx,
 				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i "
-				"AND timestamp > '%s' AND timestamp < '%s';",
+				"AND timestamp >= '%s' AND timestamp < '%s';",
 				vfs_id_write,
 				timestr1,
 				timestr2);
