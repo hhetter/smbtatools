@@ -121,13 +121,13 @@ void smbta_gfx_simple_diagram(
 		double xpos = ((double) x / ( (double) imgwidth / 100)) / 100;
 		cairo_move_to(cr, xpos, 1.0);
 		if (type == SMBTA_GFX_RW) {
-			cairo_line_to (cr, x, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
-			cairo_move_to(cr, x, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
-			cairo_line_to (cr, x, 1- (double) (( double) (yaxis_w[x]/ per)/ 100));
+			cairo_line_to (cr, xpos, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
+			cairo_move_to(cr, xpos, 1- (double) (( double) (yaxis_r[x]/ per)/ 100));
+			cairo_line_to (cr, xpos, 1- (double) (( double) (yaxis_w[x]/ per)/ 100));
 		} else if (type == SMBTA_GFX_R) {
 			cairo_line_to(cr, xpos, 1 - (double) ( ( (double) yaxis_r[x]/per) / 100));
 		} else if (type == SMBTA_GFX_W) {
-			cairo_line_to(cr, x, 1 - (double) ( ( (double) yaxis_w[x]/per) / 100));
+			cairo_line_to(cr, xpos, 1 - (double) ( ( (double) yaxis_w[x]/per) / 100));
 		}
 	}
 	cairo_stroke(cr);

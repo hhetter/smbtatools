@@ -1460,7 +1460,6 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 	}
 
 	steps = diff / imgwidth;
-
 	/** create the arrays
 	 */
 	yaxis_r = talloc_array( ctx, unsigned long int, imgwidth);
@@ -1498,9 +1497,11 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 				vfs_id_write,
 				timestr1,
 				timestr2);
+			printf("\n%s\n",query);
 			res = dbi_conn_query(config->DBIconn, query);
 			dbi_result_first_row(res);
 			yaxis_w[z] = dbi_result_get_int_idx(res,1);
+			printf("RES: %i",yaxis_w[z]);
 			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
 			talloc_free(query);
 			dbi_result_free(res);
@@ -2078,11 +2079,13 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 	struct tm tt;
 	char *tmpstr;
 	int arg_flag=0;
+
 	if (command_data->argument_count < 2) {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
 		obj_struct->to = talloc_asprintf(ctx,"1=1");
 		return;
 	}
+
 	switch(obj_struct->object) {
 	case INT_OBJ_FILE:
 	case INT_OBJ_SHARE:
@@ -2100,7 +2103,6 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 		tmpstr = interpreter_return_timestamp(
 				ctx,
 				command_data->arguments[1+arg_flag]);
-
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
 				tmpstr);
 		strptime( tmpstr,"%Y-%m-%d %T",&tt);
@@ -2118,7 +2120,6 @@ static void interpreter_make_times( TALLOC_CTX *ctx,
 	if (strcmp(command_data->arguments[0+arg_flag],"since")==0) {
 		tmpstr = interpreter_return_timestamp(ctx,
 				command_data->arguments[1+arg_flag]);
-
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
 				tmpstr);
 		strptime(tmpstr,"%Y-%m-%d %T",&tt);
