@@ -6,6 +6,10 @@
 
 # Check the minimum required cmake version for this project
 cmake_minimum_required(VERSION 2.6)
+###
+# Change to also build cpp files
+# -> seems to not help, so commented out
+#PROJECT(smbtatools)
 PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
@@ -29,13 +33,11 @@ IF (QT_INCLUDE_DIR)
 ENDIF()
 
 
-
-
 #
 # check for pango
 #
 FIND_PACKAGE(PANGO)
-if (NOT LIBPANGO_INCLUDE_DIRS)
+IF (NOT LIBPANGO_INCLUDE_DIRS)
 	MESSAGE( FATAL_ERROR "ERROR: you need the pango library and headers installed.")
 ENDIF()
 IF (LIBPANGO_INCLUDE_DIRS)
@@ -215,6 +217,52 @@ ADD_EXECUTABLE(${CurrentExe}
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
 
+
+#####
+#####
+#       ** not working yet **
+# Include the qt part into CMakeLists.txt
+#####
+#####
+SET(CurrentExe "smbtamonitor-qt")
+SET(${CurrentExe}-SOURCES
+ 	src/monitor-qt/main.cpp
+	src/monitor-qt/frontend.cpp
+	src/monitor-qt/configuration.cpp
+	src/monitor-qt/smbtamonitor-run.cpp
+	src/monitor-qt/visual.cpp
+	)
+SET(${CurrentExe}-HEADERS
+	src/monitor-qt/frontend.h
+	src/monitor-qt/configuration.h
+	src/monitor-qt/smbtamonitor-run.h
+	src/monitor-qt/visual.h
+	)
+###
+# Complains about wrong number of arguments
+#QT_WRAP_CPP(${CurrentExe}_HEADERS_MOC ${CurrentExe}-HEADERS)
+###
+# Tutorial suggests QT4_WRAP_CPP, but macro seems not to be present
+QT4_WRAP_CPP(${CurrentExe}_HEADERS_MOC ${CurrentExe}-HEADERS)
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}-SOURCES ${CurrentExe}-HEADERS)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${QT_LIBRARIES})
+
+
+# Old, mostle unchanged attempt
+#SET(CurrentExe "smbtamonitor-qt")
+#ADD_EXECUTABLE(${CurrentExe}
+#	src/monitor-qt/main.cpp
+#	src/monitor-qt/frontend.cpp
+#	src/monitor-qt/configuration.cpp
+#	src/monitor-qt/smbtamonitor-run.cpp
+#	src/monitor-qt/visual.cpp
+#	)
+#TARGET_LINK_LIBRARIES(${CurrentExe} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+
+
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
         DESTINATION "share/man/man1"
@@ -239,5 +287,5 @@ INSTALL(FILES src/torture/srv/directories.txt
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
-INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtamonitor-qt smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
 
