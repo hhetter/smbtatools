@@ -16,6 +16,21 @@ INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+
+#
+# check for QT(4)
+#
+FIND_PACKAGE(Qt4)
+IF (NOT QT_INCLUDE_DIR) 
+	MESSAGE( FATAL_ERROR "ERROR: you need the qt development files and library installed.")
+ENDIF()
+IF (QT_INCLUDE_DIR)
+	INCLUDE_DIRECTORIES($QT_INCLUDE_DIR)
+ENDIF()
+
+
+
+
 #
 # check for pango
 #
