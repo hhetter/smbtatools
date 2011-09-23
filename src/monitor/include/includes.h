@@ -21,13 +21,10 @@
 #include <talloc.h>
 #include <signal.h>
 #include <pthread.h>
-#include <curses.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
 #include "../../../include/version.h"
 #include "monitor-fn-enum.h"
 #include "configuration.h"
 #include "monitor-list.h"
-#include "backlog.h"
 #include "network.h"
-#include "visual.h"
