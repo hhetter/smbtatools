@@ -178,7 +178,7 @@ ADD_EXECUTABLE(${CurrentExe}
 
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBCAIRO_LIBRARIES} ${CURL_LIBRARIES} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
-SET(CurrentExe "smbtamonitor")
+SET(CurrentExe "smbtamonitor-gen")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	src/common/common.c
@@ -187,8 +187,6 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/configuration.c
 	src/monitor/network.c
 	src/monitor/monitor-list.c
-	src/monitor/visual.c
-	src/monitor/backlog.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
@@ -241,5 +239,5 @@ INSTALL(FILES src/torture/srv/directories.txt
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
-INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
 
