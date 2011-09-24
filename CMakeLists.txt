@@ -226,14 +226,14 @@ TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} $
 #####
 SET(CurrentExe "smbtamonitor-qt")
 SET(${CurrentExe}-SOURCES
- 	src/monitor-qt/main.cpp
+        src/monitor-qt/main.cpp
 	src/monitor-qt/frontend.cpp
 	src/monitor-qt/configuration.cpp
 	src/monitor-qt/smbtamonitor-run.cpp
 	src/monitor-qt/visual.cpp
 	)
 SET(${CurrentExe}-HEADERS
-	src/monitor-qt/include.h
+        src/monitor-qt/include.h
 	src/monitor-qt/frontend.h
 	src/monitor-qt/configuration.h
 	src/monitor-qt/smbtamonitor-run.h
@@ -247,20 +247,8 @@ SET(${CurrentExe}-HEADERS
 QT4_WRAP_CPP(${CurrentExe}_HEADERS_MOC ${CurrentExe}-HEADERS)
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
-ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}-SOURCES ${CurrentExe}-HEADERS)
+ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}-SOURCES ${CurrentExe}_HEADERS_MOC)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${QT_LIBRARIES})
-
-
-# Old, mostle unchanged attempt
-#SET(CurrentExe "smbtamonitor-qt")
-#ADD_EXECUTABLE(${CurrentExe}
-#	src/monitor-qt/main.cpp
-#	src/monitor-qt/frontend.cpp
-#	src/monitor-qt/configuration.cpp
-#	src/monitor-qt/smbtamonitor-run.cpp
-#	src/monitor-qt/visual.cpp
-#	)
-#TARGET_LINK_LIBRARIES(${CurrentExe} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 
 
