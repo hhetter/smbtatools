@@ -233,7 +233,6 @@ SET(${CurrentExe}-SOURCES
 	src/monitor-qt/visual.cpp
 	)
 SET(${CurrentExe}-HEADERS
-	src/monitor-qt/include.h
 	src/monitor-qt/frontend.h
 	src/monitor-qt/configuration.h
 	src/monitor-qt/smbtamonitor-run.h
