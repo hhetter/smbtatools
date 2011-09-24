@@ -1,12 +1,13 @@
 #ifndef FRONTEND_H
 #define FRONTEND_H
+
+ #include "include.h"
  #include "configuration.h"
- #include <QApplication>
- #include <QPushButton>
- #include <QWidget>
- #include <QDebug>
- #include <QProcess>
- #include <QGridLayout>
+ #include "smbtamonitor-run.h"
+ #include "visual.h"
+
+//   Class Configuration;
+//   Class Visual;
 
  class Frontend : public QWidget
  {
@@ -21,12 +22,17 @@
      int i_frontendvariable;
 
      QPushButton *configbutton, *monitorbutton, *quitbutton;
-     QGridLayout *gridlayout;
+     QGridLayout *gridlayout, *frontendlayout;
+     QWidget *frontendwidget;
      
      Configuration *configurator;
+     Smbtamonitor_run *smbtamonitur_runner;
+     Visual *visualizer;
 
  public slots:
-//     void gt_getdevices();
+     void fr_config();
+     void fr_getmonitor();
+     
 
 };
 
