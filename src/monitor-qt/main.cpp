@@ -1,13 +1,23 @@
 
 
- #include "include.h"
-
  #include "frontend.h"
  #include "configuration.h"
  #include "smbtamonitor-run.h"
  #include "visual.h"
-
-
+ // #include "Scriptfunc.h"
+ #include <QApplication>
+ #include <QFont>
+// #include <QLCDNumber>
+ #include <QPushButton>
+// #include <QSlider>
+ #include <QComboBox>
+// #include <QVBoxLayout>
+ #include <QWidget>
+ #include <QTextEdit>
+ #include <QFile>
+ #include <QIODevice>
+ #include <QProcess>
+ #include <QGridLayout>
 
 // Main function
  int main(int argc, char *argv[])

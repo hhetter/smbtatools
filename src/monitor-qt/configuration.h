@@ -1,7 +1,13 @@
  #ifndef CONFIGURATION_H
  #define CONFIGURATION_H
-
- #include "include.h"
+ #include <QApplication>
+ #include <QPushButton>
+ #include <QWidget>
+ #include <QDebug>
+ #include <QProcess>
+ #include <QGridLayout>
+ #include <QTabWidget>
+ #include <QLabel>
 
  class Configuration : public QWidget
  {
@@ -17,8 +23,6 @@
       QPushButton *remoteconfigbutton;
       QGridLayout *configgridlayout;
       QLabel *message1, *message2;
-      QFormLayout *configform;
-      QLineEdit *hostline, *portline, *shareline, *timeline;
      
 
 };
