@@ -62,3 +62,5 @@ void Frontend::fr_getmonitor(){
   
   
 }
+
+#include "frontend.moc"

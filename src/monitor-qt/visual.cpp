@@ -11,3 +11,5 @@
   
   qDebug()<< "Hurz";
 } 
+
+#include "visual.moc"

@@ -21,3 +21,5 @@ void Smbtamonitor_run::run(){
  monitorprocess->start("./owntools");
  qDebug() << "run another time!";
 }
+
+#include "smbtamonitor-run.moc"

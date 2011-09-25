@@ -31,3 +31,5 @@
 //    configgridlayout->addWidget(message2, 10,1);
 
 }
+
+#include "configuration.moc"
