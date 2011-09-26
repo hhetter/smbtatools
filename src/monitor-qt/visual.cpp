@@ -9,5 +9,5 @@
 {
   
   
-  qDebug()<< "Hurz";
+  qDebug()<< "visual.cpp";
 } 

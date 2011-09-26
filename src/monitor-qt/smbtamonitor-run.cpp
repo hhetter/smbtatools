@@ -18,6 +18,15 @@ void Smbtamonitor_run::run(){
   
  qDebug() << "run, run!";
  monitorprocess = new QProcess;
- monitorprocess->start("./owntools");
+// connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this,SLOT(sr_emit()));
+
+ monitorprocess->start("./owntools >> owntools.txt");
+ 
  qDebug() << "run another time!";
+}
+
+void Smbtamonitor_run::sr_emit(){
+  
+  qDebug("runner");
+  
 }
