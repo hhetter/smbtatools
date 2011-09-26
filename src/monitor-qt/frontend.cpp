@@ -54,23 +54,11 @@ void Frontend::fr_config(){
 
 void Frontend::fr_getmonitor(){
   
-//  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), smbtamonitor_runner,SLOT(sr_emit()));
-  smbtamonitor_runner = new Smbtamonitor_run;
- //  connect(smbtamonitur_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp,SLOT(quit()));
-//  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), smbtamonitor_runner,SLOT(sr_emit()));
-//   connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this,SLOT(fr_echo()));
-  smbtamonitor_runner->run();
+  smbtamonitur_runner = new Smbtamonitor_run;
+  smbtamonitur_runner->run();
   
   
   
   
   
 }
-
-void Frontend::fr_echo(){
-  qDebug()<<"echo";
-  
-  
-}
-  
-  

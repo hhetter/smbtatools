@@ -26,13 +26,12 @@
      QWidget *frontendwidget;
      
      Configuration *configurator;
-     Smbtamonitor_run *smbtamonitor_runner;
+     Smbtamonitor_run *smbtamonitur_runner;
      Visual *visualizer;
 
  public slots:
      void fr_config();
      void fr_getmonitor();
-     void fr_echo();
      
 
 };

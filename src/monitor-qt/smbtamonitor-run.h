@@ -16,10 +16,7 @@
      
      
      void run();
- 
- public slots:
-     void sr_emit();
- 
+
 
 };
 
