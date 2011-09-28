@@ -197,6 +197,10 @@ class FunctionsController < ApplicationController
     if @function == "throughput"
       @cmd += " " + @number + " " + @timemode + " " + @mode + ";\""
     end
+    new_function = Temp.new
+    new_function.user = current_user.id
+    new_function.function = @cmd
+    new_function.save!
   end
 
   def get_system_info

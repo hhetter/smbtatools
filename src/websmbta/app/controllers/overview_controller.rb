@@ -195,6 +195,31 @@ class OverviewController < ApplicationController
     File.delete("#{Dir.tmpdir}/files.xml")
   end
 
+  def temp_functions
+    @all_functions = Array.new
+    @functions = Temp.where("user = #{current_user.id}")
+    @functions.each do |function|
+      @cmd = function.function
+      create_file_and_divname
+    end
+    render :layout => false
+  end
+
+  def create_file_and_divname
+    @temp_function = Array.new
+    @cmd += " -o html > #{Dir.tmpdir}/function.html"
+    `#{@cmd}`
+    @output = File.open("#{Dir.tmpdir}/function.html", "r")
+    @output = @output.readlines.to_s
+    @output = @output.html_safe
+    File.delete("#{Dir.tmpdir}/function.html")
+    @divname = Digest::MD5.hexdigest(@cmd)
+    @temp_function << @output
+    @temp_function << @divname
+    @temp_function << @cmd
+    @all_functions << @temp_function
+  end
+
   private
 
   def required_config

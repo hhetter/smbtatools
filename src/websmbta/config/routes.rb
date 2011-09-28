@@ -15,6 +15,7 @@ Smbtaquery::Application.routes.draw do
   get "overview/get_shares_and_users"
   get "overview/get_files"
   get "overview/refresh_files"
+  get "overview/temp_functions"
   get "config" => "config#general", :as => "config"
   get "users/show"
   get "users/edit_user"

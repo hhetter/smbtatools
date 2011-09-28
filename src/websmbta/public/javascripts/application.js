@@ -676,6 +676,13 @@ var delay = (function(){
 
 
 $(document).ready(function(){
+
+  if (window.location.pathname == "/overview/index"){
+        var url = "temp_functions";
+        $.get(url, function(html) {
+            $("#temp-functions").html(html);
+        });
+  }
     delay(function(){
 
         $("#big-search-box").bind("keyup", function() {

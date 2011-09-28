@@ -17,6 +17,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    Temp.destroy_all("user = #{current_user.id}")
     session[:user_id] = nil
     session[:dbdriver] = nil
     session[:dbname] = nil
