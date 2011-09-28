@@ -166,7 +166,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				break;
 				
 			case 'I':
-				c->port = (int) common_myatoi( optarg );
+				c->identify = (int) common_myatoi( optarg );
 				break;
                         case 'i':
                                 c->port = (int) common_myatoi( optarg );
