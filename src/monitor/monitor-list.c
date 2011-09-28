@@ -84,16 +84,21 @@ struct monitor_item *monitor_list_get_by_id( int id )
 
 void monitor_list_change_results( char *data )
 {
-	pthread_mutex_lock(&monitor_list_lock);
-	struct monitor_item *entry;
-	char *ctx = talloc(NULL, char);
-	char *tmp = NULL;
-	tmp = result_get_element(ctx,0,data);
-	int id = (int) common_myatoi(tmp);
-	entry = monitor_list_get_by_id(id);
-	tmp = result_get_element(ctx,1,data);
-	entry->data = strdup(tmp);
-	entry->changed = 1;
+        pthread_mutex_lock(&monitor_list_lock);
+        struct monitor_item *entry;
+        char *ctx = talloc(NULL, char);
+        char *tmp = NULL;
+        tmp = result_get_monitor_element(ctx,0,data);
+        int id = (int) common_myatoi(tmp);
+        entry = monitor_list_get_by_id(id);
+        tmp = result_get_monitor_element(ctx,1,data);
+	if ( atol(tmp) == 0) {
+		talloc_free(ctx);
+		pthread_mutex_unlock(&monitor_list_lock);
+		return;
+	}
+        entry->data = strdup(tmp);
+        entry->changed = 1;
 	switch(entry->type) {
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
