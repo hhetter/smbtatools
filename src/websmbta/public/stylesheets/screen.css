@@ -13,7 +13,11 @@ body {
     background: #fff;
     color: #333;
 }
-#hp_link {
+#nav {
+    margin-left:10px;
+    margin-top:10px;
+}
+#live_search_form {
     margin-left:10px;
     margin-top:10px;
 }

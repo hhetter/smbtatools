@@ -22,22 +22,11 @@ class FunctionsController < ApplicationController
   def global_search
     initial_command
     search
-    render :update do |page|
-      page << "if (!$('div#search_results').length)"
-      page.insert_html :after, "list", :partial => "search"
-    end
-  end
-
-  def global_search_refresh
-    initial_command
-    search
-    render :update do |page|
-      page.replace "search_results", :partial => "search"
-    end
+    render :layout => false
   end
 
   def search
-    @search_string = "%" + params[:search_string] + "%"
+    @search_string = "%" + params[:q] + "%"
     @cmd += "-q \"global, search " + @search_string + ";\""
     @cmd = @cmd + " -x /tmp/compare.xml"
 

@@ -40,8 +40,6 @@ class OverviewController < ApplicationController
     if params[:user] 
       @user = params[:user]
     end
-    logger.debug @cmd
-    #@domain = params[:domain]
     render :update do |page|
       page << "if (!$('div#shares_and_users').length)"
       page.insert_html :after, "domains", :partial => "shares"     
@@ -95,7 +93,6 @@ class OverviewController < ApplicationController
     initial_command
     cmd = @cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
     `#{cmd}`
-    logger.debug cmd
     @domains = Array.new
     @domains << "(All)"
     @domain = "(All)"
@@ -115,7 +112,6 @@ class OverviewController < ApplicationController
     else
       cmd = @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
     end
-    logger.debug cmd
     `#{cmd}`
     @shares = Array.new
     @shares << "(All)"
@@ -149,9 +145,16 @@ class OverviewController < ApplicationController
   end
 
   def initialize_files
-    @domain = params[:domain]
-    @share = params[:share]
-    @user = params[:user]
+    if @domain.empty?
+      @domain = "(All)"
+    end
+    if @share.empty?
+      @share = "(All)"
+    end
+    if @user.empty?
+      @user = "(All)"
+    end
+    @file = params[:file]
     initial_command
     
     if @domain == "(All)"

@@ -2,134 +2,95 @@
 // This file is automatically included by javascript_include_tag :defaults
 var check_time = "false";
 
-function global_search(){
-    if ($("#global_search").attr("value") == "" && $("#search_results").length > 0){
-            $("div#search_results").remove();
-    }
-    else if ($("#global_search").attr("value") != "%" && $("#global_search").attr("value") != ""){
-        if ($("#search_results").length == 0){
-            $.ajax({
-                url: "../functions/global_search",
-                type: "get",
-                data:{
-                    search_string: $("#global_search").attr("value")
-                }
-            });
-        }
-        if ($("#search_results").length > 0){
-            $.ajax({
-                url: "../functions/global_search_refresh",
-                type: "get",
-                data:{
-                    search_string: $("#global_search").attr("value")
-                }
-            });
-        }
-    }
-}
-function select_searched(search_data1, search_data2, search_data3, object){
-    if(object == "domain"){
-        domOnClickChange();
-            $.ajax({
-                url: "get_domains",
-                type: "get",
-                complete: function(){domOnClickChange()},
-                data:{
-                    domain: search_data1
-                }
-            });
-    }
-    if(object == "share"){
-        domOnClickChange();
+function select_searched(object, domain, share, user, file){
+    $("input#domain").val(domain);
+    $("input#share").val(share);
+    $("input#user").val(user);
+    $("input#file").val(file);
+    if (object == "domain"){
+        $("#spinner_getdomains").show();
         $.ajax({
             url: "get_domains",
             type: "get",
+            data:{
+                domain: domain
+            },
             complete: function(){
-                domOnClickChange();
+                $("#spinner_getdomains").hide();
+            }
+        });
+        $("#files").remove();
+        $("#shares_and_users").remove();
+    }
+    if (object == "share" || object == "user"){
+        $("#spinner_getdomains").show();
+        $.ajax({
+            url: "get_domains",
+            type: "get",
+            data:{
+                domain: domain
+            },
+            complete: function(){
+                $("#spinner_getdomains").hide();
+                $("#spinner_getshares").show();
                 $.ajax({
                     url: "get_shares_and_users",
                     type: "get",
-                    complete: function(){
-                        shareOnClickChange();
-                    },
                     data:{
-                        domain: search_data2,
-                        share: search_data1
+                        domain: domain,
+                        share: share,
+                        user: user
+                    },
+                    complete:function(){
+                        $("#spinner_getshares").hide();
                     }
                 });
-            },
-            data:{
-                domain: search_data2
+                $("#files").remove();
             }
         });
     }
-    if(object == "user"){
-        domOnClickChange();
+    if (object == "file"){
+        $("#spinner_getdomains").show();
         $.ajax({
             url: "get_domains",
             type: "get",
-            complete: function(){
-                domOnClickChange();
-                $.ajax({
-                    url: "get_shares_and_users",
-                    type: "get",
-                    complete: function(){
-                        shareOnClickChange();
-                    },
-                    data:{
-                        domain: search_data2,
-                        user: search_data1
-                    }
-                });
-            },
             data:{
-                domain: search_data2
-            }
-        });
-        
-    }
-    if(object == "file"){
-        domOnClickChange();
-        $.ajax({
-            url: "get_domains",
-            type: "get",
+                domain: domain
+            },
             complete: function(){
-                domOnClickChange();
+                $("#spinner_getdomains").hide();
+                $("#spinner_getshares").show();
                 $.ajax({
                     url: "get_shares_and_users",
                     type: "get",
+                    data:{
+                        domain: domain,
+                        share: share,
+                        user: user
+                    },
                     complete: function(){
-                        shareOnClickChange();
+                        $("#spinner_getshares").hide();
+                        $("#spinner_getfiles").show();
                         $.ajax({
                             url: "get_files",
                             type: "get",
-                            complete: function(){
-                                //fileOnClickChange();
-                                $("input#file").val(search_data1);
-                            },
                             data:{
-                                domain: search_data3,
-                                share: search_data2,
-                                user: "(All)",
-                                file: search_data1
+                                domain: domain,
+                                share: share,
+                                user: user,
+                                file: file
+                            },
+                            complete: function(){
+                                $("#spinner_getfiles").hide();
                             }
-                        })
-                    },
-                    data:{
-                        domain: search_data3,
-                        share: search_data2,
-                        file: search_data1
+                        });
                     }
                 });
-            },
-            data:{
-                domain: search_data3,
-                share: search_data2,
-                file: search_data1
             }
-        });  
+        });
     }
 }
+
 
 function getDomains () {
     $("#spinner_getdomains").show();
@@ -280,7 +241,7 @@ function globalOnSelectChange(){
     }
     getDomains();
 }
-function domOnClickChange(){
+function domOnClickChange(callback){
     var selected = $("#domainlist option:selected");
     $("#dom_diff").hide();
     $("#share").val("");
@@ -293,6 +254,8 @@ function domOnClickChange(){
     getShares();
     if ($("div#files").length)
         $("#files").remove();
+    function(e) {callback();}
+
 }
 function shareOnClickChange(){
     var selected1 = $("#sharelist option:selected");
@@ -703,7 +666,30 @@ $(function() {
     });
 });
 
+var delay = (function(){
+  var timer = 0;
+  return function(callback, ms){
+    clearTimeout (timer);
+    timer = setTimeout(callback, ms);
+  };
+})();
+
+
 $(document).ready(function(){
+    delay(function(){
+
+        $("#big-search-box").bind("keyup", function() {
+            delay(function(){
+                var form = $("#live-search-form"); // grab the form wrapping the search bar.
+                var url = "/functions/global_search"; // live_search action.
+                var formData = form.serialize(); // grab the data in the form
+                $.get(url, formData, function(html) { // perform an AJAX get
+                    $("#live-search-results").html(html); // replace the "results" div with the results
+                });
+            }, 1000 );
+        });
+    });
+
 
     $(".number").numeric({
         decimal: false,
