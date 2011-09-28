@@ -98,12 +98,12 @@ void monitor_list_change_results( char *data )
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		printf("R:%i\n");
+		printf("R:%i\n",atol(tmp));
 		break;
 	case MONITOR_WRITE: ;
 		global_write = global_write + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		printf("W:%i\n");
+		printf("W:%i\n",atol(tmp));
 		break;
 	default: ;
 	}
