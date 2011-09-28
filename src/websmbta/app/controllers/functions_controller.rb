@@ -28,11 +28,11 @@ class FunctionsController < ApplicationController
   def search
     @search_string = "%" + params[:q] + "%"
     @cmd += "-q \"global, search " + @search_string + ";\""
-    @cmd = @cmd + " -x /tmp/compare.xml"
+    @cmd = @cmd + " -x #{Dir.tmpdir}/compare.xml"
 
     `#{@cmd}`
-    @output = File.open("/tmp/compare.xml", "r")
-    file = File.new( "/tmp/compare.xml" )
+    @output = File.open("#{Dir.tmpdir}/compare.xml", "r")
+    file = File.new( "#{Dir.tmpdir}/compare.xml" )
     doc = Document.new file
     @search_result_domains = Array.new
     @search_result_shares = Array.new
@@ -79,7 +79,7 @@ class FunctionsController < ApplicationController
         @buffer_search_result =[]
       }
     }
-    File.delete("/tmp/compare.xml")
+    File.delete("#{Dir.tmpdir}/compare.xml")
   end
 
   def get_objects
@@ -214,12 +214,12 @@ class FunctionsController < ApplicationController
   end
 
   def create_file_and_divname
-    @cmd += " -o html > /tmp/function.html"
+    @cmd += " -o html > #{Dir.tmpdir}/function.html"
     `#{@cmd}`
-    @output = File.open("/tmp/function.html", "r")
+    @output = File.open("#{Dir.tmpdir}/function.html", "r")
     @output = @output.readlines.to_s
     @output = @output.html_safe
-    File.delete("/tmp/function.html")
+    File.delete("#{Dir.tmpdir}/function.html")
     @divname = Array.new
     @divname << @function
     @divname << @domain
@@ -240,15 +240,15 @@ class FunctionsController < ApplicationController
   def printview
     @cmd = params[:cmd]
     `#{@cmd}`
-    @output = File.open("/tmp/function.html", "r")
+    @output = File.open("#{Dir.tmpdir}/function.html", "r")
     @output = @output.readlines.to_s
     @output = @output.html_safe
-    File.delete("/tmp/function.html")
+    File.delete("#{Dir.tmpdir}/function.html")
   end
 
   def save_function
     @cmd = params[:cmd]
-    @cmd.chomp!(" -o html > /tmp/function.html")
+    @cmd.chomp!(" -o html > #{Dir.tmpdir}/function.html")
     output = %x[#{@cmd}]
     send_data(output, :filename => "function-" + Time.now.strftime("%Y-%m-%d-%H%M%S").to_s + ".txt",
       :type => 'text/plain')
@@ -258,10 +258,10 @@ class FunctionsController < ApplicationController
     @cmd = params[:cmd]
     @divname = params[:divname]
      `#{@cmd}`
-    @output = File.open("/tmp/function.html", "r")
+    @output = File.open("#{Dir.tmpdir}/function.html", "r")
     @output = @output.readlines.to_s
     @output = @output.html_safe
-    File.delete("/tmp/function.html")
+    File.delete("#{Dir.tmpdir}/function.html")
     render :update do |page|
       page.replace @divname, :partial => "start_function"
     end

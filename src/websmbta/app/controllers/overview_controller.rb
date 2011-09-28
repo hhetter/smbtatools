@@ -91,57 +91,57 @@ class OverviewController < ApplicationController
 
   def initialize_domains
     initial_command
-    cmd = @cmd + " -q 'global, list domains;' -x /tmp/domains.xml"
+    cmd = @cmd + " -q 'global, list domains;' -x #{Dir.tmpdir}/domains.xml"
     `#{cmd}`
     @domains = Array.new
     @domains << "(All)"
     @domain = "(All)"
-    file = File.new( "/tmp/domains.xml" )
+    file = File.new( "#{Dir.tmpdir}/domains.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='domain']") {
       |e| @domains << e.text
     }
-    File.delete("/tmp/domains.xml")
+    File.delete("#{Dir.tmpdir}/domains.xml")
   end
 
   def initialize_shares
     @domain = params[:domain]
     initial_command
     if @domain == "(All)"
-      cmd = @cmd + " -q 'global, list shares;' -x /tmp/shares.xml"
+      cmd = @cmd + " -q 'global, list shares;' -x #{Dir.tmpdir}/shares.xml"
     else
-      cmd = @cmd + " -q 'domain " + @domain + ", list shares;' -x /tmp/shares.xml"
+      cmd = @cmd + " -q 'domain " + @domain + ", list shares;' -x #{Dir.tmpdir}/shares.xml"
     end
     `#{cmd}`
     @shares = Array.new
     @shares << "(All)"
     @share = "(All)"
-    file = File.new( "/tmp/shares.xml" )
+    file = File.new( "#{Dir.tmpdir}/shares.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='sharename']") {
       |e| @shares << e.text
     }
-    File.delete("/tmp/shares.xml")
+    File.delete("#{Dir.tmpdir}/shares.xml")
   end
 
   def initialize_users
     @domain = params[:domain]
     initial_command
     if @domain == "(All)"
-      cmd = @cmd + " -q 'global, list users;' -x /tmp/users.xml"
+      cmd = @cmd + " -q 'global, list users;' -x #{Dir.tmpdir}/users.xml"
     else
-      cmd = @cmd + " -q 'domain " + @domain + ", list users;' -x /tmp/users.xml"
+      cmd = @cmd + " -q 'domain " + @domain + ", list users;' -x #{Dir.tmpdir}/users.xml"
     end
     `#{cmd}`
     @users = Array.new
     @users << "(All)"
     @user = "(All)"
-    file = File.new( "/tmp/users.xml" )
+    file = File.new( "#{Dir.tmpdir}/users.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='username']") {
       |e| @users << e.text
     }
-    File.delete("/tmp/users.xml")
+    File.delete("#{Dir.tmpdir}/users.xml")
   end
 
   def initialize_files
@@ -159,40 +159,40 @@ class OverviewController < ApplicationController
     
     if @domain == "(All)"
       if @user == "(All)" and @share == "(All)"
-        cmd = @cmd + " -q 'global, list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user == "(All)" and @share != "(All)"
-        cmd = @cmd + " -q 'global, share " + @share + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, share " + @share + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user != "(All)" and @share == "(All)"
-        cmd = @cmd + " -q 'global, user " + @user + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, user " + @user + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user != "(All)" and @share != "(All)"
-        cmd = @cmd + " -q 'global, user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'global, user " + @user + ", share " + @share + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
     end
     if @domain != "(All)"
       if @user == "(All)" and @share == "(All)"
-        cmd = @cmd + " -q 'domain " + @domain + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'domain " + @domain + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user == "(All)" and @share != "(All)"
-        cmd = @cmd + " -q 'domain " + @domain + ", share " + @share + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'domain " + @domain + ", share " + @share + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user != "(All)" and @share == "(All)"
-        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
       if @user != "(All)" and @share != "(All)"
-        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", share " + @share + ", list files;' -x /tmp/files.xml"
+        cmd = @cmd + " -q 'domain " + @domain + ", user " + @user + ", share " + @share + ", list files;' -x #{Dir.tmpdir}/files.xml"
       end
     end
     `#{cmd}`
     @files = Array.new
-    file = File.new( "/tmp/files.xml" )
+    file = File.new( "#{Dir.tmpdir}/files.xml" )
     doc = Document.new file
     doc.elements.each("smbta_output/list/table_row/table_value[@id='filename']") {
       |e| @files << e.text
     }
-    File.delete("/tmp/files.xml")
+    File.delete("#{Dir.tmpdir}/files.xml")
   end
 
   private
