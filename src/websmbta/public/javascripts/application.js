@@ -604,6 +604,13 @@ function resetClose(divname){
     });
 }
 function closeFunction(divname){
+    $.ajax({
+        url: "../functions/delete_function",
+        type: "get",
+        data: {
+            id:     $("#function_id_" + divname).attr("value")
+        }
+    });
     $('div#' + divname).remove();
 }
 

@@ -271,4 +271,12 @@ class FunctionsController < ApplicationController
     end
   end
 
+  def delete_function
+    if Temp.find_by_id(params[:id])
+      @func = Temp.find_by_id(params[:id])
+      @func.destroy
+    end
+    render :nothing => true
+  end
+
 end

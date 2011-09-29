@@ -200,6 +200,7 @@ class OverviewController < ApplicationController
     @functions = Temp.where("user = #{current_user.id}")
     @functions.each do |function|
       @cmd = function.function
+      @id = function.id
       create_file_and_divname
     end
     render :layout => false
@@ -217,6 +218,7 @@ class OverviewController < ApplicationController
     @temp_function << @output
     @temp_function << @divname
     @temp_function << @cmd
+    @temp_function << @id
     @all_functions << @temp_function
   end
 
