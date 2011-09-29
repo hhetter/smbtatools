@@ -149,17 +149,22 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "user",1,NULL,'u'},
 			{ "domain",1,NULL,'D'},
 			{ "file",1,NULL,'f'},
+			{ "global",0,NULL,'g'},
 			{ "unix-socket",0,NULL,'n'},
 			{ "identify",1,NULL,'I'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "ns:u:f:d:i:c:k:h:?I:D:", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:?I:D:g", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'g':
+				c->object_type = 6;
+				c->object_name = strdup( "global");
+				break;
 			case 'D':
 				c->object_type = SMBTA_DOMAIN;
 				c->object_name = strdup( optarg );
