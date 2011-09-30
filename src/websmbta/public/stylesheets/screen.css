@@ -13,18 +13,45 @@ body {
     background: #fff;
     color: #333;
 }
-#nav {
-    margin-left:10px;
-    margin-top:10px;
+#navigation {
+    margin-left:1em;
+    margin-top:1em;
 }
-#live_search_form {
-    margin-left:10px;
-    margin-top:10px;
+
+#nav, #nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
+
+#nav a {
+    display: block;
+    width: 12em;
+}
+
+#nav li {
+    font-family: Helvetica,Arial,sans-serif;
+    font-weight: 300;
+    letter-spacing:0.5px;
+    text-align:center;
+    float: left;
+    width: 12em;
+    font-size: 15px;
+}
+#nav li ul {
+	position: absolute;
+	width: 10em;
+	left: -999em;
+}
+
+#big-search-box{
+    width:9em;
+}
+
 #header {
     width: 100%;
     height: 90px;
-    background-color: #439539;
+    background-color: #4B9037;
     font-family: Verdana, Tahoma, sans-serif;
     font-size: 11px;
 }
