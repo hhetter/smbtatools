@@ -13,6 +13,16 @@ body {
     background: #fff;
     color: #333;
 }
+#footer {
+    clear:left;
+    margin-top:1em;
+    background:#efefef;
+    text-align:center;
+    padding:10px;
+    position: fixed;
+    width: 100%;
+    bottom:0px;
+}
 #navigation {
     margin-left:1em;
     margin-top:1em;

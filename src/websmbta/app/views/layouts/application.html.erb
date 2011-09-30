@@ -68,5 +68,8 @@
     <% else %>
       <%= yield %>
     <% end %>
+      <div id="footer">
+        <%=link_to"SMB Traffic Analyzer", "http://holger123.wordpress.com/smb-traffic-analyzer/"%> Version <%=%x[smbtaquery --version]%>
+      </div>
   </body>
 </html>
