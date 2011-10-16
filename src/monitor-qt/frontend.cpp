@@ -14,6 +14,9 @@
  Frontend::Frontend(QWidget *parent)
   
 {
+
+ i_debug=0;
+  
   
       configurator = new Configuration;
  //      Configuration configclass(this);
@@ -26,6 +29,7 @@
       
       monitorbutton = new QPushButton("Monitor");
       connect(monitorbutton, SIGNAL(clicked()), this, SLOT(fr_getmonitor()));
+      
       
       quitbutton = new QPushButton("Quit");
       connect(quitbutton, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -40,9 +44,29 @@
       frontendlayout->addWidget(monitorbutton,2,0);
       frontendlayout->addWidget(quitbutton,3,0);
  //     gridlayout->addWidget(configurator->configwidget,1,1,3,3);
+      outputline = new QLabel("QLabel outputline");
+      frontendlayout->addWidget(outputline,4,0);
 
       gridlayout->addWidget(frontendwidget,0,0);
       setLayout(gridlayout);  
+
+}
+
+void Frontend::fr_sendmessage(){
+  i_debug++;
+  qDebug()<<i_debug;
+  if(i_debug == 10000){
+   smbtamonitor_runner->monitorprocess->close();
+//   qDebug() << "fin";
+//   i_debug=0;
+    
+  }
+  QByteArray output;
+  output = smbtamonitor_runner->monitorprocess->readLine();
+  qDebug() << output;
+  outputline->setText(output);
+    
+  
 }
 
 void Frontend::fr_config(){
@@ -54,8 +78,9 @@ void Frontend::fr_config(){
 
 void Frontend::fr_getmonitor(){
   
-  smbtamonitur_runner = new Smbtamonitor_run;
-  smbtamonitur_runner->run();
+  smbtamonitor_runner = new Smbtamonitor_run;
+  smbtamonitor_runner->run();
+  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
   
   
   
