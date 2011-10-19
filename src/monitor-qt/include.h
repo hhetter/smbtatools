@@ -14,6 +14,7 @@
  #include <QFormLayout>
  #include <QLineEdit>
  #include <QThread>
+ #include <QString>
 /* 
  #include "frontend.h"
  #include "configuration.h"

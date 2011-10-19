@@ -61,11 +61,29 @@ void Frontend::fr_sendmessage(){
 //   i_debug=0;
     
   }
-  QByteArray output;
-  output = smbtamonitor_runner->monitorprocess->readLine();
-  qDebug() << output;
-  outputline->setText(output);
-    
+  output = new QString;
+  *output = smbtamonitor_runner->monitorprocess->readLine();
+  fr_parsemonitor();
+//  qDebug() << *output;
+     
+  
+}
+
+void Frontend::fr_parsemonitor(){
+  
+  if( output->startsWith("W")){
+    qDebug() << "Write" << *output;
+    output->replace("W: ","");
+//    qDebug()<< "Replaced .." << *output; 
+    int i_out = output->toInt();
+    qDebug() << i_out;
+  }
+  
+  if( output->startsWith("R")){
+    qDebug() << "Read";
+  }
+  
+  outputline->setText(*output);
   
 }
 

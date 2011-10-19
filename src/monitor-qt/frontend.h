@@ -21,6 +21,8 @@
 
      int i_frontendvariable;
      int i_debug;
+     
+     QString *output;
 
      QPushButton *configbutton, *monitorbutton, *quitbutton;
      QGridLayout *gridlayout, *frontendlayout;
@@ -35,6 +37,7 @@
      void fr_config();
      void fr_getmonitor();
      void fr_sendmessage();
+     void fr_parsemonitor();
 
 };
 
