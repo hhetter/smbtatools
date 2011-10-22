@@ -1,7 +1,7 @@
 smbtatools
 ~~~~~~~~~~
 
-tools for the samba traffic analyzer daemon
+tools for the smb traffic analyzer daemon
 smbtaquery and smbtamonitor
 
 Documentation
