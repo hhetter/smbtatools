@@ -4,6 +4,7 @@
  #include "include.h"
  #include "timeclass.h"
  #include "visual.h"
+ #include "processrunner.h"
  
  
  
@@ -16,9 +17,15 @@
  public:
      ~Smbtamonitor_run();
      Smbtamonitor_run(QWidget *parent=0);
-     QProcess *monitorprocess;
+//     QProcess *monitorprocess;
      Timeclass *timeclass;
      Visual *visualizer;
+     Processrunner *processrunner;
+     
+     int i_debug;
+     
+     QString *output;
+     QLabel *outputline;
      
      
      void run();
@@ -27,6 +34,9 @@
  public slots:
      
      void smr_timersignal();
+     void smr_visualizer();
+     void smr_sendmessage();
+     void smr_parsemonitor();
 
 
 };

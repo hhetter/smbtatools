@@ -56,13 +56,13 @@ void Frontend::fr_sendmessage(){
   i_debug++;
   qDebug()<<i_debug;
   if(i_debug == 10000){
-   smbtamonitor_runner->monitorprocess->close();
+//   smbtamonitor_runner->monitorprocess->close();
 //   qDebug() << "fin";
 //   i_debug=0;
     
   }
   output = new QString;
-  *output = smbtamonitor_runner->monitorprocess->readLine();
+//  *output = smbtamonitor_runner->monitorprocess->readLine();
   fr_parsemonitor();
 //  qDebug() << *output;
      
@@ -98,7 +98,7 @@ void Frontend::fr_getmonitor(){
 
   smbtamonitor_runner = new Smbtamonitor_run;
   smbtamonitor_runner->run();
-  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
+//  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
   
   
   
