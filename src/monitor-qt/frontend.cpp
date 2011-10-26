@@ -89,13 +89,13 @@ void Frontend::fr_parsemonitor(){
 
 void Frontend::fr_config(){
   
- qDebug()<< "give config"; 
+ qDebug()<< "fr_config"; 
   gridlayout->addWidget(configurator->configwidget,0,1,3,3);
   
 }
 
 void Frontend::fr_getmonitor(){
-  
+
   smbtamonitor_runner = new Smbtamonitor_run;
   smbtamonitor_runner->run();
   connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
@@ -105,5 +105,7 @@ void Frontend::fr_getmonitor(){
   
   
 }
+
+
 
 #include "frontend.moc"

@@ -6,6 +6,7 @@
  #include "configuration.h"
  #include "smbtamonitor-run.h"
  #include "visual.h"
+ #include "timeclass.h"
 
 
 

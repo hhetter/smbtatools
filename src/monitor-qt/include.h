@@ -15,6 +15,7 @@
  #include <QLineEdit>
  #include <QThread>
  #include <QString>
+ #include <QTimer>
 /* 
  #include "frontend.h"
  #include "configuration.h"

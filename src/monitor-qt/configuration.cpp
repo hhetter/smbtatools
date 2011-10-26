@@ -19,13 +19,15 @@
     hostline = new QLineEdit("localhost");
     portline = new QLineEdit("3942");
     shareline = new QLineEdit("holger");
-    timeline = new QLineEdit("1h");
+    timeline = new QLineEdit("10m");
+    timeframe = new QLineEdit("60s");
  
     configform = new QFormLayout(configwidget);
     configform->addRow("Hostname:", hostline);
     configform->addRow("Port:", portline);
     configform->addRow("Share:", shareline);
-    configform->addRow("Timeframe:", timeline);
+    configform->addRow("Monitor time:", timeline);
+    configform->addRow("Time frame:", timeframe);
     
 //    configgridlayout->addWidget(message1, 1,1);
 //    configgridlayout->addWidget(message2, 10,1);

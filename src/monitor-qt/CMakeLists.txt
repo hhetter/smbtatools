@@ -5,10 +5,12 @@ find_package(Qt4 REQUIRED)
 include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} )
 
 SET( smbtamonitor-qt_SRC  main.cpp
-                        frontend.cpp
-                        configuration.cpp
-                        smbtamonitor-run.cpp
-                        visual.cpp )
+                          frontend.cpp
+                          configuration.cpp
+                          smbtamonitor-run.cpp
+                          visual.cpp
+                          timeclass.cpp
+                          processrunner.cpp )
 
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 

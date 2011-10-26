@@ -18,7 +18,7 @@
       QGridLayout *configgridlayout;
       QLabel *message1, *message2;
       QFormLayout *configform;
-      QLineEdit *hostline, *portline, *shareline, *timeline;
+      QLineEdit *hostline, *portline, *shareline, *timeline, *timeframe;
      
 
 };

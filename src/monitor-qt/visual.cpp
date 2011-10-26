@@ -9,7 +9,7 @@
 {
   
   
-  qDebug()<< "Hurz";
+  qDebug()<< "Class Visual";
 } 
 
 #include "visual.moc"

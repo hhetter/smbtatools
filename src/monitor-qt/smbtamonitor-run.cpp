@@ -1,7 +1,7 @@
  
  
 
- # include "smbtamonitor-run.h"
+ #include "smbtamonitor-run.h"
 
 
   
@@ -11,15 +11,26 @@
 {
   
   
- // qDebug()<< "Hurz";
+ // qDebug()<< "Class constructor Smbtamonitor_run";
 }
 
 void Smbtamonitor_run::run(){
   
- qDebug() << "run, run!";
+ qDebug() << "Class Smbtamonitor_run";
  monitorprocess = new QProcess;
  monitorprocess->start("./owntools");
- qDebug() << "run another time!";
+ 
+   timeclass = new Timeclass;
+  timeclass->run();
+//  connect(timeclass->timer, SIGNAL(timeout()), qApp, SLOT(quit()));
+  connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
+
+}
+
+void Smbtamonitor_run::smr_timersignal(){
+   
+  qDebug()<<"smr_timersignal"; 
+  
 }
 
 #include "smbtamonitor-run.moc"

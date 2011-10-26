@@ -6,6 +6,7 @@
  #include "smbtamonitor-run.h"
  #include "visual.h"
 
+
 //   Class Configuration;
 //   Class Visual;
 
@@ -31,13 +32,15 @@
      
      Configuration *configurator;
      Smbtamonitor_run *smbtamonitor_runner;
-     Visual *visualizer;
+    
+
 
  public slots:
      void fr_config();
      void fr_getmonitor();
      void fr_sendmessage();
      void fr_parsemonitor();
+
 
 };
 
