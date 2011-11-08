@@ -9,17 +9,28 @@
 
  Timeclass::Timeclass(QWidget *parent)
 {
-  
+   qDebug() << "Class Timeclass";
+
   
 }
 
 void Timeclass::run(){
   
- qDebug() << "Class Timeclass";
- timer = new QTimer;
- timer->setInterval(60000);
- timer->start();
+   timer = new QTimer; 
+//   timer->setInterval(60000);
+   timer->setInterval(60);
+   timer->start();
+   
+    connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
 
 }
+
+
+void Timeclass::tc_timersignal(){
+  
+  qDebug()<<"timer";
+  
+}
+  
 
 #include "timeclass.moc"

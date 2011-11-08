@@ -24,7 +24,7 @@
  
  public slots:
      
-//     void smr_timersignal();
+     void pr_readsignal();
 
 
 };

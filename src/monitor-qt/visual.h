@@ -13,6 +13,8 @@
  public:
      ~Visual();
      Visual(QWidget *parent=0);
+     
+     QLabel *visuallabel;
 
 
 };

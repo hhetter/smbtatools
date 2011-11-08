@@ -10,6 +10,8 @@
   
   
   qDebug()<< "Class Visual";
+  
+  visuallabel = new QLabel("Visuallabel");
 } 
 
 #include "visual.moc"

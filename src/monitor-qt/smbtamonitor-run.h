@@ -17,7 +17,7 @@
  public:
      ~Smbtamonitor_run();
      Smbtamonitor_run(QWidget *parent=0);
-//     QProcess *monitorprocess;
+     QProcess *monitorprocess2;
      Timeclass *timeclass;
      Visual *visualizer;
      Processrunner *processrunner;

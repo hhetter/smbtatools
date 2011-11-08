@@ -17,6 +17,11 @@
      QTimer *timer; 
      
      void run();
+     
+      
+ public slots:
+     
+     void tc_timersignal();
 
 
 };

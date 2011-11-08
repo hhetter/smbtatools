@@ -1,7 +1,7 @@
  
  
 
- # include "processrunner.h"
+ #include "processrunner.h"
 
 
   
@@ -9,29 +9,27 @@
 
  Processrunner::Processrunner(QWidget *parent)
 {
-  
-  
- // qDebug()<< "Class constructor Processrunner";
+   qDebug() << " Constructor Class Processrunner";
+
 }
 
 void Processrunner::run(){
+
   
- qDebug() << "Class Processrunner";
- monitorprocess = new QProcess;
- monitorprocess->start("./owntools");
+   monitorprocess = new QProcess; 
+   qDebug() << "Processrunner::run";
+   monitorprocess->start("./owntools");
+   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
+//   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
  
-//   timeclass = new Timeclass;
-//  timeclass->run();
-//  connect(timeclass->timer, SIGNAL(timeout()), qApp, SLOT(quit()));
-//  connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
 
 }
 
-/*
-void Processrunner::smr_timersignal(){
+
+void Processrunner::Processrunner::pr_readsignal(){
    
-  qDebug()<<"smr_timersignal"; 
+  qDebug()<<"pr_readsignal"; 
   
 }
-*/
+
 #include "processrunner.moc"

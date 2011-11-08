@@ -13,19 +13,37 @@
   i_debug=0;
   outputline = new QLabel("QLabel outputline");
  
-// qDebug()<< "Class constructor Smbtamonitor_run";
+ qDebug()<< "Class constructor Smbtamonitor_run";
 }
 
 void Smbtamonitor_run::run(){
   
+   qDebug()<< "Smbtamonitor_run  1";
   processrunner = new Processrunner;
   processrunner->start();
-  connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
+   qDebug()<< "Smbtamonitor_run  2";
+//  connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
 
+   qDebug()<< "Smbtamonitor_run  3";  
   timeclass = new Timeclass;
   timeclass->run();
 //  connect(timeclass->timer, SIGNAL(timeout()), qApp, SLOT(quit()));
-  connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
+
+  
+//  visualizer = new Visual;
+  
+    sleep(1);
+    connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
+    connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
+    
+    
+    ////
+    // Only for debugging reasons
+//   monitorprocess2 = new QProcess; 
+//   qDebug() << "debugging reasons";
+//   monitorprocess2->start("./owntools");
+//   connect(monitorprocess2, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
+//   connect(monitorprocess2, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_visualizer()));
 
 }
 
@@ -42,6 +60,7 @@ void Smbtamonitor_run::smr_visualizer(){
 }
 
 void Smbtamonitor_run::smr_sendmessage(){
+      qDebug()<< "Smbtamonitor_run  4";
   i_debug++;
   qDebug()<<i_debug;
   if(i_debug == 10000){
