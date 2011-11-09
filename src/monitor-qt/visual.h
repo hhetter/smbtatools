@@ -14,6 +14,8 @@
      ~Visual();
      Visual(QWidget *parent=0);
      
+     QWidget *visualwidget;
+     QGridLayout *visuallayout;
      QLabel *visuallabel;
 
 

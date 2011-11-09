@@ -20,9 +20,9 @@ void Smbtamonitor_run::run(){
   
    qDebug()<< "Smbtamonitor_run  1";
   processrunner = new Processrunner;
-  processrunner->start();
+  processrunner->run();
    qDebug()<< "Smbtamonitor_run  2";
-//  connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
+  connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
 
    qDebug()<< "Smbtamonitor_run  3";  
   timeclass = new Timeclass;
@@ -30,11 +30,11 @@ void Smbtamonitor_run::run(){
 //  connect(timeclass->timer, SIGNAL(timeout()), qApp, SLOT(quit()));
 
   
-//  visualizer = new Visual;
+  visualizer = new Visual;
   
-    sleep(1);
-    connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
-    connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
+//    sleep(1);
+//    connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
+//    connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
     
     
     ////
@@ -63,7 +63,7 @@ void Smbtamonitor_run::smr_sendmessage(){
       qDebug()<< "Smbtamonitor_run  4";
   i_debug++;
   qDebug()<<i_debug;
-  if(i_debug == 10000){
+  if(i_debug == 1000000){
    processrunner->monitorprocess->close();
 //   qDebug() << "fin";
 //   i_debug=0;

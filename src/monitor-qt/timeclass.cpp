@@ -28,7 +28,7 @@ void Timeclass::run(){
 
 void Timeclass::tc_timersignal(){
   
-  qDebug()<<"timer";
+//  qDebug()<<"timer";
   
 }
   

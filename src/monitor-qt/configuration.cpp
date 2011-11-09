@@ -9,7 +9,7 @@
  Configuration::Configuration(QWidget *parent)
 {
   
-    qDebug() << "bleh";
+    qDebug() << "Constructor Configuration class";
     remoteconfigbutton = new QPushButton("remotething");
     configwidget = new QWidget;
 //    configgridlayout = new QGridLayout(configwidget);

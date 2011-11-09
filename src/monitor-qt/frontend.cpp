@@ -30,6 +30,9 @@
       monitorbutton = new QPushButton("Monitor");
       connect(monitorbutton, SIGNAL(clicked()), this, SLOT(fr_getmonitor()));
       
+      dosomethingbutton = new QPushButton("Do something");
+      connect(dosomethingbutton, SIGNAL(clicked()), this, SLOT(fr_dosomething()));
+      
       
       quitbutton = new QPushButton("Quit");
       connect(quitbutton, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -42,10 +45,11 @@
       
       frontendlayout->addWidget(configbutton,1,0);
       frontendlayout->addWidget(monitorbutton,2,0);
-      frontendlayout->addWidget(quitbutton,3,0);
+      frontendlayout->addWidget(dosomethingbutton,3,0);
+      frontendlayout->addWidget(quitbutton,4,0);
  //     gridlayout->addWidget(configurator->configwidget,1,1,3,3);
       outputline = new QLabel("QLabel outputline");
-      frontendlayout->addWidget(outputline,4,0);
+      frontendlayout->addWidget(outputline,5,0);
 
       gridlayout->addWidget(frontendwidget,0,0);
       setLayout(gridlayout);  
@@ -103,6 +107,17 @@ void Frontend::fr_getmonitor(){
   
   
   
+  
+}
+
+void Frontend::fr_dosomething(){
+  
+  i_debug++;
+  QString astring;
+  
+  astring.append(i_debug);
+ 
+  outputline->setText(astring);
   
 }
 

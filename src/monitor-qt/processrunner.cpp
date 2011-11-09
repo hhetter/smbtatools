@@ -21,7 +21,8 @@ void Processrunner::run(){
    monitorprocess->start("./owntools");
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
    connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
- 
+  
+   pr_readsignal();
 
 }
 
