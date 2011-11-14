@@ -10,17 +10,22 @@
   
   
   qDebug()<< "Class Visual";
-/*  
-  visuallabel = new QLabel("Visuallabel");
+
+  visualwidget = new QWidget(this);
+  visuallabel = new QLabel("Visuallabel",visualwidget);
+  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
+  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
+//  visuallabel->show();  
   
-  
-      visualwidget = new QWidget;
-      visuallayout = new QGridLayout(visualwidget);
+//  visualwidget->show();
+      
+//      visuallayout = new QGridLayout(visualwidget);
 
       
-      visuallayout->addWidget(visuallabel,1,0);
-      setLayout(visuallayout);  
-  */    
+//      visuallayout->addWidget(visuallabel,1,0);
+//      setLayout(visuallayout);
+     
+//      visualwidget->show();    
 } 
 
 #include "visual.moc"

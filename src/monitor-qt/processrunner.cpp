@@ -20,7 +20,7 @@ void Processrunner::run(){
    qDebug() << "Processrunner::run";
    monitorprocess->start("./owntools");
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
-   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
+//   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
   
    pr_readsignal();
 
@@ -29,7 +29,7 @@ void Processrunner::run(){
 
 void Processrunner::Processrunner::pr_readsignal(){
    
-  qDebug()<<"pr_readsignal"; 
+//  qDebug()<<"pr_readsignal"; 
   
 }
 

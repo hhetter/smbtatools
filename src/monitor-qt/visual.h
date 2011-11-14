@@ -12,11 +12,12 @@
 
  public:
      ~Visual();
-     Visual(QWidget *parent=0);
+     Visual(QWidget *parent);
      
      QWidget *visualwidget;
      QGridLayout *visuallayout;
-     QLabel *visuallabel;
+     QLabel *visuallabel, *visualwritevalue, *visualreadvalue;;
+     int *i_visualread, *i_visualwrite;
 
 
 };

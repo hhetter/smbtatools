@@ -16,16 +16,19 @@
 
  public:
      ~Smbtamonitor_run();
-     Smbtamonitor_run(QWidget *parent=0);
+     Smbtamonitor_run(QWidget *parent);
      QProcess *monitorprocess2;
      Timeclass *timeclass;
      Visual *visualizer;
      Processrunner *processrunner;
+     QWidget *smbtawidget;
+     QVBoxLayout *smbtalayout;
      
      int i_debug;
+     int *i_writestack, *i_readstack;
      
      QString *output;
-     QLabel *outputline;
+     QLabel *runtestline;
      
      
      void run();

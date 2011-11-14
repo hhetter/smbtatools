@@ -48,7 +48,7 @@
       frontendlayout->addWidget(dosomethingbutton,3,0);
       frontendlayout->addWidget(quitbutton,4,0);
  //     gridlayout->addWidget(configurator->configwidget,1,1,3,3);
-      outputline = new QLabel("QLabel outputline");
+      outputline = new QLabel("QLabel Frontend class outputline");
       frontendlayout->addWidget(outputline,5,0);
 
       gridlayout->addWidget(frontendwidget,0,0);
@@ -94,13 +94,14 @@ void Frontend::fr_parsemonitor(){
 void Frontend::fr_config(){
   
  qDebug()<< "fr_config"; 
-  gridlayout->addWidget(configurator->configwidget,0,1,3,3);
-  
+//  gridlayout->addWidget(configurator->configwidget,0,1,3,3);
+    gridlayout->addWidget(configurator,0,1,3,3);
 }
 
 void Frontend::fr_getmonitor(){
 
-  smbtamonitor_runner = new Smbtamonitor_run;
+  smbtamonitor_runner = new Smbtamonitor_run(this);
+  gridlayout->addWidget(smbtamonitor_runner->smbtawidget, 1,0);
   smbtamonitor_runner->run();
 //  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
   

@@ -16,6 +16,7 @@
  #include <QThread>
  #include <QString>
  #include <QTimer>
+ #include <QMutex>
 /* 
  #include "frontend.h"
  #include "configuration.h"
