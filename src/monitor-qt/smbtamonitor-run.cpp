@@ -11,8 +11,8 @@
 {
   
   i_debug=0;
-  i_writestack = new int;
-  i_readstack = new int;
+  l_writestack = new long;
+  l_readstack = new long;
   smbtalayout = new QVBoxLayout;
   smbtawidget = new QWidget;
   runtestline = new QLabel("QLabel Smbtamonitor_run class testline", smbtawidget);
@@ -24,6 +24,8 @@
 }
 
 void Smbtamonitor_run::run(){
+  
+
   
 //   qDebug()<< "Smbtamonitor_run  1";
   processrunner = new Processrunner;
@@ -60,13 +62,34 @@ void Smbtamonitor_run::run(){
 }
 
 void Smbtamonitor_run::smr_timersignal(){
-   
-  qDebug()<<"smr_timersignal";
-  visualizer->i_visualread  = i_readstack;
-  visualizer->i_visualwrite = i_writestack;
-  *i_readstack =  0;
-  *i_writestack = 0;
+
+  mutex.lock();
   
+  qDebug() << "++++++++++++++++++++++++++++++++++++++++";
+  qDebug()<<"smr_timersignal";
+//  *visualizer->l_visualread  = *l_readstack;
+//  *visualizer->l_visualwrite = *l_writestack;
+//  qDebug() << "*l_readstack  : " << *l_readstack;
+//  qDebug() << "*visualizer->l_visualread: " << *visualizer->l_visualread;
+//  qDebug();
+  visualizer->vs_processnumbers(l_readstack, l_writestack);
+
+  *l_readstack  =  0;
+  *l_writestack = 0;
+
+//  sleep(1);
+  
+//  qDebug() << "*l_readstack 2: " << *l_readstack;
+//  qDebug() << "*visualizer->l_visualread 2 : " << *visualizer->l_visualread;
+//  qDebug();
+  
+  
+//  qDebug() << "*l_readstack 3: " << *l_readstack;
+//  qDebug() << "*visualizer->l_visualread 3 : " << *visualizer->l_visualread;
+  qDebug() << "---------------------------------------------------";
+  qDebug(); qDebug();
+  
+  mutex.unlock();
 }
 
 void Smbtamonitor_run::smr_visualizer(){
@@ -100,14 +123,14 @@ void Smbtamonitor_run::smr_parsemonitor(){
 //    qDebug() << "Write" << *output;
     output->replace("W: ","");
 //    qDebug()<< "Replaced .." << *output; 
-     *i_writestack =+ output->toInt();
-//    qDebug() << i_out;
+     *l_writestack += output->toLong();
+//    qDebug() << output->toInt();
   }
   
   if( output->startsWith("R")){
     output->replace("R: ","");
 //    qDebug()<< "Replaced .." << *output; 
-     *i_readstack =+ output->toInt();
+     *l_readstack += output->toLong();
 //    qDebug() << i_out;
   }
   

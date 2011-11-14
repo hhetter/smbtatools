@@ -14,10 +14,17 @@
      ~Visual();
      Visual(QWidget *parent);
      
+//     QPainter *painter;
+     
      QWidget *visualwidget;
-     QGridLayout *visuallayout;
-     QLabel *visuallabel, *visualwritevalue, *visualreadvalue;;
-     int *i_visualread, *i_visualwrite;
+     QVBoxLayout *visuallayout;
+     QLabel *visuallabel, *visualwritevalue, *visualreadvalue, *visualhistorymax, *visualtimerstep;
+     unsigned long *l_visualread, *l_visualwrite, *l_currentmax, *l_timerstep;
+     unsigned long  *l_historymax;
+     
+     
+     void vs_processnumbers(long *l_read, long *l_write);
+     void vs_painter();
 
 
 };

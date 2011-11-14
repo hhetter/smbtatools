@@ -26,7 +26,6 @@
      
      void pr_readsignal();
 
-
 };
 
 #endif

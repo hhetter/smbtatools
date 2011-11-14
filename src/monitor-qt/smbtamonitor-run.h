@@ -17,6 +17,7 @@
  public:
      ~Smbtamonitor_run();
      Smbtamonitor_run(QWidget *parent);
+     QMutex mutex;
      QProcess *monitorprocess2;
      Timeclass *timeclass;
      Visual *visualizer;
@@ -25,7 +26,7 @@
      QVBoxLayout *smbtalayout;
      
      int i_debug;
-     int *i_writestack, *i_readstack;
+     long *l_writestack, *l_readstack;
      
      QString *output;
      QLabel *runtestline;

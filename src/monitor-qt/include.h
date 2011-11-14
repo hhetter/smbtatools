@@ -17,6 +17,7 @@
  #include <QString>
  #include <QTimer>
  #include <QMutex>
+ #include <QPainter>
 /* 
  #include "frontend.h"
  #include "configuration.h"
