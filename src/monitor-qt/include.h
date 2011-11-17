@@ -18,6 +18,7 @@
  #include <QTimer>
  #include <QMutex>
  #include <QPainter>
+ #include <QPaintEvent>
 /* 
  #include "frontend.h"
  #include "configuration.h"

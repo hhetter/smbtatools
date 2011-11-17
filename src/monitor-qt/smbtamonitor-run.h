@@ -26,7 +26,7 @@
      QVBoxLayout *smbtalayout;
      
      int i_debug;
-     long *l_writestack, *l_readstack;
+     unsigned long *l_writestack, *l_readstack;
      
      QString *output;
      QLabel *runtestline;

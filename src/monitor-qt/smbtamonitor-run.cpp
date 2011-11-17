@@ -11,8 +11,8 @@
 {
   
   i_debug=0;
-  l_writestack = new long;
-  l_readstack = new long;
+  l_writestack = new unsigned long; *l_writestack = 0;
+  l_readstack = new  unsigned long;  *l_readstack = 0;
   smbtalayout = new QVBoxLayout;
   smbtawidget = new QWidget;
   runtestline = new QLabel("QLabel Smbtamonitor_run class testline", smbtawidget);
@@ -69,7 +69,8 @@ void Smbtamonitor_run::smr_timersignal(){
   qDebug()<<"smr_timersignal";
 //  *visualizer->l_visualread  = *l_readstack;
 //  *visualizer->l_visualwrite = *l_writestack;
-//  qDebug() << "*l_readstack  : " << *l_readstack;
+  qDebug() << "*l_readstack  : " << *l_readstack;
+  qDebug() << "*l_writestack  : " << *l_writestack;  
 //  qDebug() << "*visualizer->l_visualread: " << *visualizer->l_visualread;
 //  qDebug();
   visualizer->vs_processnumbers(l_readstack, l_writestack);
@@ -123,14 +124,14 @@ void Smbtamonitor_run::smr_parsemonitor(){
 //    qDebug() << "Write" << *output;
     output->replace("W: ","");
 //    qDebug()<< "Replaced .." << *output; 
-     *l_writestack += output->toLong();
+     *l_writestack += output-> toULong();
 //    qDebug() << output->toInt();
   }
   
   if( output->startsWith("R")){
     output->replace("R: ","");
 //    qDebug()<< "Replaced .." << *output; 
-     *l_readstack += output->toLong();
+     *l_readstack += output->toULong();
 //    qDebug() << i_out;
   }
   

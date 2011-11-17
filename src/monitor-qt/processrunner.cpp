@@ -18,7 +18,8 @@ void Processrunner::run(){
   
    monitorprocess = new QProcess; 
    qDebug() << "Processrunner::run";
-   monitorprocess->start("./owntools");
+//   monitorprocess->start("./owntools");
+   monitorprocess->start("./owntools2");
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
   

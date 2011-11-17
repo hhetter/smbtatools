@@ -21,10 +21,14 @@
      QLabel *visuallabel, *visualwritevalue, *visualreadvalue, *visualhistorymax, *visualtimerstep;
      unsigned long *l_visualread, *l_visualwrite, *l_currentmax, *l_timerstep;
      unsigned long  *l_historymax;
+     QString xstring1, xstring2, xstring3, xstring4, xstring5;
+     int i_time;
+     QVector<QPoint> readv, writev;
+     QPoint readp, writep;
+     QLine readl, writel;
      
-     
-     void vs_processnumbers(long *l_read, long *l_write);
-     void vs_painter();
+     void vs_processnumbers(unsigned long *l_read, unsigned long *l_write);
+     void paintEvent(QPaintEvent *event);
 
 
 };
