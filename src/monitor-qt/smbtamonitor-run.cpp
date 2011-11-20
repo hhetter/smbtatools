@@ -71,22 +71,10 @@ void Smbtamonitor_run::smr_timersignal(){
 //  *visualizer->l_visualwrite = *l_writestack;
   qDebug() << "*l_readstack  : " << *l_readstack;
   qDebug() << "*l_writestack  : " << *l_writestack;  
-//  qDebug() << "*visualizer->l_visualread: " << *visualizer->l_visualread;
-//  qDebug();
   visualizer->vs_processnumbers(l_readstack, l_writestack);
 
   *l_readstack  =  0;
   *l_writestack = 0;
-
-//  sleep(1);
-  
-//  qDebug() << "*l_readstack 2: " << *l_readstack;
-//  qDebug() << "*visualizer->l_visualread 2 : " << *visualizer->l_visualread;
-//  qDebug();
-  
-  
-//  qDebug() << "*l_readstack 3: " << *l_readstack;
-//  qDebug() << "*visualizer->l_visualread 3 : " << *visualizer->l_visualread;
   qDebug() << "---------------------------------------------------";
   qDebug(); qDebug();
   
@@ -100,15 +88,6 @@ void Smbtamonitor_run::smr_visualizer(){
 }
 
 void Smbtamonitor_run::smr_sendmessage(){
-//      qDebug()<< "Smbtamonitor_run  4";
-//  i_debug++;
-//  qDebug()<<i_debug;
-//  if(i_debug == 1000000){
-//   processrunner->monitorprocess->close();
-//   qDebug() << "fin";
-//   i_debug=0;
-    
-//  }
  
   output = new QString;
   *output = processrunner->monitorprocess->readLine();
@@ -120,19 +99,19 @@ void Smbtamonitor_run::smr_sendmessage(){
 
 void Smbtamonitor_run::smr_parsemonitor(){
   
+//  qDebug() << "Smbtamonitor_run::smr_parsemonitor()";
+  
+  ////
+  // Adjustet output parse lines to work with remote test smbta host
   if( output->startsWith("W")){
-//    qDebug() << "Write" << *output;
     output->replace("W: ","");
-//    qDebug()<< "Replaced .." << *output; 
      *l_writestack += output-> toULong();
-//    qDebug() << output->toInt();
+     qDebug() << "output: "  << output->toULong();  
   }
   
   if( output->startsWith("R")){
     output->replace("R: ","");
-//    qDebug()<< "Replaced .." << *output; 
      *l_readstack += output->toULong();
-//    qDebug() << i_out;
   }
   
   runtestline->setText(*output);

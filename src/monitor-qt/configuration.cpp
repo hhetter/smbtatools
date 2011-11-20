@@ -16,8 +16,8 @@
 //    message1 = new QLabel("Eins", configwidget);
 //    message2 = new QLabel("zweo", configwidget);
     
-    hostline = new QLineEdit("localhost");
-    portline = new QLineEdit("3942");
+    hostline = new QLineEdit("smbtad.b0chi.de");
+    portline = new QLineEdit("3491");
     shareline = new QLineEdit("holger");
     timeline = new QLineEdit("10m");
     timeframe = new QLineEdit("60s");

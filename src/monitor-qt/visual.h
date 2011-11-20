@@ -22,10 +22,12 @@
      unsigned long *l_visualread, *l_visualwrite, *l_currentmax, *l_timerstep;
      unsigned long  *l_historymax;
      QString xstring1, xstring2, xstring3, xstring4, xstring5;
-     int i_time;
-     QVector<QPoint> readv, writev;
-     QPoint readp, writep;
+     int i_time, i_scalefactor, i_oldscalefactor;
+     QVector<QPointF> readv, writev;
+     QPointF readp, writep;
      QLine readl, writel;
+     QPolygon readpg, writepg;
+     QPainterPath readpath, writepath;
      
      void vs_processnumbers(unsigned long *l_read, unsigned long *l_write);
      void paintEvent(QPaintEvent *event);

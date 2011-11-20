@@ -17,8 +17,9 @@
 void Timeclass::run(){
   
    timer = new QTimer; 
-//   timer->setInterval(60000);
-   timer->setInterval(600);
+//   timer->setInterval(60000); // minute
+   timer->setInterval(600);   // second
+//   timer->setInterval(60);	// milisecond
    timer->start();
    
     connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
