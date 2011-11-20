@@ -21,7 +21,7 @@
  //    Testclass testclass;
   //   testclass.getamessage();
  //    widget.i = 1+2;
-     frontendwidget.resize(700,700);
+     frontendwidget.resize(700,800);
      frontendwidget.show();
      return app.exec();
  }

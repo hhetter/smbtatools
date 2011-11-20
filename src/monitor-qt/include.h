@@ -19,6 +19,7 @@
  #include <QMutex>
  #include <QPainter>
  #include <QPaintEvent>
+ #include <QFile>
 /* 
  #include "frontend.h"
  #include "configuration.h"

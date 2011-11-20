@@ -25,7 +25,7 @@
      
      QString *output;
 
-     QPushButton *configbutton, *monitorbutton, *quitbutton, *dosomethingbutton;
+     QPushButton *configbutton, *monitorbutton, *quitbutton, *querysharebutton;
      QGridLayout *gridlayout, *frontendlayout;
      QWidget *frontendwidget;
      QLabel *outputline;
@@ -40,7 +40,7 @@
      void fr_getmonitor();
      void fr_sendmessage();
      void fr_parsemonitor();
-     void fr_dosomething();
+     void fr_queryshare();
 
 
 };

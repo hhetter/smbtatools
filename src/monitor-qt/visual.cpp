@@ -17,14 +17,14 @@
   
   visualwidget = new QWidget(this);
   visuallayout = new QVBoxLayout(visualwidget);
-  visuallabel = new QLabel("Visuallabel",visualwidget);
-  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
-  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
+//  visuallabel = new QLabel("Visuallabel",visualwidget);
+//  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
+//  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
   visualhistorymax = new QLabel("Visuahistorymax: ", visualwidget);
   
-  visuallayout->addWidget(visuallabel,0);
-  visuallayout->addWidget(visualreadvalue,1);
-  visuallayout->addWidget(visualwritevalue,2);
+//  visuallayout->addWidget(visuallabel,0);
+//  visuallayout->addWidget(visualreadvalue,1);
+//  visuallayout->addWidget(visualwritevalue,2);
   visuallayout->addWidget(visualhistorymax,3);
 
   visualwidget->setLayout(visuallayout);
@@ -109,8 +109,10 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     writepath.lineTo(650-i, writev[i_time-i].y());
     readpath.lineTo(650-i, readv[i_time-i].y());    
   }
-  
-  i_time++;    
+
+  if(i_time < 600){
+    i_time++;
+  }
 
   // call the qpainter
   update();
@@ -122,6 +124,8 @@ void Visual::paintEvent(QPaintEvent *){
 
   QPainter painter(this);
   QRect graphbr(50,100,600,400);
+  QRect writerect(50,510,10,10);
+  QRect readrect(50, 530, 10, 10);
   QPen writepen(Qt::blue, 1);
   QPen readpen(Qt::red, 1);
 
@@ -136,7 +140,13 @@ void Visual::paintEvent(QPaintEvent *){
   painter.setPen(Qt::black);
   painter.setFont(QFont("Arial", 8));
   painter.drawText(0,500, xstring1);painter.drawText(0,400, xstring2);painter.drawText(0,300, xstring3);painter.drawText(0,200, xstring4);painter.drawText(0,100, xstring5);
-
+  painter.drawText(65,520, "Write traffic");
+  painter.drawText(65,540, "Read traffic");
+  painter.setPen(writepen);
+  painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
+  painter.setPen(readpen);
+  painter.drawRect(readrect);painter.fillRect(readrect, Qt::red);
+  
   // Paint graphs
   painter.setPen(readpen);
   painter.drawPath(readpath);

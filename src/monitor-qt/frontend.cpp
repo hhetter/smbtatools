@@ -27,12 +27,19 @@
       configbutton = new QPushButton("Configuration");
       connect(configbutton, SIGNAL(clicked()), this, SLOT(fr_config()));
       
+      if(QFile::exists("smbtamonitor-gen")){
       monitorbutton = new QPushButton("Monitor");
       connect(monitorbutton, SIGNAL(clicked()), this, SLOT(fr_getmonitor()));
-      
-      dosomethingbutton = new QPushButton("Do something");
-      connect(dosomethingbutton, SIGNAL(clicked()), this, SLOT(fr_dosomething()));
-      
+      }else{
+	monitorbutton = new QPushButton("File smbtamonitor-gen not found - error!");	
+      }
+
+      if(QFile::exists("smbtaquery")){
+      querysharebutton = new QPushButton("Query shares");
+      connect(querysharebutton, SIGNAL(clicked()), this, SLOT(fr_queryshare()));
+      }else{
+	querysharebutton = new QPushButton("File smbtaquery not found - error!");	
+      }
       
       quitbutton = new QPushButton("Quit");
       connect(quitbutton, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -45,10 +52,10 @@
       
       frontendlayout->addWidget(configbutton,1,0);
       frontendlayout->addWidget(monitorbutton,2,0);
-      frontendlayout->addWidget(dosomethingbutton,3,0);
+      frontendlayout->addWidget(querysharebutton,3,0);
       frontendlayout->addWidget(quitbutton,4,0);
  //     gridlayout->addWidget(configurator->configwidget,1,1,3,3);
-      outputline = new QLabel("QLabel Frontend class outputline");
+      outputline = new QLabel("");
       frontendlayout->addWidget(outputline,5,0);
 
       gridlayout->addWidget(frontendwidget,0,0);
@@ -95,13 +102,13 @@ void Frontend::fr_config(){
   
  qDebug()<< "fr_config"; 
 //  gridlayout->addWidget(configurator->configwidget,0,1,3,3);
-    gridlayout->addWidget(configurator,0,1,3,3);
+    gridlayout->addWidget(configurator,0,1,2,2);
 }
 
 void Frontend::fr_getmonitor(){
 
   smbtamonitor_runner = new Smbtamonitor_run(this);
-  gridlayout->addWidget(smbtamonitor_runner->smbtawidget, 1,0);
+  gridlayout->addWidget(smbtamonitor_runner->smbtawidget, 1,0,3,3);
   smbtamonitor_runner->run();
 //  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
   
@@ -111,7 +118,7 @@ void Frontend::fr_getmonitor(){
   
 }
 
-void Frontend::fr_dosomething(){
+void Frontend::fr_queryshare(){
   
   i_debug++;
   QString astring;

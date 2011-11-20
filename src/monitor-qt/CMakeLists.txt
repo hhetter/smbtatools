@@ -10,7 +10,8 @@ SET( smbtamonitor-qt_SRC  main.cpp
                           smbtamonitor-run.cpp
                           visual.cpp
                           timeclass.cpp
-                          processrunner.cpp  )
+                          processrunner.cpp
+			  queryshares.cpp)
 
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 
