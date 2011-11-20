@@ -18,7 +18,7 @@ void Processrunner::run(){
   
    monitorprocess = new QProcess; 
    qDebug() << "Processrunner::run";
-//   monitorprocess->start("./smbtamonitor-gen -h smbtad.b0chi.de -i 3491 -g -I 0" );
+//   monitorprocess->start("./smbtamonitor-gen -h smbtad.de -i 3491 -g -I 0" );
    monitorprocess->start("./owntools");
 //   monitorprocess->start("./owntools2");
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
