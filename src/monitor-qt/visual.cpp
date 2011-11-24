@@ -113,7 +113,7 @@ TALLOC_CTX *ctx = NULL;
     xstring3 = QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
     xstring2 = QString( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
     xstring1 = QString( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
-    qDebug() << mhr(ctx,(long long) (0*1.1*(*l_historymax)));
+//    qDebug() << mhr(ctx,(long long) (0*1.1*(*l_historymax)));
     talloc_free(ctx);
   
   }
@@ -132,8 +132,8 @@ TALLOC_CTX *ctx = NULL;
   // Create QVector<QPoint>'s with the scanned graph datasets
   readv<<(readp);
   writev<<(writep);
-  qDebug() << "writev.size() " << writev.size();
-  qDebug() << "i_time: " << i_time;
+//  qDebug() << "writev.size() " << writev.size();
+//  qDebug() << "i_time: " << i_time;
   
   ////
   // Create QPaths from the QVector<QPoint>'s

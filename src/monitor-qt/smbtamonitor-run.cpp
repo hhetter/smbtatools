@@ -41,7 +41,7 @@ void Smbtamonitor_run::run(){
 
   
   visualizer = new Visual(smbtawidget);
-//  visualizer->visuallabel->setText("Jetzt aber.");
+  visualizer->visuallabel->setText("Jetzt aber.");
   visualizer->visualwidget->show();
   smbtalayout->addWidget(visualizer,1);
   smbtawidget->show();
@@ -66,18 +66,20 @@ void Smbtamonitor_run::smr_timersignal(){
 
   mutex.lock();
   
-  qDebug() << "++++++++++++++++++++++++++++++++++++++++";
-  qDebug()<<"smr_timersignal";
+//  qDebug() << "++++++++++++++++++++++++++++++++++++++++";
+//  qDebug()<<"smr_timersignal";
 //  *visualizer->l_visualread  = *l_readstack;
 //  *visualizer->l_visualwrite = *l_writestack;
-  qDebug() << "*l_readstack  : " << *l_readstack;
-  qDebug() << "*l_writestack  : " << *l_writestack;  
+//  qDebug() << "*l_readstack  : " << *l_readstack;
+//  qDebug() << "*l_writestack  : " << *l_writestack;  
+
+
   visualizer->vs_processnumbers(l_readstack, l_writestack);
 
   *l_readstack  =  0;
   *l_writestack = 0;
-  qDebug() << "---------------------------------------------------";
-  qDebug(); qDebug();
+//  qDebug() << "---------------------------------------------------";
+//  qDebug(); qDebug();
   
   mutex.unlock();
 }
@@ -107,7 +109,7 @@ void Smbtamonitor_run::smr_parsemonitor(){
   if( output->startsWith("W")){
     output->replace("W: ","");
      *l_writestack += output-> toULong();
-     qDebug() << "output: "  << output->toULong();  
+//     qDebug() << "output: "  << output->toULong();  
   }
   
   if( output->startsWith("R")){

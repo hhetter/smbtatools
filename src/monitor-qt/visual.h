@@ -29,7 +29,10 @@
      QLine readl, writel;
      QPolygon readpg, writepg;
      QPainterPath readpath, writepath;
-	char *mhr( TALLOC_CTX *ctx, long long int kb );  
+
+
+
+     char *mhr( TALLOC_CTX *ctx, long long int kb );  
      void vs_processnumbers(unsigned long *l_read, unsigned long *l_write);
      void paintEvent(QPaintEvent *event);
 
