@@ -17,7 +17,7 @@
   
   visualwidget = new QWidget(this);
   visuallayout = new QVBoxLayout(visualwidget);
-//  visuallabel = new QLabel("Visuallabel",visualwidget);
+  visuallabel = new QLabel("Visuallabel",visualwidget);
 //  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
 //  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
   visualhistorymax = new QLabel("Visuahistorymax: ", visualwidget);
