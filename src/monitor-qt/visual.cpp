@@ -28,7 +28,7 @@
   visuallayout->addWidget(visualhistorymax,3);
 
   visualwidget->setLayout(visuallayout);
-
+   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
  // xstring1.append("0 kb"); xstring2.append("25 kb"); xstring3.append("50 kb"); xstring4.append("100 kb");xstring5.append("125 kb");
 
 } 
@@ -108,7 +108,6 @@ TALLOC_CTX *ctx = NULL;
     
     ////
     // Rescale axes
-    xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
     xstring5.append(QString( mhr( ctx,(long long) (1.1*(*l_historymax)))));
     xstring4.append(QString( mhr( ctx,(long long) (0.75*1.1*(*l_historymax)))));;
     xstring3.append(QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax)))));;
