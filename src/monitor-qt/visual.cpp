@@ -1,6 +1,7 @@
  
  # include "visual.h"
-
+#include <talloc.h>
+#include "../../include/common.h"
 
   
  Visual::~Visual(){}
@@ -39,19 +40,20 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   
 //  qDebug() << " l_visualread: "  << *l_visualread;
 //  qDebug() << " l_visualwrite: " << *l_visualwrite;
+TALLOC_CTX *ctx = NULL;
 
 
   // Reset Graph painterpaths
   readpath  = QPainterPath();
   writepath = QPainterPath();
 
- 
+
 
   *l_currentmax = (*l_read + *l_write);
 
   if(*l_currentmax > *l_historymax){
     
-    *l_historymax = *l_currentmax; visualhistorymax->setText(QString::number(*l_currentmax));
+    *l_historymax = *l_currentmax; visualhistorymax->setText(QString( common_make_human_readable(ctx, (long long int) *l_currentmax)));
   
     ////
     // Traffic values need to be scaled to the graph range
@@ -78,6 +80,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     xstring3.append(QString::number(0.5*1.1*(*l_historymax)));;
     xstring2.append(QString::number(0.25*1.1*(*l_historymax)));;
     xstring1.append(QString::number(0*1.1*(*l_historymax)));;
+    
   
   }
   

@@ -25,6 +25,7 @@ void Processrunner::run(){
 //   connect(monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(pr_readsignal()));
   
    pr_readsignal();
+//   exec();
 
 }
 

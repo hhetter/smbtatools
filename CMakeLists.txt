@@ -9,8 +9,8 @@ cmake_minimum_required(VERSION 2.6)
 ###
 # Change to also build cpp files
 # -> seems to not help, so commented out
-#PROJECT(smbtatools)
-PROJECT(smbtatools C)
+PROJECT(smbtatools)
+#PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
 set(APPLICATION_VERSION "0.0.1")

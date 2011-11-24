@@ -30,6 +30,7 @@ void Smbtamonitor_run::run(){
 //   qDebug()<< "Smbtamonitor_run  1";
   processrunner = new Processrunner;
   processrunner->run();
+//  processrunner->start();
 //   qDebug()<< "Smbtamonitor_run  2";
   connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
 
