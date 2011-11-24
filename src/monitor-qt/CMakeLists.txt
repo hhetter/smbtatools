@@ -5,9 +5,6 @@ find_package(Qt4 REQUIRED)
 include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${TALLOC_INCLUDE_DIR})
 
 SET( smbtamonitor-qt_SRC  main.cpp
-			  ../common/aes.c
-			  ../common/rijndael-alg-fst.c
-			  ../common/common.c
                           frontend.cpp
                           configuration.cpp
                           smbtamonitor-run.cpp

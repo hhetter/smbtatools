@@ -1,7 +1,6 @@
  
  # include "visual.h"
 #include <talloc.h>
-#include "../../include/common.h"
 
   
  Visual::~Visual(){}
@@ -34,6 +33,41 @@
 
 } 
 
+char *Visual::mhr( TALLOC_CTX *ctx, long long int kb )
+{
+	char kbstring[20];
+	char *output;
+	long long int result = kb;
+        long long int rest = 0;
+        lldiv_t diff;
+        strcpy(kbstring,"Bytes");
+        if (kb >= (long long )1024*1024*1024*1024) {
+                diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
+                strcpy(kbstring,"TB");
+                result = diff.quot;
+                rest = diff.rem;
+	        } else
+																	        if (kb >= (long long )1024*1024*1024) {
+                diff = lldiv(kb,(long long) 1024*1024*1024); // gb
+                strcpy(kbstring,"GB");
+                result = diff.quot;
+                rest = diff.rem;
+		} else
+																	        if (kb >= (long long) 1024*1024) {
+               diff = lldiv(kb,(long long) 1024*1024); // mb
+               strcpy(kbstring,"MB");
+               result = diff.quot;
+               rest = diff.rem;
+		} else
+     if (kb >= 1024) {
+               diff =  lldiv(kb, (long long) 1024); // kb
+               strcpy(kbstring,"KB");
+               result = diff.quot;
+               rest = diff.rem;
+																		        }
+     output = talloc_asprintf( ctx,"%lli.%lli %s",result,rest,kbstring);
+     return output;
+}
 
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
@@ -53,7 +87,7 @@ TALLOC_CTX *ctx = NULL;
 
   if(*l_currentmax > *l_historymax){
     
-    *l_historymax = *l_currentmax; visualhistorymax->setText(QString( common_make_human_readable(ctx, (long long int) *l_currentmax)));
+    *l_historymax = *l_currentmax; visualhistorymax->setText(QString( mhr(ctx, (long long int) *l_currentmax)));
   
     ////
     // Traffic values need to be scaled to the graph range
@@ -75,12 +109,12 @@ TALLOC_CTX *ctx = NULL;
     ////
     // Rescale axes
     xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
-    xstring5.append(QString::number(1.1*(*l_historymax)));
-    xstring4.append(QString::number(0.75*1.1*(*l_historymax)));;
-    xstring3.append(QString::number(0.5*1.1*(*l_historymax)));;
-    xstring2.append(QString::number(0.25*1.1*(*l_historymax)));;
-    xstring1.append(QString::number(0*1.1*(*l_historymax)));;
-    
+    xstring5.append(QString( mhr( ctx,(long long) (1.1*(*l_historymax)))));
+    xstring4.append(QString( mhr( ctx,(long long) (0.75*1.1*(*l_historymax)))));;
+    xstring3.append(QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax)))));;
+    xstring2.append(QString( mhr( ctx,(long long) (0.25*1.1*(*l_historymax)))));;
+    xstring1.append(QString( mhr( ctx,(long long) (0*1.1*(*l_historymax)))));;
+    talloc_free(ctx);
   
   }
   
