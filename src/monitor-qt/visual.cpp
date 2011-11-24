@@ -96,7 +96,7 @@ TALLOC_CTX *ctx = NULL;
     //
      if(i_scalefactor != 1){i_oldscalefactor = i_scalefactor;}
     i_scalefactor = (1.1)*(*l_historymax)/400;
-    qDebug() << "i_scalefactor: " << i_scalefactor;
+//    qDebug() << "i_scalefactor: " << i_scalefactor;
     
     // Rescale all values in the current vectors
     if(i_oldscalefactor != 1){
@@ -108,11 +108,12 @@ TALLOC_CTX *ctx = NULL;
     
     ////
     // Rescale axes
-    xstring5.append(QString( mhr( ctx,(long long) (1.1*(*l_historymax)))));
-    xstring4.append(QString( mhr( ctx,(long long) (0.75*1.1*(*l_historymax)))));;
-    xstring3.append(QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax)))));;
-    xstring2.append(QString( mhr( ctx,(long long) (0.25*1.1*(*l_historymax)))));;
-    xstring1.append(QString( mhr( ctx,(long long) (0*1.1*(*l_historymax)))));;
+    xstring5 = QString( mhr( ctx,(long long) (1.1*(*l_historymax))));
+    xstring4 = QString( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
+    xstring3 = QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
+    xstring2 = QString( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
+    xstring1 = QString( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
+    qDebug() << mhr(ctx,(long long) (0*1.1*(*l_historymax)));
     talloc_free(ctx);
   
   }
