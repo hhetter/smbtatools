@@ -33,7 +33,7 @@
 
 } 
 
-/*char *Visual::mhr( TALLOC_CTX *ctx, long long int kb )
+char *Visual::mhr( long long int kb )
 {
 	char kbstring[20];
 	char *output;
@@ -65,10 +65,9 @@
                result = diff.quot;
                rest = diff.rem;
 																		        }
-     output = talloc_asprintf( ctx,"%lli.%lli %s",result,rest,kbstring);
+     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
      return output;
 }
-*/
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   
@@ -96,7 +95,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     //
      if(i_scalefactor != 1){i_oldscalefactor = i_scalefactor;}
     i_scalefactor = (1.1)*(*l_historymax)/400;
-//    qDebug() << "i_scalefactor: " << i_scalefactor;
+    qDebug() << "i_scalefactor: " << i_scalefactor;
     
     // Rescale all values in the current vectors
     if(i_oldscalefactor != 1){
@@ -108,11 +107,24 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     
     ////
     // Rescale axes
-    xstring5 = QString();// ( mhr( ctx,(long long) (1.1*(*l_historymax))));
-    xstring4 = QString();// ( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
-    xstring3 = QString();// ( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
-    xstring2 = QString();// ( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
-    xstring1 = QString();// ( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
+
+    char *dummy;
+    dummy=mhr((long long) (1.1*(*l_historymax)));
+    xstring5 = QString(dummy);// ( mhr( ctx,(long long) (1.1*(*l_historymax))));
+    free(dummy);
+    dummy=mhr((long long) (0.75*1.1*(*l_historymax)));
+    xstring4 = QString(dummy);// ( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0.5*1.1*(*l_historymax)));
+    xstring3 = QString(dummy);// ( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0.25*1.1*(*l_historymax)));
+    xstring2 = QString(dummy);// ( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0*1.1*(*l_historymax)));
+    qDebug() << dummy;
+    xstring1 = QString(dummy);// ( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
+    free(dummy);
 //    qDebug() << mhr(ctx,(long long) (0*1.1*(*l_historymax)));
 //    talloc_free(ctx);
   
