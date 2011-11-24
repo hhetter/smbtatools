@@ -33,7 +33,7 @@
 
 } 
 
-char *Visual::mhr( TALLOC_CTX *ctx, long long int kb )
+/*char *Visual::mhr( TALLOC_CTX *ctx, long long int kb )
 {
 	char kbstring[20];
 	char *output;
@@ -68,13 +68,13 @@ char *Visual::mhr( TALLOC_CTX *ctx, long long int kb )
      output = talloc_asprintf( ctx,"%lli.%lli %s",result,rest,kbstring);
      return output;
 }
-
+*/
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   
 //  qDebug() << " l_visualread: "  << *l_visualread;
 //  qDebug() << " l_visualwrite: " << *l_visualwrite;
-TALLOC_CTX *ctx = NULL;
+//TALLOC_CTX *ctx = NULL;
 
 
   // Reset Graph painterpaths
@@ -87,7 +87,7 @@ TALLOC_CTX *ctx = NULL;
 
   if(*l_currentmax > *l_historymax){
     
-    *l_historymax = *l_currentmax; visualhistorymax->setText(QString( mhr(ctx, (long long int) *l_currentmax)));
+    *l_historymax = *l_currentmax; visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
   
     ////
     // Traffic values need to be scaled to the graph range
@@ -108,13 +108,13 @@ TALLOC_CTX *ctx = NULL;
     
     ////
     // Rescale axes
-    xstring5 = QString( mhr( ctx,(long long) (1.1*(*l_historymax))));
-    xstring4 = QString( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
-    xstring3 = QString( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
-    xstring2 = QString( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
-    xstring1 = QString( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
+    xstring5 = QString();// ( mhr( ctx,(long long) (1.1*(*l_historymax))));
+    xstring4 = QString();// ( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
+    xstring3 = QString();// ( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
+    xstring2 = QString();// ( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
+    xstring1 = QString();// ( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
 //    qDebug() << mhr(ctx,(long long) (0*1.1*(*l_historymax)));
-    talloc_free(ctx);
+//    talloc_free(ctx);
   
   }
   
