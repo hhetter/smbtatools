@@ -24,8 +24,8 @@
      unsigned long  *l_historymax;
      QString xstring1, xstring2, xstring3, xstring4, xstring5;
      int i_time, i_scalefactor, i_oldscalefactor;
-     QVector<QPointF> readv, writev;
-     QPointF readp, writep;
+     QVector<QPoint> readv, writev; //QVector<QPointF> readv, writev;
+     QPoint readp, writep; // QPointF readp, writep;
      QLine readl, writel;
      QPolygon readpg, writepg;
      QPainterPath readpath, writepath;

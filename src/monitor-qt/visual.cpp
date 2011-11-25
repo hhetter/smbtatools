@@ -148,9 +148,13 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 //  qDebug() << "i_time: " << i_time;
   
   ////
+  ////
+  // QPainterPath Method
+  ////
   // Create QPaths from the QVector<QPoint>'s
   // Inverse order of the vectors is needed so that every new value gets added to the 
   // right end of the graph,the rest gets just shifted one point to the left
+  /*
   writepath.moveTo(650-i_time, writev[0].y());
   readpath.moveTo( 650-i_time, readv[0].y());
 
@@ -162,6 +166,54 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   if(i_time < 600){
     i_time++;
   }
+  */
+  
+  
+  ////
+  ////
+  // QPolygon Method
+  ////
+  // Create QPolygon from the QVector<QPoint>'s
+  // Inverse order of the vectors is needed so that every new value gets added to the 
+  // right end of the graph,the rest gets just shifted one point to the left
+
+//   readpg = QPolygon(readv); QPolygon read2pg = QPolygon(writev); //readpg.<<QPoint(0,200,200); //readpg.setPoint(0,300,300);
+//   readpg<<read2pg;
+//   QVector<QPoint> backlinerv;
+
+//   readpg<<readp;
+   
+   for(int i = 0; i <= i_time; i++){
+    readpg<<QPoint(readv[i]);
+    }
+   
+   
+  for(int i = i_time; i >= 0; i--){
+    readpg<<writev[i];
+
+  }
+  
+     
+   for(int i = 0; i <= i_time; i++){
+    writepg<<writev[i];
+    }
+   
+   
+  for(int i = i_time; i >= 0; i--){
+    writepg<<QPoint(i,500);
+  }
+  
+  
+//QPolygon backlinerpg(backlinerv);
+//readpg<<backlinerpg;
+  if(i_time < 600){
+    i_time++;
+  }
+  
+  
+ 
+  
+  
 
   // call the qpainter
   update();
@@ -199,8 +251,11 @@ void Visual::paintEvent(QPaintEvent *){
   // Paint graphs
   painter.setPen(readpen);
   painter.drawPath(readpath);
+//  readpg.fill();
+  painter.drawPolygon(readpg);
   painter.setPen(writepen);
-  painter.drawPath(writepath);
+//  painter.drawPath(writepath);
+//  painter.drawPolygon(writepg);
 
 }
 
