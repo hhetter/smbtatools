@@ -13,7 +13,7 @@
 
  public:
      ~Visual();
-     Visual(QWidget *parent);
+     Visual( QWidget *parent);
      
 //     QPainter *painter;
      
@@ -24,10 +24,11 @@
      unsigned long  *l_historymax;
      QString xstring1, xstring2, xstring3, xstring4, xstring5;
      int i_time, i_scalefactor, i_oldscalefactor;
+     float f_scalefactor, f_oldscalefactor;
      QVector<QPoint> readv, writev; //QVector<QPointF> readv, writev;
      QPoint readp, writep; // QPointF readp, writep;
      QLine readl, writel;
-     QPolygon readpg, writepg;
+     QPolygonF readpg, writepg; //QPolygon readpg, writepg;
      QPainterPath readpath, writepath;
     
 
@@ -35,6 +36,7 @@
      char *mhr( long long int kb );  
      void vs_processnumbers(unsigned long *l_read, unsigned long *l_write);
      void paintEvent(QPaintEvent *event);
+     void vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i_timeframe);
 
 
 };

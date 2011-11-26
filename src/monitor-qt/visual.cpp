@@ -5,7 +5,7 @@
   
  Visual::~Visual(){}
 
- Visual::Visual(QWidget *parent) : QWidget(parent)
+ Visual::Visual( QWidget *parent) : QWidget(parent)
 {
   qDebug()<< "Class Visual";
 
@@ -28,7 +28,7 @@
   visuallayout->addWidget(visualhistorymax,3);
 
   visualwidget->setLayout(visuallayout);
-   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
+//   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
  // xstring1.append("0 kb"); xstring2.append("25 kb"); xstring3.append("50 kb"); xstring4.append("100 kb");xstring5.append("125 kb");
 
 } 
@@ -70,6 +70,14 @@ char *Visual::mhr( long long int kb )
      return output;
 }
 
+void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i_timeframe){
+  
+  
+  
+}
+
+
+
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   
 //  qDebug() << " l_visualread: "  << *l_visualread;
@@ -94,15 +102,15 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     // y-Axis ranges 400 px, so historymax must be displayed with a shorter range
     // If scale changes, all values need to be recalculated
     //
-     if(i_scalefactor != 1){i_oldscalefactor = i_scalefactor;}
-    i_scalefactor = (1.1)*(*l_historymax)/400;
-    qDebug() << "i_scalefactor: " << i_scalefactor;
+     if(f_scalefactor != 1){f_oldscalefactor = f_scalefactor;}
+    f_scalefactor = (1.1)*((float)*l_historymax)/400;
+//    qDebug() << "f_scalefactor: " << f_scalefactor;
     
     // Rescale all values in the current vectors
-    if(i_oldscalefactor != 1){
+    if(f_oldscalefactor != 1){
       for(int i=0; i < i_time; i++){	
-	writev[i].setY( writev[i].y() * (i_scalefactor/i_oldscalefactor) );
-	readv[i].setY( readv[i].y() * (i_scalefactor/i_oldscalefactor) );
+	writev[i].setY( writev[i].y() * (f_scalefactor/f_oldscalefactor) );
+	readv[i].setY( readv[i].y() * (f_scalefactor/f_oldscalefactor) );
       }
     }
     
@@ -138,8 +146,8 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
    
   
   // Create QPoints according to the r/w input and scaling
-  readp.setY(500 - (*l_read/i_scalefactor));readp.setX(650-i_time);
-  writep.setY(500 -( ((*l_write+*l_read) /i_scalefactor) ));writep.setX(650-i_time);
+  readp.setY(500 - (*l_read/f_scalefactor));readp.setX(650-i_time);
+  writep.setY(500 -( ((*l_write+*l_read) /f_scalefactor) ));writep.setX(650-i_time);
 
   
   // Create QVector<QPoint>'s with the scanned graph datasets
@@ -183,25 +191,25 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 //   QVector<QPoint> backlinerv;
 
 
-  writepg = QPolygon();
-  readpg = QPolygon();
+  writepg = QPolygonF();
+  readpg = QPolygonF();
   
-  writepg<<QPoint(650-i_time, writev[0].y());
-  readpg<<QPoint( 650-i_time, readv[0].y());
+  writepg<<QPointF(650-i_time, writev[0].y());
+  readpg<<QPointF( 650-i_time, readv[0].y());
    
    for(int i = i_time-1; i >= 0; i--){
-     writepg<<QPoint(650-i,writev[i_time-i].y());
-     readpg<< QPoint(650-i,readv[i_time-i].y());
+     writepg<<QPointF(650-i,writev[i_time-i].y());
+     readpg<< QPointF(650-i,readv[i_time-i].y());
     }
     
-   writepg<<QPoint(650,readv[i_time].y());
-   readpg<<QPoint(650,500);
+   writepg<<QPointF(650,readv[i_time].y());
+   readpg<<QPointF(650,500);
 //   readpg<<QPoint( 650-i_time, readv[0].y());
 //  readpg<<QPoint(100,500-i_time);
    
   for(int i = 1; i <= i_time; i++){
-    writepg<<QPoint(650-i,readv[i_time-i].y());
-    readpg<<QPoint(650-i,500);
+    writepg<<QPointF(650-i,readv[i_time-i].y());
+    readpg<<QPointF(650-i,500);
 
   }
   
@@ -215,9 +223,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 //    writepg<<QPoint(i,500);
   }
   
-  
-//QPolygon backlinerpg(backlinerv);
-//readpg<<backlinerpg;
+
   if(i_time < 600){
     i_time++;
   }
@@ -225,7 +231,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   
  
   
-  
+ 
 
   // call the qpainter
   update();
@@ -263,7 +269,6 @@ void Visual::paintEvent(QPaintEvent *){
   
   // Paint graphs
   painter.setPen(writepen);
-//  painter.drawPolygon(testpolygon);
 //  painter.drawPath(writepath);
   painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
   painter.drawPolygon(writepg);

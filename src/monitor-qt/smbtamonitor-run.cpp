@@ -40,7 +40,7 @@ void Smbtamonitor_run::run(){
   connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
 
   
-  visualizer = new Visual(smbtawidget);
+  visualizer = new Visual( smbtawidget);
 //  visualizer->visuallabel->setText("Jetzt aber.");
   visualizer->visualwidget->show();
   smbtalayout->addWidget(visualizer,1);
