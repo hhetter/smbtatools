@@ -41,6 +41,9 @@
 	querysharebutton = new QPushButton("File smbtaquery not found - error!");	
       }
       
+      stopbutton = new QPushButton("Stop Monitoring");
+      connect(stopbutton, SIGNAL(clicked()), this, SLOT(fr_stop()));      
+      
       quitbutton = new QPushButton("Quit");
       connect(quitbutton, SIGNAL(clicked()), qApp, SLOT(quit()));
       
@@ -53,7 +56,8 @@
       frontendlayout->addWidget(configbutton,1,0);
       frontendlayout->addWidget(monitorbutton,2,0);
       frontendlayout->addWidget(querysharebutton,3,0);
-      frontendlayout->addWidget(quitbutton,4,0);
+      frontendlayout->addWidget(stopbutton,4,0);
+//      frontendlayout->addWidget(quitbutton,5,0);
  //     gridlayout->addWidget(configurator->configwidget,1,1,3,3);
       outputline = new QLabel("");
       frontendlayout->addWidget(outputline,5,0);
@@ -77,7 +81,6 @@ void Frontend::fr_sendmessage(){
   fr_parsemonitor();
 //  qDebug() << *output;
      
-  
 }
 
 void Frontend::fr_parsemonitor(){
@@ -126,6 +129,12 @@ void Frontend::fr_queryshare(){
   astring.append(i_debug);
  
   outputline->setText(astring);
+  
+}
+void Frontend::fr_stop(){
+  smbtamonitor_runner->processrunner->monitorprocess->close();
+  smbtamonitor_runner->timeclass->timer->stop();
+  
   
 }
 

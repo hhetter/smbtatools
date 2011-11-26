@@ -29,7 +29,7 @@
      QLine readl, writel;
      QPolygon readpg, writepg;
      QPainterPath readpath, writepath;
-
+    
 
 
      char *mhr( long long int kb );  

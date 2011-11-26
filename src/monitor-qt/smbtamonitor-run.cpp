@@ -41,7 +41,7 @@ void Smbtamonitor_run::run(){
 
   
   visualizer = new Visual(smbtawidget);
-  visualizer->visuallabel->setText("Jetzt aber.");
+//  visualizer->visuallabel->setText("Jetzt aber.");
   visualizer->visualwidget->show();
   smbtalayout->addWidget(visualizer,1);
   smbtawidget->show();
@@ -50,8 +50,7 @@ void Smbtamonitor_run::run(){
 //    sleep(1);
 //    connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
 //    connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
-    
-    
+        
     ////
     // Only for debugging reasons
 //   monitorprocess2 = new QProcess; 

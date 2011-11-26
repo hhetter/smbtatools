@@ -65,7 +65,8 @@ char *Visual::mhr( long long int kb )
                result = diff.quot;
                rest = diff.rem;
 																		        }
-     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
+//     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
+     asprintf( &output,"%lli %s",result,kbstring);
      return output;
 }
 
@@ -181,26 +182,37 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 //   readpg<<read2pg;
 //   QVector<QPoint> backlinerv;
 
-//   readpg<<readp;
+
+  writepg = QPolygon();
+  readpg = QPolygon();
+  
+  writepg<<QPoint(650-i_time, writev[0].y());
+  readpg<<QPoint( 650-i_time, readv[0].y());
    
-   for(int i = 0; i <= i_time; i++){
-    readpg<<QPoint(readv[i]);
+   for(int i = i_time-1; i >= 0; i--){
+     writepg<<QPoint(650-i,writev[i_time-i].y());
+     readpg<< QPoint(650-i,readv[i_time-i].y());
     }
+    
+   writepg<<QPoint(650,readv[i_time].y());
+   readpg<<QPoint(650,500);
+//   readpg<<QPoint( 650-i_time, readv[0].y());
+//  readpg<<QPoint(100,500-i_time);
    
-   
-  for(int i = i_time; i >= 0; i--){
-    readpg<<writev[i];
+  for(int i = 1; i <= i_time; i++){
+    writepg<<QPoint(650-i,readv[i_time-i].y());
+    readpg<<QPoint(650-i,500);
 
   }
   
      
    for(int i = 0; i <= i_time; i++){
-    writepg<<writev[i];
+//    writepg<<writev[i];
     }
    
    
   for(int i = i_time; i >= 0; i--){
-    writepg<<QPoint(i,500);
+//    writepg<<QPoint(i,500);
   }
   
   
@@ -229,13 +241,14 @@ void Visual::paintEvent(QPaintEvent *){
   QRect readrect(50, 530, 10, 10);
   QPen writepen(Qt::blue, 1);
   QPen readpen(Qt::red, 1);
+  
+  
+//  QPolygon testpolygon; testpolygon<<QPoint(200,200)<<QPoint(400,200)<<QPoint(400,400)<<QPoint(200,400);
 
   // Create Graph Area
   painter.drawRect(graphbr);
   painter.fillRect(graphbr, QColor(255,255,255));
-  painter.drawLine(50, 200, 650, 200);
-  painter.drawLine(50, 300, 650, 300);
-  painter.drawLine(50, 400, 650, 400);
+
 
   // Create Axis / Labeling
   painter.setPen(Qt::black);
@@ -249,13 +262,21 @@ void Visual::paintEvent(QPaintEvent *){
   painter.drawRect(readrect);painter.fillRect(readrect, Qt::red);
   
   // Paint graphs
-  painter.setPen(readpen);
-  painter.drawPath(readpath);
-//  readpg.fill();
-  painter.drawPolygon(readpg);
   painter.setPen(writepen);
+//  painter.drawPolygon(testpolygon);
 //  painter.drawPath(writepath);
-//  painter.drawPolygon(writepg);
+  painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+  painter.drawPolygon(writepg);
+  painter.setPen(readpen);
+//  painter.drawPath(readpath);
+  painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+  painter.drawPolygon(readpg);
+  
+  painter.setPen(Qt::black);
+  painter.drawLine(50, 200, 650, 200);
+  painter.drawLine(50, 300, 650, 300);
+  painter.drawLine(50, 400, 650, 400);
+  painter.drawLine(50, 500, 650, 500);
 
 }
 
