@@ -111,7 +111,7 @@ void Frontend::fr_config(){
 void Frontend::fr_getmonitor(){
 
   smbtamonitor_runner = new Smbtamonitor_run(this);
-  gridlayout->addWidget(smbtamonitor_runner->smbtawidget, 1,0,3,3);
+  gridlayout->addWidget(smbtamonitor_runner->smbtawidget, 0,2,3,3);
   smbtamonitor_runner->run();
 //  connect(smbtamonitor_runner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(fr_sendmessage()));
   

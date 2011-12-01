@@ -13,19 +13,19 @@
   l_visualwrite = new unsigned long;
   l_currentmax = new unsigned long; l_historymax = new unsigned long;
   *l_currentmax = 0; *l_historymax = 0;
-  i_time = 0; i_oldscalefactor = 1; i_scalefactor = 1;
+  i_time = 0; f_oldscalefactor = 1; f_scalefactor = 1;
   
   visualwidget = new QWidget(this);
   visuallayout = new QVBoxLayout(visualwidget);
-  visuallabel = new QLabel("Visuallabel",visualwidget);
+//  visuallabel = new QLabel("Visuallabel",visualwidget);
 //  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
 //  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
-  visualhistorymax = new QLabel("Visuahistorymax: ", visualwidget);
+//  visualhistorymax = new QLabel("Visuahistorymax: ", visualwidget);
   
 //  visuallayout->addWidget(visuallabel,0);
 //  visuallayout->addWidget(visualreadvalue,1);
 //  visuallayout->addWidget(visualwritevalue,2);
-  visuallayout->addWidget(visualhistorymax,3);
+//  visuallayout->addWidget(visualhistorymax,3);
 
   visualwidget->setLayout(visuallayout);
 //   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
@@ -92,11 +92,22 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 
 
   *l_currentmax = (*l_read + *l_write);
+  
+  // Find a new *l_historymax, if the old one moved out of the graph
+  if(i_rescaletimer == 600){
+    f_switch = 0;
+    for(int i =0; i < 600; i++){
+//      if(f_switch < (   )  ){}
+      
+    }
+    
+    
+  }
 
   if(*l_currentmax > *l_historymax){
     
-    *l_historymax = *l_currentmax; visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
-  
+    *l_historymax = *l_currentmax;// visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
+    i_rescaletimer=0;
     ////
     // Traffic values need to be scaled to the graph range
     // y-Axis ranges 400 px, so historymax must be displayed with a shorter range
@@ -146,8 +157,8 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
    
   
   // Create QPoints according to the r/w input and scaling
-  readp.setY(500 - (*l_read/f_scalefactor));readp.setX(650-i_time);
-  writep.setY(500 -( ((*l_write+*l_read) /f_scalefactor) ));writep.setX(650-i_time);
+  readp.setY(450 - (*l_read/f_scalefactor));readp.setX(650-i_time);
+  writep.setY(450 -( ((*l_write+*l_read) /f_scalefactor) ));writep.setX(650-i_time);
 
   
   // Create QVector<QPoint>'s with the scanned graph datasets
@@ -175,6 +186,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   if(i_time < 600){
     i_time++;
   }
+  i_rescaletimer++;
   */
   
   
@@ -203,13 +215,13 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     }
     
    writepg<<QPointF(650,readv[i_time].y());
-   readpg<<QPointF(650,500);
+   readpg<<QPointF(650,450);
 //   readpg<<QPoint( 650-i_time, readv[0].y());
 //  readpg<<QPoint(100,500-i_time);
    
   for(int i = 1; i <= i_time; i++){
     writepg<<QPointF(650-i,readv[i_time-i].y());
-    readpg<<QPointF(650-i,500);
+    readpg<<QPointF(650-i,450);
 
   }
   
@@ -227,6 +239,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
   if(i_time < 600){
     i_time++;
   }
+  i_rescaletimer++;
   
   
  
@@ -242,9 +255,9 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 void Visual::paintEvent(QPaintEvent *){
 
   QPainter painter(this);
-  QRect graphbr(50,100,600,400);
-  QRect writerect(50,510,10,10);
-  QRect readrect(50, 530, 10, 10);
+  QRect graphbr(50,50,600,400);
+  QRect writerect(50,460,10,10);
+  QRect readrect(50, 480, 10, 10);
   QPen writepen(Qt::blue, 1);
   QPen readpen(Qt::red, 1);
   
@@ -259,9 +272,9 @@ void Visual::paintEvent(QPaintEvent *){
   // Create Axis / Labeling
   painter.setPen(Qt::black);
   painter.setFont(QFont("Arial", 8));
-  painter.drawText(0,500, xstring1);painter.drawText(0,400, xstring2);painter.drawText(0,300, xstring3);painter.drawText(0,200, xstring4);painter.drawText(0,100, xstring5);
-  painter.drawText(65,520, "Write traffic");
-  painter.drawText(65,540, "Read traffic");
+  painter.drawText(0,450, xstring1);painter.drawText(0,350, xstring2);painter.drawText(0,250, xstring3);painter.drawText(0,150, xstring4);painter.drawText(0,50, xstring5);
+  painter.drawText(65,470, "Write traffic");
+  painter.drawText(65,490, "Read traffic");
   painter.setPen(writepen);
   painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
   painter.setPen(readpen);
@@ -278,10 +291,12 @@ void Visual::paintEvent(QPaintEvent *){
   painter.drawPolygon(readpg);
   
   painter.setPen(Qt::black);
-  painter.drawLine(50, 200, 650, 200);
-  painter.drawLine(50, 300, 650, 300);
-  painter.drawLine(50, 400, 650, 400);
-  painter.drawLine(50, 500, 650, 500);
+  painter.drawLine(50, 50,  650, 50);
+  painter.drawLine(50, 150, 650, 150);
+  painter.drawLine(50, 250, 650, 250);
+  painter.drawLine(50, 350, 650, 350);
+  painter.drawLine(50, 450, 650, 450);
+  painter.drawLine(50, 50,  50,  450);
 
 }
 

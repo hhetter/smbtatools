@@ -23,13 +23,14 @@ void Timeclass::run(){
    timer->start();
    
     connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
+//   exec();
 
 }
 
 
 void Timeclass::tc_timersignal(){
   
-//  qDebug()<<"timer";
+  qDebug()<<"timer";
   
 }
   

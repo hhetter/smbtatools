@@ -37,6 +37,7 @@ void Smbtamonitor_run::run(){
 //   qDebug()<< "Smbtamonitor_run  3";  
   timeclass = new Timeclass;
   timeclass->run();
+//  timeclass->start();
   connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
 
   
