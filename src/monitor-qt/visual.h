@@ -25,6 +25,9 @@
      QString xstring1, xstring2, xstring3, xstring4, xstring5;
      int i_time, i_scalefactor, i_oldscalefactor, i_rescaletimer, f_switch;
      float f_scalefactor, f_oldscalefactor;
+     int i_x_os, i_y_os;   // Offset for x- and y-Graph
+     int i_x_max, i_y_max; // Range of x- and y-Graph
+     int i_step; // used to make variable step size for variable graphs
      QVector<QPoint> readv, writev; //QVector<QPointF> readv, writev;
      QPoint readp, writep; // QPointF readp, writep;
      QLine readl, writel;
