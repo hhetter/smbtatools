@@ -13,8 +13,14 @@
   i_debug=0;
   l_writestack = new unsigned long; *l_writestack = 0;
   l_readstack = new  unsigned long;  *l_readstack = 0;
+  output = new QString;
+
+
   smbtalayout = new QVBoxLayout;
   smbtawidget = new QWidget;
+  visualizer = new Visual( smbtawidget);
+  processrunner = new Processrunner;
+  timeclass = new Timeclass;
   runtestline = new QLabel("QLabel Smbtamonitor_run class testline", smbtawidget);
   smbtalayout->addWidget(runtestline,0);
   smbtawidget->setLayout(smbtalayout);
@@ -28,22 +34,21 @@ void Smbtamonitor_run::run(){
 
   
 //   qDebug()<< "Smbtamonitor_run  1";
-  processrunner = new Processrunner;
   processrunner->run();
 //  processrunner->start();
 //   qDebug()<< "Smbtamonitor_run  2";
   connect(processrunner->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(smr_sendmessage()));
 
 //   qDebug()<< "Smbtamonitor_run  3";  
-  timeclass = new Timeclass;
+
   timeclass->run();
 //  timeclass->start();
   connect(timeclass->timer, SIGNAL(timeout()), this, SLOT(smr_timersignal()));
 
   
-  visualizer = new Visual( smbtawidget);
+
 //  visualizer->visuallabel->setText("Jetzt aber.");
-  visualizer->visualwidget->show();
+//  visualizer->visualwidget->show();
   smbtalayout->addWidget(visualizer,1);
   smbtawidget->show();
 
@@ -75,7 +80,8 @@ void Smbtamonitor_run::smr_timersignal(){
 
 
   visualizer->vs_processnumbers(l_readstack, l_writestack);
-
+ 
+  
   *l_readstack  =  0;
   *l_writestack = 0;
 //  qDebug() << "---------------------------------------------------";
@@ -92,7 +98,7 @@ void Smbtamonitor_run::smr_visualizer(){
 
 void Smbtamonitor_run::smr_sendmessage(){
  
-  output = new QString;
+
   *output = processrunner->monitorprocess->readLine();
   smr_parsemonitor();
 //  qDebug() << *output;
