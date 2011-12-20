@@ -5,7 +5,7 @@
   
  Visual::~Visual(){}
 
- Visual::Visual( QWidget *parent) : QWidget(parent)
+ Visual::Visual( QWidget *parent, int i_timeframe) : QWidget(parent)
 {
   qDebug()<< "Class Visual";
 
@@ -13,9 +13,16 @@
   l_visualwrite = new unsigned long;
   l_currentmax = new unsigned long; l_historymax = new unsigned long;
   *l_currentmax = 0; *l_historymax = 0;
+  l_readmax = 0; l_writemax = 0;
   i_time = 0; f_oldscalefactor = 1; f_scalefactor = 1;
   i_x_os = 50;  i_y_os = 50; // Offset for x- and y-Graph
   i_x_max = 600; i_y_max = 400;   // Range of x- and y-Graph
+  i_x = 0;
+  
+  ////
+  //
+  // Calculate the stepping
+  i_step = i_x_max/i_timeframe;
   
   visualwidget = new QWidget(this);
   visuallayout = new QVBoxLayout(visualwidget);
@@ -31,7 +38,7 @@
 
   visualwidget->setLayout(visuallayout);
 //   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
-  xstring1.append("0 kb"); xstring2.append("25 kb"); xstring3.append("50 kb"); xstring4.append("100 kb");xstring5.append("125 kb");
+  xstring1 ="0 kb"; xstring2 ="25 kb"; xstring3 = "50 kb"; xstring4 = "100 kb";xstring5 = "125 kb";
 
 } 
 
@@ -81,6 +88,150 @@ void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i
 
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
+  
+
+  ////
+  //
+  // Create nice bars
+  
+  if(*l_read > l_readmax){
+    
+    l_readmax = *l_read;
+    
+  }
+   
+  if(*l_write > l_writemax){
+    
+    l_writemax = *l_write;
+    
+  }
+  
+  
+  
+  ////
+  //
+  // Create points array from the data
+  readp.setY( *l_read);readp.setX(i_x);
+  writep.setY(( ((*l_write+*l_read) )));writep.setX(i_x);
+  
+  
+  ////
+  //
+  // Compute max values, scaling
+  
+   *l_currentmax = (*l_read + *l_write);
+
+  if( (*l_read + *l_write) > *l_historymax){
+    
+    *l_historymax = (*l_read + *l_write);// visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
+    i_rescaletimer=0;
+    f_scalefactor = (1.1)*((float)*l_historymax)/i_y_max;
+//    qDebug() << "f_scalefactor: " << f_scalefactor;
+    
+    ////
+    // (Re)scale axes
+
+    char *dummy;
+    dummy=mhr((long long) (1.1*(*l_historymax)));
+    xstring5 = QString(dummy);// ( mhr( ctx,(long long) (1.1*(*l_historymax))));
+    free(dummy);
+    dummy=mhr((long long) (0.75*1.1*(*l_historymax)));
+    xstring4 = QString(dummy);// ( mhr( ctx,(long long) (0.75*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0.5*1.1*(*l_historymax)));
+    xstring3 = QString(dummy);// ( mhr( ctx,(long long) (0.5*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0.25*1.1*(*l_historymax)));
+    xstring2 = QString(dummy);// ( mhr( ctx,(long long) (0.25*1.1*(*l_historymax))));;
+    free(dummy);
+    dummy=mhr((long long) (0*1.1*(*l_historymax)));
+    qDebug() << dummy;
+    xstring1 = QString(dummy);// ( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
+    free(dummy);
+
+  }
+  
+    // Find a new *l_historymax, if the old one moved out of the graph
+    // not implemented yet
+  if(i_rescaletimer == 600){
+    f_switch = 0;
+    for(int i =0; i < 600; i++){
+//      if(f_switch < (   )  ){}
+      
+    }
+  }
+    
+  
+  ////
+  ////
+  // QPolygon Method
+  ////
+  // Create QPolygon from the QVector<QPoint>'s
+  // Inverse order of the vectors is needed so that every new value gets added to the 
+  // right end of the graph,the rest gets just shifted one point to the left
+  
+
+  // Reset Graph painterpaths
+  readpath  = QPainterPath();
+  writepath = QPainterPath();
+   
+  writepg = QPolygonF();
+  readpg =  QPolygonF();
+  
+  // Create QVector<QPoint>'s with the scanned graph datasets
+  readv<< (readp);
+  writev<<(writep);
+  
+  writepg<<QPointF((i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (writev[0].y()/f_scalefactor));
+  readpg<<QPointF( (i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (readv[0].y()/f_scalefactor));
+  
+//  qDebug() << "writev[0].y(): " << writev[0].y();
+//  qDebug() << "i_y_os - (writev[0].y()/f_scalefactor): " << i_y_os - (writev[0].y()/f_scalefactor);
+   
+   for(int i = i_time-1; i >= 0; i--){
+     writepg<<QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (writev[i_x-i].y()/f_scalefactor));
+     readpg<< QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (readv[i_x-i].y()/f_scalefactor));
+    }
+    
+   writepg<<QPointF((i_x_os + i_x_max),  (i_y_os + i_y_max) - (readv[i_x].y()/f_scalefactor));
+   readpg<<QPointF( (i_x_os + i_x_max),  450);
+
+  for(int i = 1; i <= i_time; i++){
+    writepg<<QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (readv[i_x-i].y()/f_scalefactor));
+    readpg<<QPointF( (i_x_os + i_x_max)-i,   450);
+  }
+    
+
+  if(i_time < 600){
+    i_time++;
+  }
+  i_rescaletimer++;
+  i_x++;
+  
+  update();
+     
+
+//*********************************************************************************
+//*********************************************************************************
+//*********************************************************************************
+//*********************************************************************************
+  
+/*
+  ////
+  //
+  // Create nice bars
+  
+  if(*l_read > l_readmax){
+    
+    l_readmax = *l_read;
+    
+  }
+   
+  if(*l_write > l_writemax){
+    
+    l_writemax = *l_write;
+    
+  }
   
   
   
@@ -183,11 +334,13 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
     i_time++;
   }
   i_rescaletimer++;
+  i_x++;
   
-  update();
-     
- 
+  update();  
   
+  
+  
+ */ 
 
 //*********************************************************************************
 //*********************************************************************************

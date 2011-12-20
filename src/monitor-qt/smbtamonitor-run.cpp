@@ -18,7 +18,7 @@
 
   smbtalayout = new QVBoxLayout;
   smbtawidget = new QWidget;
-  visualizer = new Visual( smbtawidget);
+  visualizer = new Visual( smbtawidget, 600);
   processrunner = new Processrunner;
   timeclass = new Timeclass;
   runtestline = new QLabel("QLabel Smbtamonitor_run class testline", smbtawidget);
