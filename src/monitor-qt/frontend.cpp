@@ -3,6 +3,7 @@
  #include "frontend.h"
  #include "configuration.h"
  #include "smbtamonitor-run.h"
+ #include "controls.h"
 
 // Class Configuration;
 
