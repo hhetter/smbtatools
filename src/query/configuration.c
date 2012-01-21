@@ -233,6 +233,7 @@ static int configuration_database_connect( struct configuration_data *conf )
 	rc = dbi_initialize(NULL);
 	if ( rc == -1 ) {
 		printf("DBI: ERROR dbi_initialize. Exiting.\n");
+		printf("- is the given database driver installed?\n");
 		return 1;
 		}
 	conf->DBIconn = dbi_conn_new(conf->dbdriver);
