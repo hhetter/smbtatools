@@ -240,6 +240,7 @@ static int configuration_database_connect( struct configuration_data *conf )
 	if (conf->DBIconn == NULL) {
 		printf("DBI: ERROR dbi_conn_new, with driver %s.\n",
 			conf->dbdriver);
+		printf("- sure you have a network connection to the database?");
 		return 1;
 		}
 	/**
