@@ -2,6 +2,7 @@
 #define VISUAL_H
 
 #include <QWidget>
+#include <QDebug>
 
 class Visual : public QWidget
 {

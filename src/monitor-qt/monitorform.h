@@ -32,6 +32,7 @@ public:
 public slots:
 
     void startmonitor();
+    void sendmessage();
 
 private:
     Ui::MonitorForm *ui;

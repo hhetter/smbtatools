@@ -12,3 +12,6 @@ ConfigForm::~ConfigForm()
 {
     delete ui;
 }
+
+
+#include "configform.moc"

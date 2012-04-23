@@ -27,3 +27,6 @@ void Timeclass::tc_timersignal(){
   qDebug()<<"timer";
 
 }
+
+
+#include "timeclass.moc"

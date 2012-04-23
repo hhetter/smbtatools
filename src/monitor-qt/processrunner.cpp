@@ -29,3 +29,5 @@ void Processrunner::Processrunner::pr_readsignal(){
 //  qDebug()<<"pr_readsignal";
 
 }
+
+#include "processrunner.moc"

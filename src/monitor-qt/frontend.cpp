@@ -72,3 +72,6 @@ void frontend::fr_setTestLabel()
 
 
 }
+
+
+#include "frontend.moc"

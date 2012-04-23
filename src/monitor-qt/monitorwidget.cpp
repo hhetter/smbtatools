@@ -4,3 +4,5 @@ MonitorWidget::MonitorWidget(QWidget *parent) :
     QThread(parent)
 {
 }
+
+#include "monitorwidget.moc"

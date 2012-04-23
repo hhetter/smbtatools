@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+OBJECTS_DIR =
+
 QT       += core gui
 
 TARGET = smbtamonitor-qt

@@ -47,7 +47,7 @@ Configuration::Configuration()
 
 }
 
-//#include "configuration.moc"
+#include "configuration.moc"
 
 
 
