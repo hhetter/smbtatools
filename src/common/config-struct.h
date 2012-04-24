@@ -11,6 +11,7 @@ enum smbta_monitor_object {
         SMBTA_USER,
         SMBTA_FILE,
 	SMBTA_DOMAIN,
+	SMBTA_GLOBAL,
 	SMBTA_NONE
 };
 

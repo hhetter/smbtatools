@@ -24,20 +24,22 @@
  */
 int network_register_monitor( enum monitor_fn func,
 	char *param,
-	char *pattern,char *title, int xpos, int ypos, struct configuration_data *c)
+	char *pattern, struct configuration_data *c)
 {
-	int retval = 0;
         char *tosend, *data;
         tosend = talloc_asprintf(NULL,"~~0001%i%04i%s%s",
-		func,(int) strlen(param),param,pattern);
+			                func,(int) strlen(param),param,pattern);
         char *body = connect_monitor(NULL,c,tosend);
-	data = result_get_monitor_element(NULL,0,body);
-	retval = (int) common_myatoi(data);
-	monitor_list_add( retval, func, xpos,ypos,title);	
+        data = result_get_monitor_element(NULL,0,body);
+        int retval = (int) common_myatoi(data);
+
+
+
+	monitor_list_add( (int) retval, func);	
 	talloc_free(tosend);
 	talloc_free(data);
 	talloc_free(body);
-        return retval;
+        return 1;
 }
 
 
@@ -57,7 +59,7 @@ void network_handle_data( struct configuration_data *c)
         char *body=NULL;
         int body_position=0;
         int data_length=0;
-        int sockfd;
+        int sockfd = c->socket;
         enum network_send_flags state = UNSENT;
 
 	state = UNSENT;
@@ -77,11 +79,9 @@ void network_handle_data( struct configuration_data *c)
                 	FD_ZERO (&active_fd_set);
                 	FD_SET(c->socket,&active_fd_set);
                 	fd_set_r=active_fd_set;
+                	fd_set_w=active_fd_set;
 
                 	z=select( sockfd+1,&fd_set_r,NULL,NULL,NULL);
-			if (z == -1) {
-				printf("ERROR: select : %s\n",strerror(errno));
-			}
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;
@@ -103,16 +103,19 @@ void network_handle_data( struct configuration_data *c)
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_HEADER_ONGOING) {
-                        	common_receive_data(header + header_position, sockfd,
+                        	common_receive_data(header + header_position,
+					sockfd,
                                 	26-header_position, &header_position);
 
                         	if (header_position != 26) continue;
                         	/* full header */
                         	state = HEADER_RECEIVED;
-                        	data_length= common_get_data_block_length(header);
+                        	data_length= common_get_data_block_length(
+					header);
                         	continue;
                 	} else
-                	if (FD_ISSET( sockfd,&fd_set_r) && state == HEADER_RECEIVED) {
+                	if (FD_ISSET( sockfd,&fd_set_r) &&
+				state == HEADER_RECEIVED) {
                         	state = RECEIVING_DATA;
                         	body = talloc_array(NULL, char, data_length +2);
                         	body_position = 0;
@@ -134,19 +137,21 @@ void network_handle_data( struct configuration_data *c)
                 	} else
                 	if (FD_ISSET( sockfd,&fd_set_r) &&
                         	state == RECEIVING_DATA_ONGOING) {
-                        	common_receive_data(body + body_position,sockfd,
-                                	data_length - body_position, &body_position);
+                        	common_receive_data(body + body_position,
+					sockfd,
+                                	data_length - body_position,
+					&body_position);
                         	if (body_position != data_length) continue;
                         	state = UNSENT;
                         	break;
                 	}
         	}
-		if (c->keyfile != NULL) { // body is encrypted
-			char *crypted = common_decrypt(NULL,body,data_length,
-				(const unsigned char *) c->key);
-			monitor_list_change_results(crypted);
-			talloc_free(crypted);
-			} else monitor_list_change_results(body);
+                if (c->keyfile != NULL) { // body is encrypted
+                        char *crypted = common_decrypt(NULL,body,data_length,
+                                (const unsigned char *) c->key);
+                        monitor_list_change_results(crypted);
+                        talloc_free(crypted);
+                        } else monitor_list_change_results(body);
 		talloc_free(header);
 		talloc_free(body);
 	}

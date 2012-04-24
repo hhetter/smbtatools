@@ -631,6 +631,10 @@ char *non_db_simple_identify( TALLOC_CTX *ctx,
 		return retstr;
 	}
 	switch(Type) {
+	case INT_OBJ_GLOBAL:
+		retstr = talloc_asprintf(ctx,
+			"0001*0001*0001*0001*0001*");
+		break;
 	case INT_OBJ_USER:
 		retstr = talloc_asprintf(ctx,
 			"%04i%s0001*0001*0001*0001*",

@@ -6,7 +6,11 @@
 
 # Check the minimum required cmake version for this project
 cmake_minimum_required(VERSION 2.6)
-PROJECT(smbtatools C)
+###
+# Change to also build cpp files
+# -> seems to not help, so commented out
+PROJECT(smbtatools)
+#PROJECT(smbtatools C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 set(APPLICATION_NAME "smbtatools")
 set(APPLICATION_VERSION "0.0.1")
@@ -16,11 +20,24 @@ INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+
+#
+# check for QT(4)
+#
+FIND_PACKAGE(Qt4)
+IF (NOT QT_INCLUDE_DIR) 
+	MESSAGE( FATAL_ERROR "ERROR: you need the qt development files and library installed.")
+ENDIF()
+IF (QT_INCLUDE_DIR)
+	INCLUDE_DIRECTORIES($QT_INCLUDE_DIR)
+ENDIF()
+
+
 #
 # check for pango
 #
 FIND_PACKAGE(PANGO)
-if (NOT LIBPANGO_INCLUDE_DIRS)
+IF (NOT LIBPANGO_INCLUDE_DIRS)
 	MESSAGE( FATAL_ERROR "ERROR: you need the pango library and headers installed.")
 ENDIF()
 IF (LIBPANGO_INCLUDE_DIRS)
@@ -163,7 +180,7 @@ ADD_EXECUTABLE(${CurrentExe}
 
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBCAIRO_LIBRARIES} ${CURL_LIBRARIES} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${SQLITE_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser dl)
 
-SET(CurrentExe "smbtamonitor")
+SET(CurrentExe "smbtamonitor-gen")
 ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/main.c
 	src/common/common.c
@@ -172,8 +189,6 @@ ADD_EXECUTABLE(${CurrentExe}
 	src/monitor/configuration.c
 	src/monitor/network.c
 	src/monitor/monitor-list.c
-	src/monitor/visual.c
-	src/monitor/backlog.c
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
@@ -201,6 +216,9 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
+# Adding the subdirectory for monitor-qt
+
+add_subdirectory( src/monitor-qt )
 
 # install documentation
 INSTALL(FILES doc/smbtaquery.1
@@ -226,5 +244,5 @@ INSTALL(FILES src/torture/srv/directories.txt
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
-INSTALL(TARGETS smbtaquery smbtamonitor smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor-gen  smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
 
