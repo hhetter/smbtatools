@@ -5,12 +5,14 @@ Processrunner::Processrunner(QWidget *parent) :
 {
    qDebug() << " Constructor Class Processrunner";
 
+    monitorprocess = new QProcess;
+
 }
 
 void Processrunner::run(){
 
 
-   monitorprocess = new QProcess;
+
    qDebug() << "Processrunner::run";
 //   monitorprocess->start("./smbtamonitor-gen -h smbtad.de -i 3491 -g -I 0" );
 //   monitorprocess->start("./owntools");
@@ -26,7 +28,7 @@ void Processrunner::run(){
 
 void Processrunner::Processrunner::pr_readsignal(){
 
-//  qDebug()<<"pr_readsignal";
+  qDebug()<<"pr_readsignal";
 
 }
 

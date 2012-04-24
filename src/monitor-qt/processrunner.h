@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QProcess>
 #include <QDebug>
+#include <QApplication>
 
 class Processrunner : public QThread
 {

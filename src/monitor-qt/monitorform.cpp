@@ -42,6 +42,7 @@ void MonitorForm::startmonitor()
     timeClassW->start();
     processRunnerW->start();
 //    processRunnerW->monitorprocess->start("./owntools3");
+//    sleep(100);
 //    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
 
 
