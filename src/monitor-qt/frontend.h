@@ -5,10 +5,10 @@
 
 #include <QDebug>
 
-#include <configuration.h>
-#include <configform.h>
-#include <monitorform.h>
-#include <monitorwidget.h>
+#include "configuration.h"
+#include "configform.h"
+#include "monitorform.h"
+#include "monitorwidget.h"
 
 
 namespace Ui {

@@ -5,8 +5,8 @@
 #include <QThread>
 #include <QMutex>
 
-#include <processrunner.h>
-#include <timeclass.h>
+#include "processrunner.h"
+#include "timeclass.h"
 
 namespace Ui {
     class MonitorForm;
