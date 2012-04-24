@@ -1,31 +1,26 @@
- #ifndef TIMECLASS_H
- #define TIMECLASS_H
+#ifndef TIMECLASS_H
+#define TIMECLASS_H
 
- #include "include.h"
+#include <QThread>
+#include <QWidget>
+#include <QTimer>
+#include <QDebug>
 
- class Timeclass : public QThread
- {
+class Timeclass : public QThread
+{
+    Q_OBJECT
+public:
+    explicit Timeclass(QWidget *parent = 0);
+    QTimer *timer;
 
-	Q_OBJECT
+    void run();
 
+signals:
 
- public:
-     ~Timeclass();
-     Timeclass(QWidget *parent=0);
-//     QProcess *monitorprocess;
-     
-     QTimer *timer; 
-     
-     void run();
-     
-      
- public slots:
-     
-     void tc_timersignal();
+public slots:
 
+    void tc_timersignal();
 
 };
 
-#endif
-
- 
+#endif // TIMECLASS_H

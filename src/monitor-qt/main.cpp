@@ -1,27 +1,15 @@
+#include <QtGui/QApplication>
+#include "frontend.h"
+#include <QDebug>
 
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    frontend w;
+    w.show();
 
- #include "include.h"
+   // Test
+    qDebug() << "Test";
 
- #include "frontend.h"
- #include "configuration.h"
- #include "smbtamonitor-run.h"
- #include "visual.h"
- #include "timeclass.h"
-
-
-
-// Main function
- int main(int argc, char *argv[])
- {
-     QApplication app(argc, argv);
-     Frontend frontendwidget;
-//     qDebug("bleh");
-     
- //    frontendwidget.i_frontendvariable = 5;
- //    Testclass testclass;
-  //   testclass.getamessage();
- //    widget.i = 1+2;
-     frontendwidget.resize(910,600);
-     frontendwidget.show();
-     return app.exec();
- }
+    return a.exec();
+}

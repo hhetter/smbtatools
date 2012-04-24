@@ -7,12 +7,12 @@ include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${TALLOC_INCLUDE
 SET( smbtamonitor-qt_SRC  main.cpp
                           frontend.cpp
                           configuration.cpp
-                          smbtamonitor-run.cpp
+			  configform.cpp
+			  monitorform.cpp
+			  monitorwidget.cpp
                           visual.cpp
                           timeclass.cpp
-                          processrunner.cpp
-			  queryshares.cpp
-			  controls.cpp)
+                          processrunner.cpp)
 
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 

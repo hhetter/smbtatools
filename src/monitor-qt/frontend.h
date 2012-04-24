@@ -1,50 +1,39 @@
 #ifndef FRONTEND_H
 #define FRONTEND_H
 
- #include "include.h"
- #include "configuration.h"
- #include "smbtamonitor-run.h"
- #include "visual.h"
+#include <QMainWindow>
+
+#include <QDebug>
+
+#include <configuration.h>
+#include <configform.h>
+#include <monitorform.h>
+#include <monitorwidget.h>
 
 
-//   Class Configuration;
-//   Class Visual;
+namespace Ui {
+    class frontend;
+}
 
- class Frontend : public QWidget
- {
+class frontend : public QMainWindow
+{
+    Q_OBJECT
 
-	Q_OBJECT
+public:
+    explicit frontend(QWidget *parent = 0);
+    ~frontend();
 
+    ConfigForm *configWidget;
+    MonitorWidget *monitorOldW;
+    MonitorForm *monitorFormW;
 
- public:
-     Frontend(QWidget *parent=0);
-     ~Frontend();
+public slots:
+    void fr_setTestLabel();
+    void fr_setConfigWidget();
+    void fr_setMonitorWidget();
 
-     int i_frontendvariable;
-     int i_debug;
-     
-     QString *output;
-
-     QPushButton *configbutton, *monitorbutton, *quitbutton, *querysharebutton, *stopbutton;
-     QGridLayout *gridlayout, *frontendlayout;
-     QWidget *frontendwidget;
-     QLabel *outputline;
-     
-     Configuration *configurator;
-     Smbtamonitor_run *smbtamonitor_runner;
-    
-
-
- public slots:
-     void fr_config();
-     void fr_getmonitor();
-     void fr_sendmessage();
-     void fr_parsemonitor();
-     void fr_queryshare();
-     void fr_stop();
-    
-
-
+private:
+    Ui::frontend *ui;
 };
 
-#endif
+#endif // FRONTEND_H

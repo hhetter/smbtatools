@@ -1,33 +1,27 @@
- #ifndef PROCESSRUNNER_H
- #define PROCESSRUNNER_H
+#ifndef PROCESSRUNNER_H
+#define PROCESSRUNNER_H
 
- #include "include.h"
+#include <QWidget>
+#include <QThread>
+#include <QProcess>
+#include <QDebug>
 
- 
- 
- class Processrunner : public QThread
- {
+class Processrunner : public QThread
+{
+    Q_OBJECT
+public:
+    explicit Processrunner(QWidget *parent = 0);
 
-	Q_OBJECT
+    QProcess *monitorprocess;
 
+    void run();
 
- public:
-     ~Processrunner();
-     Processrunner(QWidget *parent=0);
-     QProcess *monitorprocess;
-//     Timeclass *timeclass;
-//     Visual *visualizer;
-     
-     
-     void run();
-     
- 
- public slots:
-     
-     void pr_readsignal();
+signals:
+
+public slots:
+
+    void pr_readsignal();
 
 };
 
-#endif
-
- 
+#endif // PROCESSRUNNER_H
