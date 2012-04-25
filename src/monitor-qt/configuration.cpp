@@ -50,22 +50,3 @@ Configuration::Configuration()
 #include "configuration.moc"
 
 
-
-
-/*
-
-#include "configuration.h"
-
-Configuration::Configuration()
-{
-
-
-    qDebug()<< "This is the Configurator";
-
-}
-
-
-Configuration::~Configuration()
-{
-}
-*/
