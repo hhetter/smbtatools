@@ -10,11 +10,13 @@ MonitorForm::MonitorForm(QWidget *parent) :
 
     timeClassW = new Timeclass();
     processRunnerW = new Processrunner();
+    running=false;
 
 
 
     //    timeClassW->start();
     connect(ui->startButton, SIGNAL(clicked()),this, SLOT(startmonitor()));
+    connect(ui->stopButton, SIGNAL(clicked()),this, SLOT(stopmonitor()));
 //    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()));
 
 
@@ -37,10 +39,35 @@ void MonitorForm::startmonitor()
 {
 
     qDebug() << "startmonitor";
-
+    running=true;
 
     timeClassW->start();
     processRunnerW->start();
+    processRunnerW->monitorprocess->start("./owntools3");
+//    sleep(1);
+
+//    processRunnerW->monitorprocess->start("./owntools3");
+//    sleep(100);
+    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()));
+
+
+
+
+}
+
+void MonitorForm::stopmonitor()
+{
+
+    qDebug() << "stopmonitor";
+
+
+//    timeClassW->start();
+    if(running==true){
+    processRunnerW->monitorprocess->close();
+    timeClassW->timer->stop();
+    }
+//    sleep(1);
+
 //    processRunnerW->monitorprocess->start("./owntools3");
 //    sleep(100);
 //    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
@@ -51,10 +78,11 @@ void MonitorForm::startmonitor()
 }
 
 
+
 void MonitorForm::sendmessage()
 {
 
-    qDebug() << "sendmessage";
+    qDebug() << "monitorform:sendmessage()";
 
 }
 

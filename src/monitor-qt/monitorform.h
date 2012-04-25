@@ -27,11 +27,13 @@ public:
 
     int i_debug;
     unsigned long *l_writestack, *l_readstack;
+    bool running;
 
 
 public slots:
 
     void startmonitor();
+    void stopmonitor();
     void sendmessage();
 
 private:
