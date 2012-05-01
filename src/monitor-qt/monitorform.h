@@ -4,9 +4,11 @@
 #include <QWidget>
 #include <QThread>
 #include <QMutex>
+#include <QLabel>
 
 #include "processrunner.h"
 #include "timeclass.h"
+#include "visual.h"
 
 namespace Ui {
     class MonitorForm;
@@ -22,6 +24,7 @@ public:
 
     Timeclass     *timeClassW;
     Processrunner *processRunnerW;
+    Visual *visualW;
 
     QMutex mutex;
 
