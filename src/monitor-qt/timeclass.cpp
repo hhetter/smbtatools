@@ -14,7 +14,7 @@ Timeclass::Timeclass(QWidget *parent) :
  //   timer->setInterval(60);	// milisecond
  //   timer->start();
 
-     connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
+//     connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
 
 }
 

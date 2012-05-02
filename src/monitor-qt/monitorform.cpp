@@ -7,13 +7,11 @@ MonitorForm::MonitorForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     timeClassW = new Timeclass();
     timeClassW->start();
     processRunnerW = new Processrunner();
     processRunnerW->start();
     running=false;
-
 
 
     //    timeClassW->start();
@@ -44,8 +42,10 @@ void MonitorForm::startmonitor()
     if(running == false){
        qDebug() << "startmonitor";
        running=true;
+       qDebug()<<"1";
        timeClassW->timer->start();
-
+       processRunnerW->monitorprocess->start("./owntools3");
+       qDebug()<<"2";
        timeClassW->tc_timersignal();
 //       visualW = new Visual(ui->visual_widget, 5);
 
@@ -59,7 +59,7 @@ void MonitorForm::startmonitor()
        qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
 //       processRunnerW->monitorprocess->start("./owntools3");
        qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
-       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()));
+       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
 
     }
 
