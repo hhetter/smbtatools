@@ -18,6 +18,35 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 #include "include/includes.h"
+
+
+
+/**
+ *  * create a unix domain socket
+ *   *
+ *    */
+int network_create_unix_socket(char *name)
+{
+	/* Create a streaming UNIX Domain Socket */
+        int s,len;
+        struct sockaddr_un local;
+        if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) == -1){
+                syslog(LOG_DAEMON, "ERROR: unix socket creation failed.");
+                return 1;
+        }
+
+        local.sun_family= AF_UNIX;
+        strcpy(local.sun_path,name);
+        unlink(local.sun_path);
+        len=strlen(local.sun_path) + sizeof(local.sun_family);
+        bind(s,(struct sockaddr *) &local, len);
+ //       listen(s,50); We are outputting only no need to listen
+										        return s;
+}
+
+
+
+
 /*
  * transmit the monitor function and the pattern
  * to smbtad and receive the id

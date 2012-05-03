@@ -39,3 +39,4 @@
 
 int network_register_monitor( enum monitor_fn func, char *param, char *pattern,struct configuration_data *c);
 void network_handle_data( struct configuration_data *c);
+int network_create_unix_socket( char *path );

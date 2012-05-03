@@ -83,6 +83,10 @@ struct configuration_data {
 	int timer;
 	char *rrdtool_setup;
 
+	// for monitor-gen
+
+	char *path;
+	int monitor_gen_socket;
 };
 
 

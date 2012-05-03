@@ -55,6 +55,10 @@ static void configuration_show_help()
 	printf("-k	--keyfile		Read encryption key from given file.\n");
 	printf("-I	--identify		0 or 1. if 0, no identification is done.\n");
 	printf("				Default is 1.\n");
+	printf("-p	--path			Define the path for the\n");
+	printf("				unix-domain socket to be used\n");
+	printf("				for client communication.\n");
+	printf("				Default: /var/tmp/\n");
         printf("\n");
 }
 
@@ -74,6 +78,7 @@ static void configuration_define_defaults( struct configuration_data *c )
 	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
 	c->object_name = NULL;
 	c->identify = 1;
+	c->path = strdup ("/var/tmp/");
 }
 
 /* load $HOME/.smbtatools/monitor.config */
@@ -114,6 +119,8 @@ static int configuration_load_config_file( struct configuration_data *c)
 	if (cc != NULL) {
 		c->identify = (int) common_myatoi(cc);
 	}
+	cc = iniparser_getstring(Mydict,"network:socket_path",NULL);
+	if (cc != NULL) c->path = strdup(cc);
         return 0;
 }
 
@@ -152,11 +159,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "global",0,NULL,'g'},
 			{ "unix-socket",0,NULL,'n'},
 			{ "identify",1,NULL,'I'},
+			{ "path",1,NULL,'p'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "ns:u:f:d:i:c:k:h:?I:D:g", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:?I:D:gp:", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
@@ -217,6 +225,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 't':
 				c->timer= (int) common_myatoi(optarg);
 				break;
+			case 'p':
+				c->path = strdup( optarg );
+				break;
                         default :
                                 printf("ERROR: unkown option.\n\n");
                                 configuration_show_help();
@@ -234,6 +245,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		c->socket = common_connect_unix_socket(
 			"/var/tmp/stadsocket_client");
 
+	char *fname = talloc_asprintf(NULL, "%ssmbtamonitor-gen-socket-%i",c->path,getpid());
+	c->monitor_gen_socket = network_create_unix_socket( fname );
+	talloc_free(fname);
 	monitor_list_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
