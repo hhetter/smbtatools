@@ -57,7 +57,7 @@ void MonitorForm::startmonitor()
 //       ui->label->setText("Derp");
 //         visualW->vs_processnumbers(l_writestack, l_readstack);
        qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
-//       processRunnerW->monitorprocess->start("./owntools3");
+//       processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
        qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
        connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
 
