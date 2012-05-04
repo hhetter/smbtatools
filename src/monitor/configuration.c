@@ -248,6 +248,21 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	char *fname = talloc_asprintf(NULL, "%ssmbtamonitor-gen-socket-%i",c->path,getpid());
 	c->monitor_gen_socket = network_create_unix_socket( fname );
 	talloc_free(fname);
+
+	// At this point we'll block the process until our client
+	// connects
+	//
+	struct sockaddr_un *remote_unix;
+	socklen_t t=sizeof(*remote_unix);
+	c->monitor_gen_socket_cli = accept(c->monitor_gen_socket,
+			(struct sockaddr *) &remote_unix,
+			&t);
+	if ( c->monitor_gen_socket_cli == -1 ) {
+		printf("Connection to the client failed.\n");
+		exit(1);
+	}
+
+
 	monitor_list_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);

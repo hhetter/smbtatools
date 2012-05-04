@@ -87,6 +87,7 @@ struct configuration_data {
 
 	char *path;
 	int monitor_gen_socket;
+	int monitor_gen_socket_cli;
 };
 
 

@@ -82,13 +82,15 @@ struct monitor_item *monitor_list_get_by_id( int id )
 }
 
 
-void monitor_list_change_results( char *data )
+void monitor_list_change_results( char *data,
+	       struct configuration_data *c)
 {
         pthread_mutex_lock(&monitor_list_lock);
         struct monitor_item *entry;
         char *ctx = talloc(NULL, char);
         char *tmp = NULL;
-        tmp = result_get_monitor_element(ctx,0,data);
+	char *str = NULL;
+	tmp = result_get_monitor_element(ctx,0,data);
         int id = (int) common_myatoi(tmp);
         entry = monitor_list_get_by_id(id);
         tmp = result_get_monitor_element(ctx,1,data);
@@ -97,18 +99,21 @@ void monitor_list_change_results( char *data )
 		pthread_mutex_unlock(&monitor_list_lock);
 		return;
 	}
+	
         entry->data = strdup(tmp);
         entry->changed = 1;
 	switch(entry->type) {
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		printf("R:%i\n",atol(tmp));
+		str = talloc_asprintf(ctx,"R:%i#",atol(tmp));
+		send( c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
 	case MONITOR_WRITE: ;
 		global_write = global_write + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		printf("W:%i\n",atol(tmp));
+		str = talloc_asprintf(ctx,"W:%i#",atol(tmp));
+		send (c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
 	default: ;
 	}

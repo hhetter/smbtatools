@@ -40,7 +40,7 @@ int network_create_unix_socket(char *name)
         unlink(local.sun_path);
         len=strlen(local.sun_path) + sizeof(local.sun_family);
         bind(s,(struct sockaddr *) &local, len);
- //       listen(s,50); We are outputting only no need to listen
+        listen(s,50);
 										        return s;
 }
 
@@ -178,9 +178,9 @@ void network_handle_data( struct configuration_data *c)
                 if (c->keyfile != NULL) { // body is encrypted
                         char *crypted = common_decrypt(NULL,body,data_length,
                                 (const unsigned char *) c->key);
-                        monitor_list_change_results(crypted);
+                        monitor_list_change_results(crypted,c);
                         talloc_free(crypted);
-                        } else monitor_list_change_results(body);
+                        } else monitor_list_change_results(body,c);
 		talloc_free(header);
 		talloc_free(body);
 	}

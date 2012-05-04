@@ -8,7 +8,7 @@ struct monitor_item {
 
 void monitor_list_push_values(struct configuration_data *c);
 void monitor_list_init();
-void monitor_list_change_results( char *data );
+void monitor_list_change_results( char *data,struct configuration_data *c );
 struct monitor_item *monlist_end;
 struct monitor_item *monlist_start;
 int monitor_list_add( int id, enum monitor_fn type );
