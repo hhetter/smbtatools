@@ -54,7 +54,7 @@ static void configuration_show_help()
 	printf("-D	--domain		Specify a domain to monitor.\n");
 	printf("-k	--keyfile		Read encryption key from given file.\n");
 	printf("-I	--identify		0 or 1. if 0, no identification is done.\n");
-	printf("				Default is 1.\n");
+	printf("				Default is 0.\n");
 	printf("-p	--path			Define the path for the\n");
 	printf("				unix-domain socket to be used\n");
 	printf("				for client communication.\n");
@@ -77,7 +77,7 @@ static void configuration_define_defaults( struct configuration_data *c )
 	c->unix_socket = 0;
 	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
 	c->object_name = NULL;
-	c->identify = 1;
+	c->identify = 0;
 	c->path = strdup ("/var/tmp/");
 }
 
@@ -248,6 +248,21 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	char *fname = talloc_asprintf(NULL, "%ssmbtamonitor-gen-socket-%i",c->path,getpid());
 	c->monitor_gen_socket = network_create_unix_socket( fname );
 	talloc_free(fname);
+
+	// At this point we'll block the process until our client
+	// connects
+	//
+	struct sockaddr_un *remote_unix;
+	socklen_t t=sizeof(*remote_unix);
+	c->monitor_gen_socket_cli = accept(c->monitor_gen_socket,
+			(struct sockaddr *) &remote_unix,
+			&t);
+	if ( c->monitor_gen_socket_cli == -1 ) {
+		printf("Connection to the client failed.\n");
+		exit(1);
+	}
+
+
 	monitor_list_init();
         /* through all options, now run the query command */
 	pattern = configuration_generate_pattern(runtime_mem, c);
