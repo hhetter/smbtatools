@@ -5,6 +5,13 @@
 #include <QThread>
 #include <QMutex>
 #include <QLabel>
+#include <QProcess>
+#include <QFile>
+#include <QString>
+
+#include <QtNetwork>
+#include <QLocalSocket>
+
 
 #include "processrunner.h"
 #include "timeclass.h"
@@ -31,6 +38,10 @@ public:
     int i_debug;
     unsigned long *l_writestack, *l_readstack;
     bool running;
+
+
+    QString  *pid_string;
+//    QLocalSocket *monitorSocket;
 
 
 public slots:

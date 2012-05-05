@@ -11,7 +11,10 @@ MonitorForm::MonitorForm(QWidget *parent) :
     timeClassW->start();
     processRunnerW = new Processrunner();
     processRunnerW->start();
+    QLocalSocket test;
+//    monitorSocket = new QLocalSocket();
     running=false;
+    pid_string = new QString;
 
 
     //    timeClassW->start();
@@ -44,22 +47,31 @@ void MonitorForm::startmonitor()
        running=true;
        qDebug()<<"1";
        timeClassW->timer->start();
-       processRunnerW->monitorprocess->start("./owntools3");
-       qDebug()<<"2";
+
        timeClassW->tc_timersignal();
 //       visualW = new Visual(ui->visual_widget, 5);
 
-       QLabel testlabel("BLah", ui->visual_widget);
-       testlabel.setText("Blah");
-       testlabel.setParent(ui->visual_widget);
-//       visualW->show();
 
-//       ui->label->setText("Derp");
 //         visualW->vs_processnumbers(l_writestack, l_readstack);
        qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
-//       processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
+       processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
+
+       int lpid = processRunnerW->monitorprocess->pid();
+       qDebug() <<lpid << " Hey";
+//       *pid_string = QString("%1").arg(processRunnerW->monitorprocess->pid());
+       *pid_string = QString::number(processRunnerW->monitorprocess->pid());
+       QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
+       qDebug()<<socketString;
+       if(QFile::exists(socketString))
+       {
+           qDebug() << "Habs";
+
+       }
+       else(qDebug()<<"nichts");
+
+
        qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
-       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
+//       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
 
     }
 
@@ -89,12 +101,6 @@ void MonitorForm::stopmonitor()
         qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
         timeClassW->timer->stop();
     }
-//    sleep(1);
-
-//    processRunnerW->monitorprocess->start("./owntools3");
-//    sleep(100);
-//    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), qApp, SLOT(quit()));
-
 
 
 

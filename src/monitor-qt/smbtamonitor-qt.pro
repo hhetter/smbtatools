@@ -6,7 +6,8 @@
 
 OBJECTS_DIR =
 
-QT       += core gui
+QT       += core gui network
+
 
 TARGET = smbtamonitor-qt
 TEMPLATE = app
