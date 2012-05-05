@@ -11,7 +11,7 @@ MonitorForm::MonitorForm(QWidget *parent) :
     timeClassW->start();
     processRunnerW = new Processrunner();
     processRunnerW->start();
-    QLocalSocket test;
+//    QLocalSocket test;
 //    monitorSocket = new QLocalSocket();
     running=false;
     pid_string = new QString;
