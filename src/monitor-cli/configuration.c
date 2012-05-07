@@ -121,7 +121,9 @@ static int configuration_load_config_file( struct configuration_data *c)
 
 void catch_signal(int z)
 {
+	printf("PID: %i\n",signal_data_pid);
 	printf("Closing socket and cleanup...");
+	exit(1);
 	kill(signal_data.pid,SIGKILL);
 	close(signal_data.socket);
 	char delstr = talloc_asprintf(NULL,"/var/tmp/smbtamonitor-gen-socket-%i",
