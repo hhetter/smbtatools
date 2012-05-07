@@ -276,7 +276,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	int mysocket = common_connect_unix_socket( socketstr );
 	signal_data.pid=pid;
 	signal_data.socket=mysocket;
-	signal( SIGTERM, &catch_signal);
+	signal( SIGINT, &catch_signal);
 
 	char MyBuffer[1000];
 	int tt;
