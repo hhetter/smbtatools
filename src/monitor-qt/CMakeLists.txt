@@ -20,6 +20,6 @@ SET( smbtamonitor-qt_SRC  main.cpp
 qt4_wrap_ui( smbtamonitor-qt_ui configform.ui frontend.ui monitorform.ui )
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 ADD_EXECUTABLE( smbtamonitor-qt ${smbtamonitor-qt_SRC} ${smbtamonitor-qt_ui})
-TARGET_LINK_LIBRARIES( smbtamonitor-qt ${LIBDBI_LIBRARIES} ${TALLOC_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_NETWORK_LIBRARY} )
+TARGET_LINK_LIBRARIES( smbtamonitor-qt ${LIBDBI_LIBRARIES} ${TALLOC_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} )
 
 INSTALL(TARGETS smbtamonitor-qt DESTINATION bin)
