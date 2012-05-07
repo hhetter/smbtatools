@@ -106,13 +106,13 @@ void monitor_list_change_results( char *data,
 	case MONITOR_READ: ;
 		global_read = global_read + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		str = talloc_asprintf(ctx,"R:%i#",atol(tmp));
+		str = talloc_asprintf(ctx,"R:%li#",atol(tmp));
 		send( c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
 	case MONITOR_WRITE: ;
 		global_write = global_write + atol(tmp);
 		global_rw = global_rw + atol(tmp);
-		str = talloc_asprintf(ctx,"W:%i#",atol(tmp));
+		str = talloc_asprintf(ctx,"W:%li#",atol(tmp));
 		send (c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
 	default: ;

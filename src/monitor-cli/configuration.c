@@ -137,7 +137,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
         int argc, char *argv[] )
 {
         int i;
-	char *pattern;
         TALLOC_CTX *runtime_mem = NULL;
         configuration_define_defaults( c );
 
@@ -266,10 +265,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			free(c->object_name);
 			c->object_name=NULL;
 			break;
+		case SMBTA_NONE:
+			printf("ERROR: unspecified type of object!\n");
+			exit(1);
+			break;
+
 	}
 	char *spawnArgs[] = { "smbtamonitor-gen","-h",c->host,"-i",pp,types,c->object_name, NULL };
-	int res = posix_spawnp(&pid,spawnArgs[0],NULL,NULL,spawnArgs,NULL);
-
+	posix_spawnp(&pid,spawnArgs[0],NULL,NULL,spawnArgs,NULL);
+	
 	printf("Warming up..\n");
 	sleep(1);
 	printf("Connecting to socket.\n");
@@ -306,7 +310,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 int configuration_check_configuration( struct configuration_data *c )
 {
-       struct stat sb;
     
         if ( c->debug_level <0 || c->debug_level>10 ) {
                 printf("ERROR: debug level has to be between 0 and 10.\n");

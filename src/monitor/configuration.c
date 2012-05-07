@@ -288,7 +288,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 int configuration_check_configuration( struct configuration_data *c )
 {
-       struct stat sb;
     
         if ( c->debug_level <0 || c->debug_level>10 ) {
                 printf("ERROR: debug level has to be between 0 and 10.\n");

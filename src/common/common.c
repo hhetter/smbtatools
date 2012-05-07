@@ -288,13 +288,12 @@ int common_get_data_block_length( char *header )
 int common_load_key_from_file( struct configuration_data *c)
 {
         FILE *keyfile;
-	int l;
         char *key = malloc(sizeof(char) * 21);
         keyfile = fopen(c->keyfile, "r");
         if (keyfile == NULL) {
                 return -1;
         }
-        l = fscanf(keyfile, "%20s", key);
+        fscanf(keyfile, "%20s", key);
         if (strlen(key) != 16) {
                 printf("ERROR: Key file in wrong format\n");
                 fclose(keyfile);
@@ -480,6 +479,10 @@ char *connect_monitor( TALLOC_CTX *ctx,
                 fd_set_w=active_fd_set;
 
                 z=select( sockfd+1,&fd_set_r,&fd_set_w,NULL,NULL);
+		if (z == -1) {
+			printf("ERROR in select in connect_monitor!\n");
+			exit(1);
+		}
                 if (FD_ISSET( sockfd,&fd_set_w) && state == UNSENT) {
                         /* ready to write to the socket */
 

@@ -323,6 +323,10 @@ static void handle_network( struct configuration *config )
 					} else handle_data(i,config);
                         	}
                 	}
+		if (z == -1) {
+			printf("error in select.\n");
+			exit(1);
+		}
 	}
 }
 

@@ -235,6 +235,11 @@ static void _1_2_4_to_1_2_5(struct confdata *c)
 	printf("\n");
 	enter_data(c);
 	ch = convert_database_connect(c);
+	if (ch == -1) {
+		printf("\nError connecting to the database.\n");
+		printf("Please check the configuration.\n");
+		exit(1);
+	}
 	printf("Updating tables...\n");
 	dbi_result rs = dbi_conn_query(c->DBIconn,
 		"ALTER TABLE mkdir ALTER COLUMN result TYPE bigint;" );
@@ -264,6 +269,11 @@ static void _1_2_5_to_1_2_6(struct confdata *c)
 	printf("\n");
 	enter_data(c);
 	ch = convert_database_connect(c);
+	if (ch == 1) {
+		printf("\nError: could not connect to the database.\n");
+		printf("\nPlease check options.\n");
+		exit(1);
+	}
 	printf("Creating new base table...\n");
 	dbi_result rs = dbi_conn_query(c->DBIconn,
 			"CREATE TABLE data ("

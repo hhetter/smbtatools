@@ -51,7 +51,7 @@ int network_register_monitor( enum monitor_fn func,
 void network_handle_data( struct configuration_data *c)
 {
         pthread_detach(pthread_self());
-        fd_set fd_set_r,fd_set_w,active_fd_set;
+        fd_set fd_set_r,active_fd_set;
         int z=0;
         char *header=NULL;
         int header_position=0;
@@ -72,15 +72,17 @@ void network_handle_data( struct configuration_data *c)
        		FD_ZERO (&active_fd_set);
 	        FD_SET(c->socket,&active_fd_set);
 	        fd_set_r=active_fd_set;
- 	  	fd_set_w=active_fd_set;
 	        while (state != DATA_RECEIVED) {
         	        /* Initialize the set of active input sockets. */
                 	FD_ZERO (&active_fd_set);
                 	FD_SET(c->socket,&active_fd_set);
                 	fd_set_r=active_fd_set;
-                	fd_set_w=active_fd_set;
 
                 	z=select( sockfd+1,&fd_set_r,NULL,NULL,NULL);
+			if (z == -1) {
+				printf("ERROR: select in network_handle\n");
+				exit(1);
+			}
                 	if (FD_ISSET( sockfd,&fd_set_r) && state == UNSENT) {
                         	/* ready to read */
                         	state = RECEIVING_HEADER;
