@@ -195,16 +195,16 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				exit(0);
 			case 's':
 				c->object_type = SMBTA_SHARE;
-				c->object_name = talloc_asprintf(runtime_mem, "-s %s",optarg);
+				c->object_name = talloc_asprintf(runtime_mem, "%s",optarg);
 				
 				break;
 			case 'u':
 				c->object_type = SMBTA_USER;
-				c->object_name = talloc_asprintf(runtime_mem, "-u %s",optarg);
+				c->object_name = talloc_asprintf(runtime_mem, "%s",optarg);
 				break;
 			case 'f':
 				c->object_type = SMBTA_FILE;
-				c->object_name = talloc_asprintf(runtime_mem, "-f %s",optarg);
+				c->object_name = talloc_asprintf(runtime_mem, "%s",optarg);
 				break;
 			case 't':
 				c->timer= (int) common_myatoi(optarg);
@@ -226,14 +226,39 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 	// Run the monitor-gen process
 	//
+	//
+	int pid;
+	char *types;
+	char *pp = talloc_asprintf(runtime_mem, "%i",c->port);
+	switch(c->object_type) {
+		case SMBTA_USER:
+			types = talloc_asprintf(runtime_mem,"-u");
+			break;
+		case SMBTA_SHARE:
+			types = talloc_asprintf(runtime_mem,"-s");
+			break;
+		case SMBTA_FILE:
+			types = talloc_asprintf(runtime_mem,"-f");
+			break;
+		case SMBTA_DOMAIN:
+			types = talloc_asprintf(runtime_mem,"-d");
+			break;
+		case SMBTA_GLOBAL:
+			types = talloc_asprintf(runtime_mem,"-g");
+			free(c->object_name);
+			c->object_name=NULL;
+			break;
+	}
+	char *spawnArgs[] = { "smbtamonitor-gen","-h",c->host,"-i",pp,types,c->object_name, NULL };
+	int res = posix_spawnp(&pid,spawnArgs[0],NULL,NULL,spawnArgs,NULL);
 
-	char *cmdstr = talloc_asprintf(runtime_mem, "exec smbtamonitor-gen -h %s -i %i %s &",
-			c->host, c->port, c->object_name);
-	printf("%s\n", cmdstr);
-	system( cmdstr );
+	printf("Warming up..\n");
+	sleep(1);
+	printf("Connecting to socket.\n");
+	
+
+
 	exit(1);
-
-
 	while (1 == 1) {
 		sleep( 100 );
 	}
@@ -278,42 +303,4 @@ int configuration_check_configuration( struct configuration_data *c )
         return 0;
 }
 
-void configuration_create_db(struct configuration_data *c)
-{
-	FILE *db;
-	db = fopen(c->database,"r");
-	if (db != NULL) { fclose(db); return; }
-	char rrdbin[255] = "/usr/bin/rrdtool";
-	char fullstr[500];
-	int res = 0;
-	time_t starttime = time(NULL);
-	char timestr[255];
-	sprintf(timestr,"%ju",(uintmax_t) starttime);
-	sprintf(fullstr,"%s create %s -b %s -s %i %s",
-		rrdbin,
-		c->database,
-		timestr,
-		c->timer,
-		c->rrdtool_setup);
 
-	res = system( fullstr );
-	if (res == -1) {
-		printf("ERROR: error creating the database.\n");
-	}
-}
-
-/* 
- * This fills the filter pattern for the monitor by running identify,
- * and eventually filling more required patterns
- */
-static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
-{
-	/*
-	 * How the pattern is build:
-	 * USER, USERSID, SHARE, FILE, DOMAIN
-	 *
-	 */
-	char *pattern;
-	pattern = common_identify( ctx,c->object_type,c->object_name,c,1);
-	return pattern;
-}	
