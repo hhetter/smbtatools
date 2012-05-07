@@ -255,12 +255,18 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	printf("Warming up..\n");
 	sleep(1);
 	printf("Connecting to socket.\n");
-	
+	char *socketstr = talloc_asprintf(runtime_mem,
+			"/var/tmp/smbtamonitor-gen-socket-%i",
+			pid);
+	int mysocket = common_connect_unix_socket( socketstr );
 
 
-	exit(1);
+	char MyBuffer[1000];
+
 	while (1 == 1) {
-		sleep( 100 );
+		recv(mysocket,&MyBuffer,200,0);
+		printf("%s\n",MyBuffer);
+		
 	}
 
 
