@@ -28,6 +28,12 @@ pthread_t thread;
 int configuration_check_configuration( struct configuration_data *c );
 void configuration_create_db(struct configuration_data *c);
 
+struct signalstruct {
+	int pid;
+	int socket;
+};
+
+struct signalstruct signal_data;
 
 static void configuration_show_help()
 {
@@ -113,7 +119,15 @@ static int configuration_load_config_file( struct configuration_data *c)
         return 0;
 }
 
-static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
+void catch_signal(int z)
+{
+	printf("Closing socket and cleanup...");
+	close(signal_data.socket);
+	char delstr = talloc_asprintf(NULL,"/var/tmp/smbtamonitor-gen-socket-%i",
+			signal_data.pid);
+	remove(delstr);
+	printf("done.\n");
+}
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -229,6 +243,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	//
 	int pid;
 	char *types;
+
 	char *pp = talloc_asprintf(runtime_mem, "%i",c->port);
 	switch(c->object_type) {
 		case SMBTA_USER:
@@ -259,7 +274,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			"/var/tmp/smbtamonitor-gen-socket-%i",
 			pid);
 	int mysocket = common_connect_unix_socket( socketstr );
-
+	signal_data.pid=pid;
+	signal_data.socket=mysocket;
+	signal( SIGTERM, &catch_signal);
 
 	char MyBuffer[1000];
 	int tt;
