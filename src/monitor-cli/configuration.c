@@ -129,6 +129,7 @@ void catch_signal(int z)
 	remove(delstr);
 	talloc_free(delstr);
 	printf("done.\n");
+	exit(0);
 }
 
 
