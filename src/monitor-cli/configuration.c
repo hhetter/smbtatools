@@ -262,9 +262,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 
 	char MyBuffer[1000];
-
+	int tt;
 	while (1 == 1) {
 		recv(mysocket,&MyBuffer,200,0);
+		for (tt=0;tt<200;tt++) {
+			if ( MyBuffer[tt]=='#' ) {
+				MyBuffer[tt]='\0';
+				break;
+			}
+		}
 		printf("%s\n",MyBuffer);
 		
 	}
