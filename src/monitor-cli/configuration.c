@@ -122,10 +122,12 @@ static int configuration_load_config_file( struct configuration_data *c)
 void catch_signal(int z)
 {
 	printf("Closing socket and cleanup...");
+	kill(signal_data.pid,SIGKILL);
 	close(signal_data.socket);
 	char delstr = talloc_asprintf(NULL,"/var/tmp/smbtamonitor-gen-socket-%i",
 			signal_data.pid);
 	remove(delstr);
+	talloc_free(delstr);
 	printf("done.\n");
 }
 
