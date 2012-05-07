@@ -216,6 +216,17 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
+SET(CurrentExe "smbtamonitor-cli")
+ADD_EXECUTABLE(${CurrentExe}
+	src/monitor-cli/main.c
+	src/monitor-cli/configuration.c
+	src/common/common.c
+	src/common/aes.c
+	src/common/rijndael-alg-fst.c
+	)
+
+TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
+
 # Adding the subdirectory for monitor-qt
 
 add_subdirectory( src/monitor-qt )
@@ -244,5 +255,5 @@ INSTALL(FILES src/torture/srv/directories.txt
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
-INSTALL(TARGETS smbtaquery smbtamonitor-gen  smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtamonitor-cli smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
 
