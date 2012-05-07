@@ -288,8 +288,8 @@ int common_get_data_block_length( char *header )
 int common_load_key_from_file( struct configuration_data *c)
 {
         FILE *keyfile;
+	int l;
         char *key = malloc(sizeof(char) * 21);
-        int l;
         keyfile = fopen(c->keyfile, "r");
         if (keyfile == NULL) {
                 return -1;
@@ -462,9 +462,9 @@ char *connect_monitor( TALLOC_CTX *ctx,
          struct configuration_data *config,
          char *query )
  {
-         if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
+	int z = 0;
+ 	if (config->debug_level>0) printf("\nSQL-QUERY: %s\n",query);
         fd_set fd_set_r,fd_set_w,active_fd_set;
-        int z=0;
         char *header=NULL;
         int header_position=0;
         char *body=NULL;

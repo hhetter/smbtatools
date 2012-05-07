@@ -294,7 +294,7 @@ static void handle_network( struct configuration *config )
 {
 	int maxconn=0;
 	socklen_t t = sizeof(struct sockaddr_in);
-	int z,i;
+	int i,z;
         struct sockaddr_in remote_inet;
 
         fd_set read_fd_set;

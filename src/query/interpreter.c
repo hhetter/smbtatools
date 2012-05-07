@@ -1501,7 +1501,6 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 			res = dbi_conn_query(config->DBIconn, query);
 			dbi_result_first_row(res);
 			yaxis_w[z] = dbi_result_get_int_idx(res,1);
-			printf("RES: %i",yaxis_w[z]);
 			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
 			talloc_free(query);
 			dbi_result_free(res);
@@ -1541,7 +1540,6 @@ static void interpreter_fn_usage(TALLOC_CTX *ctx,
 		}
 	go = go + steps;
 	}
-	printf("MAX: %i",maximum);
 	smbta_gfx_simple_diagram( imgwidth,
 			imgheight,
 			yaxis_r,
@@ -1634,7 +1632,6 @@ static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 	dbi_result qdat;
 	upstream_data.memory = malloc(1);
 	upstream_data.size = 0;
-	int rc = 0;
 	interpreter_xml_begin_function(config,"self-check");
 	qdat = sql_query(ctx,config,"SELECT smbtad_version FROM status;");
 	dbi_result_first_row(qdat);

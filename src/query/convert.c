@@ -228,7 +228,7 @@ static void convert_check_dbi_res( dbi_result rs)
 
 static void _1_2_4_to_1_2_5(struct confdata *c)
 {
-	int ch=0;
+	int ch;
 	printf("\n");
 	printf("-> Upgrading database from version 1.2.4 to 1.2.5.\n");
 	printf("-------------------------------------------------------------\n");
@@ -257,7 +257,7 @@ static void _1_2_4_to_1_2_5(struct confdata *c)
 
 static void _1_2_5_to_1_2_6(struct confdata *c)
 {
-	int ch=0;
+	int ch;
 	printf("\n");
 	printf("-> Upgrading database from version 1.2.5 to 1.2.6.\n");
 	printf("-------------------------------------------------------------\n");

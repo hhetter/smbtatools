@@ -49,7 +49,7 @@ enum SMBTA_GFX {
 	SMBTA_GFX_R,
 	SMBTA_GFX_W,
 	SMBTA_GFX_RW};
-
+/*
 static double smbta_gfx_downscale_maximum( unsigned long int kb,
 		char *type)
 {
@@ -90,7 +90,7 @@ static double smbta_gfx_downscale_maximum( unsigned long int kb,
 	strcpy(type,kbstring);
 	return rr;
 }
-																																												
+*/																																												
 
 
 void smbta_gfx_simple_diagram(
@@ -102,7 +102,6 @@ void smbta_gfx_simple_diagram(
 		unsigned long int maximum)
 {
 	int x;
-	char kbstring[20];
 	double per;
 	cairo_surface_t *surface = cairo_svg_surface_create(
 			"test",
@@ -111,7 +110,6 @@ void smbta_gfx_simple_diagram(
 	cairo_t *cr = cairo_create(surface);
 	/* black background */
 	per = (double) maximum / 100;
-	printf("MAX: %i,   per = %f",maximum, per);
 	cairo_set_source_rgb(cr,0,0,0);
 	cairo_paint(cr);
 	cairo_scale(cr, imgwidth,imgheight); // imgwidth
