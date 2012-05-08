@@ -12,6 +12,7 @@
 #include <QtNetwork>
 #include <QLocalSocket>
 
+#include <QApplication>
 
 #include "processrunner.h"
 #include "timeclass.h"
@@ -41,7 +42,7 @@ public:
 
 
     QString  *pid_string;
-//    QLocalSocket *monitorSocket;
+    QLocalSocket *monitorSocket;
 
 
 public slots:

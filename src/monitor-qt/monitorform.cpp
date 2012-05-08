@@ -11,8 +11,8 @@ MonitorForm::MonitorForm(QWidget *parent) :
     timeClassW->start();
     processRunnerW = new Processrunner();
     processRunnerW->start();
-    QLocalSocket test;
-    QLocalSocket *monitorSocket = new QLocalSocket();
+
+    monitorSocket = new QLocalSocket();
     running=false;
     pid_string = new QString;
 
@@ -56,11 +56,14 @@ void MonitorForm::startmonitor()
        qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
        processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
 
+
+
        int lpid = processRunnerW->monitorprocess->pid();
        qDebug() <<lpid << " Hey";
 //       *pid_string = QString("%1").arg(processRunnerW->monitorprocess->pid());
        *pid_string = QString::number(processRunnerW->monitorprocess->pid());
        QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
+       sleep(1);
        qDebug()<<socketString;
        if(QFile::exists(socketString))
        {
@@ -68,6 +71,19 @@ void MonitorForm::startmonitor()
 
        }
        else(qDebug()<<"nichts");
+
+       connect(monitorSocket, SIGNAL(connected()), this, SLOT(sendmessage()));
+       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
+       monitorSocket->connectToServer(socketString, QIODevice::ReadOnly);
+       qDebug() << monitorSocket->state();
+
+
+        if(monitorSocket->isValid()){
+
+            qDebug() << "Valide";
+        }
+
+
 
 
        qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
@@ -112,6 +128,7 @@ void MonitorForm::sendmessage()
 {
 
     qDebug() << "monitorform:sendmessage()";
+    qDebug()<< "Heute: connected to socket";
 
 }
 
