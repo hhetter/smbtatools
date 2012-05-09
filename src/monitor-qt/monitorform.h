@@ -41,7 +41,8 @@ public:
     bool running;
 
 
-    QString  *pid_string;
+    QString  *pid_string, *readstring;
+    QStringList *readlist;
     QLocalSocket *monitorSocket;
 
 
@@ -49,6 +50,7 @@ public slots:
 
     void startmonitor();
     void stopmonitor();
+    void readfromsocket();
     void sendmessage();
 
 private:

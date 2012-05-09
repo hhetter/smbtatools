@@ -15,6 +15,8 @@ MonitorForm::MonitorForm(QWidget *parent) :
     monitorSocket = new QLocalSocket();
     running=false;
     pid_string = new QString;
+    readstring = new QString;
+    readlist = new QStringList;
 
 
     //    timeClassW->start();
@@ -74,6 +76,7 @@ void MonitorForm::startmonitor()
 
        connect(monitorSocket, SIGNAL(connected()), this, SLOT(sendmessage()));
        connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
+       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(readfromsocket()));
        monitorSocket->connectToServer(socketString, QIODevice::ReadOnly);
        qDebug() << monitorSocket->state();
 
@@ -129,6 +132,22 @@ void MonitorForm::sendmessage()
 
     qDebug() << "monitorform:sendmessage()";
     qDebug()<< "Heute: connected to socket";
+
+}
+
+void MonitorForm::readfromsocket(){
+
+    qDebug() << "readfromsocket()";
+
+    *readstring = monitorSocket->readLine();
+    qDebug()<<*readstring;
+    *readlist = readstring->split("#");
+    qDebug()<< "Last index: " << readlist->last();
+
+
+
+
+
 
 }
 
