@@ -52,6 +52,8 @@ public slots:
     void stopmonitor();
     void readfromsocket();
     void sendmessage();
+    void sendtovisualizer();
+    void parseinput();
 
 private:
     Ui::MonitorForm *ui;

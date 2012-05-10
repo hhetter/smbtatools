@@ -18,6 +18,8 @@ MonitorForm::MonitorForm(QWidget *parent) :
     readstring = new QString;
     readlist = new QStringList;
 
+    int i_listmax;
+
 
     //    timeClassW->start();
     connect(ui->startButton, SIGNAL(clicked()),this, SLOT(startmonitor()), Qt::UniqueConnection);
@@ -52,6 +54,8 @@ void MonitorForm::startmonitor()
 
        timeClassW->tc_timersignal();
 //       visualW = new Visual(ui->visual_widget, 5);
+       QLabel *label = new QLabel(ui->visual_widget);
+       label->setText("Derp");
 
 
 //         visualW->vs_processnumbers(l_writestack, l_readstack);
@@ -77,6 +81,7 @@ void MonitorForm::startmonitor()
        connect(monitorSocket, SIGNAL(connected()), this, SLOT(sendmessage()));
        connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
        connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(readfromsocket()));
+       connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendtovisualizer()));
        monitorSocket->connectToServer(socketString, QIODevice::ReadOnly);
        qDebug() << monitorSocket->state();
 
@@ -142,13 +147,27 @@ void MonitorForm::readfromsocket(){
     *readstring = monitorSocket->readLine();
     qDebug()<<*readstring;
     *readlist = readstring->split("#");
-    qDebug()<< "Last index: " << readlist->last();
+    qDebug()<< "Last index: " << readlist->count();
+
+}
 
 
 
+void MonitorForm::parseinput(){
 
 
 
 }
+
+void MonitorForm::sendtovisualizer(){
+
+    qDebug() << "sendtovisualizer()";
+
+
+
+}
+
+
+
 
 #include "monitorform.moc"

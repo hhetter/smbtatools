@@ -40,6 +40,9 @@
    </property>
   </widget>
   <widget class="QWidget" name="visual_widget" native="true">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -48,19 +51,6 @@
      <height>201</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>20</y>
-      <width>90</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>blargh</string>
-    </property>
-   </widget>
   </widget>
  </widget>
  <resources/>
