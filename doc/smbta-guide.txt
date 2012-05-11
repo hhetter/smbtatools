@@ -1803,6 +1803,15 @@ http://holger123.wordpress.com/smb-traffic-analyzer/
 
 If you can reproduce an error situation, do not hestitate to open a bug on http://bugzilla.novell.com, set "Samba" as component, and begin the Bug subject with [SMBTA]. If you have problems that might not be as easy to reproduce, or need help in doing this, longer stories, or even a word of "Hey SMBTA is cool, thank you!", please send mail to Holger Hetterich <ozzy@metal-district.de>.
 
+SMBTA performance
+-----------------
+
+SMBTA benchmarking has been done using the Phoronix Testsuite, and a graph of the results can be found in
+the ./doc/performance-testing/ directory as *smbtad_performance_analysis.png*. The used utility scripts and a README can be found there too.
+
+
+
+
 Project outlook and version history
 -----------------------------------
 
