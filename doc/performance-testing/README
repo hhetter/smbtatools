@@ -1,0 +1,24 @@
+Find more information about this performance test of SMBTA in
+https://bugzilla.samba.org/show_bug.cgi?id=8210
+
+
+--------------
+
+For each of file sizes, simple copy from/to were carried out 10 times. Average
+transfer speed were used. It was all automated using Phoronix Test Suite.
+
+To reproduce these tests, you will require the following:
+1) Download and install PTS (http://www.phoronix-test-suite.com/)
+2) create local profile for specified file size (10MB, 100MB, 1GB etc)
+you will require following files (examples attached):
+* downloads.xml
+* install.sh
+* results-definition.xml
+* test-definition.xml
+
+3) install and run tests. For convenience, I attached simple script which does
+it automatically:
+* run_tests.sh
+
+In my test scenario, samba+smbtad were installed on one computer and tests were
+carried out from remote machine.

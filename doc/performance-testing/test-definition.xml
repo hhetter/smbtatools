@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Phoronix Test Suite v3.0.0a3 (Iveland) [ http://www.phoronix-test-suite.com/ ]-->
+<PhoronixTestSuite>
+  <TestInformation>
+    <Title>Samba</Title>
+    <AppVersion>3.6.0_rc2 using 1000MB(s) files</AppVersion>
+    <Description>This is a test of Samba performance using 1000MB files.</Description>
+    <ResultScale>MB/sec</ResultScale>
+    <Proportion>HIB</Proportion>
+    <SubTitle>Total Time</SubTitle>
+    <TimesToRun>10</TimesToRun>
+  </TestInformation>
+  <TestProfile>
+    <Version>1.0.0</Version>
+    <SupportedPlatforms>Linux, Solaris, MacOSX, BSD</SupportedPlatforms>
+    <SoftwareType>Utility</SoftwareType>
+    <TestType>Processor</TestType>
+    <License>Free</License>
+    <Status>Verified</Status>
+    <ExternalDependencies>build-utilities</ExternalDependencies>
+    <EnvironmentSize>6.0</EnvironmentSize>
+    <ProjectURL>http://www.samba.org</ProjectURL>
+    <InternalTags>SMP</InternalTags>
+    <Maintainer>Robert Piasek</Maintainer>
+  </TestProfile>
+</PhoronixTestSuite>

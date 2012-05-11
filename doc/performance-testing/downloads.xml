@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Phoronix Test Suite v3.0.0a3 (Iveland) [ http://www.phoronix-test-suite.com/ ]-->
+<PhoronixTestSuite>
+  <Downloads>
+    <Package>
+      <URL>file:///opt/phoronix-test-suite/files/1GB</URL>
+      <MD5>e5c834fbdaa6bfd8eac5eb9404eefdd4</MD5>
+      <FileSize>1000</FileSize>
+    </Package>
+  </Downloads>
+</PhoronixTestSuite>
