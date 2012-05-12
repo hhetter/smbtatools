@@ -19,6 +19,7 @@ INCLUDE(${CMAKE_SOURCE_DIR}/FindSqlite.cmake)
 # Build debugging enabled binaries
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #
