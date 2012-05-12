@@ -1351,47 +1351,39 @@ image:gfx/webSMBTA/edituser.png[Change user settings] +
 smbtamonitor
 ~~~~~~~~~~~~
 
-smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is listening on the smbtad socket for news, and visualizes them in an curses window.
+smbtamonitor allows to view Samba traffic in real-time. The program connects directly to smbtad via the network. To allow real-time, a special feature in smbtad has been implemented. Instead of receiving data from the SQL storage, smbtad filters and sends directly to smbtamonitor when receiving a data package from a vfs_smb_traffic_analyzer VFS module. The smbtamonitor program is separated into a generic process making the connection to smbtad, and frontends, that are connecting to the subprocess by a unix domain socket.
 
-This concept allows for interesting options, such as computing the throughput of an object within smbtad. The queries smbtamonitor is doing are called "monitors" by the authors. A "monitor" is like a dynamically loaded module in smbtad, requested by smbtamonitor, and doing some computing on the numbers.
+smbtamonitor-cli is a command line tool, which can be used to test the connection to smbtad, or to consume the data by another program. It resembles the simplest smbtamonitor backend one can use.
 
-For example you can watch the total number of transferred bytes and the throughput per second of an object by running smbtamonitor.
+smbtamonitor-qt is a QT based program, showing the traffic in real time using a graph. It is currently in development, and documentation has not yet been written.
 
-Any smbtamonitor instance is bound to an object ( a user, a file, a share, or a domain). You can run as many smbtamonitor instances as you want against smbtad.
-
-smbtamonitor startup
-^^^^^^^^^^^^^^^^^^^^
+using smbtamonitor-cli
+^^^^^^^^^^^^^^^^^^^^^^
 
 To start a monitor, use the same arguments for the host and internet port to connect to as with smbtaquery:
 ------------------------------------------
-smbtamonitor -h examplehost.de.ex -i 3491 --share "Distribution Space"
+smbtamonitor-cli -h examplehost.de.ex -i 3491 --share "Distribution Space"
 ------------------------------------------
 
 Or, alternativly let smbtamonitor connect through a unix domain socket to smbtad, by invoking the -n switch:
 -------------------------------------------
-smbtamonitor -n --share "Distribution Space"
+smbtamonitor-cli -n --share "Distribution Space"
 -------------------------------------------
 
 This command will start a real time monitor that will display information about the share named "Distribution Space". Likewise, it's possible to run:
 
 -----------------------------------------
-smbtamonitor -h examplehost.de.ex -i 3491 --user holger
+smbtamonitor-cli -h examplehost.de.ex -i 3491 --user holger
 -----------------------------------------
 
 which will run a monitor displaying information about the user holger, and:
 
 -----------------------------------------
-smbtamonitor -h examplehost.de.ex -i 3491 --file README
+smbtamonitor-cli -h examplehost.de.ex -i 3491 --file README
 -----------------------------------------
 
 will run a monitor displaying real time information about the file named
 "README".
-
-After identification of the given object, like already mentioned in the smbtaquery chapter, the monitor will initialize the curses library for it's display. smbtamonitor runs 80x25 display size fixed at the moment. The smbtamonitor screen is the same for any object given. In the upper half of the screen the user will be presented the total sum of transferred bytes by the given object, sorted by read-only requests, write-only and both of them. Then the data throughput per second is displayed, this number should change quickly when something is transferred involving the given object. The throughput is also sorted by read-only, write-only and both of them. The lower half of the screen represents a real-time human readable text log of what happens with the given object. For example copying a simple file on a share should show that the file was opened, written to, and then closed.
-
-Running smbtamonitor without identification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-By default, smbtamonitor runs an identification process, that queries the database of smbtad. However the database handling of smbtad can be shut down by the administrator, if SMBTA is only to be used with rrddriver or smbtamonitor. Therefore the -I --identify command line switch can be used to shut down identification at startup of smbtamonitor. If this parameter is set to 0, identification will be ommited.
 
 
 rrddriver
