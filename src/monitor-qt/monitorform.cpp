@@ -52,11 +52,22 @@ void MonitorForm::startmonitor()
        qDebug()<<"1";
        timeClassW->timer->start();
 
-       timeClassW->tc_timersignal();
-//       visualW = new Visual(ui->visual_widget, 5);
-       QLabel *label = new QLabel(ui->visual_widget);
-       label->setText("Derp");
 
+//       timeClassW->tc_timersignal();
+
+       visualW = new Visual(ui->visual_widget, 5);
+       QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
+//       QLabel *label = new QLabel(ui->visual_widget);
+ //      label->setText("*label");
+       vlayout->addWidget(visualW);
+
+//       visualW = new Visual(ui->visual_widget, 5);
+//       QLabel *label = new QLabel(ui->visual_widget);
+//       label->setText("label");
+//       ui->visual_widget->show();
+//       label->setText("hm");
+//       long unsigned int uli1 = 1000;
+//       visualW->vs_processnumbers(&uli1,&uli1);
 
 //         visualW->vs_processnumbers(l_writestack, l_readstack);
        qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
@@ -124,6 +135,8 @@ void MonitorForm::stopmonitor()
         processRunnerW->monitorprocess->kill();
         qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
         timeClassW->timer->stop();
+
+
     }
 
 
@@ -148,6 +161,15 @@ void MonitorForm::readfromsocket(){
     qDebug()<<*readstring;
     *readlist = readstring->split("#");
     qDebug()<< "Last index: " << readlist->count();
+
+//    int kk = readlist->count();
+
+    for(int i=0; i < readlist->count(); i++){
+                qDebug()<<i;
+                qDebug()<<readlist->at(i);
+                qDebug()<<"--------------";
+
+            }
 
 }
 

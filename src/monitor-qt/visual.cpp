@@ -89,6 +89,8 @@ void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 
+    qDebug()<<"vs_processnumbers";
+
 
  ////
  //
@@ -208,7 +210,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
  i_rescaletimer++;
  i_x++;
 
- update();
+// update();
 
 
 //*********************************************************************************

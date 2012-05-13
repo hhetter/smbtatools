@@ -19,8 +19,8 @@
      <rect>
       <x>120</x>
       <y>30</y>
-      <width>771</width>
-      <height>541</height>
+      <width>750</width>
+      <height>550</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -164,7 +164,7 @@
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>1</x>

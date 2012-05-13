@@ -8,8 +8,9 @@
 #include <QProcess>
 #include <QFile>
 #include <QString>
+#include <QHBoxLayout>
 
-#include <QtNetwork>
+//#include <QtNetwork>
 #include <QLocalSocket>
 
 #include <QApplication>
