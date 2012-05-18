@@ -59,6 +59,9 @@ static void configuration_show_help()
 	printf("				unix-domain socket to be used\n");
 	printf("				for client communication.\n");
 	printf("				Default: /var/tmp/\n");
+	printf("-x	--dryrun		Don't connect to smbta, instead\n");
+	printf("				deliver random values to the client.\n");
+	printf("				Used for offline testing.\n");
         printf("\n");
 }
 
@@ -79,6 +82,7 @@ static void configuration_define_defaults( struct configuration_data *c )
 	c->object_name = NULL;
 	c->identify = 0;
 	c->path = strdup ("/var/tmp/");
+	c->dryrun = 0;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
@@ -160,15 +164,19 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "unix-socket",0,NULL,'n'},
 			{ "identify",1,NULL,'I'},
 			{ "path",1,NULL,'p'},
+			{ "dryrun",0,NULL,'x'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "ns:u:f:d:i:c:k:h:?I:D:gp:", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:?I:D:gp:x", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'x':
+				c->dryrun = 1;
+				break;
 			case 'g':
 				c->object_type = 6;
 				c->object_name = strdup( "global");
@@ -238,12 +246,13 @@ int configuration_parse_cmdline( struct configuration_data *c,
         configuration_default_config( runtime_mem, c);
         if (c->config_file != NULL)
                 configuration_load_config_file(c);
-        if (configuration_check_configuration(c)==-1) exit(1);
-	if (c->unix_socket == 0)
+        if (c->dryrun==0 && configuration_check_configuration(c)==-1) exit(1);
+	if (c->dryrun==0 && c->unix_socket == 0)
 		c->socket = common_connect_socket( c->host, c->port );
-	else
+	else if (c->dryrun==0) {
 		c->socket = common_connect_unix_socket(
 			"/var/tmp/stadsocket_client");
+	}
 
 	char *fname = talloc_asprintf(NULL, "%ssmbtamonitor-gen-socket-%i",c->path,getpid());
 	c->monitor_gen_socket = network_create_unix_socket( fname );
@@ -264,10 +273,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 
 	monitor_list_init();
-        /* through all options, now run the query command */
-	pattern = configuration_generate_pattern(runtime_mem, c);
-        network_register_monitor(MONITOR_READ,"NULL",pattern,c);
-	network_register_monitor(MONITOR_WRITE,"NULL",pattern,c);
+	if (c->dryrun==0) {
+		/* through all options, now run the query command */
+		pattern = configuration_generate_pattern(runtime_mem, c);
+        	network_register_monitor(MONITOR_READ,"NULL",pattern,c);
+		network_register_monitor(MONITOR_WRITE,"NULL",pattern,c);
+	}
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
 	/* main loop 

@@ -83,6 +83,8 @@ void network_handle_data( struct configuration_data *c)
         pthread_detach(pthread_self());
         fd_set fd_set_r,active_fd_set;
         int z=0;
+	int u=0;
+	char *str = NULL;
         char *header=NULL;
         int header_position=0;
         char *body=NULL;
@@ -90,6 +92,24 @@ void network_handle_data( struct configuration_data *c)
         int data_length=0;
         int sockfd = c->socket;
         enum network_send_flags state = UNSENT;
+
+	// dryrun just sends out values
+	// and will loop forever
+	if (c->dryrun==1) {
+		while( 1==1 ) {
+			z = rand();
+			u = rand() % 2;
+			if (u == 0) {
+				str = talloc_asprintf(NULL,"R:%i#",z);
+			} else {
+				str = talloc_asprintf(NULL,"W:%i#",z);
+			}
+			send(c->monitor_gen_socket_cli,str,strlen(str),0);
+			talloc_free(str);
+			z = rand() % 5;
+			sleep(z);
+		}
+	}
 
 	state = UNSENT;
 	while (1 == 1) {
