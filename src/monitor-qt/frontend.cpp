@@ -9,7 +9,7 @@ frontend::frontend(QWidget *parent) :
     ui->setupUi(this);
 
 //    Configuration *configurator = new Configuration();
-    Configuration *confi2;
+//    Configuration *confi2;
     configWidget = new ConfigForm;
 //    confi2 = new Configuration();
     monitorFormW = new MonitorForm();

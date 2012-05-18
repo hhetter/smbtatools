@@ -9,11 +9,13 @@
 #include <QFile>
 #include <QString>
 #include <QHBoxLayout>
+#include <QMutex>
 
 //#include <QtNetwork>
 #include <QLocalSocket>
 
 #include <QApplication>
+#include <QProcess>
 
 #include "processrunner.h"
 #include "timeclass.h"
@@ -45,6 +47,8 @@ public:
     QString  *pid_string, *readstring;
     QStringList *readlist;
     QLocalSocket *monitorSocket;
+
+    QProcess *testsocketprocess;
 
 
 public slots:

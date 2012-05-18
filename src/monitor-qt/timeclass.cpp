@@ -26,7 +26,7 @@ void Timeclass::run(){
 //   timer->setInterval(60000); // minute
    timer->setInterval(600);   // second
 //   timer->setInterval(60);	// milisecond
-//   timer->start();
+   timer->start();
 
 //    connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
    exec();
