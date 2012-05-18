@@ -89,7 +89,7 @@ void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i
 
 void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 
-    qDebug()<<"vs_processnumbers";
+//    qDebug()<<"vs_processnumbers";
 
 
  ////

@@ -16,6 +16,8 @@ MonitorForm::MonitorForm(QWidget *parent) :
     running=false;
     pid_string = new QString;
     readstring = new QString;
+    leftoverstring = new QString;
+
     readlist = new QStringList;
 
     testsocketprocess = new QProcess;
@@ -90,19 +92,12 @@ void MonitorForm::startmonitor()
        }
        else(qDebug()<<"No socket found");
 
-//       connect(monitorSocket, SIGNAL(connected()), this, SLOT(sendmessage()));
-//       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
-//       connect(monitorSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendmessage()));
-
-//       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(readfromsocket()));
-//       connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendtovisualizer()));
-
-       //connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendmessage())); // enter function here: QIODevice::readData
 
 
        monitorSocket->connectToServer(socketString, QIODevice::ReadOnly);
        connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendtovisualizer()));
-       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
+       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(readfromsocket()));
+//       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
        qDebug() << monitorSocket->state();
 
 
@@ -117,6 +112,14 @@ void MonitorForm::startmonitor()
 
 //    processRunnerW->monitorprocess->start("./owntools3");
 //    connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()));
+//       connect(monitorSocket, SIGNAL(connected()), this, SLOT(sendmessage()));
+//       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(sendmessage()));
+//       connect(monitorSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(sendmessage()));
+
+//       connect(monitorSocket, SIGNAL(readyRead()), this, SLOT(readfromsocket()));
+//       connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendtovisualizer()));
+
+//connect(timeClassW->timer, SIGNAL(timeout()), this, SLOT(sendmessage())); // enter function here: QIODevice::readData
 
 
 
@@ -137,7 +140,8 @@ void MonitorForm::stopmonitor()
 //    if(1){
         qDebug() << "stopmonitor";
         running = false;
-        processRunnerW->monitorprocess->kill();
+//        processRunnerW->monitorprocess->kill();
+        processRunnerW->monitorprocess->terminate();
         qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
         timeClassW->timer->stop();
 
@@ -152,6 +156,9 @@ void MonitorForm::stopmonitor()
 
 void MonitorForm::sendmessage()
 {
+    ////
+    // used mainly to create debug messages for certain signals
+
 
     qDebug() << "monitorform:sendmessage()";
     qDebug()<< "Heute: readyRead()";
@@ -163,6 +170,7 @@ void MonitorForm::readfromsocket(){
     ////
     // Read input from the socket and write to i_readstack and i_writestack
     // Test if traffic line is complete (trailing '#') and handle incomplete traffic values
+    // **trailing '#' issue not touched yet**
     // **not finished yet**
 
 
@@ -176,12 +184,42 @@ void MonitorForm::readfromsocket(){
 
 //    int kk = readlist->count();
 
-//    for(int i=0; i < readlist->count(); i++){
+    for(int i=0; i < readlist->count()-1; i++){
+
+        QString output = readlist->at(i);
+
+        qDebug()<<"Output 1: " << output;
+
+        if(output.startsWith("W")){
+            qDebug()<<"starts with W";
+                 qDebug()<<"------------";
+                qDebug()<<"Output: " << output;
+                output.replace("W:","");
+                output.chop(1);
+                qDebug()<<"Output: " << output;
+                *l_writestack += output.toULong();
+                qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
+        }
+
+        if(output.startsWith("R")){
+            qDebug()<<"starts with R";
+                qDebug()<<"------------";
+                qDebug()<<"Output: " << output;
+                output.replace("R:","");
+                output.chop(1);
+                qDebug()<<"Output: " << output;
+                *l_readstack += output.toULong();
+                qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
+        }
+
+
+
+
 //                qDebug()<<i;
 //                qDebug()<<readlist->at(i);
 //                qDebug()<<"--------------";
 
-//            }
+            }
 //
 //    *readstring = "";
 
@@ -211,10 +249,14 @@ void MonitorForm::sendtovisualizer(){
     mutex.lock();
 
 
-    qDebug() << "sendtovisualizer()";
+//    qDebug() << "sendtovisualizer()";
     unsigned long int uli1 = 1000;
     unsigned long int uli2 = 1500;
-    visualW->vs_processnumbers( &uli1, &uli2);
+    qDebug()<<"*l_readstack  " << *l_readstack;
+    qDebug()<<"*l_writestack " << *l_writestack;
+    visualW->vs_processnumbers( l_readstack, l_writestack);
+    *l_readstack = 0;
+    *l_writestack = 0;
 
 
 

@@ -44,7 +44,7 @@ public:
     bool running;
 
 
-    QString  *pid_string, *readstring;
+    QString  *pid_string, *readstring, *leftoverstring;
     QStringList *readlist;
     QLocalSocket *monitorSocket;
 
