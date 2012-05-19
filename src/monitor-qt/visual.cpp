@@ -44,37 +44,37 @@ Visual::Visual( QWidget *parent, int i_timeframe) : QWidget(parent)
 
 char *Visual::mhr( long long int kb )
 {
-       char kbstring[20];
-       char *output;
-       long long int result = kb;
-       long long int rest = 0;
-       lldiv_t diff;
-       strcpy(kbstring,"Bytes");
-       if (kb >= (long long )1024*1024*1024*1024) {
-               diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
-               strcpy(kbstring,"TB");
-               result = diff.quot;
-               rest = diff.rem;
-               } else
-                                                                                                                                               if (kb >= (long long )1024*1024*1024) {
-               diff = lldiv(kb,(long long) 1024*1024*1024); // gb
-               strcpy(kbstring,"GB");
-               result = diff.quot;
-               rest = diff.rem;
-               } else
-                                                                                                                                               if (kb >= (long long) 1024*1024) {
-              diff = lldiv(kb,(long long) 1024*1024); // mb
-              strcpy(kbstring,"MB");
-              result = diff.quot;
-              rest = diff.rem;
-               } else
-    if (kb >= 1024) {
-              diff =  lldiv(kb, (long long) 1024); // kb
-              strcpy(kbstring,"KB");
-              result = diff.quot;
-              rest = diff.rem;
-                                                                                                                                                       }
-//     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
+    char kbstring[20];
+    char *output;
+    long long int result = kb;
+    long long int rest = 0;
+    lldiv_t diff;
+    strcpy(kbstring,"Bytes");
+    if (kb >= (long long )1024*1024*1024*1024) {
+        diff = lldiv(kb,(long long ) 1024*1024*1024*1024); // tb
+        strcpy(kbstring,"TB");
+        result = diff.quot;
+        rest = diff.rem;
+    } else
+        if (kb >= (long long )1024*1024*1024) {
+            diff = lldiv(kb,(long long) 1024*1024*1024); // gb
+            strcpy(kbstring,"GB");
+            result = diff.quot;
+            rest = diff.rem;
+        } else
+            if (kb >= (long long) 1024*1024) {
+                diff = lldiv(kb,(long long) 1024*1024); // mb
+                strcpy(kbstring,"MB");
+                result = diff.quot;
+                rest = diff.rem;
+            } else
+                if (kb >= 1024) {
+                    diff =  lldiv(kb, (long long) 1024); // kb
+                    strcpy(kbstring,"KB");
+                    result = diff.quot;
+                    rest = diff.rem;
+                }
+    //     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
     asprintf( &output,"%lli %s",result,kbstring);
     return output;
 }

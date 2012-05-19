@@ -5,10 +5,8 @@
 
 #include <QDebug>
 
-#include "configuration.h"
 #include "configform.h"
 #include "monitorform.h"
-#include "monitorwidget.h"
 
 
 namespace Ui {
@@ -24,7 +22,6 @@ public:
     ~frontend();
 
     ConfigForm *configWidget;
-    MonitorWidget *monitorOldW;
     MonitorForm *monitorFormW;
 
 public slots:

@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     visual.cpp
 
 HEADERS  += frontend.h \
-    configuration.h \
     configform.h \
     monitorform.h \
     monitorwidget.h \
@@ -35,6 +34,7 @@ HEADERS  += frontend.h \
 FORMS    += frontend.ui \
     configform.ui \
     monitorform.ui
+
 
 
 
