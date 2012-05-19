@@ -39,16 +39,14 @@ public:
 
     QMutex mutex;
 
-    int i_debug;
+    int i_debug, i_monitortime, i_intervaltime;
     unsigned long *l_writestack, *l_readstack;
-    bool running;
+    bool running, layouted;
 
 
-    QString  *pid_string, *readstring, *leftoverstring;
+    QString  *pid_string, *readstring, *leftoverstring, *configString;
     QStringList *readlist;
     QLocalSocket *monitorSocket;
-
-    QProcess *testsocketprocess;
 
 
 public slots:

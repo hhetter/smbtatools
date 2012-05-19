@@ -20,7 +20,7 @@ Timeclass::Timeclass(QWidget *parent) :
 
 void Timeclass::run(){
 
-    qDebug()<<"Timeclass::run()";
+//    qDebug()<<"Timeclass::run()";
 
    timer = new QTimer;
 //   timer->setInterval(60000); // minute

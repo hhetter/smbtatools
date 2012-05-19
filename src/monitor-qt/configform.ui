@@ -6,109 +6,215 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>398</width>
+    <height>337</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QLabel" name="headlineLabel">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>20</y>
-     <width>327</width>
-     <height>241</height>
+     <x>120</x>
+     <y>10</y>
+     <width>169</width>
+     <height>20</height>
     </rect>
    </property>
-   <layout class="QFormLayout" name="formLayout">
-    <item row="0" column="1">
-     <widget class="QLabel" name="headlineLabel">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Configuration Screen</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loadButton">
+   <property name="geometry">
+    <rect>
+     <x>87</x>
+     <y>290</y>
+     <width>54</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Load a profile - not implemented yet</string>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>31</x>
+     <y>47</y>
+     <width>351</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="hostLabel">
       <property name="text">
-       <string>Configuration Screen</string>
+       <string>Host:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="hostLine">
+      <property name="toolTip">
+       <string>Host where the smbta is running</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="portLabel">
+      <property name="text">
+       <string>Port:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="portLine">
+      <property name="toolTip">
+       <string>Port where the smbta is listening</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QLabel" name="userLabel">
       <property name="text">
-       <string>Load</string>
+       <string>User</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="userLine">
+      <property name="toolTip">
+       <string>Set the username for the smbta</string>
       </property>
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QLabel" name="passwordLabel">
       <property name="text">
-       <string>Save</string>
+       <string>Password</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="hostLabel">
-        <property name="text">
-         <string>Host:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="hostLine"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="portLabel">
-        <property name="text">
-         <string>Port:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="monitorLabel">
-        <property name="text">
-         <string>Monitor time:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="monitorLine"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="intervalLabel">
-        <property name="text">
-         <string>Monitor interval:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="intervalLine"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="shareLabel">
-        <property name="text">
-         <string>Share:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="shareBox"/>
-      </item>
-      <item row="4" column="2">
-       <widget class="QPushButton" name="queryShareButton">
-        <property name="text">
-         <string>Query Shares</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="portLine"/>
-      </item>
-     </layout>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="passwordLine">
+      <property name="toolTip">
+       <string>Password to access smbta - not implemented yet</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="monitorLabel">
+      <property name="text">
+       <string>Monitor time:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="monitorLine">
+      <property name="toolTip">
+       <string>The time frame that is displayed in the graph window in seconds - default value is 600.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="intervalLabel">
+      <property name="text">
+       <string>Monitor interval:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="intervalLine">
+      <property name="toolTip">
+       <string>Defines the update interval of the graph in seconds - default value is 1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="shareLabel">
+      <property name="text">
+       <string>Share:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QComboBox" name="shareBox">
+      <property name="toolTip">
+       <string>Select a share to monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2">
+     <widget class="QPushButton" name="queryShareButton">
+      <property name="toolTip">
+       <string>Query available shares using smbtaquery</string>
+      </property>
+      <property name="text">
+       <string>Query Shares</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="saveButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>290</y>
+     <width>53</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Save the current profile - not implemented yet</string>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>235</y>
+     <width>96</width>
+     <height>48</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCheckBox" name="idCheckbox">
+      <property name="toolTip">
+       <string>Turn on identification (default is no identification)</string>
+      </property>
+      <property name="text">
+       <string>Identification</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="dryrunCheckbox">
+      <property name="toolTip">
+       <string>Start a dry run. All options are overriden, the smbtamonitor-gen does not connect to the smbta but generates random data on its own.</string>
+      </property>
+      <property name="text">
+       <string>Dryrun</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

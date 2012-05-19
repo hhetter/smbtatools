@@ -8,26 +8,25 @@ frontend::frontend(QWidget *parent) :
 {
     ui->setupUi(this);
 
-//    Configuration *configurator = new Configuration();
-//    Configuration *confi2;
+    ////
+    // Create the Widgets for configuration and the monitoring
+
     configWidget = new ConfigForm;
-//    confi2 = new Configuration();
     monitorFormW = new MonitorForm();
 
- //   ui->stackedView->addWidget(confi2);
+
+    ////
+    // Add widgets to the stackedWidget
+
     ui->stackedView->addWidget(configWidget);
     ui->stackedView->addWidget(monitorFormW);
     ui->stackedView->show();
     ui->stackedView->setCurrentIndex(0);
 
 
-    connect(ui->configbutton, SIGNAL(clicked()),
-            this, SLOT(fr_setConfigWidget()));
-
-    connect(ui->monitorbutton, SIGNAL(clicked()),
-            this, SLOT(fr_setMonitorWidget()));
-    connect(ui->quitbutton, SIGNAL(clicked()),
-            qApp, SLOT(quit()));
+    connect(ui->configbutton, SIGNAL(clicked()),this, SLOT(fr_setConfigWidget()));
+    connect(ui->monitorbutton, SIGNAL(clicked()),this, SLOT(fr_setMonitorWidget()));
+    connect(ui->quitbutton, SIGNAL(clicked()),qApp, SLOT(quit()));
 
 
 }
@@ -52,6 +51,11 @@ void frontend::fr_setConfigWidget()
 void frontend::fr_setMonitorWidget()
 {
 
+    configWidget->cf_readconfig();
+
+    monitorFormW->configString->append(*configWidget->configString);
+    monitorFormW->i_monitortime = configWidget->i_monitortime;
+    monitorFormW->i_intervaltime = configWidget->i_intervaltime;
 
     qDebug()<<"fr_setMonitorWidget()";
     ui->stackedView->setCurrentIndex(4);
