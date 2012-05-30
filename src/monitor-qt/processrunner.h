@@ -12,7 +12,7 @@ class Processrunner : public QThread
 {
     Q_OBJECT
 public:
-    explicit Processrunner(QWidget *parent = 0);
+    explicit Processrunner(QWidget *parent=0);
 
     QProcess *monitorprocess;
 

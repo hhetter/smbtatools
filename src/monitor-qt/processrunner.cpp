@@ -7,6 +7,7 @@ Processrunner::Processrunner(QWidget *parent) :
 //           monitorprocess = new QProcess;
 
 
+//   monitorprocess = new QProcess;
 
 
 

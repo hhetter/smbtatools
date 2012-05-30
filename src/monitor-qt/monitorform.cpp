@@ -92,9 +92,16 @@ void MonitorForm::startmonitor()
 
 
 //         visualW->vs_processnumbers(l_writestack, l_readstack);
-       qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
+
+//       qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
 //       processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
 //       processRunnerW->monitorprocess->start("smbtamonitor-gen -x");
+
+       ////
+       // The following line triggers all the Child Process errors...
+       // When I leave out exec() from Processrunner::run(), the errors disappear
+       // but I think it does not run in a different thread then , so I leave it there for now
+       // The errors are ugly but they on't stop the program
        processRunnerW->monitorprocess->start("smbtamonitor-gen "+(*configString));
 
 
@@ -145,7 +152,7 @@ void MonitorForm::stopmonitor()
     if(running==true){
         qDebug() << "stopmonitor";
         running = false;
-//        processRunnerW->monitorprocess->kill();
+        //        processRunnerW->monitorprocess->kill();
         processRunnerW->monitorprocess->terminate();
         qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
         timeClassW->timer->stop();
@@ -187,7 +194,7 @@ void MonitorForm::readfromsocket(){
     *readlist = readstring->split("#");
     qDebug()<< "Last index: " << readlist->count();
 
-//    int kk = readlist->count();
+    //    int kk = readlist->count();
 
     for(int i=0; i < readlist->count()-1; i++){
 
@@ -197,37 +204,37 @@ void MonitorForm::readfromsocket(){
 
         if(output.startsWith("W")){
 
-//            qDebug()<<"starts with W";
-//            qDebug()<<"------------";
-//                qDebug()<<"Output: " << output;
-                output.replace("W:","");
-                output.chop(1);
-//                qDebug()<<"Output: " << output;
-                *l_writestack += output.toULong();
-                qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
+            //            qDebug()<<"starts with W";
+            //            qDebug()<<"------------";
+            //                qDebug()<<"Output: " << output;
+            output.replace("W:","");
+            output.chop(1);
+            //                qDebug()<<"Output: " << output;
+            *l_writestack += output.toULong();
+            qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
         }
 
         if(output.startsWith("R")){
-//            qDebug()<<"starts with R";
-//                qDebug()<<"------------";
-//                qDebug()<<"Output: " << output;
-                output.replace("R:","");
-                output.chop(1);
-//                qDebug()<<"Output: " << output;
-                *l_readstack += output.toULong();
-                qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
+            //            qDebug()<<"starts with R";
+            //                qDebug()<<"------------";
+            //                qDebug()<<"Output: " << output;
+            output.replace("R:","");
+            output.chop(1);
+            //                qDebug()<<"Output: " << output;
+            *l_readstack += output.toULong();
+            qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
         }
 
 
 
 
-//                qDebug()<<i;
-//                qDebug()<<readlist->at(i);
-//                qDebug()<<"--------------";
+        //                qDebug()<<i;
+        //                qDebug()<<readlist->at(i);
+        //                qDebug()<<"--------------";
 
-            }
-//
-//    *readstring = "";
+    }
+    //
+    //    *readstring = "";
 
 }
 

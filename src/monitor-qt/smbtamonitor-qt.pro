@@ -15,10 +15,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         frontend.cpp \
-    configuration.cpp \
     configform.cpp \
     monitorform.cpp \
-    monitorwidget.cpp \
     processrunner.cpp \
     timeclass.cpp \
     visual.cpp
@@ -26,7 +24,6 @@ SOURCES += main.cpp\
 HEADERS  += frontend.h \
     configform.h \
     monitorform.h \
-    monitorwidget.h \
     processrunner.h \
     timeclass.h \
     visual.h

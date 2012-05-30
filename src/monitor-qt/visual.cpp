@@ -162,8 +162,6 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
 
    }
  }
-
-
  ////
  ////
  // QPolygon Method
@@ -181,8 +179,87 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
  readpg =  QPolygonF();
 
  // Create QVector<QPoint>'s with the scanned graph datasets
- readv<< (readp);
- writev<<(writep);
+ // New points are added to the beginning
+ readv.prepend(readp);
+ writev.prepend(writep);
+
+
+// If the QVector has more than 600 entries, remove the last one
+ if(i_time == 600){
+     readv.remove(600);
+     writev.remove(600);
+ }
+
+
+
+
+
+// Start of the Graph with its newest value on its right side
+ qDebug()<<"i_time: " << i_time << "  1";
+ writepg<<QPointF((i_x_os + i_time), (i_y_os + i_y_max) - (writev[0].y()/f_scalefactor));
+ readpg<<QPointF( (i_x_os + i_time), (i_y_os + i_y_max) - (readv[0].y()/f_scalefactor));
+
+//  qDebug() << "writev[0].y(): " << writev[0].y();
+//  qDebug() << "i_y_os - (writev[0].y()/f_scalefactor): " << i_y_os - (writev[0].y()/f_scalefactor);
+
+
+qDebug()<<"i_time: " << i_time << "  2";
+  for(int i = 1; i < i_time; i++){
+    writepg<<QPointF((i_x_os + i_time)-i,  (i_y_os + i_y_max) - (writev[i].y()/f_scalefactor));
+    readpg<< QPointF((i_x_os + i_time)-i,  (i_y_os + i_y_max) - (readv[i].y()/f_scalefactor));
+   }
+qDebug()<<"i_time: " << i_time << "  3";
+qDebug()<<"i_time: " << i_time;
+//qDebug()<<"readv[i_time-1] " << readv[i_time-1];
+//qDebug()<<"readv[i_time] " << readv[i_time];
+//  writepg<<QPointF((i_x_os),  (i_y_os + i_y_max) - (readv[i_time].y()/f_scalefactor));
+//  readpg<<QPointF( (i_x_os),  450);
+
+
+qDebug()<<"i_time: " << i_time << "  4";
+ for(int i = i_time-1; i > 0; i--){
+           qDebug()<<"i: " << i;
+   writepg<<QPointF((i_x_os + i_time)-i,  (i_y_os + i_y_max) - (readv[i].y()/f_scalefactor));
+   readpg<<QPointF( (i_x_os + i_time)-i,   450);
+ }
+ qDebug()<<"i_time: " << i_time << "  5";
+
+
+ if(i_time < 600){
+   i_time++;
+ }
+ i_rescaletimer++;
+ i_x++;
+
+
+
+
+
+////
+//  Old, working version. commented out to work on the new moving graph
+
+
+
+/*
+ ////
+ ////
+ // QPolygon Method
+ ////
+ // Create QPolygon from the QVector<QPoint>'s
+ // Inverse order of the vectors is needed so that every new value gets added to the
+ // right end of the graph,the rest gets just shifted one point to the left
+
+
+ // Reset Graph painterpaths
+ readpath  = QPainterPath();
+ writepath = QPainterPath();
+
+ writepg = QPolygonF();
+ readpg =  QPolygonF();
+
+ // Create QVector<QPoint>'s with the scanned graph datasets
+ readv << (readp);
+ writev<< (writep);
 
  writepg<<QPointF((i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (writev[0].y()/f_scalefactor));
  readpg<<QPointF( (i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (readv[0].y()/f_scalefactor));
@@ -209,7 +286,7 @@ void Visual::vs_processnumbers(unsigned long *l_read, unsigned long *l_write){
  }
  i_rescaletimer++;
  i_x++;
-
+*/
 // update();
 
 

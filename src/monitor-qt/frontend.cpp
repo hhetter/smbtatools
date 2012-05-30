@@ -42,7 +42,7 @@ void frontend::fr_setConfigWidget()
 
     qDebug()<<"fr_setConfigWidget()";
     ui->stackedView->setCurrentIndex(3);
-    ui->testlabel->setText("fr_setConfigWidget()");
+//    ui->testlabel->setText("fr_setConfigWidget()");
 
 
 }
@@ -59,7 +59,7 @@ void frontend::fr_setMonitorWidget()
 
     qDebug()<<"fr_setMonitorWidget()";
     ui->stackedView->setCurrentIndex(4);
-    ui->testlabel->setText("fr_setMonitorWidget()");
+//    ui->testlabel->setText("fr_setMonitorWidget()");
 
 
 }
@@ -72,7 +72,7 @@ void frontend::fr_setTestLabel()
 
 
     qDebug()<<"setTestLabel()";
-    ui->testlabel->setText("setTestLabel()");
+//    ui->testlabel->setText("setTestLabel()");
 
 
 }
