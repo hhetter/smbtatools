@@ -13,7 +13,9 @@ MonitorForm::MonitorForm(QWidget *parent) :
     timeClassW = new Timeclass();
     timeClassW->start();
     processRunnerW = new Processrunner();
-    processRunnerW->start();
+    QThread processThread;
+    processRunnerW->moveToThread(&processThread);
+//    processRunnerW->start();
 
     monitorSocket = new QLocalSocket();
     running=false;

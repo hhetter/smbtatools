@@ -2,13 +2,15 @@
 #define PROCESSRUNNER_H
 
 #include <QWidget>
+#include <QObject>
 #include <QThread>
 #include <QProcess>
 #include <QDebug>
 //#include <QLocalSocket>
 #include <QApplication>
 
-class Processrunner : public QThread
+//class Processrunner : public QThread
+class Processrunner : public QObject
 {
     Q_OBJECT
 public:
@@ -16,7 +18,6 @@ public:
 
     QProcess *monitorprocess;
 
-    void run();
 
 signals:
 
