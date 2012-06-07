@@ -11,9 +11,10 @@ MonitorForm::MonitorForm(QWidget *parent) :
     ////
     // Start instances of timerClassW (handles the timing of the graph updates) and processRunnerW (handles the smbtamonitor-gen, maybe in a own thread)
     timeClassW = new Timeclass();
-    timeClassW->start();
+//    timeClassW->start();
     processRunnerW = new Processrunner();
-    QThread processThread;
+    QThread processThread, timerThread;
+    timeClassW->moveToThread(&timerThread);
     processRunnerW->moveToThread(&processThread);
 //    processRunnerW->start();
 
@@ -68,7 +69,7 @@ void MonitorForm::startmonitor()
     if(running == false){
 
 
-
+        qDebug()<<"Runningfalse";
         qDebug()<<"-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+";
         qDebug()<< "*configstring: " << *configString;
         qDebug()<<"i_monitortime: " << i_monitortime;
@@ -79,8 +80,9 @@ void MonitorForm::startmonitor()
 
        qDebug() << "startmonitor";
        running=true;
-       qDebug()<<"1";
+
        timeClassW->timer->start();
+
 
 
     ////
