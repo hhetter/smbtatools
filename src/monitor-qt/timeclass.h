@@ -2,11 +2,12 @@
 #define TIMECLASS_H
 
 #include <QThread>
+#include <QObject>
 #include <QWidget>
 #include <QTimer>
 #include <QDebug>
 
-class Timeclass : public QThread
+class Timeclass : public QObject
 {
     Q_OBJECT
 public:

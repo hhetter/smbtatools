@@ -9,7 +9,7 @@
 //#include <QLocalSocket>
 #include <QApplication>
 
-//class Processrunner : public QThread
+
 class Processrunner : public QObject
 {
     Q_OBJECT

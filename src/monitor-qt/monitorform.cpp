@@ -191,12 +191,12 @@ void MonitorForm::readfromsocket(){
 
 
 
-    qDebug() << "readfromsocket()";
+//    qDebug() << "readfromsocket()";
 
     *readstring = monitorSocket->readAll();
-    qDebug()<<"*readstring: " << *readstring;
+//    qDebug()<<"*readstring: " << *readstring;
     *readlist = readstring->split("#");
-    qDebug()<< "Last index: " << readlist->count();
+//    qDebug()<< "Last index: " << readlist->count();
 
     //    int kk = readlist->count();
 
@@ -204,7 +204,7 @@ void MonitorForm::readfromsocket(){
 
         QString output = readlist->at(i);
 
-        qDebug()<<"Output " << i <<": " << output;
+//        qDebug()<<"Output " << i <<": " << output;
 
         if(output.startsWith("W")){
 
@@ -215,7 +215,7 @@ void MonitorForm::readfromsocket(){
             output.chop(1);
             //                qDebug()<<"Output: " << output;
             *l_writestack += output.toULong();
-            qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
+//            qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
         }
 
         if(output.startsWith("R")){
@@ -226,7 +226,7 @@ void MonitorForm::readfromsocket(){
             output.chop(1);
             //                qDebug()<<"Output: " << output;
             *l_readstack += output.toULong();
-            qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
+//            qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
         }
 
 
@@ -269,9 +269,9 @@ void MonitorForm::sendtovisualizer(){
 //    qDebug() << "sendtovisualizer()";
 //    unsigned long int uli1 = 1000;
 //    unsigned long int uli2 = 1500;
-    qDebug()<<"*l_readstack  " << *l_readstack;
-    qDebug()<<"*l_writestack " << *l_writestack;
-    visualW->vs_processnumbers( l_readstack, l_writestack);
+//    qDebug()<<"*l_readstack  " << *l_readstack;
+//    qDebug()<<"*l_writestack " << *l_writestack;
+    visualW->vs_receivenumbers( l_readstack, l_writestack);
     *l_readstack = 0;
     *l_writestack = 0;
 
