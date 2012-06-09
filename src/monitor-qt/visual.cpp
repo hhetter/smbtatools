@@ -24,11 +24,15 @@ Visual::Visual( QWidget *parent, int i_timeframe) : QWidget(parent)
 
  *l_currentmax = 0; *l_historymax = 0;
  l_readmax = 0; l_writemax = 0;
+ i_rescaletimer=0;
  i_time = 0; f_oldscalefactor = 1; f_scalefactor = 1;
  i_x_os = 50;  i_y_os = 50; // Offset for x- and y-Graph
  i_x_max = 600; i_y_max = 400;   // Range of x- and y-Graph
  i_x = 0;
  i_c_count = 0;
+
+ i_stepsize = 5; // i_stepsize defines the number of steps that are used to display a single data point
+ i_x_savemax = i_x_max; // Define how many data points are stored. After max is reached, the oldest values will subsequently be deleted
 
  ////
  //
@@ -37,15 +41,10 @@ Visual::Visual( QWidget *parent, int i_timeframe) : QWidget(parent)
 
  visualwidget = new QWidget(this);
  visuallayout = new QVBoxLayout(visualwidget);
-//  visuallabel = new QLabel("Visuallabel",visualwidget);
-//  visualreadvalue = new QLabel("Visualreadvalue: ", visualwidget);
-//  visualwritevalue = new QLabel("Visualwritevalue: ", visualwidget);
-//  visualhistorymax = new QLabel("Visuahistorymax: ", visualwidget);
 
-//  visuallayout->addWidget(visuallabel,0);
-//  visuallayout->addWidget(visualreadvalue,1);
-//  visuallayout->addWidget(visualwritevalue,2);
-//  visuallayout->addWidget(visualhistorymax,3);
+
+
+
 
  visualwidget->setLayout(visuallayout);
 //   xstring1 = QString(); xstring2 = QString(); xstring3 = QString(); xstring4 = QString(); xstring5 = QString();
@@ -99,37 +98,37 @@ void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i
 void Visual::vs_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
 
 
-    if(i_c_count < 4 )
+    if(i_c_count < i_stepsize-1 )
     {
         *l_in_read += *l_fread;
         *l_in_write += *l_fwrite;
         i_c_count++;
     }
-    if (i_c_count == 4)
+    if (i_c_count == i_stepsize-1)
     {
 
         *l_in_read_end = *l_in_read; *l_in_read = 0;
         *l_in_write_end = *l_in_write; *l_in_write = 0;
-        *l_read_diff = (*l_in_read_end)/5;
-        *l_write_diff = (*l_in_write_end)/5;
-        vs_processnumbers( ((*l_read_diff)*((unsigned long)(i_c_count%5)+1)), ((*l_write_diff)*((unsigned long)(i_c_count%5)+1)) );
+        *l_read_diff = (*l_in_read_end)/i_stepsize;
+        *l_write_diff = (*l_in_write_end)/i_stepsize;
+        vs_processnumbers( ((*l_read_diff)*((unsigned long)(i_c_count%i_stepsize)+1)), ((*l_write_diff)*((unsigned long)(i_c_count%i_stepsize)+1)) );
         i_c_count++;
     }
-    if (i_c_count > 4 && i_c_count %5 != 0)
+    if (i_c_count > (i_stepsize -1) && i_c_count %(i_stepsize) != 0)
     {
 
         *l_in_read += *l_fread;
         *l_in_write += *l_fwrite;
-        vs_processnumbers( (*l_read_diff*((i_c_count%5)+1)), (*l_write_diff*((i_c_count%5)+1)) );
+        vs_processnumbers( (*l_read_diff*((i_c_count%i_stepsize)+1)), (*l_write_diff*((i_c_count%i_stepsize)+1)) );
         i_c_count++;
     }
-    if (i_c_count > 4 && i_c_count %5 == 0)
+    if (i_c_count > (i_stepsize -1) && i_c_count %(i_stepsize) == 0)
     {
         *l_in_read_end = *l_in_read; *l_in_read = 0;
         *l_in_write_end = *l_in_write; *l_in_write = 0;
-        *l_read_diff = *l_in_read_end/5;
-        *l_write_diff = *l_in_write_end/5;
-        vs_processnumbers( (*l_read_diff*((i_c_count%5)+1)), (*l_write_diff*((i_c_count%5)+1)) );
+        *l_read_diff = *l_in_read_end/i_stepsize;
+        *l_write_diff = *l_in_write_end/i_stepsize;
+        vs_processnumbers( (*l_read_diff*((i_c_count%i_stepsize)+1)), (*l_write_diff*((i_c_count%i_stepsize)+1)) );
 
         i_c_count++;
     }
@@ -166,23 +165,38 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
 
  ////
  //
- // Create points array from the data
+ // Create QPoints from the data
  readp.setY( l_read);readp.setX(i_x);
- writep.setY(( ((l_write+l_read) )));writep.setX(i_x);
+ writep.setY(( (l_write+l_read) ));writep.setX(i_x);
 
 
  ////
  //
  // Compute max values, scaling
 
-  *l_currentmax = (l_read + l_write);
+ *l_currentmax = (l_read + l_write);
 
- if( (l_read + l_write) > *l_historymax){
+ if( *l_currentmax > *l_historymax){
+     *l_historymax = *l_currentmax;// visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
+     i_rescaletimer = 0;
+ }
 
-   *l_historymax = (l_read + l_write);// visualhistorymax->setText(QString()); // ( mhr(ctx, (long long int) *l_currentmax)));
-   i_rescaletimer=0;
+ // Find a new *l_historymax, if the old one moved out of the graph
+ // not working perfect yet
+ if(i_rescaletimer == i_x_max){
+
+     *l_historymax = 1;
+     i_rescaletimer = 0;
+     for(int i =0; i < i_x_max-1; i++){
+         *l_currentmax = writev[i].y();  // + writev[i].y(); Attention: writep.y currently holds the max y value, this could change in the future
+         if(*l_currentmax > *l_historymax){
+             *l_historymax = *l_currentmax;
+         }
+     }
+ }
+
+
    f_scalefactor = (1.1)*((float)*l_historymax)/i_y_max;
-//    qDebug() << "f_scalefactor: " << f_scalefactor;
 
    ////
    // (Re)scale axes
@@ -204,17 +218,9 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
    xstring1 = QString(dummy);// ( mhr( ctx,(long long) (0*1.1*(*l_historymax))));;
    free(dummy);
 
- }
 
-   // Find a new *l_historymax, if the old one moved out of the graph
-   // not implemented yet
- if(i_rescaletimer == 600){
-   f_switch = 0;
-   for(int i =0; i < 600; i++){
-//      if(f_switch < (   )  ){}
 
-   }
- }
+
  ////
  ////
  // QPolygon Method
@@ -238,9 +244,9 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
 
 
 // If the QVector has more than 600 entries, remove the last one
- if(i_time == 600){
-     readv.remove(600);
-     writev.remove(600);
+ if(i_time == i_x_max){
+     readv.remove(i_x_max);
+     writev.remove(i_x_max);
  }
 
 
@@ -273,7 +279,7 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
  };
 
 
- if(i_time < 600){
+ if(i_time < i_x_max){
    i_time++;
  }
  i_rescaletimer++;

@@ -12,9 +12,12 @@ class Timeclass : public QObject
     Q_OBJECT
 public:
     explicit Timeclass(QWidget *parent = 0);
+
+    int i_stepsize; // i_stepsize defines the number of steps that are used to display a single data point
+
     QTimer *timer;
 
-    void run();
+
 
 signals:
 

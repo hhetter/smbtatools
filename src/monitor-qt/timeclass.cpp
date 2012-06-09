@@ -6,10 +6,13 @@ Timeclass::Timeclass(QWidget *parent) :
 
     qDebug() << "Class constructor Timeclass";
 
+    i_stepsize = 5;
+
     timer = new QTimer;
- //   timer->setInterval(60000/5); // minute
-    timer->setInterval(600/5);   // second
- //   timer->setInterval(60/5);	// milisecond
+ //   timer->setInterval(60000/i_stepsize); // minute
+    timer->setInterval(600/i_stepsize);   // second
+//    timer->setInterval(300/i_stepsize);   // second
+//    timer->setInterval(60/i_stepsize);	// milisecond
  //   timer->start();
 
      connect(timer, SIGNAL(timeout()), this, SLOT(tc_timersignal()));
