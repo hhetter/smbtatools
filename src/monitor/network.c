@@ -106,8 +106,8 @@ void network_handle_data( struct configuration_data *c)
 			}
 			send(c->monitor_gen_socket_cli,str,strlen(str),0);
 			talloc_free(str);
-			z = rand() % 5;
-			sleep(z);
+			z = ( rand() % 1000 );
+			usleep(1000*z);
 		}
 	}
 
