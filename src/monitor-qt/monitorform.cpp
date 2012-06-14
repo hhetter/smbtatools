@@ -283,6 +283,12 @@ void MonitorForm::sendtovisualizer(){
 
 }
 
+void MonitorForm::resizeEvent(QResizeEvent *event)
+{
+    qDebug()<<"Monitorform Resized";
+
+}
+
 
 
 

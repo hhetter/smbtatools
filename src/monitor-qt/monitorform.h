@@ -57,6 +57,7 @@ public slots:
     void sendmessage();
     void sendtovisualizer();
     void parseinput();
+    void resizeEvent(QResizeEvent *event);
 
 private:
     Ui::MonitorForm *ui;

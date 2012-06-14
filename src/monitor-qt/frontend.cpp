@@ -64,6 +64,12 @@ void frontend::fr_setMonitorWidget()
 
 }
 
+void frontend::resizeEvent(QResizeEvent *event)
+{
+    qDebug()<<"Frontend Resized";
+
+}
+
 
 
 
@@ -76,6 +82,8 @@ void frontend::fr_setTestLabel()
 
 
 }
+
+
 
 
 #include "frontend.moc"

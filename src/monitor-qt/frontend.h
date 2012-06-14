@@ -28,6 +28,7 @@ public slots:
     void fr_setTestLabel();
     void fr_setConfigWidget();
     void fr_setMonitorWidget();
+    void resizeEvent(QResizeEvent *event);
 
 private:
     Ui::frontend *ui;

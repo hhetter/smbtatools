@@ -26,7 +26,7 @@ Visual::Visual( QWidget *parent, int i_timeframe) : QWidget(parent)
  l_readmax = 0; l_writemax = 0;
  i_rescaletimer=0;
  i_time = 0; f_oldscalefactor = 1; f_scalefactor = 1;
- i_x_os = 50;  i_y_os = 50; // Offset for x- and y-Graph
+ i_x_os = 50;  i_y_os = 0; // Offset for x- and y-Graph
  i_x_max = 600; i_y_max = 400;   // Range of x- and y-Graph
  i_x = 0;
  i_c_count = 0;
@@ -275,7 +275,7 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
  for(int i = i_time-1; i > 0; i--){
 
    writepg<<QPointF((i_x_os + i_time)-i,  (i_y_os + i_y_max) - (readv[i].y()/f_scalefactor));
-   readpg<<QPointF( (i_x_os + i_time)-i,   450);
+   readpg<<QPointF( (i_x_os + i_time)-i,  (i_y_os + i_y_max) );
  };
 
 
@@ -358,8 +358,8 @@ void Visual::paintEvent(QPaintEvent *){
 
  QPainter painter(this);
  QRect graphbr(i_x_os,i_y_os,i_x_max,i_y_max);
- QRect writerect(50,460,10,10);
- QRect readrect(50, 480, 10, 10);
+ QRect writerect(50,i_y_os+i_y_max+10,10,10);
+ QRect readrect(50, i_y_os+i_y_max+30, 10, 10);
  QPen writepen(Qt::blue, 1);
  QPen readpen(Qt::red, 1);
 
@@ -374,9 +374,9 @@ void Visual::paintEvent(QPaintEvent *){
  // Create Axis / Labeling
  painter.setPen(Qt::black);
  painter.setFont(QFont("Arial", 8));
- painter.drawText(0,i_y_os+i_y_max, xstring1);painter.drawText(0,i_y_os+(i_y_max*0.75), xstring2);painter.drawText(0,i_y_os+(i_y_max*0.50), xstring3);painter.drawText(0,i_y_os+(i_y_max*0.25), xstring4);painter.drawText(0,i_y_os, xstring5);
- painter.drawText(65,470, "Write traffic");
- painter.drawText(65,490, "Read traffic");
+ painter.drawText(0,i_y_os+i_y_max+10, xstring1);painter.drawText(0,i_y_os+10+(i_y_max*0.75), xstring2);painter.drawText(0,i_y_os+10+(i_y_max*0.50), xstring3);painter.drawText(0,i_y_os+10+(i_y_max*0.25), xstring4);painter.drawText(0,i_y_os+10, xstring5);
+ painter.drawText(65,i_y_os+i_y_max+20, "Write traffic");
+ painter.drawText(65,i_y_os+i_y_max+40, "Read traffic");
  painter.setPen(writepen);
  painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
  painter.setPen(readpen);
