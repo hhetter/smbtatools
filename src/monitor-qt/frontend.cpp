@@ -13,6 +13,7 @@ frontend::frontend(QWidget *parent) :
 
     configWidget = new ConfigForm;
     monitorFormW = new MonitorForm();
+    monitorFormW;
 
 
     ////
@@ -66,7 +67,7 @@ void frontend::fr_setMonitorWidget()
 
 void frontend::resizeEvent(QResizeEvent *event)
 {
-    qDebug()<<"Frontend Resized";
+//    qDebug()<<"Frontend Resized";
 
 }
 

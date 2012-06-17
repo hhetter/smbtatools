@@ -1,4 +1,4 @@
-#include "monitorform.h"
+ ()vis#include "monitorform.h"
 #include "ui_monitorform.h"
 
 MonitorForm::MonitorForm(QWidget *parent) :
@@ -285,7 +285,7 @@ void MonitorForm::sendtovisualizer(){
 
 void MonitorForm::resizeEvent(QResizeEvent *event)
 {
-    qDebug()<<"Monitorform Resized";
+  //  qDebug()<<"Monitorform Resized";
 
 }
 

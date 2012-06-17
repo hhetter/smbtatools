@@ -95,6 +95,15 @@ void Visual::vs_wraptraffic(unsigned long *l_read, unsigned long *l_write, int i
 
 }
 
+void Visual::wheelEvent(QWheelEvent *event){
+
+    qDebug()<< "Wheelevent detected";
+    if(event->delta() > 0){qDebug() << "zoom in";}
+    if(event->delta() < 0){qDebug() << "zoom out";}
+    qDebug()<<QTime::currentTime();
+
+}
+
 void Visual::vs_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
 
 
@@ -375,8 +384,8 @@ void Visual::paintEvent(QPaintEvent *){
  painter.setPen(Qt::black);
  painter.setFont(QFont("Arial", 8));
  painter.drawText(0,i_y_os+i_y_max+10, xstring1);painter.drawText(0,i_y_os+10+(i_y_max*0.75), xstring2);painter.drawText(0,i_y_os+10+(i_y_max*0.50), xstring3);painter.drawText(0,i_y_os+10+(i_y_max*0.25), xstring4);painter.drawText(0,i_y_os+10, xstring5);
- painter.drawText(65,i_y_os+i_y_max+20, "Write traffic");
- painter.drawText(65,i_y_os+i_y_max+40, "Read traffic");
+ painter.drawText(65,i_y_os+i_y_max+30, "Write traffic");
+ painter.drawText(65,i_y_os+i_y_max+50, "Read traffic");
  painter.setPen(writepen);
  painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
  painter.setPen(readpen);
