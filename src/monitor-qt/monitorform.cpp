@@ -1,4 +1,4 @@
- ()vis#include "monitorform.h"
+#include "monitorform.h"
 #include "ui_monitorform.h"
 
 MonitorForm::MonitorForm(QWidget *parent) :
