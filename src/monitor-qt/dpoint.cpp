@@ -31,7 +31,7 @@ void DPoint::dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
                         readlist.removeLast();
                         writelist.removeLast();
                 }
-                qDebug()<<"readlist.size: "<< readlist.size();
+                //qDebug()<<"readlist.size: "<< readlist.size();
 
 
                 l_read_end = 0;
@@ -42,6 +42,19 @@ void DPoint::dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
         }
 
 }
+
+
+QLinkedList<unsigned long> DPoint::dp_returnreadlist(){
+        return readlist;
+}
+
+
+
+QLinkedList<unsigned long> DPoint::dp_returnwritelist(){
+        return writelist;
+}
+
+
 
 
 #include "dpoint.moc"

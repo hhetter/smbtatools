@@ -26,6 +26,8 @@ public slots:
 
 
         void dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite);
+        QLinkedList<unsigned long> dp_returnreadlist();
+        QLinkedList<unsigned long> dp_returnwritelist();
 
 
 };

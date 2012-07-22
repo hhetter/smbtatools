@@ -306,6 +306,7 @@ void MonitorForm::sendtopoints(){
         //    qDebug()<<"*l_readstack  " << *l_readstack;
         //    qDebug()<<"*l_writestack " << *l_writestack;
         d_points->dp_receivenumbers( l_readstack, l_writestack);
+        p_graph->g_receivelist(d_points->dp_returnreadlist(), d_points->dp_returnwritelist());
         *l_readstack = 0;
         *l_writestack = 0;
 
