@@ -29,7 +29,7 @@ void ConfigForm::cf_readconfig(){
     // Parse the input of the configuration form and put it together to a QString. The QString will be handled over to the monitoring process.
     // password is not implemented in the smbtamonitor-gen so it is disabled here. Should I leave it here or completely disable it?
     // queryshares not implemented yet
-    // Sava/Load not implemented yet, and also not part of this method
+    // Save/Load not implemented yet, and also not part of this method
     // **wip**
 
 

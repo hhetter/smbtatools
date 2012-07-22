@@ -8,8 +8,5 @@ int main(int argc, char *argv[])
     frontend w;
     w.show();
 
-   // Test
-    qDebug() << "Test";
-
     return a.exec();
 }

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+#include <QDir>
 #include <QDebug>
 
 #include "configform.h"
@@ -28,6 +29,8 @@ public slots:
     void fr_setTestLabel();
     void fr_setConfigWidget();
     void fr_setMonitorWidget();
+    void fr_firstInit();
+
     void resizeEvent(QResizeEvent *event);
 
 private:

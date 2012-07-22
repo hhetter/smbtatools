@@ -20,6 +20,8 @@
 #include "processrunner.h"
 #include "timeclass.h"
 #include "visual.h"
+#include "dpoint.h"
+#include "graph.h"
 
 namespace Ui {
     class MonitorForm;
@@ -36,10 +38,12 @@ public:
     Timeclass     *timeClassW;
     Processrunner *processRunnerW;
     Visual *visualW;
+    DPoint *d_points;
+    Graph *p_graph;
 
     QMutex mutex;
 
-    int i_debug, i_monitortime, i_intervaltime;
+    int i_monitortime, i_intervaltime;
     unsigned long *l_writestack, *l_readstack;
     bool running, layouted;
 
@@ -56,6 +60,7 @@ public slots:
     void readfromsocket();
     void sendmessage();
     void sendtovisualizer();
+    void sendtopoints();
     void parseinput();
     void resizeEvent(QResizeEvent *event);
 

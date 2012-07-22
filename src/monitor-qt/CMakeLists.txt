@@ -10,7 +10,9 @@ SET( smbtamonitor-qt_SRC  main.cpp
 			  monitorform.cpp
                           visual.cpp
                           timeclass.cpp
-                          processrunner.cpp)
+                          processrunner.cpp
+			  dpoint.cpp
+			  graph.cpp)
 
 
 
