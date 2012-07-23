@@ -74,7 +74,7 @@ void Graph::g_interpolate(){} // Interpolation and create points to make the gra
 
 void Graph::wheelEvent(QWheelEvent *event)
 {
-
+    qDebug() << "Wheel event detected";
 }
 
 

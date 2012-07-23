@@ -47,7 +47,7 @@
     <string>Load</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>31</x>
@@ -102,12 +102,12 @@
     <item row="3" column="0">
      <widget class="QLabel" name="passwordLabel">
       <property name="text">
-       <string>Password</string>
+       <string>Share</string>
       </property>
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QLineEdit" name="passwordLine">
+     <widget class="QLineEdit" name="shareLine">
       <property name="toolTip">
        <string>Password to access smbta - not implemented yet</string>
       </property>
@@ -116,12 +116,12 @@
     <item row="4" column="0">
      <widget class="QLabel" name="monitorLabel">
       <property name="text">
-       <string>Monitor time:</string>
+       <string>Domain</string>
       </property>
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QLineEdit" name="monitorLine">
+     <widget class="QLineEdit" name="domainLine">
       <property name="toolTip">
        <string>The time frame that is displayed in the graph window in seconds - default value is 600.</string>
       </property>
@@ -130,12 +130,12 @@
     <item row="5" column="0">
      <widget class="QLabel" name="intervalLabel">
       <property name="text">
-       <string>Monitor interval:</string>
+       <string>File</string>
       </property>
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QLineEdit" name="intervalLine">
+     <widget class="QLineEdit" name="fileLine">
       <property name="toolTip">
        <string>Defines the update interval of the graph in seconds - default value is 1</string>
       </property>
@@ -144,7 +144,7 @@
     <item row="6" column="0">
      <widget class="QLabel" name="shareLabel">
       <property name="text">
-       <string>Share:</string>
+       <string>QueryShare:</string>
       </property>
      </widget>
     </item>
@@ -183,7 +183,7 @@
     <string>Save</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>30</x>

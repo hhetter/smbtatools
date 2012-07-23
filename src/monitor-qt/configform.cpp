@@ -48,6 +48,17 @@ void ConfigForm::cf_readconfig(){
     if(ui->userLine->text() != ""){
         configString->append(" -u "+ui->userLine->text());
     }
+    if(ui->fileLine->text() != ""){
+        configString->append(" -f "+ui->userLine->text());
+    }
+    if(ui->domainLine->text() != ""){
+        configString->append(" -d "+ui->userLine->text());
+    }
+    if(ui->shareLine->text() != ""){
+        configString->append(" -s "+ui->userLine->text());
+    }
+
+
 //    if(ui->passwordLine->text() != ""){
 //        configString->append(" - "+ui->passwordLine->text());
 //    }
@@ -57,14 +68,15 @@ void ConfigForm::cf_readconfig(){
     if(ui->dryrunCheckbox->isChecked()){
         *configString = " -x";
     }
-
+    /*
+      No use atm
     if(ui->monitorLine->text() != ""){
         i_monitortime = ui->monitorLine->text().toInt();
     }
     if(ui->intervalLine->text() != ""){
         i_intervaltime = 600 * ui->intervalLine->text().toInt();
-
     }
+    */
 
 
 
