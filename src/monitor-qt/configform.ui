@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>398</width>
-    <height>337</height>
+    <width>434</width>
+    <height>358</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>120</x>
      <y>10</y>
-     <width>169</width>
+     <width>191</width>
      <height>20</height>
     </rect>
    </property>
@@ -53,21 +53,14 @@
      <x>31</x>
      <y>47</y>
      <width>351</width>
-     <height>181</height>
+     <height>182</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QLabel" name="hostLabel">
       <property name="text">
-       <string>Host:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="hostLine">
-      <property name="toolTip">
-       <string>Host where the smbta is running</string>
+       <string>Query type</string>
       </property>
      </widget>
     </item>
@@ -162,6 +155,20 @@
       </property>
       <property name="text">
        <string>Query Shares</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="queryTypeButton">
+      <property name="toolTip">
+       <string>Select a share to monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLineEdit" name="queryParameterLine">
+      <property name="toolTip">
+       <string>Port where the smbta is listening</string>
       </property>
      </widget>
     </item>

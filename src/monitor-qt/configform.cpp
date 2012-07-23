@@ -7,6 +7,12 @@ ConfigForm::ConfigForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->queryTypeButton->addItem("User");
+    ui->queryTypeButton->addItem("File");
+    ui->queryTypeButton->addItem("Share");
+    ui->queryTypeButton->addItem("Domain");
+    ui->queryTypeButton->addItem("Global");
+    ui->queryTypeButton->setCurrentIndex(0);
 
     configString = new QString;
 
@@ -14,7 +20,7 @@ ConfigForm::ConfigForm(QWidget *parent) :
     i_intervaltime = 600;
 
     qDebug()<<"Class constructor ConfigForm";
-//    cf_readconfig();
+    //    cf_readconfig();
 }
 
 ConfigForm::~ConfigForm()
@@ -25,6 +31,42 @@ ConfigForm::~ConfigForm()
 
 void ConfigForm::cf_readconfig(){
 
+    *configString = "";
+
+    qDebug()<<"Current index: " <<ui->queryTypeButton->currentIndex();
+    int i_switch = ui->queryTypeButton->currentIndex();
+    qDebug()<<"i_switch: " <<i_switch;
+
+    switch(ui->queryTypeButton->currentIndex())
+    {
+    case 0:
+            configString->append(" -u "+ui->queryParameterLine->text());
+            qDebug()<< "Configstring: " << configString;
+    case 1:
+        configString->append(" -f "+ui->queryParameterLine->text());
+        qDebug()<< "Configstring: " << configString;
+    case 2:
+        configString->append(" -s "+ui->queryParameterLine->text());
+        qDebug()<< "Configstring: " << configString;
+    case 3:
+        configString->append(" -d "+ui->queryParameterLine->text());
+        qDebug()<< "Configstring: " << configString;
+    case 4:
+        configString->append(" -g "+ui->queryParameterLine->text());
+        qDebug()<< "Configstring: " << configString;
+    default:
+        qDebug()<<"nil";
+
+    }
+
+
+
+
+
+
+
+
+
     ////
     // Parse the input of the configuration form and put it together to a QString. The QString will be handled over to the monitoring process.
     // password is not implemented in the smbtamonitor-gen so it is disabled here. Should I leave it here or completely disable it?
@@ -33,15 +75,16 @@ void ConfigForm::cf_readconfig(){
     // **wip**
 
 
-//    qDebug()<<"cf_readconfig";
+    //    qDebug()<<"cf_readconfig";
 
     ////
     // Reset configString in case it already contains values
     *configString = "";
-
+    /*Taken out, here sits the queryTypeButton now
     if(ui->hostLine->text() != ""){
         configString->append(" -h "+ui->hostLine->text());
     }
+    *//*
     if(ui->portLine->text() != ""){
         configString->append(" -i "+ui->portLine->text());
     }
@@ -57,11 +100,11 @@ void ConfigForm::cf_readconfig(){
     if(ui->shareLine->text() != ""){
         configString->append(" -s "+ui->userLine->text());
     }
+    */
 
-
-//    if(ui->passwordLine->text() != ""){
-//        configString->append(" - "+ui->passwordLine->text());
-//    }
+    //    if(ui->passwordLine->text() != ""){
+    //        configString->append(" - "+ui->passwordLine->text());
+    //    }
     if(ui->idCheckbox->isChecked()){
         configString->append(" -I 1");
     }else(configString->append(" -I 0"));
@@ -80,9 +123,9 @@ void ConfigForm::cf_readconfig(){
 
 
 
-//    qDebug()<<"*configString: "<<*configString;
-//    qDebug()<<"i_monitortime: "<<i_monitortime;
-//    qDebug()<<"i_intervaltime: "<< i_intervaltime;
+    //    qDebug()<<"*configString: "<<*configString;
+    //    qDebug()<<"i_monitortime: "<<i_monitortime;
+    //    qDebug()<<"i_intervaltime: "<< i_intervaltime;
 
 
 

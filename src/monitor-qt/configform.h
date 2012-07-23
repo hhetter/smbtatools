@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <QComboBox>
 
 namespace Ui {
     class ConfigForm;
