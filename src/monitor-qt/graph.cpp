@@ -56,12 +56,29 @@ void Graph::g_change_dp_num() // Change the number of datapoints for the graph
 void Graph::g_def_dp_num() // Map datapoints to pixels
 {
     // 1) find out if there are more pixels or more datapoints
-    if(i_dp_number == i_dp_number){}
+    if(i_dp_number <= i_dp_number){
+            g_release_dp();
+    }
+    if(i_dp_number > i_dp_number){
+            g_squeeze_dp();
+    }
     // 2) find a method to map datapoints to pixels
-
+    // -> see the two methods called from here
 
 }
 
+/*
+ * Distribute data points to the graph when the pixel width is greater than the
+ * number of data points
+ */
+void Graph::g_release_dp(){}
+
+
+/*
+ * Distribute data points to the graph when the number of data points is greater
+ * than the pixel width.
+ */
+void Graph::g_squeez_dp(){}
 
 
 void Graph::g_interpolate(){} // Interpolation and create points to make the graph

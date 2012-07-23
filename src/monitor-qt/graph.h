@@ -32,6 +32,8 @@ public slots:
         void g_get_dp_offset(); // Get the datapoint offset to t=0
         void g_change_dp_num(); // Change the number of datapoints for the graph
         void g_def_dp_num(); // Map datapoints to pixels
+        void g_release_dp(); // map data points to pixel width (dp < pw)
+        void g_squeeze_dp(); // map data points to pixel width (dp > pw)
         void g_interpolate(); // Inteerpolation and create points to make the graph
 
         void wheelEvent(QWheelEvent *event); // Will catch wheel events to zoom the graph

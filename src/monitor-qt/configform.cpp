@@ -28,7 +28,10 @@ ConfigForm::~ConfigForm()
         delete ui;
 }
 
-
+/*
+ * No input validation is done - needs to be implemented too before the release.
+ *
+ */
 void ConfigForm::cf_readconfig(){
 
         *configString = "";
