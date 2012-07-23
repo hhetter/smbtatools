@@ -47,133 +47,6 @@
     <string>Load</string>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>31</x>
-     <y>47</y>
-     <width>351</width>
-     <height>182</height>
-    </rect>
-   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="hostLabel">
-      <property name="text">
-       <string>Query type</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="portLabel">
-      <property name="text">
-       <string>Port:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="portLine">
-      <property name="toolTip">
-       <string>Port where the smbta is listening</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="userLabel">
-      <property name="text">
-       <string>User</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="userLine">
-      <property name="toolTip">
-       <string>Set the username for the smbta</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="passwordLabel">
-      <property name="text">
-       <string>Share</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLineEdit" name="shareLine">
-      <property name="toolTip">
-       <string>Password to access smbta - not implemented yet</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="monitorLabel">
-      <property name="text">
-       <string>Domain</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLineEdit" name="domainLine">
-      <property name="toolTip">
-       <string>The time frame that is displayed in the graph window in seconds - default value is 600.</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="intervalLabel">
-      <property name="text">
-       <string>File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QLineEdit" name="fileLine">
-      <property name="toolTip">
-       <string>Defines the update interval of the graph in seconds - default value is 1</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="shareLabel">
-      <property name="text">
-       <string>QueryShare:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QComboBox" name="shareBox">
-      <property name="toolTip">
-       <string>Select a share to monitor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2">
-     <widget class="QPushButton" name="queryShareButton">
-      <property name="toolTip">
-       <string>Query available shares using smbtaquery</string>
-      </property>
-      <property name="text">
-       <string>Query Shares</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="queryTypeButton">
-      <property name="toolTip">
-       <string>Select a share to monitor</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLineEdit" name="queryParameterLine">
-      <property name="toolTip">
-       <string>Port where the smbta is listening</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QPushButton" name="saveButton">
    <property name="geometry">
     <rect>
@@ -220,6 +93,77 @@
       </property>
       <property name="checked">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>32</x>
+     <y>74</y>
+     <width>274</width>
+     <height>78</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="hostLabel">
+      <property name="text">
+       <string>Query type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="queryTypeButton">
+      <property name="toolTip">
+       <string>Select a share to monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLineEdit" name="queryParameterLine">
+      <property name="toolTip">
+       <string>Port where the smbta is listening</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="queryShareButton">
+      <property name="toolTip">
+       <string>Query available shares using smbtaquery</string>
+      </property>
+      <property name="text">
+       <string>Query Shares</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QComboBox" name="shareBox">
+      <property name="toolTip">
+       <string>Select a share to monitor</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="portLabel">
+      <property name="text">
+       <string>Port:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="portLine">
+      <property name="toolTip">
+       <string>Port where the smbta is listening</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="shareLabel">
+      <property name="text">
+       <string>QueryShare:</string>
       </property>
      </widget>
     </item>
