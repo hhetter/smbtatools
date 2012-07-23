@@ -21,7 +21,7 @@ frontend::frontend(QWidget *parent) :
         ui->stackedView->addWidget(configWidget);
         ui->stackedView->addWidget(monitorFormW);
         ui->stackedView->show();
-        ui->stackedView->setCurrentIndex(0);
+        ui->stackedView->setCurrentIndex(3);
 
 
         connect(ui->configbutton, SIGNAL(clicked()),this,

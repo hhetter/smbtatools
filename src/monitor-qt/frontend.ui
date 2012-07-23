@@ -38,41 +38,7 @@
     <property name="currentIndex">
      <number>1</number>
     </property>
-    <widget class="QWidget" name="page0">
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>80</y>
-        <width>52</width>
-        <height>14</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Page 0</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="nopagelabel">
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>130</y>
-        <width>151</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Smbtamonitor-qt</string>
-      </property>
-     </widget>
-    </widget>
+    <widget class="QWidget" name="page0"/>
     <widget class="QWidget" name="page1">
      <widget class="QLabel" name="label_2">
       <property name="geometry">
@@ -162,19 +128,6 @@
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QLabel" name="testlabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>240</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
