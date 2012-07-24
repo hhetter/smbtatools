@@ -138,7 +138,7 @@ void MonitorForm::startmonitor()
 		 * wait for 5 seconds, then connect to the socket
 		 */
 
-		QTime dieTime = QTime::currentTime().addSecs(5);
+                QTime dieTime = QTime::currentTime().addSecs(2);
 		while( QTime::currentTime() < dieTime ) {
 			Progress->update();
 			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
