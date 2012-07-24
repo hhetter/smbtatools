@@ -123,9 +123,9 @@ void MonitorForm::startmonitor()
 
 
                 // Danger - Program freeze if socket is not created
-                while(!QFile::exists(socketString)){
+ //               while(!QFile::exists(socketString)){
                         sleep(1);
-                }
+//                }
 
                 ////
                 // Test if the socket is already established - the sleep command a few lines earlier should make it work reliable.

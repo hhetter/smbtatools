@@ -13,7 +13,7 @@ Graph::Graph(QWidget *parent) :
 
 void Graph::g_receivelist(QLinkedList<unsigned long> readlist,                           QLinkedList<unsigned long> writelist)
  {
-                qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
+    //            qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
                 g_get_w_size();
 
 
@@ -29,9 +29,10 @@ void Graph::g_receivelist(QLinkedList<unsigned long> readlist,                  
 void Graph::g_get_w_size()
 {
     QSize w_size = this->frameSize();
-    qDebug()<<"QSize: y " << w_size.height();
+/*    qDebug()<<"QSize: y " << w_size.height();
     qDebug()<<"QSize calc: y " << (int)(w_size.height()*0.8);
     qDebug()<<"QSize: x " << w_size.width();
+*/
 }
 
 void Graph::g_get_dp_offset(){} // Get the datapoint offset to t=0

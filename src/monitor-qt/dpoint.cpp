@@ -7,6 +7,12 @@ DPoint::DPoint(QObject *parent) :
         i_stepsize=5;
         i_max_index = 86400;
 
+        for(int i = 0; i< 86400; i++){
+            readlist.prepend(0);
+            writelist.prepend(0);
+
+        }
+
 }
 
 
@@ -26,8 +32,8 @@ void DPoint::dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
                 readlist.prepend(l_read_end);
                 writelist.prepend(l_write_end);
 
-                if(readlist.size() == i_max_index &&
-                                writelist.size() == i_max_index){
+                if(readlist.size() == i_max_index+1 &&
+                                writelist.size() == i_max_index+1){
                         readlist.removeLast();
                         writelist.removeLast();
                 }

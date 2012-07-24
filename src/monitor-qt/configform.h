@@ -28,6 +28,7 @@ public:
 public slots:
 
     void cf_readconfig();
+    void cf_hidefield();
 
 
 private:

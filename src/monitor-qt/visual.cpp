@@ -207,7 +207,7 @@ void Visual::vs_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
 void Visual::vs_set_time(){
 
         timestart = givetime->currentTime().toString();
-        qDebug()<<"timestart: " << timestart;
+//        qDebug()<<"timestart: " << timestart;
 }
 
 
