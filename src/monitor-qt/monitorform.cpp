@@ -1,6 +1,9 @@
 #include "monitorform.h"
 #include "ui_monitorform.h"
 
+#include <QProgressDialog>
+#include <QTest>
+#include <QMessageBox>
 MonitorForm::MonitorForm(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::MonitorForm)
@@ -115,17 +118,39 @@ void MonitorForm::startmonitor()
                 // When I leave out exec() from Processrunner::run(), the errors disappear
                 // but I think it does not run in a different thread then , so I leave it there for now
                 // The errors are ugly but they on't stop the program
+
+		/** indicate some processing for the user */
+
+		QProgressDialog *Progress = new QProgressDialog("Connecting to smbtad...", NULL, 0, 0, this);
+		Progress->move(this->width()/2, this->height()/2);
+		Progress->show();
+
+
+
+
                 processRunnerW->monitorprocess->start("smbtamonitor-gen "+(*configString));
 
 
                 *pid_string = QString::number(processRunnerW->monitorprocess->pid());
                 QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
+		this->update();
+		/**
+		 * wait for 5 seconds, then connect to the socket
+		 */
 
+		QTime dieTime = QTime::currentTime().addSecs(5);
+		while( QTime::currentTime() < dieTime ) {
+			Progress->update();
+			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+		}
 
-                // Danger - Program freeze if socket is not created
-                while(!QFile::exists(socketString)){
-                        sleep(1);
-                }
+		if (!QFile::exists(socketString)) {
+			QMessageBox::information(this,"Error!","Unable to connect to the socket of the subprocess.");
+			delete Progress;
+			exit(1);
+		}
+		Progress->hide();
+		delete Progress;
 
                 ////
                 // Test if the socket is already established - the sleep command a few lines earlier should make it work reliable.
