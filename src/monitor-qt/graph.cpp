@@ -78,7 +78,7 @@ void Graph::g_release_dp(){}
  * Distribute data points to the graph when the number of data points is greater
  * than the pixel width.
  */
-void Graph::g_squeez_dp(){}
+void Graph::g_squeeze_dp(){}
 
 
 void Graph::g_interpolate(){} // Interpolation and create points to make the graph
