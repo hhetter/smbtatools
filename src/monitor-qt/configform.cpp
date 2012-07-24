@@ -84,7 +84,7 @@ void ConfigForm::cf_readconfig(){
     }
 
     if(ui->portLine->text() != ""){
-        configString->append(" -p "+ui->portLine->text());
+        configString->append(" -i "+ui->portLine->text());
     }
 
 
