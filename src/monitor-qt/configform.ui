@@ -153,7 +153,7 @@
     <item row="1" column="1">
      <widget class="QLineEdit" name="hostLine">
       <property name="toolTip">
-       <string>Port where the smbta is listening</string>
+       <string>Host where the smbtad is listening</string>
       </property>
      </widget>
     </item>

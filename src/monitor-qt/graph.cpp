@@ -3,6 +3,7 @@
 Graph::Graph(QWidget *parent) :
     QWidget(parent)
 {
+    i_max_index = 86400;
     i_s_count = 0;
     i_stepsize=5;
     i_x_d_size = 400;
@@ -15,10 +16,17 @@ Graph::Graph(QWidget *parent) :
 
 
 
-void Graph::g_receivelist(QLinkedList<unsigned long> readlist,                           QLinkedList<unsigned long> writelist)
+void Graph::g_receivelist(QList<unsigned long> readlist_in,
+                          QList<unsigned long> writelist_in)
 {
     //            qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
-    g_get_w_size();
+
+    readlist = readlist_in;
+    writelist = writelist_in;
+    //g_get_w_size();
+
+    g_interpolate();
+    g_create_path();
 
 
 }
@@ -54,20 +62,18 @@ void Graph::g_change_dp_num() // Change the number of datapoints for the graph
     if(/* signal to zoom in*/ true)
     {
         i_dp_number = (int)(i_dp_number*0.8);
-        i_dp_start = i_dp_start + g_get_dp_offset();
-        i_dp_end = i_dp_start + i_dp_end;
     }
 
     if(/* signal to zoom out*/ true)
     {
         i_dp_number = (int)(i_dp_number*1.2);
-        i_dp_start = i_dp_start + g_get_dp_offset();
-        i_dp_end = i_dp_start + i_dp_end;
     }
+    i_dp_start = i_dp_start + g_get_dp_offset();
+    i_dp_end = i_dp_start + i_dp_end;
 }
 
 
-
+// Not needed with the current graph model
 void Graph::g_def_dp_num() // Define how to map datapoints to pixels
 {
     // 1) find out if there are more pixels or more datapoints
@@ -78,31 +84,54 @@ void Graph::g_def_dp_num() // Define how to map datapoints to pixels
         g_squeeze_dp();
     }
     // 2) find a method to map datapoints to pixels
-    // -> see the two methods called from here, g_release_dp() and g_squeeze_dp();
+    //-> see the two methods called from here, g_release_dp(), g_squeeze_dp();
 }
 
 /*
  * Distribute data points to the graph when the pixel width is greater than the
  * number of data points
  */
+// Not needed with the current graph model
 void Graph::g_release_dp()
 {
 }
-
 
 /*
  * Distribute data points to the graph when the number of data points is greater
  * than the pixel width.
  */
+// Not needed with the current graph model
 void Graph::g_squeeze_dp()
 {
 }
 
 
-void Graph::g_interpolate(){} // Interpolation and create points to make the graph
+// Interpolation and create points to make the graph
+void Graph::g_interpolate()
+{
+    // Find combined max value
+
+        l_max = 0;
+    for(int i = i_dp_start; i < i_dp_end; i++){
+            l_c_max = readlist[i] + writelist[i];
+
+        if(l_c_max > l_max){
+            l_max = l_c_max;
+        }
+    }
+    qDebug() << "lmax: " << l_max;
+      qDebug() << "readlist[0]: " << readlist[0];
+
+}
+
+
+void Graph::g_create_path()
+{
 
 
 
+
+}
 
 
 

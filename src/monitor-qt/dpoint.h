@@ -2,6 +2,7 @@
 #define DPOINT_H
 
 #include <QObject>
+#include <QList>
 #include <QLinkedList>
 #include <QPoint>
 #include <QDebug>
@@ -18,7 +19,7 @@ public:
         int i_stepsize;
         int i_max_index;
 
-        QLinkedList<unsigned long> readlist, writelist;
+        QList<unsigned long> readlist, writelist;
 
 signals:
 
@@ -26,8 +27,8 @@ public slots:
 
 
         void dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite);
-        QLinkedList<unsigned long> dp_returnreadlist();
-        QLinkedList<unsigned long> dp_returnwritelist();
+        QList<unsigned long> dp_returnreadlist();
+        QList<unsigned long> dp_returnwritelist();
 
 
 };

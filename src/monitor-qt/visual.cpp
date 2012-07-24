@@ -366,66 +366,6 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
 
 
 
-        ////
-        //  Old, working version. commented out to work on the new moving graph
-
-
-
-        /*
- ////
- ////
- // QPolygon Method
- ////
- // Create QPolygon from the QVector<QPoint>'s
- // Inverse order of the vectors is needed so that every new value gets added to the
- // right end of the graph,the rest gets just shifted one point to the left
-
-
- // Reset Graph painterpaths
- readpath  = QPainterPath();
- writepath = QPainterPath();
-
- writepg = QPolygonF();
- readpg =  QPolygonF();
-
- // Create QVector<QPoint>'s with the scanned graph datasets
- readv << (readp);
- writev<< (writep);
-
- writepg<<QPointF((i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (writev[0].y()/f_scalefactor));
- readpg<<QPointF( (i_x_os + i_x_max)-i_time, (i_y_os + i_y_max) - (readv[0].y()/f_scalefactor));
-
-//  qDebug() << "writev[0].y(): " << writev[0].y();
-//  qDebug() << "i_y_os - (writev[0].y()/f_scalefactor): " << i_y_os - (writev[0].y()/f_scalefactor);
-
-  for(int i = i_time-1; i >= 0; i--){
-    writepg<<QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (writev[i_x-i].y()/f_scalefactor));
-    readpg<< QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (readv[i_x-i].y()/f_scalefactor));
-   }
-
-  writepg<<QPointF((i_x_os + i_x_max),  (i_y_os + i_y_max) - (readv[i_x].y()/f_scalefactor));
-  readpg<<QPointF( (i_x_os + i_x_max),  450);
-
- for(int i = 1; i <= i_time; i++){
-   writepg<<QPointF((i_x_os + i_x_max)-i,  (i_y_os + i_y_max) - (readv[i_x-i].y()/f_scalefactor));
-   readpg<<QPointF( (i_x_os + i_x_max)-i,   450);
- }
-
-
- if(i_time < 600){
-   i_time++;
- }
- i_rescaletimer++;
- i_x++;
-*/
-        // update();
-
-
-        //*********************************************************************************
-        //*********************************************************************************
-        //*********************************************************************************
-        //*********************************************************************************
-
         update();
 
 
@@ -434,6 +374,8 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
 void Visual::paintEvent(QPaintEvent *){
 
         QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.scale(1.0,1.0);
         QRect graphbr(i_x_os,i_y_os,i_x_max,i_y_max);
         QRect writerect(50,i_y_os+i_y_max+10,10,10);
         QRect readrect(50, i_y_os+i_y_max+30, 10, 10);
@@ -451,9 +393,11 @@ void Visual::paintEvent(QPaintEvent *){
         // Create Axis / Labeling
         painter.setPen(Qt::black);
         painter.setFont(QFont("Arial", 8));
+        painter.scale(1.0,1.0);
         painter.drawText(0,i_y_os+i_y_max+10, xstring1);painter.drawText(0,i_y_os+10+(i_y_max*0.75), xstring2);painter.drawText(0,i_y_os+10+(i_y_max*0.50), xstring3);painter.drawText(0,i_y_os+10+(i_y_max*0.25), xstring4);painter.drawText(0,i_y_os+10, xstring5);
         painter.drawText(65,i_y_os+i_y_max+20, "Write traffic");
         painter.drawText(65,i_y_os+i_y_max+40, "Read traffic");
+        painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
         painter.setPen(readpen);
@@ -476,6 +420,7 @@ void Visual::paintEvent(QPaintEvent *){
         painter.drawLine(i_x_os, i_y_os+(i_y_max*0.75), i_x_os+i_x_max, i_y_os+(i_y_max*0.75));
         painter.drawLine(i_x_os, i_y_os+(i_y_max),      i_x_os+i_x_max, i_y_os+i_y_max);
         painter.drawLine(i_x_os, i_y_os,                i_x_os,         i_y_os+i_y_max); // draws left border of the rect black
+
 
 }
 

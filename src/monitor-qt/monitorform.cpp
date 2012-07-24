@@ -119,11 +119,11 @@ void MonitorForm::startmonitor()
                 // but I think it does not run in a different thread then , so I leave it there for now
                 // The errors are ugly but they on't stop the program
 
-		/** indicate some processing for the user */
+                /** indicate some processing for the user */
 
-		QProgressDialog *Progress = new QProgressDialog("Connecting to smbtad...", NULL, 0, 0, this);
-		Progress->move(this->width()/2, this->height()/2);
-		Progress->show();
+                QProgressDialog *Progress = new QProgressDialog("Connecting to smbtad...", NULL, 0, 0, this);
+                Progress->move(this->width()/2, this->height()/2);
+                Progress->show();
 
 
 
@@ -133,25 +133,25 @@ void MonitorForm::startmonitor()
 
                 *pid_string = QString::number(processRunnerW->monitorprocess->pid());
                 QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
-		this->update();
-		/**
-		 * wait for 5 seconds, then connect to the socket
-		 */
+                this->update();
+                /**
+   * wait for 5 seconds, then connect to the socket
+   */
 
-                QTime dieTime = QTime::currentTime().addSecs(2);
-		while( QTime::currentTime() < dieTime ) {
-			Progress->update();
-			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-		}
+                QTime dieTime = QTime::currentTime().addSecs(1);
+                while( QTime::currentTime() < dieTime ) {
+                        Progress->update();
+                        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+                }
 
 
-		if (!QFile::exists(socketString)) {
-			QMessageBox::information(this,"Error!","Unable to connect to the socket of the subprocess.");
-			delete Progress;
-			exit(1);
-		}
-		Progress->hide();
-		delete Progress;
+                if (!QFile::exists(socketString)) {
+                        QMessageBox::information(this,"Error!","Unable to connect to the socket of the subprocess.");
+                        delete Progress;
+                        exit(1);
+                }
+                Progress->hide();
+                delete Progress;
 
 
                 ////
@@ -168,14 +168,14 @@ void MonitorForm::startmonitor()
                                                QIODevice::ReadOnly);
                 connect(timeClassW->timer, SIGNAL(timeout()),
                         this, SLOT(sendtovisualizer()));
-                connect(timeClassW->timer, SIGNAL(timeout()),
-                        this, SLOT(sendtopoints()));
+//                connect(timeClassW->timer, SIGNAL(timeout()),
+//                        this, SLOT(sendtopoints()));
                 connect(monitorSocket, SIGNAL(readyRead()),
                         this, SLOT(readfromsocket()));
                 qDebug() << monitorSocket->state();
 
 
-                qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
+ //               qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
                 //       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
 
         }
@@ -195,7 +195,7 @@ void MonitorForm::stopmonitor()
                 running = false;
                 //        processRunnerW->monitorprocess->kill();
                 processRunnerW->monitorprocess->terminate();
-                qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
+                //                qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
                 timeClassW->timer->stop();
 
 
@@ -229,7 +229,7 @@ void MonitorForm::readfromsocket(){
         //    qDebug() << "readfromsocket()";
 
         *readstring = monitorSocket->readAll();
-        //    qDebug()<<"*readstring: " << *readstring;
+//            qDebug()<<"*readstring: " << *readstring;
         *readlist = readstring->split("#");
         //    qDebug()<< "Last index: " << readlist->count();
 
@@ -242,23 +242,16 @@ void MonitorForm::readfromsocket(){
                 //        qDebug()<<"Output " << i <<": " << output;
 
                 if(output.startsWith("W")){
-
-                        //            qDebug()<<"starts with W";
-                        //            qDebug()<<"------------";
-                        //                qDebug()<<"Output: " << output;
                         output.replace("W:","");
                         output.chop(1);
-                        //                qDebug()<<"Output: " << output;
                         *l_writestack += output.toULong();
-                        //            qDebug()<<"readfromsocket:*l_writestack: " << *l_writestack;
                 }
 
                 if(output.startsWith("R")){
                         output.replace("R:","");
                         output.chop(1);
-                        //                qDebug()<<"Output: " << output;
+
                         *l_readstack += output.toULong();
-                        //            qDebug()<<"readfromsocket:*l_readstack: " << *l_readstack;
                 }
 
 
@@ -269,8 +262,6 @@ void MonitorForm::readfromsocket(){
                 //                qDebug()<<"--------------";
 
         }
-        //
-        //    *readstring = "";
 
 }
 
@@ -301,9 +292,13 @@ void MonitorForm::sendtovisualizer(){
         //    qDebug() << "sendtovisualizer()";
         //    unsigned long int uli1 = 1000;
         //    unsigned long int uli2 = 1500;
-        //    qDebug()<<"*l_readstack  " << *l_readstack;
+  //         qDebug()<<"*l_readstack ->visualizer " << *l_readstack;
         //    qDebug()<<"*l_writestack " << *l_writestack;
         visualW->vs_receivenumbers( l_readstack, l_writestack);
+        d_points->dp_receivenumbers( l_readstack, l_writestack);
+        p_graph->g_receivelist(d_points->dp_returnreadlist(),
+                               d_points->dp_returnwritelist());
+
         *l_readstack = 0;
         *l_writestack = 0;
 
@@ -330,7 +325,7 @@ void MonitorForm::sendtopoints(){
         //    qDebug() << "sendtovisualizer()";
         //    unsigned long int uli1 = 1000;
         //    unsigned long int uli2 = 1500;
-        //    qDebug()<<"*l_readstack  " << *l_readstack;
+//            qDebug()<<"*l_readstack -> topoints " << *l_readstack;
         //    qDebug()<<"*l_writestack " << *l_writestack;
         d_points->dp_receivenumbers( l_readstack, l_writestack);
         p_graph->g_receivelist(d_points->dp_returnreadlist(), d_points->dp_returnwritelist());
