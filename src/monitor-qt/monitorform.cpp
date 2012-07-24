@@ -144,12 +144,7 @@ void MonitorForm::startmonitor()
 			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 		}
 
-<<<<<<< HEAD
-                // Danger - Program freeze if socket is not created
- //               while(!QFile::exists(socketString)){
-                        sleep(1);
-//                }
-=======
+
 		if (!QFile::exists(socketString)) {
 			QMessageBox::information(this,"Error!","Unable to connect to the socket of the subprocess.");
 			delete Progress;
@@ -157,7 +152,7 @@ void MonitorForm::startmonitor()
 		}
 		Progress->hide();
 		delete Progress;
->>>>>>> adc79cba8830fbad86c70433f9b1e1a4bd9a7f3c
+
 
                 ////
                 // Test if the socket is already established - the sleep command a few lines earlier should make it work reliable.
