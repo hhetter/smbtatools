@@ -29,7 +29,7 @@ public slots:
 
         void g_receivelist(QLinkedList<unsigned long> readlist, QLinkedList<unsigned long> writelist);
         void g_get_w_size(); // Get the size of the widget that contains the graph
-        void g_get_dp_offset(); // Get the datapoint offset to t=0
+        int g_get_dp_offset(); // Get the datapoint offset to t=0
         void g_change_dp_num(); // Change the number of datapoints for the graph
         void g_def_dp_num(); // Map datapoints to pixels
         void g_release_dp(); // map data points to pixel width (dp < pw)
