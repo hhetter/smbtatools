@@ -23,9 +23,30 @@
 #include <stdio.h>
 pthread_t thread;
 
+struct signalstruct {
+	        int pid;
+		        int socket;
+};
+
+struct signalstruct signal_data;
+
 
 int configuration_check_configuration( struct configuration_data *c );
 void configuration_create_db(struct configuration_data *c);
+
+
+void catch_signal(int z)
+{
+        printf("Closing socket and cleanup...\n\n");
+        close(signal_data.socket);
+        char *delstr = talloc_asprintf(NULL,"/var/tmp/smbtamonitor-gen-socket-%i",
+		signal_data.pid);
+        remove(delstr);
+        talloc_free(delstr);
+        exit(0);
+}
+
+
 
 
 static void configuration_show_help()
@@ -258,6 +279,17 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	c->monitor_gen_socket = network_create_unix_socket( fname );
 	talloc_free(fname);
 
+        /**
+	 *          * add a termination handler
+	 *                   */
+        signal_data.pid=getpid();
+        signal_data.socket=c->monitor_gen_socket;
+        signal( SIGINT, &catch_signal);
+	signal( SIGTERM, &catch_signal);
+	signal( SIGKILL, &catch_signal);
+
+
+
 	// At this point we'll block the process until our client
 	// connects
 	//
@@ -270,6 +302,7 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		printf("Connection to the client failed.\n");
 		exit(1);
 	}
+
 
 
 	monitor_list_init();
