@@ -36,6 +36,7 @@ public:
         int i_dp_max; // Maximum number of datapoints to be displayed in the graph
         int i_intpol_count; // Counter for the interpolation steps
         float f_scalefactor;
+        float f_zoomfactor; // Keeps the zoomfactor (i_x_d_size/i_dp_num)
 
         unsigned long l_read_max, l_write_max, l_max, l_c_max; // Holds the max values to do the scaling for the graph
         unsigned long l_read_diff, l_write_diff; // Needed to calculate the interpolation steps

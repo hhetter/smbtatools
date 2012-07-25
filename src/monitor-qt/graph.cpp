@@ -12,10 +12,11 @@ Graph::Graph(QWidget *parent) :
         i_x_d_size = 600;
         i_y_d_size = 400;
         i_dp_min = 10;
-        i_dp_max = 2500;
+        i_dp_max = 86400;
         //i_dp_number = i_x_d_size;
-        i_dp_number = 600;
+        i_dp_number = 300;
         f_scalefactor = 1;
+        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
 
 
         i_dp_start = 0; // index of the data point from where the display is started
@@ -97,6 +98,7 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         }
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
+        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
         qDebug() << "i_dp_start: " << i_dp_start;
         qDebug() << "i_dp_end: " << i_dp_end;
 }
@@ -180,7 +182,6 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         // Create QPolygonF from right to left
         for(int i = i_dp_start; i <= i_dp_end /* (i_dp_end*i_stepsize) */; i++)
         {
-                qDebug()<< "i: "<< i;
                 readpg<<QPointF( ( i_x_d_size - i),
                                  ( i_y_d_size) -
                                  (((float)(readlist_in[i]))/f_scalefactor)
@@ -288,9 +289,9 @@ void Graph::paintEvent(QPaintEvent *){
 
         // Paint graphs
         //graphpainter.scale(1.0,1.0);
-        graphpainter.translate(i_x_os, i_y_os);
+        graphpainter.translate(i_x_os-(f_zoomfactor*(i_x_d_size - i_dp_number)), i_y_os);
         //graphpainter.scale(((float)(i_x_d_size))/((float)(i_dp_number)),1.0);
-        graphpainter.scale(1.0,1.0);
+        graphpainter.scale(f_zoomfactor,1.0);
         graphpainter.setPen(writepen);
         graphpainter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
         graphpainter.drawPolygon(writepg);
