@@ -14,7 +14,7 @@ Graph::Graph(QWidget *parent) :
         i_dp_min = 10;
         i_dp_max = 2500;
         //i_dp_number = i_x_d_size;
-        i_dp_number = 300;
+        i_dp_number = 600;
         f_scalefactor = 1;
 
 
@@ -290,7 +290,7 @@ void Graph::paintEvent(QPaintEvent *){
         //graphpainter.scale(1.0,1.0);
         graphpainter.translate(i_x_os, i_y_os);
         //graphpainter.scale(((float)(i_x_d_size))/((float)(i_dp_number)),1.0);
-        graphpainter.scale(2.0,1.0);
+        graphpainter.scale(1.0,1.0);
         graphpainter.setPen(writepen);
         graphpainter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
         graphpainter.drawPolygon(writepg);
