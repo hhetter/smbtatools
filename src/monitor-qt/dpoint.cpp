@@ -8,8 +8,8 @@ DPoint::DPoint(QObject *parent) :
     i_max_index = 86400;
 
     for(int i = 0; i< 86400; i++){
-        readlist.prepend(0);
-        writelist.prepend(0);
+        readlist.append(i);
+        writelist.append(i);
 
     }
 

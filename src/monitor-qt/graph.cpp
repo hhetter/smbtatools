@@ -12,6 +12,9 @@ Graph::Graph(QWidget *parent) :
 
     i_dp_start = 0; // index of the data point from where the display is started
     i_dp_end = i_dp_number + i_dp_start; // index of the data point from where the display  ends
+
+    readlist = new QList<unsigned long>;
+    writelist = new QList<unsigned long>;
 }
 
 
@@ -21,11 +24,13 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
 {
     //            qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
 
-    readlist = readlist_in;
-    writelist = writelist_in;
+//    readlist = &readlist_in;
+ //   qDebug()<< readlist[0];
+ //   qDebug()<<"end";
+ //   writelist = &writelist_in;
     //g_get_w_size();
 
-    g_interpolate();
+    g_interpolate(readlist_in, writelist_in);
     g_create_path();
 
 
@@ -107,20 +112,20 @@ void Graph::g_squeeze_dp()
 
 
 // Interpolation and create points to make the graph
-void Graph::g_interpolate()
+void Graph::g_interpolate(QList<unsigned long> readlist_in,
+                          QList<unsigned long> writelist_in)
 {
     // Find combined max value
 
         l_max = 0;
     for(int i = i_dp_start; i < i_dp_end; i++){
-            l_c_max = readlist[i] + writelist[i];
-
+            l_c_max = readlist_in[i] + writelist_in[i];
         if(l_c_max > l_max){
             l_max = l_c_max;
         }
     }
     qDebug() << "lmax: " << l_max;
-      qDebug() << "readlist[0]: " << readlist[0];
+//      qDebug() << "readlist[0]: " << *readlist[0];
 
 }
 
