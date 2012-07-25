@@ -366,12 +366,13 @@ void Visual::vs_processnumbers(unsigned long l_read, unsigned long l_write){
 
 
 
-        update();
+       // update();
 
 
 }
 
 void Visual::paintEvent(QPaintEvent *){
+
 
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
