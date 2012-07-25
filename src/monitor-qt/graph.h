@@ -12,6 +12,7 @@
 #include <QString>
 #include <QWheelEvent>
 #include <QPainter>
+#include <talloc.h>
 
 
 class Graph : public QWidget
@@ -60,8 +61,10 @@ public slots:
         void g_squeeze_dp(); // map data points to pixel width (dp > pw)
         void g_interpolate(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in); // Inteerpolation and create points to make the graph
         void g_create_path();
+        char *mhr( long long int kb );
 
         void paintEvent(QPaintEvent *event);
+        void paintGraph(QPaintEvent *event);
         void wheelEvent(QWheelEvent *event); // Will catch wheel events to zoom the graph
 
 
