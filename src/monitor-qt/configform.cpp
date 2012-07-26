@@ -24,7 +24,7 @@ ConfigForm::ConfigForm(QWidget *parent) :
 
 
 
-    qDebug()<<"Class constructor ConfigForm";
+    //qDebug()<<"Class constructor ConfigForm";
     //    cf_readconfig();
 }
 
@@ -95,7 +95,7 @@ void ConfigForm::cf_readconfig(){
     if(ui->dryrunCheckbox->isChecked()){
         *configString = " -x";
     }
-    qDebug()<< "Configstring: " << *configString;
+    //qDebug()<< "Configstring: " << *configString;
 
 
 
