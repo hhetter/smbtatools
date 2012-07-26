@@ -112,15 +112,12 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
-                //qDebug()<< "Zoom in";
-
                 // i_dp_number = (int)(i_dp_number*0.8);
                 i_dp_number = i_dp_number-  offset;
         }
 
         if(i_delta < 0 && i_dp_number < i_dp_max)
         {
-                //qDebug()<< "Zoom out";
 
                 //i_dp_number = (int)(i_dp_number*1.2);
                 i_dp_number = i_dp_number+offset;
