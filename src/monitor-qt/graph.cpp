@@ -92,15 +92,20 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
                 qDebug()<< "Zoom in";
-                // i_dp_number = (int)(i_dp_number*0.8);
-                i_dp_number = i_dp_number-50;
+
+                i_dp_number = (int)(i_dp_number*0.8);
+                //if(i_dp_number > 50){
+                //        i_dp_number = i_dp_number-50;
+                //}
         }
 
         if(i_delta < 0 && i_dp_number < i_dp_max)
         {
                 qDebug()<< "Zoom out";
-                //i_dp_number = (int)(i_dp_number*1.2);
-                i_dp_number = i_dp_number+50;
+                if(i_dp_number < (int)(i_dp_number/1.25)){
+                        i_dp_number = (int)(i_dp_number*1.25);
+                }
+                //i_dp_number = i_dp_number+50;
         }
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
@@ -188,7 +193,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
         // Create Points
         // Create QPolygonF from right to left
-        for(int i = i_dp_start; i <= i_dp_end /* (i_dp_end*i_stepsize) */; i++)
+        for(int i = i_dp_start+1; i < i_dp_end /* (i_dp_end*i_stepsize) */; i++)
         {
                 readpg<<QPointF( ( i_x_d_size - i),
                                  ( i_y_d_size) -
@@ -202,7 +207,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         }
 
         // Create QPolygonF back from left to right
-        for(int i = i_dp_end; i >= i_dp_start /* (i_dp_end*i_stepsize) */; i--)
+        for(int i = i_dp_end; i > i_dp_start /* (i_dp_end*i_stepsize) */; i--)
         {
 
                 readpg<<QPointF( (i_x_d_size - i),
