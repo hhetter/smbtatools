@@ -20,7 +20,8 @@ Graph::Graph(QWidget *parent) :
         i_dp_number = 300;
         f_scalefactor = 1;
         f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
-
+	thrputw = 0;
+	thrputr = 0;
 
         i_dp_start = 0; // index of the data point from where the display is started
         i_dp_end = i_dp_number + i_dp_start; // index of the data point from where the display  ends
@@ -162,6 +163,16 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         l_read_diff = 0;
         l_write_diff = 0;
         t_string = g_clock.currentTime().toString();
+
+	// throughput per minute
+	//
+	thrputw = 0;
+	thrputr = 0;
+	for (int i = i_dp_start; i<i_dp_start+60; i++) {
+		thrputw=thrputw+writelist_in[i];
+		thrputr=thrputr+readlist_in[i];
+	};
+
 
 
         // Find max value of read+write traffic to definy y-axis scale factor
@@ -342,7 +353,21 @@ void Graph::paintEvent(QPaintEvent *){
         painter.drawText(i_x_d_size-50,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.drawText(i_x_d_size-180,15, title);
-        painter.scale(1.0,1.0);
+	QString thrstr;
+	char *thrval1 = mhr(thrputr);
+	char *thrval2 = mhr(thrputw);
+	char *totalval = mhr(thrputw + thrputr);
+	thrstr.append("Throughput Read:");
+	thrstr.append(thrval1);
+	thrstr.append(" Write:");
+	thrstr.append(thrval2);
+	thrstr.append(" Total:");
+	thrstr.append(totalval);
+	painter.drawText(i_x_d_size-260,30, thrstr);
+	free(thrval1);
+	free(thrval2);
+	free(totalval);
+	painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
         painter.setPen(readpen);
