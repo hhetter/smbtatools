@@ -20,8 +20,8 @@ Graph::Graph(QWidget *parent) :
         i_dp_number = 300;
         f_scalefactor = 1;
         f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
-	thrputw = 0;
-	thrputr = 0;
+        thrputw = 0;
+        thrputr = 0;
 
         i_dp_start = 0; // index of the data point from where the display is started
         i_dp_end = i_dp_number + i_dp_start; // index of the data point from where the display  ends
@@ -100,19 +100,19 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
 {
         int offset;
         if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
-                offset=1;
+                offset=2*1;
         } else if (i_dp_number < 60) { /* a minute */
-                offset=2;
+                offset=2*2;
         } else if (i_dp_number < 300) { /* 5 minutes */
-                offset=5;
+                offset=2*5;
         } else if (i_dp_number < 600) { /* 10 minutes */
-                offset=10;
-        } else offset=50; /* anything else */
+                offset=2*10;
+        } else offset=2*50; /* anything else */
 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
-                qDebug()<< "Zoom in";
+                //qDebug()<< "Zoom in";
 
                 // i_dp_number = (int)(i_dp_number*0.8);
                 i_dp_number = i_dp_number-  offset;
@@ -120,7 +120,7 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
 
         if(i_delta < 0 && i_dp_number < i_dp_max)
         {
-                qDebug()<< "Zoom out";
+                //qDebug()<< "Zoom out";
 
                 //i_dp_number = (int)(i_dp_number*1.2);
                 i_dp_number = i_dp_number+offset;
@@ -164,14 +164,14 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         l_write_diff = 0;
         t_string = g_clock.currentTime().toString();
 
-	// throughput per minute
-	//
-	thrputw = 0;
-	thrputr = 0;
-	for (int i = i_dp_start; i<i_dp_start+60; i++) {
-		thrputw=thrputw+writelist_in[i];
-		thrputr=thrputr+readlist_in[i];
-	};
+        // throughput per minute
+        //
+        thrputw = 0;
+        thrputr = 0;
+        for (int i = i_dp_start; i<i_dp_start+60; i++) {
+                thrputw=thrputw+writelist_in[i];
+                thrputr=thrputr+readlist_in[i];
+        };
 
 
 
@@ -182,9 +182,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                         l_max = l_c_max;
                 }
         }
-        //  qDebug() << "++++++++++++++++++++";
-        //  qDebug() << "l_max: " << l_max;
-        //  qDebug() << "++++++++++++++++++++";
+
         if(l_max > 1)
         {
                 f_scalefactor = 1.1*((float)l_max)/i_y_d_size;
@@ -236,6 +234,25 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                   );
         }
 
+
+        readpg<<QPointF( ( i_x_d_size -i_dp_end),
+                         ( i_y_d_size ) -
+                         ((float)(readlist_in[i_dp_end]))/f_scalefactor
+                         );
+        //(((float)(readlist_in[i_dp_start]))/f_scalefactor));
+        writepg<<QPointF( ( i_x_d_size - i_dp_end  ),
+                          ( i_y_d_size) -
+                          ((((float)(writelist_in[i_dp_end]))/f_scalefactor) +
+                           (((float)(readlist_in[i_dp_end]))/f_scalefactor))
+                          );
+
+
+
+
+
+
+
+
         // Create QPolygonF back from left to right
         for(int i = i_dp_end; i > i_dp_start /* (i_dp_end*i_stepsize) */; i--)
         {
@@ -250,16 +267,17 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                   (((float)(readlist_in[i]))/f_scalefactor)
                                   );
         }
+
+        // Create end points of the QPolygonF's (at the right side)
         readpg<<QPointF( ( i_x_d_size ),
                          ( i_y_d_size) -
-                         (((float)(readlist_in[i_dp_start]))/f_scalefactor));
+                         0);
+
         writepg<<QPointF( ( i_x_d_size ),
                           ( i_y_d_size) -
-                          ((((float)(writelist_in[i_dp_start]))/f_scalefactor) +
-                           (((float)(readlist_in[i_dp_start]))/f_scalefactor)
-                           )
-                          );
+                          (((float)(readlist_in[i_dp_start]))/f_scalefactor)
 
+                          );
 
         ////
         // (Re)scale axes
@@ -343,22 +361,22 @@ void Graph::paintEvent(QPaintEvent *){
         painter.drawText(i_x_d_size-40,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.drawText(i_x_d_size-180,15, title);
-	QString thrstr;
-	char *thrval1 = mhr(thrputr);
-	char *thrval2 = mhr(thrputw);
-	char *totalval = mhr(thrputw + thrputr);
-	thrstr.append("Throughput Read:");
-	thrstr.append(thrval1);
-	thrstr.append("/min Write:");
-	thrstr.append(thrval2);
-	thrstr.append("/min Total:");
-	thrstr.append(totalval);
-	thrstr.append("/min");
-	painter.drawText(5,15, thrstr);
-	free(thrval1);
-	free(thrval2);
-	free(totalval);
-	painter.scale(1.0,1.0);
+        QString thrstr;
+        char *thrval1 = mhr(thrputr);
+        char *thrval2 = mhr(thrputw);
+        char *totalval = mhr(thrputw + thrputr);
+        thrstr.append("Throughput Read:");
+        thrstr.append(thrval1);
+        thrstr.append("/min Write:");
+        thrstr.append(thrval2);
+        thrstr.append("/min Total:");
+        thrstr.append(totalval);
+        thrstr.append("/min");
+        painter.drawText(5,15, thrstr);
+        free(thrval1);
+        free(thrval2);
+        free(totalval);
+        painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
         painter.setPen(readpen);

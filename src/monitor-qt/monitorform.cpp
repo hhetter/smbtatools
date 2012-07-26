@@ -64,7 +64,7 @@ MonitorForm::MonitorForm(QWidget *parent) :
         p_graph = new Graph(ui->visual_widget);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
         vlayout->addWidget(p_graph);
- //       visualW = new Visual(this, 5);
+        //       visualW = new Visual(this, 5);
         /*
         visualW = new Visual(ui->visual_widget, 5);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
@@ -96,16 +96,17 @@ void MonitorForm::startmonitor()
         if(running == false){
 
 
+                /*
                 qDebug()<<"Runningfalse";
                 qDebug()<<"-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+";
                 qDebug()<< "*configstring: " << *configString;
                 qDebug()<<"i_monitortime: " << i_monitortime;
                 qDebug()<<"i_intervaltime: " << i_intervaltime;
                 qDebug()<<"-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+";
+                */
 
 
-
-                qDebug() << "startmonitor";
+                //qDebug() << "startmonitor";
                 running=true;
 
                 timeClassW->timer->start();
@@ -300,7 +301,7 @@ void MonitorForm::sendtovisualizer(){
         //    unsigned long int uli2 = 1500;
         //   qDebug()<<"*l_readstack ->visualizer   " << *l_readstack;
         //   qDebug()<<"*l_writestack -> visualizer " << *l_writestack;
-//        visualW->vs_receivenumbers( l_readstack, l_writestack);
+        //        visualW->vs_receivenumbers( l_readstack, l_writestack);
         d_points->dp_receivenumbers( l_readstack, l_writestack);
         p_graph->g_receivelist(d_points->dp_returnreadlist(),
                                d_points->dp_returnwritelist());
