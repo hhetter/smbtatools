@@ -97,17 +97,17 @@ int Graph::g_get_dp_offset()
 
 void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for the graph
 {
-	int offset;
-	if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
-		offset=1;
-	} else if (i_dp_number < 60) { /* a minute */
-		offset=2;
-	} else if (i_dp_number < 300) { /* 5 minutes */ 
-		offset=5;
-	} else if (i_dp_number < 600) { /* 10 minutes */
-		offset=10;
-	} else offset=50; /* anything else */
-	
+        int offset;
+        if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
+                offset=1;
+        } else if (i_dp_number < 60) { /* a minute */
+                offset=2;
+        } else if (i_dp_number < 300) { /* 5 minutes */
+                offset=5;
+        } else if (i_dp_number < 600) { /* 10 minutes */
+                offset=10;
+        } else offset=50; /* anything else */
+
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
@@ -128,8 +128,8 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         i_dp_end = i_dp_start + i_dp_number;
         f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
         t_i_string = QString::number(i_dp_number)+" Seconds";
-        qDebug() << "i_dp_start: " << i_dp_start;
-        qDebug() << "i_dp_end: " << i_dp_end;
+        //        qDebug() << "i_dp_start: " << i_dp_start;
+        //        qDebug() << "i_dp_end: " << i_dp_end;
 }
 
 
@@ -217,6 +217,12 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                  ( i_y_d_size) -
                                  (((float)(readlist_in[i]))/f_scalefactor)
                                  );
+                if(i >+ 0 && i < 10)
+                {
+                        qDebug() << "front: i: " << i << " " << ( i_y_d_size) -
+                                    ((((float)(writelist_in[i]))/f_scalefactor) +
+                                     (((float)(readlist_in[i]))/f_scalefactor));
+                }
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
                                   ((((float)(writelist_in[i]))/f_scalefactor) +
@@ -232,11 +238,15 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                  ( i_y_d_size) -
                                  0
                                  );
-
+                if(i >+ 0 && i < 10)
+                {
+                        qDebug() << "back: i: " << i << " " << ( i_y_d_size) -
+                                    ((((float)(writelist_in[i]))/f_scalefactor) +
+                                     (((float)(readlist_in[i]))/f_scalefactor));
+                }
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
-                                  ((((float)(writelist_in[i]))/f_scalefactor) +
-                                   (((float)(readlist_in[i]))/f_scalefactor))
+                                  (((float)(readlist_in[i]))/f_scalefactor)
                                   );
         }
         readpg<<QPointF( ( i_x_d_size ),
