@@ -1,5 +1,8 @@
 #include "graph.h"
 
+#include "../../include/version.h"
+
+
 Graph::Graph(QWidget *parent) :
         QWidget(parent)
 {
