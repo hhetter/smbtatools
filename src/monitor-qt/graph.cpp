@@ -271,7 +271,8 @@ void Graph::g_create_path()
 
 void Graph::paintEvent(QPaintEvent *){
 
-
+	QString Title( "smbtamonitor-qt version " );
+	Title.append( SMBTAMONITOR_VERSION );
         QPainter painter(this);
         QPainter graphpainter(this);
         graphpainter.setRenderHint(QPainter::Antialiasing);
@@ -311,6 +312,7 @@ void Graph::paintEvent(QPaintEvent *){
         painter.drawText(65,i_y_d_size+40, "Read traffic");
         painter.drawText(i_x_d_size-50,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
+	painter.drawText(120,15, Title);
         painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
