@@ -119,7 +119,7 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
         f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
-        t_i_string = QString::number(i_dp_number)+" Sekunden";
+        t_i_string = QString::number(i_dp_number)+" Seconds";
         qDebug() << "i_dp_start: " << i_dp_start;
         qDebug() << "i_dp_end: " << i_dp_end;
 }
