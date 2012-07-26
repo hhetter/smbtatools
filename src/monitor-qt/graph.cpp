@@ -89,18 +89,30 @@ int Graph::g_get_dp_offset()
 
 void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for the graph
 {
+	int offset;
+	if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
+		offset=1;
+	} else if (i_dp_number < 60) { /* a minute */
+		offset=2;
+	} else if (i_dp_number < 300) { /* 5 minutes */ 
+		offset=5;
+	} else if (i_dp_number < 600) { /* 10 minutes */
+		offset=10;
+	} else offset=50; /* anything else */
+	
+
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
                 qDebug()<< "Zoom in";
                 // i_dp_number = (int)(i_dp_number*0.8);
-                i_dp_number = i_dp_number-50;
+                i_dp_number = i_dp_number-  offset;
         }
 
         if(i_delta < 0 && i_dp_number < i_dp_max)
         {
                 qDebug()<< "Zoom out";
                 //i_dp_number = (int)(i_dp_number*1.2);
-                i_dp_number = i_dp_number+50;
+                i_dp_number = i_dp_number+offset;
         }
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
