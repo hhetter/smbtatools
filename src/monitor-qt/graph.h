@@ -15,6 +15,7 @@
 #include <QTime>
 
 #include <talloc.h>
+#include "../../include/version.h"
 
 
 class Graph : public QWidget
@@ -50,6 +51,7 @@ public:
         QPolygonF readpg, writepg; //Stores the QPointFs for the pQPinterpaths
         QString xstring1, xstring2, xstring3, xstring4, xstring5; // Graph axis labels
         QString t_string, t_i_string; // Holds current time and time for full diagramm width
+        QString title; // Holds the title displayed in the graph
         QTime g_clock;
 
 

@@ -1,6 +1,6 @@
 #include "graph.h"
 
-#include "../../include/version.h"
+
 
 
 Graph::Graph(QWidget *parent) :
@@ -37,6 +37,11 @@ Graph::Graph(QWidget *parent) :
         xstring3 = "50 kb";
         xstring4 = "100 kb";
         xstring5 = "125 kb";
+
+        title = "smbtamonitor-qt version ";
+        title.append( SMBTAMONITOR_VERSION );
+
+
 
         t_string = g_clock.currentTime().toString();
         t_i_string = QString::number(i_dp_number)+" Sekunden";
@@ -272,8 +277,7 @@ void Graph::g_create_path()
 
 void Graph::paintEvent(QPaintEvent *){
 
-	QString Title( "smbtamonitor-qt version " );
-	Title.append( SMBTAMONITOR_VERSION );
+
         QPainter painter(this);
 
         //painter.scale(((float)(i_x_d_size))/((float)(i_dp_number)),1.0);
@@ -327,7 +331,7 @@ void Graph::paintEvent(QPaintEvent *){
         painter.drawText(65,i_y_d_size+40, "Read traffic");
         painter.drawText(i_x_d_size-50,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
-	painter.drawText(120,15, Title);
+        painter.drawText(i_x_d_size-180,15, title);
         painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
