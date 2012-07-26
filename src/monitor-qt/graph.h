@@ -12,6 +12,8 @@
 #include <QString>
 #include <QWheelEvent>
 #include <QPainter>
+#include <QTime>
+
 #include <talloc.h>
 
 
@@ -47,6 +49,8 @@ public:
         QPointF readp, writep;
         QPolygonF readpg, writepg; //Stores the QPointFs for the pQPinterpaths
         QString xstring1, xstring2, xstring3, xstring4, xstring5; // Graph axis labels
+        QString t_string, t_i_string; // Holds current time and time for full diagramm width
+        QTime g_clock;
 
 
 signals:

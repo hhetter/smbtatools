@@ -34,6 +34,12 @@ Graph::Graph(QWidget *parent) :
         xstring3 = "50 kb";
         xstring4 = "100 kb";
         xstring5 = "125 kb";
+
+        t_string = g_clock.currentTime().toString();
+        t_i_string = QString::number(i_dp_number)+" Sekunden";
+
+
+
 }
 
 
@@ -99,6 +105,7 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
         f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
+        t_i_string = QString::number(i_dp_number)+" Sekunden";
         qDebug() << "i_dp_start: " << i_dp_start;
         qDebug() << "i_dp_end: " << i_dp_end;
 }
@@ -132,6 +139,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         writepg = QPolygonF();
         l_read_diff = 0;
         l_write_diff = 0;
+        t_string = g_clock.currentTime().toString();
 
 
         // Find max value of read+write traffic to definy y-axis scale factor
@@ -192,18 +200,21 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                    ((readlist_in[i])/f_scalefactor))
                                   );
         }
+
         // Create QPolygonF back from left to right
         for(int i = i_dp_end; i >= i_dp_start /* (i_dp_end*i_stepsize) */; i--)
         {
 
                 readpg<<QPointF( (i_x_d_size - i),
                                  ( i_y_d_size) -
-                                 0);
+                                 0
+                                 );
 
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
                                   (((writelist_in[i])/f_scalefactor) +
-                                   ((readlist_in[i])/f_scalefactor)));
+                                   ((readlist_in[i])/f_scalefactor))
+                                  );
         }
         readpg<<QPointF( ( i_x_d_size ),
                          ( i_y_d_size) -
@@ -281,6 +292,8 @@ void Graph::paintEvent(QPaintEvent *){
 
         painter.drawText(65,i_y_d_size+20, "Write traffic");
         painter.drawText(65,i_y_d_size+40, "Read traffic");
+        painter.drawText(i_x_d_size-50,20+(i_y_d_size), t_string);
+        painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.scale(1.0,1.0);
         painter.setPen(writepen);
         painter.drawRect(writerect);painter.fillRect(writerect, Qt::blue);
