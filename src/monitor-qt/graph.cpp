@@ -349,11 +349,12 @@ void Graph::paintEvent(QPaintEvent *){
 	char *totalval = mhr(thrputw + thrputr);
 	thrstr.append("Throughput Read:");
 	thrstr.append(thrval1);
-	thrstr.append(" Write:");
+	thrstr.append("/min Write:");
 	thrstr.append(thrval2);
-	thrstr.append(" Total:");
+	thrstr.append("/min Total:");
 	thrstr.append(totalval);
-	painter.drawText(i_x_d_size-260,30, thrstr);
+	thrstr.append("/min");
+	painter.drawText(5,15, thrstr);
 	free(thrval1);
 	free(thrval2);
 	free(totalval);
