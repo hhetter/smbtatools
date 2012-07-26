@@ -211,18 +211,13 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         // Create Points
         // Create QPolygonF from right to left
         // Uper side of the QPolygonF
-        for(int i = i_dp_start+1; i < i_dp_end /* (i_dp_end*i_stepsize) */; i++)
+        for(int i = i_dp_start; i < i_dp_end /* (i_dp_end*i_stepsize) */; i++)
         {
                 readpg<<QPointF( ( i_x_d_size - i),
                                  ( i_y_d_size) -
                                  (((float)(readlist_in[i]))/f_scalefactor)
                                  );
-                if(i >+ 0 && i < 10)
-                {
-                        qDebug() << "front: i: " << i << " " << ( i_y_d_size) -
-                                    ((((float)(writelist_in[i]))/f_scalefactor) +
-                                     (((float)(readlist_in[i]))/f_scalefactor));
-                }
+
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
                                   ((((float)(writelist_in[i]))/f_scalefactor) +
@@ -238,12 +233,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                                  ( i_y_d_size) -
                                  0
                                  );
-                if(i >+ 0 && i < 10)
-                {
-                        qDebug() << "back: i: " << i << " " << ( i_y_d_size) -
-                                    ((((float)(writelist_in[i]))/f_scalefactor) +
-                                     (((float)(readlist_in[i]))/f_scalefactor));
-                }
+
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
                                   (((float)(readlist_in[i]))/f_scalefactor)
@@ -339,7 +329,7 @@ void Graph::paintEvent(QPaintEvent *){
 
         painter.drawText(65,i_y_d_size+20, "Write traffic");
         painter.drawText(65,i_y_d_size+40, "Read traffic");
-        painter.drawText(i_x_d_size-50,20+(i_y_d_size), t_string);
+        painter.drawText(i_x_d_size-40,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.drawText(i_x_d_size-180,15, title);
         painter.scale(1.0,1.0);
