@@ -55,6 +55,11 @@ public:
         QString title; // Holds the title displayed in the graph
         QTime g_clock;
 
+        // Hold configuration data
+        QString  *hostString, *portString, *shareString, *userString,
+        *domainString, *fileString;
+
+
 
 signals:
 

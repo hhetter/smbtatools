@@ -43,6 +43,24 @@ Graph::Graph(QWidget *parent) :
         title.append( SMBTAMONITOR_VERSION );
 
 
+        // hold configoration data
+        hostString   = new QString;
+        fileString   = new QString;
+        portString   = new QString;
+        shareString  = new QString;
+        userString   = new QString;
+        domainString = new QString;
+
+        *hostString   = "";
+        *fileString = "";
+        *portString   = "";
+        *shareString  = "";
+        *userString   = "";
+        *domainString = "";
+
+
+
+
 
         t_string = g_clock.currentTime().toString();
         t_i_string = QString::number(i_dp_number)+" Sekunden";
@@ -63,6 +81,7 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
         //   qDebug()<<"end";
         //   writelist = &writelist_in;
         //g_get_w_size();
+        qDebug()<<"Gets through? " << *hostString;
 
         g_interpolate(readlist_in, writelist_in);
         g_create_path();
@@ -380,6 +399,7 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append(totalval);
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
+        painter.drawText(5,35, "Host: "+(*hostString));
         free(thrval1);
         free(thrval2);
         free(totalval);

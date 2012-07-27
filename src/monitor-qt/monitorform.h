@@ -47,6 +47,8 @@ public:
 
 
     QString  *pid_string, *readstring, *leftoverstring, *configString;
+    QString  *hostString, *portString, *shareString, *userString,
+    *domainString, *fileString;
     QStringList *readlist;
     QLocalSocket *monitorSocket;
 

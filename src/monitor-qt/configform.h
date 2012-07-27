@@ -17,7 +17,8 @@ public:
     explicit ConfigForm(QWidget *parent = 0);
     ~ConfigForm();
 
-    QString *configString;
+    QString *configString, *hostString, *portString, *shareString, *userString,
+    *domainString, *fileString;
     int i_monitortime, i_intervaltime;
 
 

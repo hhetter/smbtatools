@@ -86,6 +86,12 @@ void frontend::fr_setMonitorWidget()
         monitorFormW->configString->append(*configWidget->configString);
         monitorFormW->i_monitortime = configWidget->i_monitortime;
         monitorFormW->i_intervaltime = configWidget->i_intervaltime;
+        monitorFormW->hostString = configWidget->hostString;
+        monitorFormW->fileString = configWidget->fileString;
+        monitorFormW->portString = configWidget->portString;
+        monitorFormW->shareString = configWidget->shareString;
+        monitorFormW->userString = configWidget->userString;
+        monitorFormW->domainString = configWidget->domainString;
 
         ui->stackedView->setCurrentIndex(4);
         //    ui->testlabel->setText("fr_setMonitorWidget()");

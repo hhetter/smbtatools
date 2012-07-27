@@ -45,8 +45,19 @@ MonitorForm::MonitorForm(QWidget *parent) :
         pid_string = new QString;
         readstring = new QString;
         leftoverstring = new QString;
-        configString = new QString;
+
         readlist = new QStringList;
+
+        // Fetch ALL the configuration data
+        configString = new QString;
+        hostString   = new QString;
+        fileString   = new QString;
+        portString   = new QString;
+        shareString  = new QString;
+        userString   = new QString;
+        domainString = new QString;
+
+
 
 
         connect(ui->startButton, SIGNAL(clicked()),this,
@@ -76,6 +87,13 @@ MonitorForm::~MonitorForm()
 
 void MonitorForm::startmonitor()
 {
+        p_graph->hostString   = hostString;
+        p_graph->fileString   = fileString;
+        p_graph->portString   = portString;
+        p_graph->shareString  = shareString;
+        p_graph->userString   = userString;
+        p_graph->domainString = domainString;
+
 
         /*
          * Start and control the monitor process and the painting of the graph
