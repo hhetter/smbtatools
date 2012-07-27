@@ -1,0 +1,5 @@
+if ($('div#files').length){
+    $('div#files').remove();
+};
+
+$('div#shares_and_users').after("<%=escape_javascript(render(:partial=>'files'))%>");

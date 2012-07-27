@@ -1,0 +1,4 @@
+if ($('div#shares_and_users').length){
+    $('div#shares_and_users').remove();
+};
+$('div#domains').after("<%=escape_javascript(render(:partial=>'shares'))%>");

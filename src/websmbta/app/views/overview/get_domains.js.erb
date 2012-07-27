@@ -1,0 +1,5 @@
+if ($('div#domains').length){
+    $('div#domains').remove();
+};
+
+$('div#global').after("<%=escape_javascript(render(:partial=>'domains'))%>");

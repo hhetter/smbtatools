@@ -17,6 +17,6 @@
     <%= image_tag('spinner.gif') %>
   </div>
   <br/>
-  <%= @output %>
+  <%= @output.html_safe %>
   <%= hidden_field_tag "function_" + @divname, @cmd %>
 </div>
