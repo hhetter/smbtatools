@@ -63,7 +63,7 @@ Graph::Graph(QWidget *parent) :
 
 
         t_string = g_clock.currentTime().toString();
-        t_i_string = QString::number(i_dp_number)+" Sekunden";
+        t_i_string = QString::number(i_dp_number)+" Seconds";
 
 
 
@@ -81,7 +81,6 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
         //   qDebug()<<"end";
         //   writelist = &writelist_in;
         //g_get_w_size();
-        qDebug()<<"Gets through? " << *hostString;
 
         g_interpolate(readlist_in, writelist_in);
         g_create_path();
