@@ -63,7 +63,7 @@ Graph::Graph(QWidget *parent) :
 
 
         t_string = g_clock.currentTime().toString();
-        t_i_string = QString::number(i_dp_number)+" Sekunden";
+        t_i_string = QString::number(i_dp_number)+" Seconds";
 
 
 
@@ -81,7 +81,6 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
         //   qDebug()<<"end";
         //   writelist = &writelist_in;
         //g_get_w_size();
-        qDebug()<<"Gets through? " << *hostString;
 
         g_interpolate(readlist_in, writelist_in);
         g_create_path();
@@ -399,7 +398,17 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append(totalval);
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
-        painter.drawText(5,35, "Host: "+(*hostString));
+	QString what;
+	if (*userString != "") {
+		what.append(", monitoring User "+ *userString);
+	} else if (*shareString != "") {
+		what.append(", monitoring Share "+ *shareString);
+	} else if (*domainString != "") {
+		what.append(", monitoring Domain "+ *domainString);
+	} else if (*fileString != "") {
+		what.append(", monitoring File "+ *fileString);
+	}
+        painter.drawText(5,35, "Host: "+(*hostString) + what);
         free(thrval1);
         free(thrval2);
         free(totalval);
