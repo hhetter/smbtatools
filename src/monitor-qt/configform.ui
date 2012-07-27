@@ -147,7 +147,7 @@
     <item>
      <widget class="QCheckBox" name="dryrunCheckbox">
       <property name="toolTip">
-       <string>Start a dry run. All options are overriden, the smbtamonitor-gen does not connect to the smbta but generates random data on its own.</string>
+       <string>Start a dry run. All options are overriden, the smbtamonitor-gen does not connect to the smbtad but generates random data on its own.</string>
       </property>
       <property name="text">
        <string>Dryrun</string>

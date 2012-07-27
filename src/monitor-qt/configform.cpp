@@ -9,7 +9,7 @@ ConfigForm::ConfigForm(QWidget *parent) :
 
         ui->loadButton->hide();
         ui->saveButton->hide();
-        ui->dryrunCheckbox->hide();
+        //ui->dryrunCheckbox->hide(); we want it visible
 
         ui->queryTypeButton->addItem("User");
         ui->queryTypeButton->addItem("File");
@@ -32,6 +32,9 @@ ConfigForm::ConfigForm(QWidget *parent) :
 
         connect(ui->queryTypeButton, SIGNAL(currentIndexChanged(int)),this,
                 SLOT(cf_hidefield()));
+        connect(ui->dryrunCheckbox, SIGNAL(stateChanged(int)),this,
+                SLOT(cf_hideall()));
+
 
 
 
@@ -43,6 +46,31 @@ ConfigForm::~ConfigForm()
 {
         delete ui;
 }
+
+void ConfigForm::cf_hideall()
+{
+        if(ui->dryrunCheckbox->isChecked())
+        {
+                ui->queryParameterLine->setText("");
+                ui->queryParameterLine->setDisabled(1);
+                ui->hostLine->setText("");
+                ui->hostLine->setDisabled(1);
+                ui->portLine->setText("");
+                ui->portLine->setDisabled(1);
+                ui->queryTypeButton->setDisabled(1);
+
+
+
+        }else
+        {
+                ui->queryParameterLine->setDisabled(0);
+                ui->portLine->setDisabled(0);
+                ui->hostLine->setDisabled(0);
+                ui->queryTypeButton->setDisabled(0);
+        }
+
+}
+
 
 void ConfigForm::cf_hidefield()
 {

@@ -30,6 +30,7 @@ public slots:
 
     void cf_readconfig();
     void cf_hidefield();
+    void cf_hideall();
 
 
 private:
