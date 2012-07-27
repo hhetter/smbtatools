@@ -56,7 +56,7 @@ Graph::Graph(QWidget *parent) :
 void Graph::g_receivelist(QList<unsigned long> readlist_in,
                           QList<unsigned long> writelist_in)
 {
-        //            qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
+        //          qDebug()<<"g_receivelist.readlist.size: "<< readlist.size();
 
         //    readlist = &readlist_in;
         //   qDebug()<< readlist[0];
@@ -192,6 +192,10 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
         // Interpolate graph into i_stepsize subpoints
         // Probably not needed at all
+
+        // Idea: For every dp there will be 5 graph-dps that will be used to build the graph
+        //
+
         for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)
         {
                 // Do interpolation later
@@ -317,7 +321,7 @@ void Graph::paintEvent(QPaintEvent *){
         painter.translate(i_x_os,i_y_os);
         QRect graphbr(0,0,i_x_d_size,i_y_d_size);
         QRect writerect(50,i_y_d_size+10,10,10);
-        QRect readrect(50, i_y_d_size+30, 10, 10);
+        QRect readrect(135, i_y_d_size+10, 10, 10);
         QPen writepen(Qt::blue, 1);
         QPen readpen(Qt::red, 1);
 
@@ -360,7 +364,7 @@ void Graph::paintEvent(QPaintEvent *){
 
 
         painter.drawText(65,i_y_d_size+20, "Write traffic");
-        painter.drawText(65,i_y_d_size+40, "Read traffic");
+        painter.drawText(150,i_y_d_size+20, "Read traffic");
         painter.drawText(i_x_d_size-40,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.drawText(i_x_d_size-180,15, title);
