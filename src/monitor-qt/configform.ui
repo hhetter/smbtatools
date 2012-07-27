@@ -67,42 +67,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>235</y>
-     <width>96</width>
-     <height>48</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QCheckBox" name="idCheckbox">
-      <property name="toolTip">
-       <string>Turn on identification (default is no identification)</string>
-      </property>
-      <property name="text">
-       <string>Identification</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="dryrunCheckbox">
-      <property name="toolTip">
-       <string>Start a dry run. All options are overriden, the smbtamonitor-gen does not connect to the smbta but generates random data on its own.</string>
-      </property>
-      <property name="text">
-       <string>Dryrun</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>32</x>
-     <y>74</y>
+     <y>40</y>
      <width>274</width>
      <height>78</height>
     </rect>
@@ -159,14 +124,47 @@
     </item>
    </layout>
   </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>130</y>
+     <width>96</width>
+     <height>48</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCheckBox" name="idCheckbox">
+      <property name="toolTip">
+       <string>Turn on identification (default is no identification)</string>
+      </property>
+      <property name="text">
+       <string>Identification</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="dryrunCheckbox">
+      <property name="toolTip">
+       <string>Start a dry run. All options are overriden, the smbtamonitor-gen does not connect to the smbta but generates random data on its own.</string>
+      </property>
+      <property name="text">
+       <string>Dryrun</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>queryTypeButton</tabstop>
   <tabstop>queryParameterLine</tabstop>
   <tabstop>hostLine</tabstop>
   <tabstop>portLine</tabstop>
-  <tabstop>idCheckbox</tabstop>
-  <tabstop>dryrunCheckbox</tabstop>
   <tabstop>saveButton</tabstop>
   <tabstop>loadButton</tabstop>
  </tabstops>
