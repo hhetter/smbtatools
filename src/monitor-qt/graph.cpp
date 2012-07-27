@@ -163,6 +163,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         l_write_diff = 0;
         t_string = g_clock.currentTime().toString();
 
+
         // throughput per minute
         //
         thrputw = 0;
@@ -186,6 +187,9 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         {
                 f_scalefactor = 1.1*((float)l_max)/i_y_d_size;
         }
+
+
+
         // Interpolate graph into i_stepsize subpoints
         // Probably not needed at all
         for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)

@@ -7,6 +7,9 @@ ConfigForm::ConfigForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->loadButton->hide();
+    ui->saveButton->hide();
+
     ui->queryTypeButton->addItem("User");
     ui->queryTypeButton->addItem("File");
     ui->queryTypeButton->addItem("Share");

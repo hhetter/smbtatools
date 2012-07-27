@@ -160,6 +160,16 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>queryTypeButton</tabstop>
+  <tabstop>queryParameterLine</tabstop>
+  <tabstop>hostLine</tabstop>
+  <tabstop>portLine</tabstop>
+  <tabstop>idCheckbox</tabstop>
+  <tabstop>dryrunCheckbox</tabstop>
+  <tabstop>saveButton</tabstop>
+  <tabstop>loadButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
