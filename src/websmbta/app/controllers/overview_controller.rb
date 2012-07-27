@@ -12,11 +12,8 @@ class OverviewController < ApplicationController
     if params[:domain]
       @domain = params[:domain]
     end
-    render :update do |page|
-      page << "if (!$('div#domains').length)"
-      page.insert_html :after, "global", :partial => "domains"
-      page << "if($('div#domains').length)"
-      page.replace "domains", :partial => "domains"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -24,8 +21,8 @@ class OverviewController < ApplicationController
     initial_command
     initialize_domains
     @domain = params[:domain]
-    render :update do |page|
-      page.replace "domains", :partial => "domains"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -40,11 +37,8 @@ class OverviewController < ApplicationController
     if params[:user] 
       @user = params[:user]
     end
-    render :update do |page|
-      page << "if (!$('div#shares_and_users').length)"
-      page.insert_html :after, "domains", :partial => "shares"     
-      page << "if($('div#shares_and_users').length)"
-      page.replace "shares_and_users", :partial => "shares"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -55,8 +49,8 @@ class OverviewController < ApplicationController
     @domain = params[:domain]
     @share = params[:share]
     @user = params[:user]
-    render :update do |page|
-      page.replace "shares_and_users", :partial => "shares"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -69,11 +63,8 @@ class OverviewController < ApplicationController
     if params[:file]
       @file = params[:file]
     end
-    render :update do |page|
-      page << "if (!$('div#files').length)"
-      page.insert_html :after, "shares_and_users", :partial => "files"
-      page << "if($('div#files').length)"
-      page.replace "files", :partial => "files"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -84,8 +75,8 @@ class OverviewController < ApplicationController
     @file = params[:file]
     initial_command
     initialize_files
-    render :update do |page|
-      page.replace "files", :partial => "files"
+    respond_to do |format|
+      format.js
     end
   end
 

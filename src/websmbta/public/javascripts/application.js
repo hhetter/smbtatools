@@ -254,7 +254,7 @@ function domOnClickChange(callback){
     getShares();
     if ($("div#files").length)
         $("#files").remove();
-    function(e) {callback();}
+    function call (e) {callback();};
 
 }
 function shareOnClickChange(){

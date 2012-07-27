@@ -14,8 +14,8 @@ class FunctionsController < ApplicationController
       get_function
     end
     create_file_and_divname
-    render :update do |page|
-      page.insert_html :after, "list", :partial => "start_function"
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -221,8 +221,7 @@ class FunctionsController < ApplicationController
     @cmd += " -o html > #{Dir.tmpdir}/function.html"
     `#{@cmd}`
     @output = File.open("#{Dir.tmpdir}/function.html", "r")
-    @output = @output.readlines.to_s
-    @output = @output.html_safe
+    @output = @output.read.to_s
     File.delete("#{Dir.tmpdir}/function.html")
     @divname = Array.new
     @divname << @function
@@ -245,7 +244,7 @@ class FunctionsController < ApplicationController
     @cmd = params[:cmd]
     `#{@cmd}`
     @output = File.open("#{Dir.tmpdir}/function.html", "r")
-    @output = @output.readlines.to_s
+    @output = @output.read.to_s
     @output = @output.html_safe
     File.delete("#{Dir.tmpdir}/function.html")
   end
@@ -263,11 +262,11 @@ class FunctionsController < ApplicationController
     @divname = params[:divname]
      `#{@cmd}`
     @output = File.open("#{Dir.tmpdir}/function.html", "r")
-    @output = @output.readlines.to_s
+    @output = @output.read.to_s
     @output = @output.html_safe
     File.delete("#{Dir.tmpdir}/function.html")
-    render :update do |page|
-      page.replace @divname, :partial => "start_function"
+    respond_to do |format|
+      format.js
     end
   end
 
