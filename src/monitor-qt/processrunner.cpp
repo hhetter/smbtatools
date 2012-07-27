@@ -3,7 +3,7 @@
 Processrunner::Processrunner(QWidget *parent) :
     QObject(parent)
 {
-   qDebug() << "Constructor Class Processrunner";
+   //qDebug() << "Constructor Class Processrunner";
 
    monitorprocess = new QProcess;
 
@@ -13,7 +13,7 @@ Processrunner::Processrunner(QWidget *parent) :
 
 void Processrunner::Processrunner::pr_readsignal(){
 
-  qDebug()<<"pr_readsignal  ";
+  //qDebug()<<"pr_readsignal  ";
 
 }
 

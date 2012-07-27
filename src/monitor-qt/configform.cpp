@@ -57,9 +57,9 @@ void ConfigForm::cf_readconfig(){
 
     *configString = "";
 
-    qDebug()<<"Current index: " <<ui->queryTypeButton->currentIndex();
+    //qDebug()<<"Current index: " <<ui->queryTypeButton->currentIndex();
     int i_switch = ui->queryTypeButton->currentIndex();
-    qDebug()<<"i_switch: " <<i_switch;
+    //qDebug()<<"i_switch: " <<i_switch;
 
     switch(ui->queryTypeButton->currentIndex())
     {

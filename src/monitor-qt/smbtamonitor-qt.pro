@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     monitorform.cpp \
     processrunner.cpp \
     timeclass.cpp \
-    visual.cpp \
     dpoint.cpp \
     graph.cpp
 
@@ -35,6 +34,7 @@ HEADERS  += frontend.h \
 FORMS    += frontend.ui \
     configform.ui \
     monitorform.ui
+
 
 
 

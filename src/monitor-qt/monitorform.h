@@ -19,7 +19,6 @@
 
 #include "processrunner.h"
 #include "timeclass.h"
-#include "visual.h"
 #include "dpoint.h"
 #include "graph.h"
 
@@ -37,7 +36,6 @@ public:
 
     Timeclass     *timeClassW;
     Processrunner *processRunnerW;
-    Visual *visualW;
     DPoint *d_points;
     Graph *p_graph;
 

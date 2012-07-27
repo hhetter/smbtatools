@@ -104,7 +104,7 @@ void frontend::fr_setTestLabel()
 {
 
 
-        qDebug()<<"setTestLabel()";
+        //qDebug()<<"setTestLabel()";
         //    ui->testlabel->setText("setTestLabel()");
 
 

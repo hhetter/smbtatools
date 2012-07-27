@@ -4,7 +4,7 @@ Timeclass::Timeclass(QWidget *parent) :
     QObject(parent)
 {
 
-    qDebug() << "Class constructor Timeclass";
+    //qDebug() << "Class constructor Timeclass";
 
     i_stepsize = 5;
 
@@ -23,7 +23,7 @@ Timeclass::Timeclass(QWidget *parent) :
 
 void Timeclass::tc_timersignal(){
 
-  qDebug()<<"timer";
+  //qDebug()<<"timer";
 
 }
 

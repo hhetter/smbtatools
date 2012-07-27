@@ -64,13 +64,6 @@ MonitorForm::MonitorForm(QWidget *parent) :
         p_graph = new Graph(ui->visual_widget);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
         vlayout->addWidget(p_graph);
-        //       visualW = new Visual(this, 5);
-        /*
-        visualW = new Visual(ui->visual_widget, 5);
-        QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
-        vlayout->addWidget(visualW);
-*/
-
 
 
 }
@@ -164,7 +157,7 @@ void MonitorForm::startmonitor()
                 // Test if the socket is already established - the sleep command a few lines earlier should make it work reliable.
                 if(QFile::exists(socketString))
                 {
-                        qDebug() << "Socket found";
+                       // qDebug() << "Socket found";
                 }
                 else(qDebug()<<"No socket found");
 
@@ -172,13 +165,13 @@ void MonitorForm::startmonitor()
 
                 monitorSocket->connectToServer(socketString,
                                                QIODevice::ReadOnly);
+                //connect(timeClassW->timer, SIGNAL(timeout()),
+                //        this, SLOT(sendtovisualizer()));
                 connect(timeClassW->timer, SIGNAL(timeout()),
-                        this, SLOT(sendtovisualizer()));
-                //                connect(timeClassW->timer, SIGNAL(timeout()),
-                //                        this, SLOT(sendtopoints()));
+                        this, SLOT(sendtopoints()));
                 connect(monitorSocket, SIGNAL(readyRead()),
                         this, SLOT(readfromsocket()));
-                qDebug() << monitorSocket->state();
+                //qDebug() << monitorSocket->state();
 
 
                 //               qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
@@ -197,7 +190,7 @@ void MonitorForm::stopmonitor()
         ////
         // Stop the graph and the monitor process
         if(running==true){
-                qDebug() << "stopmonitor";
+                //qDebug() << "stopmonitor";
                 running = false;
                 //        processRunnerW->monitorprocess->kill();
                 processRunnerW->monitorprocess->terminate();
@@ -217,8 +210,8 @@ void MonitorForm::sendmessage()
 {
         ////
         // used mainly to create debug messages for certain signals
-        qDebug() << "monitorform:sendmessage()";
-        qDebug()<< "Heute: readyRead()";
+        //qDebug() << "monitorform:sendmessage()";
+        //qDebug()<< "Heute: readyRead()";
 
 }
 
@@ -286,38 +279,6 @@ void MonitorForm::parseinput(){
 
 void MonitorForm::sendtovisualizer(){
 
-
-        ////
-        // Send input from socket, stored in i_writestack and i_readstack to the graph-painting widget visualW (visual.cpp)
-        // Work with dummy input for now as the traffic from the local domain socket can not be read at the moment
-        // **not finished yet**
-        // **works with dummy numbers atm**
-
-        mutex.lock();
-
-
-        //    qDebug() << "sendtovisualizer()";
-        //    unsigned long int uli1 = 1000;
-        //    unsigned long int uli2 = 1500;
-        //   qDebug()<<"*l_readstack ->visualizer   " << *l_readstack;
-        //   qDebug()<<"*l_writestack -> visualizer " << *l_writestack;
-        //        visualW->vs_receivenumbers( l_readstack, l_writestack);
-        d_points->dp_receivenumbers( l_readstack, l_writestack);
-        p_graph->g_receivelist(d_points->dp_returnreadlist(),
-                               d_points->dp_returnwritelist());
-
-
-        //        QList<unsigned long> readlist; readlist = d_points->dp_returnreadlist();
-
-
-
-        *l_readstack = 0;
-        *l_writestack = 0;
-
-        mutex.unlock();
-
-
-
 }
 
 
@@ -337,10 +298,17 @@ void MonitorForm::sendtopoints(){
         //    qDebug() << "sendtovisualizer()";
         //    unsigned long int uli1 = 1000;
         //    unsigned long int uli2 = 1500;
-        //            qDebug()<<"*l_readstack -> topoints " << *l_readstack;
-        //    qDebug()<<"*l_writestack " << *l_writestack;
+        //   qDebug()<<"*l_readstack ->visualizer   " << *l_readstack;
+        //   qDebug()<<"*l_writestack -> visualizer " << *l_writestack;
         d_points->dp_receivenumbers( l_readstack, l_writestack);
-        p_graph->g_receivelist(d_points->dp_returnreadlist(), d_points->dp_returnwritelist());
+        p_graph->g_receivelist(d_points->dp_returnreadlist(),
+                               d_points->dp_returnwritelist());
+
+
+        //        QList<unsigned long> readlist; readlist = d_points->dp_returnreadlist();
+
+
+
         *l_readstack = 0;
         *l_writestack = 0;
 
