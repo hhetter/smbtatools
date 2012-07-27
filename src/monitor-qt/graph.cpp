@@ -399,16 +399,18 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
 	QString what;
+	what.append( "Host: "+(*hostString));
 	if (*userString != "") {
-		what.append(", monitoring User "+ *userString);
+		what.append(", monitoring User "+ *userString+".");
 	} else if (*shareString != "") {
-		what.append(", monitoring Share "+ *shareString);
+		what.append(", monitoring Share "+ *shareString+ ".");
 	} else if (*domainString != "") {
-		what.append(", monitoring Domain "+ *domainString);
+		what.append(", monitoring Domain "+ *domainString+ ".");
 	} else if (*fileString != "") {
-		what.append(", monitoring File "+ *fileString);
-	}
-        painter.drawText(5,35, "Host: "+(*hostString) + what);
+		what.append(", monitoring File "+ *fileString+ ".");
+	} else what = "Dryrun mode, simulating traffic.";
+
+	painter.drawText(5,35, what);
         free(thrval1);
         free(thrval2);
         free(totalval);
