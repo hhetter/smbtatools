@@ -398,7 +398,17 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append(totalval);
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
-        painter.drawText(5,35, "Host: "+(*hostString));
+	QString what;
+	if (*userString != "") {
+		what.append(", monitoring User "+ *userString);
+	} else if (*shareString != "") {
+		what.append(", monitoring Share "+ *shareString);
+	} else if (*domainString != "") {
+		what.append(", monitoring Domain "+ *domainString);
+	} else if (*fileString != "") {
+		what.append(", monitoring File "+ *fileString);
+	}
+        painter.drawText(5,35, "Host: "+(*hostString) + what);
         free(thrval1);
         free(thrval2);
         free(totalval);
