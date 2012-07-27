@@ -107,7 +107,9 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
                 offset=2*5;
         } else if (i_dp_number < 600) { /* 10 minutes */
                 offset=2*10;
-        } else offset=2*50; /* anything else */
+        } else if (i_dp_number < 1800) { /* 10 minutes */
+                offset=2*50;
+        } else offset=2*200; /* anything else */
 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
