@@ -1,6 +1,6 @@
 #include "processrunner.h"
 
-Processrunner::Processrunner(QWidget *parent) :
+Processrunner::Processrunner(InstanceData *idata, QWidget *parent) :
     QObject(parent)
 {
    //qDebug() << "Constructor Class Processrunner";

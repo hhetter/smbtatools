@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QComboBox>
 
+#include "instancedata.h"
+
 namespace Ui {
     class ConfigForm;
 }
@@ -14,7 +16,7 @@ class ConfigForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit ConfigForm(QWidget *parent = 0);
+    explicit ConfigForm(InstanceData *idata, QWidget *parent = 0);
     ~ConfigForm();
 
     QString *configString, *hostString, *portString, *shareString, *userString,

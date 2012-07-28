@@ -8,7 +8,7 @@
 
 #include "configform.h"
 #include "monitorform.h"
-
+#include "instancedata.h"
 
 namespace Ui {
     class frontend;
@@ -22,6 +22,7 @@ public:
     explicit frontend(QWidget *parent = 0);
     ~frontend();
 
+    InstanceData *idata;
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
 

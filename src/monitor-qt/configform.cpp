@@ -1,7 +1,7 @@
 #include "configform.h"
 #include "ui_configform.h"
 
-ConfigForm::ConfigForm(QWidget *parent) :
+ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
         QWidget(parent),
         ui(new Ui::ConfigForm)
 {

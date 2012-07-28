@@ -21,6 +21,7 @@
 #include "timeclass.h"
 #include "dpoint.h"
 #include "graph.h"
+#include "instancedata.h"
 
 namespace Ui {
     class MonitorForm;
@@ -31,7 +32,7 @@ class MonitorForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit MonitorForm(QWidget *parent = 0);
+    explicit MonitorForm(InstanceData *idata, QWidget *parent = 0);
     ~MonitorForm();
 
     Timeclass     *timeClassW;

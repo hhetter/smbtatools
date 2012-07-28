@@ -11,8 +11,9 @@ frontend::frontend(QWidget *parent) :
         ////
         // Create the Widgets for configuration and the monitoring
 
-        configWidget = new ConfigForm();
-        monitorFormW = new MonitorForm();
+        idata = new InstanceData();
+        configWidget = new ConfigForm(idata);
+        monitorFormW = new MonitorForm(idata);
 
 
         ////

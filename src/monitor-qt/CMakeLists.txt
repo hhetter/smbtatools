@@ -11,7 +11,8 @@ SET( smbtamonitor-qt_SRC  main.cpp
                           timeclass.cpp
                           processrunner.cpp
 			  dpoint.cpp
-			  graph.cpp)
+			  graph.cpp
+                          instancedata.cpp)
 
 
 

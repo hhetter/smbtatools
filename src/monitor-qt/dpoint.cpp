@@ -1,6 +1,6 @@
 #include "dpoint.h"
 
-DPoint::DPoint(QObject *parent) :
+DPoint::DPoint(InstanceData *idata, QObject *parent) :
         QObject(parent)
 {
         i_s_count = 0;

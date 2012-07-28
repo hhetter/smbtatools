@@ -8,13 +8,13 @@
 #include <QDebug>
 //#include <QLocalSocket>
 #include <QApplication>
-
+#include "instancedata.h"
 
 class Processrunner : public QObject
 {
     Q_OBJECT
 public:
-    explicit Processrunner(QWidget *parent=0);
+    explicit Processrunner(InstanceData *idata, QWidget *parent=0);
 
     QProcess *monitorprocess;
 

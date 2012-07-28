@@ -1,13 +1,14 @@
 #include "timeclass.h"
 
-Timeclass::Timeclass(QWidget *parent) :
+Timeclass::Timeclass(InstanceData *idata, QWidget *parent) :
     QObject(parent)
 {
 
     //qDebug() << "Class constructor Timeclass";
 
-    i_stepsize = 5;
-
+    i_stepsize = idata->i_stepsize;
+    //i_stepsize = 5;
+    
     timer = new QTimer;
  //   timer->setInterval(60000/i_stepsize); // minute
     timer->setInterval(600/i_stepsize);   // second

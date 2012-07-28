@@ -7,11 +7,13 @@
 #include <QTimer>
 #include <QDebug>
 
+#include "instancedata.h"
+
 class Timeclass : public QObject
 {
     Q_OBJECT
 public:
-    explicit Timeclass(QWidget *parent = 0);
+    explicit Timeclass(InstanceData *idata, QWidget *parent = 0);
 
     int i_stepsize; // i_stepsize defines the number of steps that are used to display a single data point
 

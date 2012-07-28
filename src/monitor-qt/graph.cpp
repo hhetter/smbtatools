@@ -3,7 +3,7 @@
 
 
 
-Graph::Graph(QWidget *parent) :
+Graph::Graph(InstanceData *idata, QWidget *parent) :
         QWidget(parent)
 {
         i_max_index = 86400;

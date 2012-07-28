@@ -14,6 +14,7 @@
 #include <QPainter>
 #include <QTime>
 
+#include "instancedata.h"
 #include <talloc.h>
 #include "../../include/version.h"
 
@@ -22,7 +23,7 @@ class Graph : public QWidget
 {
         Q_OBJECT
 public:
-        explicit Graph(QWidget *parent = 0);
+        explicit Graph(InstanceData *idata, QWidget *parent = 0);
 
         int i_max_index; // Hold value of maximum arrays
         int i_s_count;

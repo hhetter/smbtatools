@@ -4,7 +4,7 @@
 #include <QProgressDialog>
 #include <QTest>
 #include <QMessageBox>
-MonitorForm::MonitorForm(QWidget *parent) :
+MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         QWidget(parent),
         ui(new Ui::MonitorForm)
 {
@@ -16,8 +16,9 @@ MonitorForm::MonitorForm(QWidget *parent) :
          * updates) and processRunnerW (handles the smbtamonitor-gen) in
          * own threads
         */
-        timeClassW = new Timeclass();
-        processRunnerW = new Processrunner();
+        //idata = new InstanceData();
+        timeClassW = new Timeclass(idata);
+        processRunnerW = new Processrunner(idata);
         QThread processThread, timerThread;
         timeClassW->moveToThread(&timerThread);
         processRunnerW->moveToThread(&processThread);
@@ -26,8 +27,8 @@ MonitorForm::MonitorForm(QWidget *parent) :
          * Create classes d_points (holds the data points) and
          * p_graph (creates the graph
         */
-        d_points = new DPoint;
-        p_graph = new Graph;
+        d_points = new DPoint(idata);
+        p_graph = new Graph(idata, ui->visual_widget);
 
         /*
          * l_writestack, l_readstack store input from socket until they are
@@ -72,7 +73,7 @@ MonitorForm::MonitorForm(QWidget *parent) :
         /*
          * Setup graph box
         */
-        p_graph = new Graph(ui->visual_widget);
+        //p_graph = new Graph(idata, ui->visual_widget);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
         vlayout->addWidget(p_graph);
 
