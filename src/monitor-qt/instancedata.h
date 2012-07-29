@@ -15,7 +15,14 @@ public:
 
         QString configString;
         QString nameString, fileString, domainString, shareString, userString;
+        QString queryParameterString;
         QString portString, hostString;
+
+        QString pidString;
+        QString socketString;
+        bool socketConnected;
+
+        bool idCheck, dryrunCheck;
         
         int i_stepsize;
     
@@ -25,10 +32,6 @@ signals:
 
 public slots:
 
-
-        void dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite);
-        QList<unsigned long> dp_returnreadlist();
-        QList<unsigned long> dp_returnwritelist();
 
 
 };

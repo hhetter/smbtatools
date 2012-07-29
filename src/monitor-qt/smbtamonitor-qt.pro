@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     processrunner.cpp \
     timeclass.cpp \
     dpoint.cpp \
-    graph.cpp
+    graph.cpp \
+    instancedata.cpp
 
 HEADERS  += frontend.h \
     configform.h \
@@ -29,7 +30,8 @@ HEADERS  += frontend.h \
     timeclass.h \
     visual.h \
     dpoint.h \
-    graph.h
+    graph.h \
+    instancedata.h
 
 FORMS    += frontend.ui \
     configform.ui \

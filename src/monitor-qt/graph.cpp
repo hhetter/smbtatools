@@ -6,6 +6,8 @@
 Graph::Graph(InstanceData *idata, QWidget *parent) :
         QWidget(parent)
 {
+        ldata = idata;
+
         i_max_index = 86400;
         i_s_count = 0;
         i_stepsize=5;
@@ -44,6 +46,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 
 
         // hold configoration data
+        /*
         hostString   = new QString;
         fileString   = new QString;
         portString   = new QString;
@@ -57,6 +60,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         *shareString  = "";
         *userString   = "";
         *domainString = "";
+        */
 
 
 
@@ -83,7 +87,7 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
         //g_get_w_size();
 
         g_interpolate(readlist_in, writelist_in);
-        g_create_path();
+        //g_create_path();
 
 
 }
@@ -242,6 +246,16 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
                 */
         }
 
+
+        g_create_path(readlist_in, writelist_in);
+
+}
+
+
+void Graph::g_create_path(QList<unsigned long> readlist_in,
+                          QList<unsigned long> writelist_in)
+{
+
         // Create Points
         // Create QPolygonF from right to left
         // Uper side of the QPolygonF
@@ -316,12 +330,6 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
          * Call the paintEvent
          */
         update();
-
-}
-
-
-void Graph::g_create_path()
-{
 
 
 
@@ -399,15 +407,24 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
 	QString what;
-	what.append( "Host: "+(*hostString));
-	if (*userString != "") {
-		what.append(", monitoring User "+ *userString+".");
-	} else if (*shareString != "") {
-		what.append(", monitoring Share "+ *shareString+ ".");
-	} else if (*domainString != "") {
-		what.append(", monitoring Domain "+ *domainString+ ".");
-	} else if (*fileString != "") {
-		what.append(", monitoring File "+ *fileString+ ".");
+        //what.append( "Host: "+(*hostString));
+        what.append( "Host: "+(ldata->hostString));
+        //if (ldata->userString != "") {
+        if (ldata->userString != "") {
+                //what.append(", monitoring User "+ *userString+".");
+                what.append(", monitoring User "+ ldata->userString+".");
+        //} else if (*shareString != "") {
+                } else if (ldata->shareString != "") {
+                //what.append(", monitoring Share "+ *shareString+ ".");
+                what.append(", monitoring Share "+ ldata->shareString+ ".");
+        //} else if (*domainString != "") {
+                } else if (ldata->domainString != "") {
+                //what.append(", monitoring Domain "+ *domainString+ ".");
+                what.append(", monitoring Domain "+ ldata->domainString+ ".");
+        //} else if (*fileString != "") {
+                } else if (ldata->fileString != "") {
+                //what.append(", monitoring File "+ *fileString+ ".");
+                what.append(", monitoring File "+ ldata->fileString+ ".");
 	} else what = "Dryrun mode, simulating traffic.";
 
 	painter.drawText(5,35, what);

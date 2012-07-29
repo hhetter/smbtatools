@@ -1,14 +1,13 @@
 #include "monitorform.h"
 #include "ui_monitorform.h"
 
-#include <QProgressDialog>
-#include <QTest>
-#include <QMessageBox>
+
 MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         QWidget(parent),
         ui(new Ui::MonitorForm)
 {
         ui->setupUi(this);
+        ldata = idata;
 
 
         /*
@@ -42,6 +41,7 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         monitorSocket = new QLocalSocket();
         running=false;
         layouted = false;
+        isConnected = true;
 
         pid_string = new QString;
         readstring = new QString;
@@ -65,6 +65,10 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
                 SLOT(startmonitor()), Qt::UniqueConnection);
         connect(ui->stopButton, SIGNAL(clicked()),this,
                 SLOT(stopmonitor()), Qt::UniqueConnection);
+        connect(timeClassW->timer, SIGNAL(timeout()),
+                this, SLOT(sendtopoints()));
+        connect(monitorSocket, SIGNAL(readyRead()),
+                this, SLOT(readfromsocket()));
 
 
 
@@ -108,16 +112,6 @@ void MonitorForm::startmonitor()
         if(running == false){
 
 
-                /*
-                qDebug()<<"Runningfalse";
-                qDebug()<<"-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+";
-                qDebug()<< "*configstring: " << *configString;
-                qDebug()<<"i_monitortime: " << i_monitortime;
-                qDebug()<<"i_intervaltime: " << i_intervaltime;
-                qDebug()<<"-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+";
-                */
-
-
                 //qDebug() << "startmonitor";
                 running=true;
 
@@ -127,15 +121,6 @@ void MonitorForm::startmonitor()
 
                 //         visualW->vs_processnumbers(l_writestack, l_readstack);
 
-                //       qDebug()<<"processrunner->monitorprocess->state() 1:"<< processRunnerW->monitorprocess->state();
-                //       processRunnerW->monitorprocess->start("./smbtamonitor-gen -i 3491 -h 10.10.0.81 -u holger -I 0");
-                //       processRunnerW->monitorprocess->start("smbtamonitor-gen -x");
-
-                ////
-                // The following line triggers all the Child Process errors...
-                // When I leave out exec() from Processrunner::run(), the errors disappear
-                // but I think it does not run in a different thread then , so I leave it there for now
-                // The errors are ugly but they on't stop the program
 
                 /** indicate some processing for the user */
 
@@ -146,60 +131,70 @@ void MonitorForm::startmonitor()
 
 
 
-                processRunnerW->monitorprocess->start("smbtamonitor-gen "+(*configString));
+                //processRunnerW->monitorprocess->start("smbtamonitor-gen "+(*configString));
 
+                processRunnerW->monitorprocess->start("smbtamonitor-gen "+(ldata->configString));
 
-                *pid_string = QString::number(processRunnerW->monitorprocess->pid());
-                QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
+                //*pid_string = QString::number(processRunnerW->monitorprocess->pid());
+                //QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
+
+                ldata->pidString = QString::number(processRunnerW->monitorprocess->pid());
+                ldata->socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(ldata->pidString);
+
                 this->update();
                 /**
-   * wait for 5 seconds, then connect to the socket
-   */
+                * wait for x seconds, then connect to the socket
+                */
 
-                QTime dieTime = QTime::currentTime().addSecs(1);
+                QTime dieTime = QTime::currentTime().addSecs(2);
                 while( QTime::currentTime() < dieTime ) {
                         Progress->update();
                         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
                 }
 
-
-                if (!QFile::exists(socketString)) {
+                if (!QFile::exists(ldata->socketString)) {
                         QMessageBox::information(this,"Error!","Unable to connect to the socket of the subprocess.");
-                        delete Progress;
-                        exit(1);
-                }
+                        isConnected = false;
+
+                }else{
+                        isConnected = true;
+                        connectSocket();
+                };
+
                 Progress->hide();
+
                 delete Progress;
-
-
-                ////
-                // Test if the socket is already established - the sleep command a few lines earlier should make it work reliable.
-                if(QFile::exists(socketString))
-                {
-                       // qDebug() << "Socket found";
-                }
-                else(qDebug()<<"No socket found");
-
-
-
-                monitorSocket->connectToServer(socketString,
-                                               QIODevice::ReadOnly);
-                //connect(timeClassW->timer, SIGNAL(timeout()),
-                //        this, SLOT(sendtovisualizer()));
-                connect(timeClassW->timer, SIGNAL(timeout()),
-                        this, SLOT(sendtopoints()));
-                connect(monitorSocket, SIGNAL(readyRead()),
-                        this, SLOT(readfromsocket()));
-                //qDebug() << monitorSocket->state();
-
-
-                //               qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
-                //       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
+                running = false;
 
         }
 
 
 
+
+}
+
+void MonitorForm::connectSocket()
+{
+        if(isConnected){
+
+
+
+                monitorSocket->connectToServer(ldata->socketString,
+                                               QIODevice::ReadOnly);
+                //connect(timeClassW->timer, SIGNAL(timeout()),
+                //        this, SLOT(sendtovisualizer()));
+                /*
+                connect(timeClassW->timer, SIGNAL(timeout()),
+                        this, SLOT(sendtopoints()));
+                connect(monitorSocket, SIGNAL(readyRead()),
+                        this, SLOT(readfromsocket()));
+                //qDebug() << monitorSocket->state();
+*/
+
+                //               qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
+                //       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
+        }
+        else(qDebug()<< "Error while connecting to the smbtad");
 
 }
 

@@ -25,6 +25,8 @@ class Graph : public QWidget
 public:
         explicit Graph(InstanceData *idata, QWidget *parent = 0);
 
+        InstanceData *ldata;
+
         int i_max_index; // Hold value of maximum arrays
         int i_s_count;
         int i_stepsize;
@@ -74,7 +76,7 @@ public slots:
         void g_release_dp(); // map data points to pixel width (dp < pw)
         void g_squeeze_dp(); // map data points to pixel width (dp > pw)
         void g_interpolate(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in); // Inteerpolation and create points to make the graph
-        void g_create_path();
+        void g_create_path(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in);
         char *mhr( long long int kb );
 
         void paintEvent(QPaintEvent *event);
