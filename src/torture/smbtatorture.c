@@ -76,7 +76,7 @@ char **fnamelist;
 
 // get random filenames, either from a
 // smbtatorturesrv, or generate on it's own
-char *get_random_filename() {
+static char *get_random_filename() {
 	int max_filenames = 0;
 	int max_directories = 0;
 	int nfilename = 0;
@@ -182,7 +182,7 @@ char *get_random_filename() {
 	
 		
 
-unsigned long long int common_myatoi( char *num)
+static unsigned long long int common_myatoi( char *num)
 {
         char *endptr;
         errno = 0;
@@ -218,13 +218,7 @@ sprintf(pPassword,"%s",config.password);
 
 struct timeval tv;
 
-int mtime(void)
-{
-	gettimeofday(&tv, NULL);
-	return (int)(tv.tv_sec*1000 + (tv.tv_usec / 1000));
-}
-
-void generate_files()
+static void generate_files()
 {
         /* on playback, load the number of files */
         if (config.replay!=NULL) {
@@ -361,7 +355,7 @@ void generate_files()
 
 }
 
-void copy()
+static void copy()
 {
         int fd, fd2;
         int ret;
@@ -455,7 +449,7 @@ void copy()
 	if (config.verbose ==1) printf("Transferring data...\n");
 }
 
-void help()
+static void help()
 {
 
 	printf("smbtatorture version %s - small testingsuite for smbta	\n", SMBTATORTURE_VERSION);
@@ -494,7 +488,7 @@ void help()
 	printf("-H --host		hostname to connect to.		\n");
 }
 
-void define_config_defaults()
+static void define_config_defaults()
 {
         config.user=malloc( sizeof(char)*( strlen("john_doe") +1 ));
         strcpy(config.user,"john_doe");
@@ -522,7 +516,7 @@ void define_config_defaults()
 
 }
 
-int connect_smbtatorturesrv(int iport,char *hostname)
+static int connect_smbtatorturesrv(int iport,char *hostname)
 {
         if ( hostname == NULL ) {
                 printf("ERROR: no hostname given.\n");

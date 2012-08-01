@@ -26,7 +26,7 @@
 
 /* creates a local sqlite database that smbtaquery uses while in */
 /* operation */
-sqlite3 *create_db()
+static sqlite3 *create_db()
 {
 	char *a=getenv("HOME");
 	char path[255];
@@ -61,7 +61,7 @@ int configuration_check_configuration( struct configuration_data *c );
 /**
  * Initialize default values of the configuration.
  */
-void configuration_define_defaults( struct configuration_data *c )
+static void configuration_define_defaults( struct configuration_data *c )
 {
 	c->port = 3390;
 	c->host = NULL;
@@ -82,10 +82,11 @@ void configuration_define_defaults( struct configuration_data *c )
 	c->dbuser = NULL;
 	c->dbdriver = NULL;
 	c->dbpassword = NULL;
+	c->dbpath = NULL;
 }
 
 /* load $HOME/.smbtatools/query.config */
-void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
+static void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
         char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
@@ -98,7 +99,7 @@ void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 }
 
 
-int configuration_load_config_file( struct configuration_data *c)
+static int configuration_load_config_file( struct configuration_data *c)
 {
 	dictionary *Mydict;
 	Mydict=iniparser_load( c->config_file);
@@ -130,11 +131,12 @@ int configuration_load_config_file( struct configuration_data *c)
 	cc = iniparser_getstring(Mydict,"database:password",NULL);
 	if (cc != NULL) c->dbpassword = strdup(cc);
 
-
+	cc = iniparser_getstring(Mydict,"database:dbpath",NULL);
+	if (cc != NULL) c->dbpath = strdup(cc);
 	return 0;
 }
 
-void configuration_show_help()
+static void configuration_show_help()
 {
 	printf("smbtaquery version %s\n", SMBTAQUERY_VERSION);
 	printf("(C)opyright 2011 by Benjamin Brunner\n");
@@ -166,10 +168,12 @@ void configuration_show_help()
 	printf("-C	--convert		run an interactive conversion/update\n");
 	printf("				process to convert an older database\n");
 	printf("				to this version of SMBTA.\n");
+	printf("-t	--test-db		Only try to connect to the database\n");
+	printf("				and return the result.\n");
 	printf("\n");
 }
 
-void configuration_set_output( struct configuration_data *c,
+static void configuration_set_output( struct configuration_data *c,
 	char *fmt)
 {
 	if (c->query_xmlfile != NULL) {
@@ -188,7 +192,7 @@ void configuration_set_output( struct configuration_data *c,
 	}
 }
 
-void configuration_create_key( char *filename )
+static void configuration_create_key( char *filename )
 {
         int f;
 	FILE *keyfile;
@@ -214,7 +218,7 @@ void configuration_create_key( char *filename )
  *  * Create a database connection and setup the required tables
  *   * returns 0 if fine, 1 on error
  *    */
-int configuration_database_connect( struct configuration_data *conf )
+static int configuration_database_connect( struct configuration_data *conf )
 {
 	int rc;
 	const char *dberror;
@@ -229,16 +233,32 @@ int configuration_database_connect( struct configuration_data *conf )
 	rc = dbi_initialize(NULL);
 	if ( rc == -1 ) {
 		printf("DBI: ERROR dbi_initialize. Exiting.\n");
+		printf("- is the given database driver installed?\n");
 		return 1;
 		}
 	conf->DBIconn = dbi_conn_new(conf->dbdriver);
 	if (conf->DBIconn == NULL) {
 		printf("DBI: ERROR dbi_conn_new, with driver %s.\n",
 			conf->dbdriver);
-		dbi_conn_error(conf->DBIconn, &dberror);
-		printf("DBI: %s\n",dberror);
+		printf("- sure you have a network connection to the database?\n");
+		printf("- sure the given database driver is installed?\n");
 		return 1;
 		}
+	/**
+	 * if sqlite is used, we set the dbpath parameter
+	 */
+	if (strcmp(conf->dbdriver,"sqlite") == 0) {
+		dbi_conn_set_option(conf->DBIconn, "sqlite_dbdir",
+				conf->dbpath);
+		dbi_conn_set_option_numeric(conf->DBIconn, "sqlite_timeout",
+				10000);
+	} else if (strcmp(conf->dbdriver,"sqlite3") == 0) {
+		dbi_conn_set_option(conf->DBIconn, "sqlite3_dbdir",
+				conf->dbpath);
+		dbi_conn_set_option_numeric(conf->DBIconn, "sqlite3_timeout",
+				10000);
+	}
+
 	dbi_conn_set_option(conf->DBIconn, "host", conf->dbhost);
 	dbi_conn_set_option(conf->DBIconn, "username", conf->dbuser);
 	dbi_conn_set_option(conf->DBIconn, "password", conf->dbpassword);
@@ -257,6 +277,14 @@ int configuration_database_connect( struct configuration_data *conf )
 int configuration_parse_cmdline( struct configuration_data *c,
 	int argc, char *argv[] )
 {
+	/**
+	 * SMBTA_CONVERT is used as a flag to run the
+	 * conversion function.
+	 * SMBTA_DRY_RUN is used as a flag to run the
+	 * -t --test-db function
+	 */
+	int SMBTA_CONVERT = 0;
+	int SMBTA_DRY_RUN = 0;
 	int i;
 	TALLOC_CTX *runtime_mem = NULL;
 	configuration_define_defaults( c );
@@ -290,11 +318,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "dbpassword",1,NULL,'P'},
 			{ "convert",0,NULL,'C'},
 			{ "version",0,NULL,'v'},
+			{ "test-db",0,NULL,'t'},
 			{ 0,0,0,0 }
 		};
 
 		i = getopt_long( argc, argv,
-			"vCM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:", long_options, &option_index );
+			"vCM:N:S:H:P:o:d:f:c:k:q:h:x:p?K:I:t", long_options, &option_index );
 
 		if ( i == -1 ) break;
 
@@ -303,8 +332,12 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				printf("%s\n",SMBTAQUERY_VERSION);
 				exit(0);
 			case 'C':
-				smbta_convert();
-				exit(0);
+				/**
+				 * set SMBTA_CONVERT to 1, run all other cmd line options,
+				 * and run the smbta_convert() function later.
+				 */
+				SMBTA_CONVERT=1;
+				break;
 			case 'M':
 				c->dbdriver = strdup( optarg );
 				break;
@@ -355,6 +388,14 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case 'I': ;
 				c->identify = (int) common_myatoi( optarg );
 				break;
+			case 't': ;
+				  /**
+				   * dry run: only test if the database
+				   * connection can be established and
+				   * return the result on the terminal.
+				   */
+				SMBTA_DRY_RUN = 1;
+				break;
 			default	:
 				printf("ERROR: unkown option.\n\n");
 				configuration_show_help();
@@ -367,6 +408,14 @@ int configuration_parse_cmdline( struct configuration_data *c,
 		configuration_load_config_file(c);
 	if (configuration_check_configuration(c)==-1) exit(1);
 
+	/**
+	 * if convert (-C --convert) was called, run it now
+	 */
+	if (SMBTA_CONVERT==1) {
+		smbta_convert(c);
+		exit(0);
+	}
+
 	/* create a local sqlite database as a helper */
 	c->db=create_db();
 
@@ -374,6 +423,11 @@ int configuration_parse_cmdline( struct configuration_data *c,
 	/* Build up the connection to the database */
 	if (configuration_database_connect(c) == 1) {
 		printf("\nError on database connect.\n");
+		talloc_free(runtime_mem);
+		exit(1);
+	}
+	if (SMBTA_DRY_RUN == 1) {
+		printf("\nDatabase connection succesful.\n");
 		talloc_free(runtime_mem);
 		exit(1);
 	}
@@ -477,5 +531,16 @@ int configuration_check_configuration( struct configuration_data *c )
 		printf("ERROR: debug level has to be between 0 and 10.\n");
 		return -1;
 	}
+        if (	c->dbdriver==NULL || 
+		( strcmp(c->dbdriver,"pgsql") != 0 &&
+                strcmp(c->dbdriver,"mysql")!=0 &&
+                strcmp(c->dbdriver,"sqlite3")!=0 )) {
+	                printf("ERROR: please specifiy a correct database driver.\n");
+	                printf("pgsql   -> postgresql\n");
+	                printf("mysql   -> MySQL\n");
+	                printf("sqlite3 -> sqlite3\n");
+	                return -1;
+        }
+		
 	return 0;
 }

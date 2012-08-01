@@ -11,26 +11,65 @@
     <title>Smbtaquery</title>
   </head>
   <body>
-    <% if @output == nil  %>
+    <% if @output == nil %>
       <div id="container">
         <div id="header">
-          <div id="version"><i>Version <%=%x[smbtaquery --version]%></i></div>
-          <div id="logo"><%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index"%></div>
-          <div id="titel"><h1><i>web</i>SMBTA</h1></div>
-          <div id="hp_link" style="margin-left:10px; margin-top:10px;"><%=link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/"%>&nbsp;&nbsp;
-            <%= link_to "Online help", "http://morelias.org/smbta/smbta-guide.html" %></div>
+          <div id="version">
+            <i>Version <%=%x[smbtaquery --version]%></i>
+          </div>
+          <div id="logo">
+            <%= link_to image_tag('smbta128.png'), :controller => "overview", :action => "index" %>
+          </div>
+          <div id="titel">
+            <h1><i>web</i>SMBTA</h1>
+          </div>
+          <div id="navigation" style="float:left;">
+            <ul id="nav">
+                <% if current_user %>
+              <li>
+                  Logged in as <%= current_user.username %>.</li>
+              <li><%= link_to "Log out", log_out_path %></li>
+              <li><%= link_to "Smbtad Configuration", :controller => "config", :action => "general" %></li>
+                <% else %>
+              <li><%= link_to "log in", log_in_path %></li>
+                <% end %>
+                <% if current_user && current_user.admin == true %>
+              <li><%= link_to "User Settings", :controller => "users", :action => "show" %></li>
+                <% end %>
+                <% if current_user && current_user.admin != true %>
+              <li><%= link_to "Account Settings", :controller => "users", :action => "edit_settings" %></li>
+                <% end %>
+              <li><%= link_to "Homepage", "http://holger123.wordpress.com/smb-traffic-analyzer/" %></li>
+              <li><%= link_to "Online help", "https://wiki.samba.org/index.php/SMBTA" %></li>
+            
+            <%  if current_user && !session[:dbdriver].empty? && !session[:dbname].empty? && !session[:dbuser].empty? %>
+
+              <li><form id="live-search-form" method="get" action="/functions/global_search">
+           <%=image_tag("loupe.png", :size => "15x15")%><input id="big-search-box" name="q" type="text"/>
+              </form></li>
+
+            <% end %>
+            </ul>
+          </div>
+            
         </div>
       </div>
       <hr/>
       <% flash.each do |key, value| %>
-        <div class="flash <%= key %>"><%= value %></div>
+        <div class="flash <%= key %>"id="flash_<%= key %>" >
+          <%= value %>
+        </div>
       <% end %>
-      <div id="list" style="position:relative; width:2000px; height:350px;">
+      <div id="list">
         <%= yield %>
       </div>
-    <%else%>
+      <div id="live-search-results"></div>
+      <div id="temp-functions"></div>
+    <% else %>
       <%= yield %>
-    <%end%>
-
+    <% end %>
+      <div id="footer">
+        <%=link_to"SMB Traffic Analyzer", "http://holger123.wordpress.com/smb-traffic-analyzer/"%> Version <%=%x[smbtaquery --version]%>
+      </div>
   </body>
 </html>

@@ -39,6 +39,7 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <talloc.h>
+#include <curl/curl.h>
 #ifndef SQLITE_FOUND
 	#include "../sqlite/sqlite3.h"
 #else
@@ -46,7 +47,6 @@
 #endif
 #include "../../../iniparser3.0b/src/iniparser.h"
 #include "../../../include/common.h"
-
 int configuration_check_configuration( struct configuration_data *c );
 int configuration_parse_cmdline( struct configuration_data *c, int argc, char *argv[] );
 

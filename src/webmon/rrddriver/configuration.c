@@ -28,7 +28,7 @@ int configuration_check_configuration( struct configuration_data *c );
 void configuration_create_db(struct configuration_data *c);
 
 
-void configuration_show_help()
+static void configuration_show_help()
 {
         printf("rrddriver version %s\n", RRDDRIVER_VERSION);
         printf("(C)opyright 2010 by Michael Haefner\n");
@@ -69,7 +69,7 @@ void configuration_show_help()
 /**
  * Initialize default values of the configuration.
  */
-void configuration_define_defaults( struct configuration_data *c )
+static void configuration_define_defaults( struct configuration_data *c )
 {
         c->port = 3390;
         c->host = NULL;
@@ -85,7 +85,7 @@ void configuration_define_defaults( struct configuration_data *c )
 }
 
 /* load $HOME/.smbtatools/monitor.config */
-void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
+static void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
         char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
@@ -97,7 +97,7 @@ void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
         }
 }
 
-int configuration_load_config_file( struct configuration_data *c)
+static int configuration_load_config_file( struct configuration_data *c)
 {
         dictionary *Mydict;
         Mydict=iniparser_load( c->config_file);
@@ -125,7 +125,7 @@ int configuration_load_config_file( struct configuration_data *c)
         return 0;
 }
 
-char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
+static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -329,7 +329,7 @@ void configuration_create_db(struct configuration_data *c)
  * This fills the filter pattern for the monitor by running identify,
  * and eventually filling more required patterns
  */
-char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
+static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
 {
 	/*
 	 * How the pattern is build:

@@ -1,0 +1,50 @@
+<xsl:stylesheet 
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:output method="xml" encoding="UTF-8"/>
+
+<xsl:template match="smbtad-report-short">
+[general]
+
+	debug_level = <xsl:value-of select="debug_level"/>
+	use_db = <xsl:value-of select="use-db"/>
+[network]
+	port_number = <xsl:value-of select="client_port"/>
+	query_port = <xsl:value-of select="client_port"/>
+	unix_domain_socket = <xsl:value-of select="unix_socket_clients"/>
+	smbtad_ip = <xsl:value-of select="smbtad_ip"/>
+	unix_domain_socket_clients = <xsl:value-of select="unix_socket_clients"/>
+[database]
+	name = <xsl:value-of select="dbname"/>
+	host = <xsl:value-of select="dbhost"/>
+
+
+
+	smbtad version: <xsl:value-of select="smbtad_version"/>
+	database version: <xsl:value-of select="database_version"/>
+	client port: <xsl:value-of select="client_port"/>
+	unix_socket_clients: <xsl:value-of select="unix_socket_clients"/>
+	database name: <xsl:value-of select="dbname"/>
+	database host: <xsl:value-of select="dbhost"/>
+	database driver: <xsl:value-of select="dbdriver"/>
+	database user: <xsl:value-of select="dbuser"/>
+	maintenance timer: <xsl:value-of select="maintenance_timer_str"/>
+	run maintenance every: <xsl:value-of select="maint_run_time_str"/>
+	debug level: <xsl:value-of select="debug_level"/>
+	precision: <xsl:value-of select="precision"/>
+	daemon: <xsl:value-of select="daemon"/>
+	use-db: <xsl:value-of select="use-db"/>
+	config file: <xsl:value-of select="config_file"/>
+	smbtad_ip: <xsl:value-of select="smbtad_ip"/>
+</xsl:template>
+
+
+
+<xsl:template match="footer">
+------------------------------------------------------------------------------
+SMB Traffic Analyzer <xsl:value-of select="version"/>, <xsl:value-of select="timestamp"/>
+</xsl:template>
+
+</xsl:stylesheet>

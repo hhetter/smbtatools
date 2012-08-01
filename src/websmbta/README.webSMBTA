@@ -13,6 +13,7 @@ else
 - rename Gemfile.old to Gemfile
 - run $sudo gem install rails --version >3.0.3 (installs rails3)
 - run $sudo bundle install (installs needed ruby gems for websmbta)
+- $rake db:migrate (creates the database)
 - webSMBTA can be started by running $rails server in this directory.
 - open a Browser and enter the URL hostname:3000 (e.g. localhost:3000)
 

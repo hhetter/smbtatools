@@ -22,7 +22,8 @@
 #include "include/network.h"
 #include "../../include/version.h"
 #include <talloc.h>
-
+#include "../webmon/rrddriver/include/vfs_smb_traffic_analyzer.h"
+#include "include/graphics.h"
 struct interpreter_command {
 	int argument_count;
 	char *command;
@@ -39,6 +40,19 @@ struct interpreter_object {
 	char *from;
 	char *to;
 
+	/**
+	 * from_t and to_t are a copie of
+	 * the from and to times provided
+	 * and are converted in time_t
+	 */
+	time_t from_t;
+	time_t to_t;
+
+};
+
+struct curl_memory {
+	char *memory;
+	size_t size;
 };
 
 
@@ -61,7 +75,17 @@ struct xml_last_activity_data{
 	char *value;
 };
 
-void interpreter_xml_begin_search(
+static void interpreter_xml_print(
+		struct configuration_data *c,
+		char *text)
+{
+	if (c->xml_handle == NULL) return;
+	fprintf(c->xml_handle,
+		text);
+}
+
+
+static void interpreter_xml_begin_search(
 	struct configuration_data *c,
 	char *title)
 {
@@ -76,7 +100,7 @@ void interpreter_xml_begin_search(
 	talloc_free(ctx);
 }
 
-void interpreter_xml_end_search(
+static void interpreter_xml_end_search(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
@@ -84,7 +108,7 @@ void interpreter_xml_end_search(
 		"</search>\n");
 }
 	
-void interpreter_xml_search_result_file(
+static void interpreter_xml_search_result_file(
 		struct configuration_data *c,
 		char *name,
 		char *share,
@@ -104,7 +128,7 @@ void interpreter_xml_search_result_file(
 		domain);
 }
 
-void interpreter_xml_search_result_domain(
+static void interpreter_xml_search_result_domain(
 		struct configuration_data *c,
 		char *name)
 {
@@ -118,7 +142,23 @@ void interpreter_xml_search_result_domain(
 		name);
 }
 
-void interpreter_xml_search_result_sid(
+static void interpreter_xml_search_result_share(
+                struct configuration_data *c,
+		char *name,
+		char *domain)
+{
+        if (c->xml_handle == NULL) return;
+        fprintf(c->xml_handle,
+                "<result>\n"
+                "       <share>\n"
+                "               <name>%s</name>\n"
+		"		<domain>%s</domain>\n"
+                "       </share>\n"
+                "</result>\n",
+                name, domain);
+}
+
+static void interpreter_xml_search_result_sid(
 		struct configuration_data *c,
 		char *sid,
 		char *user,
@@ -136,7 +176,7 @@ void interpreter_xml_search_result_sid(
 		sid,user,domain);
 }
 
-void interpreter_xml_search_result_user(
+static void interpreter_xml_search_result_user(
 		struct configuration_data *c,
 		char *name,
 		char *domain)
@@ -153,7 +193,7 @@ void interpreter_xml_search_result_user(
 		domain);
 }
 
-void interpreter_xml_footer(
+static void interpreter_xml_footer(
 	struct configuration_data *c)
 {
 	char *ctx = talloc(NULL, char);
@@ -179,7 +219,7 @@ void interpreter_close_xml_file(
         fclose(c->xml_handle);
 }
 
-void interpreter_xml_create_header(
+static void interpreter_xml_create_header(
 	struct configuration_data *c)
 {
 	fprintf( c->xml_handle,
@@ -200,7 +240,7 @@ void interpreter_open_xml_file(
         }
 }
 
-void interpreter_xml_begin_function(
+static void interpreter_xml_begin_function(
 	struct configuration_data *c,
 	char *funcname)
 {
@@ -209,7 +249,7 @@ void interpreter_xml_begin_function(
 		"<%s>\n", funcname);
 }
 
-void interpreter_xml_close_function(
+static void interpreter_xml_close_function(
 	struct configuration_data *c,
 	char *funcname)
 {
@@ -218,7 +258,7 @@ void interpreter_xml_close_function(
 		"</%s>\n", funcname);
 }
 
-void interpreter_xml_description(
+static void interpreter_xml_description(
 	struct configuration_data *c,
 	char *description_str)
 {
@@ -228,7 +268,7 @@ void interpreter_xml_description(
 		description_str);
 }
 
-void interpreter_xml_value(
+static void interpreter_xml_value(
 	struct configuration_data *c,
 	unsigned long int value)
 {
@@ -238,7 +278,7 @@ void interpreter_xml_value(
 		value);
 }
 
-void interpreter_xml_totalrow(
+static void interpreter_xml_totalrow(
 	struct configuration_data *c,
 	char *value)
 {
@@ -248,7 +288,7 @@ void interpreter_xml_totalrow(
 		value);
 }
 
-void interpreter_xml_usageentry(
+static void interpreter_xml_usageentry(
 	struct configuration_data *c,
 	char *timestr,
 	unsigned long int value,
@@ -261,7 +301,7 @@ void interpreter_xml_usageentry(
 		timestr, value, conv_str, percent);
 }
 
-void interpreter_xml_last_activityentry(
+static void interpreter_xml_last_activityentry(
 	struct configuration_data *c,
 	struct xml_last_activity_data *entry,
 	char *vfs_function)
@@ -286,7 +326,7 @@ void interpreter_xml_last_activityentry(
 		entry->value);
 }
 
-void interpreter_xml_toprow(
+static void interpreter_xml_toprow(
 	struct configuration_data *c,
 	int num,
 	char *obj,
@@ -300,17 +340,7 @@ void interpreter_xml_toprow(
 		val);
 }
 	
-void interpreter_xml_objname(
-	struct configuration_data *c,
-	char *str)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<objname>%s</objname>\n",
-		str);
-}
-
-void interpreter_xml_begin_table(
+static void interpreter_xml_begin_table(
 	struct configuration_data *c,
 	int columns)
 {
@@ -319,7 +349,7 @@ void interpreter_xml_begin_table(
 		"<table_columns>%i</table_columns>\n",columns);
 }
 
-void interpreter_xml_begin_table_row(
+static void interpreter_xml_begin_table_row(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
@@ -327,7 +357,7 @@ void interpreter_xml_begin_table_row(
 		"<table_row>");
 }
 
-void interpreter_xml_table_named_row(
+static void interpreter_xml_table_named_row(
 	struct configuration_data *c,
 	char *named_row, char *res)
 {
@@ -337,23 +367,14 @@ void interpreter_xml_table_named_row(
 			named_row,res);
 }
 
-void interpreter_xml_close_table_row(
+static void interpreter_xml_close_table_row(
 	struct configuration_data *c)
 {
 	if (c->xml_handle == NULL) return;
 	fprintf( c->xml_handle,
 		"</table_row>");
 }
-
-void interpreter_xml_begin_table_header(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<table_header>");
-}
-
-void interpreter_xml_table_header_element(
+static void interpreter_xml_table_header_element(
 	struct configuration_data *c,
 	char *element)
 {
@@ -363,23 +384,7 @@ void interpreter_xml_table_header_element(
 		element);
 }
 
-void interpreter_xml_end_table_header(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table_header>");
-}
-
-void interpreter_xml_begin_table_content(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<table_content>");
-}
-
-void interpreter_xml_table_content(
+static void interpreter_xml_table_content(
 	struct configuration_data *c,
 	char *res)
 {
@@ -389,34 +394,7 @@ void interpreter_xml_table_content(
 		res);
 }
 
-void interpreter_xml_end_table_content(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table_content>");
-}
-
-void interpreter_xml_end_table(
-	struct configuration_data *c)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"</table>\n");
-}
-	
-void interpreter_xml_strvalue(
-	struct configuration_data *c,
-	char *str)
-{
-	if (c->xml_handle == NULL) return;
-	fprintf( c->xml_handle,
-		"<value>%s</value>\n",
-		str);
-}
-
-
-char *interpreter_prepare_statement(TALLOC_CTX *ctx,
+static char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 		char *data)
 {
 	int t = strlen(data);
@@ -436,7 +414,7 @@ char *interpreter_prepare_statement(TALLOC_CTX *ctx,
 
 
 
-void interpreter_print_table( TALLOC_CTX *ctx,
+static void interpreter_print_table( TALLOC_CTX *ctx,
 		struct configuration_data *c,
 		char *named_row,
 		int columns,char *data, ...)
@@ -473,18 +451,7 @@ void interpreter_print_table( TALLOC_CTX *ctx,
 	interpreter_xml_close_table_row(c);
 }
 
-void bar(unsigned long int total, unsigned long int length) {
-	long double percent= total / 100;
-	float barpercent= 0.5;
-	int x;
-	long double erg = (long double) length / percent;
-	int barlength = erg *barpercent;
-	printf("%10.2Lf%% ", erg);
-	for (x=0;x<barlength;x++) { printf("#"); }
-	printf("\n");
-}
-
-char *percent(TALLOC_CTX *ctx,
+static char *percent(TALLOC_CTX *ctx,
 	unsigned long int total,
 	unsigned long int length)
 {
@@ -499,7 +466,7 @@ char *percent(TALLOC_CTX *ctx,
 	return ret;
 }
 
-void interpreter_fn_throughput( TALLOC_CTX *ctx,
+static void interpreter_fn_throughput( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -525,23 +492,16 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 
 	if (strcmp(command_data->arguments[2],"r")==0) {
 		query = talloc_asprintf(ctx,
-			"select sum(length) from read where timestamp > '%s' and %s;",
-			timestamp,obj_struct->sql);
+			"SELECT sum(length) FROM data WHERE vfs_id = '%i' AND timestamp > '%s' AND %s;",
+			vfs_id_read, timestamp,obj_struct->sql);
 	} else if (strcmp(command_data->arguments[2],"w")==0) {
 		query = talloc_asprintf(ctx,
-			"select sum(length) from write where timestamp > '%s' and %s;",
-			timestamp,obj_struct->sql);
+			"SELECT sum(length) FROM data WHERE vfs_id = '%i' AND timestamp > '%s' AND %s;",
+			vfs_id_write, timestamp,obj_struct->sql);
 	} else if (strcmp(command_data->arguments[2],"rw")==0) {
 		query = talloc_asprintf(ctx,
-			"select sum(length) from write where timestamp > '%s' and %s;",
-			timestamp,obj_struct->sql);
-		qdat = sql_query(ctx,config,query);
-		thrput = strtoull(result_get_element(ctx,0,qdat),
-				NULL,0);
-		talloc_free(query);
-		query = talloc_asprintf(ctx,
-			"select sum(length) from read where timestamp > '%s' and %s;",
-			timestamp,obj_struct->sql);
+			"SELECT sum(length) FROM data WHERE (vfs_id = '%i' OR vfs_id = '%i') AND timestamp > '%s' AND %s;",
+			vfs_id_read, vfs_id_write, timestamp,obj_struct->sql);
 	} else {
 		printf("ERROR: Third argument to throughput must be either rw, r, or w.\n");
 		exit(1);
@@ -565,7 +525,7 @@ void interpreter_fn_throughput( TALLOC_CTX *ctx,
 	}
 }
 
-void interpreter_fn_usage( TALLOC_CTX *ctx,
+static void interpreter_fn_24h_usage( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -587,31 +547,30 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 			xmlstr2 = talloc_asprintf(ctx,"%s by read access.",
 				xmlstr);
                         query2 = talloc_asprintf(ctx,
-				"select sum(length) from read where %s;",
-                                obj_struct->sql);
+				"SELECT sum(length) FROM data"
+				" WHERE vfs_id = '%i' AND %s;",
+                                vfs_id_read, obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
                         total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else if (strcmp(command_data->arguments[0],"w")==0) {
 			xmlstr2 = talloc_asprintf(ctx,"%s by write access.",
 				xmlstr);
                         query2 = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s;",
-                                obj_struct->sql);
+                                "SELECT sum(length) FROM data"
+				" WHERE vfs_id = '%i' AND %s;",
+                                vfs_id_write, obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
                         total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else if (strcmp(command_data->arguments[0],"rw")==0) {
 			xmlstr2 = talloc_asprintf(ctx,"%s by read-write access.",
 				xmlstr);
 			query2 = talloc_asprintf(ctx,
-                                "select sum(length) from read where %s;",
-                                obj_struct->sql);
+                                "SELECT sum(length) FROM data"
+				" WHERE (vfs_id = '%i' OR vfs_id = '%i')"
+				" AND %s;",
+                                vfs_id_read, vfs_id_write, obj_struct->sql);
                         qtotal = sql_query(ctx,config,query2);
                         total = strtoull(result_get_element(ctx,0,qtotal),NULL,0);
-                        query2 = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s;",
-                                obj_struct->sql);
-                        qtotal = sql_query(ctx,config,query2);
-                        total = total + strtoull(result_get_element(ctx,0,qtotal),NULL,0);
 	} else {
 		printf("ERROR: unable to find the total value.\n");
 		exit(1);
@@ -619,32 +578,29 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 	for (hour = 0;hour<24;hour++) {
 		if (strcmp(command_data->arguments[0],"r")==0) {
 			query = talloc_asprintf(ctx,
-				"select sum(length) from read where %s"
-				" and extract(hour from \"timestamp\") = %i",
-				obj_struct->sql,hour);
+				"SELECT sum(length) FROM data"
+				"  WHERE vfs_id = '%i' AND %s"
+				" AND extract(hour from \"timestamp\") = %i",
+				vfs_id_read, obj_struct->sql,hour);
 			qdat = sql_query(ctx,config,query);
 			bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
 		} else if (strcmp(command_data->arguments[0],"w")==0) {
                         query = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s"
-                                " and extract(hour from \"timestamp\") = %i",
-                                obj_struct->sql,hour);
+                                "SELECT sum(length) FROM data"
+				" WHERE vfs_id = '%i' AND %s"
+                                " AND extract(hour from \"timestamp\") = %i",
+                                vfs_id_write, obj_struct->sql,hour);
                         qdat = sql_query(ctx,config,query);
                         bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
 		} else if (strcmp(command_data->arguments[0],"rw")==0) {
                         query = talloc_asprintf(ctx,
-                                "select sum(length) from read where %s"
+                                "SELECT sum(length) FROM data"  
+				" WHERE (vfs_id = '%i' OR vfs_id = '%i') AND %s"
                                 " and extract(hour from \"timestamp\") = %i",
-                                obj_struct->sql,hour);
+                                vfs_id_read, vfs_id_write, 
+				obj_struct->sql,hour);
                         qdat = sql_query(ctx,config,query);
                         bytes = strtoull(result_get_element(ctx,0,qdat),NULL,0);
-                        query = talloc_asprintf(ctx,
-                                "select sum(length) from write where %s"
-                                " and extract(hour from \"timestamp\") = %i",
-                                obj_struct->sql,hour);
-                        qdat = sql_query(ctx,config,query);
-                        bytes = bytes + strtoull(result_get_element(ctx,0,qdat),NULL,0);
-
 		} else {
 			printf("ERROR: usage expects r,w, or rw.\n");
 			exit(1);
@@ -659,7 +615,7 @@ void interpreter_fn_usage( TALLOC_CTX *ctx,
 }
 
 
-void interpreter_fn_last_activity( TALLOC_CTX *ctx,
+static void interpreter_fn_last_activity( TALLOC_CTX *ctx,
                 struct interpreter_command *command_data,
                 struct interpreter_object *obj_struct,
                 struct configuration_data *config)
@@ -692,10 +648,11 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
 	/* VFS : read */
         query1 = talloc_asprintf(ctx,
-		"select username,timestamp,filename,length,domain from read "
-		"where %s order by timestamp desc "
+		"SELECT username,timestamp,string1,length,domain"
+		" FROM data"
+		" WHERE vfs_id = '%i' AND %s order by timestamp desc "
 		"limit %i;",
-		obj_struct->sql,limit);
+		vfs_id_read, obj_struct->sql,limit);
 	qdat = sql_query(ctx,config,query1);
 	helper = result_get_element(ctx,0,qdat);
 	int row = 0;
@@ -719,10 +676,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	}
 	/* VFS: write */
         query1 = talloc_asprintf(ctx,
-	        "select username,timestamp,filename,length,domain from write "
-                "where %s order by timestamp desc "
+	        "SELECT username,timestamp,string1,length,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc "
                 "limit %i;",
-                obj_struct->sql,limit);
+                vfs_id_write, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -749,10 +706,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
 	/* VFS: open */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,filename,domain from open "
-                "where %s order by timestamp desc "
+                "SELECT username,timestamp,string1,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc "
                 "limit %i;",
-                obj_struct->sql,limit);
+                vfs_id_open, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -779,10 +736,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
 	/* VFS: close */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,filename,domain from close "
-                "where %s order by timestamp desc "
+                "SELECT username,timestamp,string1,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc "
                 "limit %i;",
-                obj_struct->sql,limit);
+                vfs_id_close, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -809,10 +766,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
         /* VFS: rename */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,source, destination,domain from rename "
-                "where %s order by timestamp desc "
-                "limit %i;",
-                obj_struct->sql,limit);
+                "SELECT username,timestamp, string1, string2,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc"
+                " limit %i;",
+                vfs_id_rename, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -840,10 +797,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	
 	/* VFS: mkdir */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,path,domain from mkdir "
-                "where %s order by timestamp desc "
-                "limit %i;",
-                obj_struct->sql,limit);
+                "SELECT username,timestamp,string1,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc"
+                " limit %i;",
+                vfs_id_mkdir, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -870,10 +827,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
 	/* VFS: rmdir */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,path,domain from rmdir "
-                "where %s order by timestamp desc "
+                "SELECT username,timestamp,string1,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc "
                 "limit %i;",
-                obj_struct->sql,limit);
+                vfs_id_rmdir, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -900,10 +857,10 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 
         /* VFS: chdir */
         query1 = talloc_asprintf(ctx,
-                "select username,timestamp,path,domain from chdir "
-                "where %s order by timestamp desc "
+                "SELECT username,timestamp,string1,domain FROM data"
+                " WHERE vfs_id = '%i' AND %s order by timestamp desc "
                 "limit %i;",
-                obj_struct->sql,limit);
+                vfs_id_chdir, obj_struct->sql,limit);
         qdat = sql_query(ctx,config,query1);
         helper = result_get_element(ctx,0,qdat);
         row = 0;
@@ -948,7 +905,7 @@ void interpreter_fn_last_activity( TALLOC_CTX *ctx,
 	TALLOC_FREE(temp);
 }
 
-void interpreter_fn_search( TALLOC_CTX *ctx,
+static void interpreter_fn_search( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -968,12 +925,13 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 
 	interpreter_xml_begin_search(config, xmldata);
 	
-	static const char *tables[] = { "write",  NULL };
-	static const char *rows[] = { "filename", "username", "usersid", "domain",  NULL };
-	static const char *rules[] = { "distinct filename, share, domain ",
+	static const char *tables[] = { "data",  NULL };
+	static const char *rows[] = { "string1", "username", "usersid", "domain", "share", NULL };
+	static const char *rules[] = { "distinct string1, share, domain ",
 					"distinct username, domain ",
 					"distinct usersid, username, domain ",
-					"distinct domain ", NULL };
+					"distinct domain ",
+					"distinct share, domain", NULL };
 	int i = 0,t = 0, n = 0;
 	char *res = NULL;
 	str = tables[0];
@@ -981,10 +939,10 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	while (str != NULL) {
 		while ( str2 != NULL ) {
 			query = talloc_asprintf(ctx,
-				"select %s from "
-				"write where %s LIKE '%s' and %s;",
+				"SELECT %s FROM data"
+				" WHERE %s LIKE '%s' and %s and (vfs_id = %i or vfs_id = %i);",
 				 rules[t],
-				 rows[t], command_data->arguments[0], obj_struct->sql);
+				 rows[t], command_data->arguments[0], obj_struct->sql, vfs_id_read, vfs_id_write);
 			qdat = sql_query(ctx,config,query);
 			if (result_get_element(ctx,0,qdat) != NULL) {
 				switch (t) {
@@ -1045,6 +1003,20 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 						n = n + 1;
 					}
 					break;
+				case 4: ;
+					n = 0;
+					res = "\0";
+					while (res != NULL) {
+						res = result_get_element(ctx,n,qdat);
+						if (res != NULL) {
+							interpreter_xml_search_result_share(
+								config,
+								result_get_element(ctx,n+0,qdat),  //doamin
+								result_get_element(ctx,n+1,qdat)); //share
+						}
+						n = n + 2;
+					}
+					break;
 				default: break ;
 				}
 			}
@@ -1059,7 +1031,7 @@ void interpreter_fn_search( TALLOC_CTX *ctx,
 	interpreter_xml_end_search(config);
 }
 
-void interpreter_fn_top_list( TALLOC_CTX *ctx,
+static void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1098,29 +1070,29 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain,sum(length) over (Partition by username) from read"
-				" where %s order by sum(length) over (Partition by username) %s"
+				"SELECT distinct username, domain,sum(length) over (Partition by username) from data"
+				" where vfs_id = '%i' AND %s order by sum(length) over (Partition by username) %s"
 				" limit %i;",
-				obj_struct->sql,order,limit);
+				vfs_id_read, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by write access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain, sum(length) over (Partition by username) from write "
-				"where %s order by sum(length) over (Partition by username)  %s "
+				"SELECT distinct username, domain, sum(length) over (Partition by username) from data"
+				" WHERE vfs_id = '%i' AND %s order by sum(length) over (Partition by username)  %s "
 				"limit %i;",
-				obj_struct->sql,order,limit);
+				vfs_id_write, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i users %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct username, domain,sum(length) over (Partition by username)  from "
-				"( select * from read UNION select * "
-				"from write) as subrequest where %s order by "
-				"sum(length) over (Partition by username) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct username, domain,sum(length) over (Partition by username) FROM data"
+				" WHERE (vfs_id = '%i' OR vfs_id = '%i') AND %s order by sum(length) over (Partition by username) %s "
+				"limit %i;", 
+				vfs_id_read, vfs_id_write, obj_struct->sql,
+				order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"shares")==0) {
@@ -1128,26 +1100,25 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read access.",
 				limit, obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain,sum(length) over (Partition by share) from read where"
-				" %s order by sum(length) over (Partition by share) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct share, domain,sum(length) over (Partition by share) FROM data where"
+				" vfs_id = '%i' AND %s order by sum(length) over (Partition by share) %s limit %i;",
+				vfs_id_read, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain, sum(length) over (Partition by share) from write where"
-				" %s order by sum(length) over (Partition by share) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct share, domain, sum(length) over (Partition by share) FROM data WHERE"
+				" vfs_id = '%i' AND %s order by sum(length) over (Partition by share) %s limit %i;",
+				vfs_id_write, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i shares %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct share, domain, sum(length) over (Partition by share) from ( select * from"
-				" read UNION select * from write) as subrequest where %s"
-				" order by sum(length) over (Partition by share) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct share, domain, sum(length) over (Partition by share) FROM data WHERE (vfs_id = '%i' OR vfs_id = '%i') AND %s order by sum(length) over (Partition by share) %s limit %i;",
+				vfs_id_read, vfs_id_write, obj_struct->sql,
+				order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"files")==0) {
@@ -1155,26 +1126,24 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain, sum(length) over (Partition by filename) from read where"
-				" %s order by sum(length) over (Partition by filename) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct string1, share, domain, sum(length) over (Partition by string1) from data WHERE"
+				" vfs_id = '%i' AND%s order by sum(length) over (Partition by string1) %s limit %i;",
+				vfs_id_read, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain, sum(length) over (Partition by filename) from write where"
-				" %s order by sum(length) over (Partition by filename)  %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct string1, share, domain, sum(length) over (Partition by string1) from data WHERE"
+				" vfs_id  = '%i' AND %s order by sum(length) over (Partition by string1)  %s limit %i;",
+				vfs_id_write, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata=talloc_asprintf(ctx,"Top %i files %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct filename, share, domain, sum(length) over (Partition by filename)  from ( select *"
-				" from read UNION select * from write) as subrequest where"
-				" %s order by sum(length) over (Partition by filename) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct string1, share, domain, sum(length) over (Partition by string1) FROM data WHERE (vfs_id = '%i' OR vfs_id = '%i') AND %s order by sum(length) over (Partition by string1) %s limit %i;",
+				vfs_id_read, vfs_id_write, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"domains")==0) {
@@ -1182,26 +1151,25 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 			xmldata=talloc_asprintf(ctx,"Top %i domains %s by read access.",
 				limit,obj_struct->output_term);
 			query1 = talloc_asprintf(ctx,
-				"select distinct domain, sum(length) over (Partition by domain) from read where"
-				" %s order by sum(length) over (Partition by domain) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct domain, sum(length) over (Partition by domain) from data WHERE"
+				" vfs_id = '%i' AND %s order by sum(length) over (Partition by domain) %s limit %i;",
+				vfs_id_read, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 			xmldata = talloc_asprintf(ctx,"Top %i domains %s by write access.",
 				limit,obj_struct->output_term);
 			query1= talloc_asprintf(ctx,
-				"select distinct domain, sum(length) over (Partition by domain)  from write where"
-				" %s order by sum(length) over (Partition by domain) %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct domain, sum(length) over (Partition by domain)  from data where"
+				" vfs_id = '%i' AND %s order by sum(length) over (Partition by domain) %s limit %i;",
+				vfs_id_write, obj_struct->sql,order,limit);
 			qdat = sql_query(ctx,config,query1);
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 			xmldata = talloc_asprintf(ctx,"Top %i domains %s by read-write access.",
 				limit,obj_struct->output_term);
 			query1=talloc_asprintf(ctx,
-				"select distinct domain, sum(length) over (Partition by domain)  from ( select *"
-				"from read UNION selec t* from write ) as subrequest where"
-				" %s order by sum(length) over (Partition by domain)  %s limit %i;",
-				obj_struct->sql,order,limit);
+				"SELECT distinct domain, sum(length) over (Partition by domain) FROM data WHERE "
+				"(vfs_id = '%i' OR vfs_id = '%i') AND %s order by sum(length) over (Partition by domain) %s limit %i;",
+				vfs_id_read, vfs_id_write, obj_struct->sql,order,limit);
 			qdat=sql_query(ctx,config,query1);
 		}
 	} else if (strcmp(command_data->arguments[1],"domains")==0) {
@@ -1243,28 +1211,27 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		if (strcmp(command_data->arguments[1],"users")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from read where"
-					" username='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" vfs_id = '%i', username='%s' and %s;",
+					vfs_id_read, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from write where "
-					"username='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE "
+					"vfs_id = '%i' AND username='%s' AND %s;",
+					vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from ( select * from "
-					"read UNION select * from write) as subrequest  where "
-					"username='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE "
+					"(vfs_id = '%i' OR vfs_id = '%i') AND username = '%s' AND %s;",
+					vfs_id_read, vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
@@ -1273,28 +1240,27 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		} else if (strcmp(command_data->arguments[1],"domains")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from read where"
-					" domain='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data where"
+					" vfs_id = '%i' AND domain='%s' and %s;",
+					vfs_id_read, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l +2;
 		} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from write where"
-					" domain='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" vfs_id = '%i' AND domain='%s' and %s;",
+					vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l +2;
 		} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from ( select * from "
-					"read UNION select * from write) as subrequest where "
-					"domain='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE "
+					"(vfs_id = '%i' OR vfs_id = '%i') AND domain = '%s' AND %s;",
+					vfs_id_read, vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
@@ -1303,28 +1269,27 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		} else if (strcmp(command_data->arguments[1],"shares")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from read"
-					" where share='%s' and %s;",
-					el,
+					"SELECT sum(length) from data"
+					" WHERE vfs_id = '%i' AND share='%s' and %s;",
+					vfs_id_read, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from write where"
-					" share='%s' and %s;",
-					el,
+					"SELECT sum(length) from data WHERE"
+					" vfs_id = '%i' AND share='%s' AND %s;",
+					vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 3;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from (select * from "
-					"read UNION select * from write) as subrequest where "
-					"share='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" (vfs_id = '%i' OR vfs_id = '%i') AND share = '%s' AND %s;",
+					vfs_id_read, vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
@@ -1333,28 +1298,28 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 		} else if (strcmp(command_data->arguments[1],"files")==0) {
 			if (strcmp(command_data->arguments[2],"r")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from read where"
-					" filename='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" vfs_id = '%i' AND string1='%s' and %s;",
+					vfs_id_read, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 4;
 			} else if (strcmp(command_data->arguments[2],"w")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from write where"
-					" filename='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" vfs_id = '%i' AND string1='%s' and %s;",
+					vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
 				l = l + 4;
 			} else if (strcmp(command_data->arguments[2],"rw")==0) {
 				query1 = talloc_asprintf(ctx,
-					"select sum(length) from (select * from"
-					" read UNION select * from write) as subrequest where "
-					"filename='%s' and %s;",
-					el,
+					"SELECT sum(length) FROM data WHERE"
+					" (vfs_id = '%i' OR vfs_id = '%i') AND"
+					" string1 = '%s' AND %s;",  
+					vfs_id_read, vfs_id_write, el,
 					obj_struct->sql);
 				qdat2 = sql_query(ctx,config,query1);
 				length[i]=strtoull(result_get_element(ctx,0,qdat2),NULL,0);
@@ -1404,7 +1369,7 @@ void interpreter_fn_top_list( TALLOC_CTX *ctx,
 	
 
 
-void interpreter_fn_list( TALLOC_CTX *ctx,
+static void interpreter_fn_list( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
@@ -1421,10 +1386,12 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata= talloc_asprintf(ctx,"List of users %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select username,usersid from read where"
-			" %s union select username,usersid"
-			" from write where %s;",
-			obj_struct->sql,obj_struct->sql);
+			"SELECT username,usersid FROM data " 
+			"WHERE vfs_id = '%i' AND %s UNION "
+			"SELECT username,usersid FROM data "
+			"WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql, 
+			vfs_id_write, obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1434,10 +1401,11 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata = talloc_asprintf(ctx,"List of domains %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select domain from read where"
-			"%s union select domain"
-			" from write where %s;",
-			obj_struct->sql, obj_struct->sql);
+			"SELECT domain FROM data WHERE vfs_id = '%i' AND "
+			"%s UNION SELECT domain"
+			" FROM data WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql, 
+			vfs_id_write, obj_struct->sql);
 		qdat=sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1447,9 +1415,12 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata=talloc_asprintf(ctx,"List of shares %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select share,domain from read where %s "
-			"union select share,domain from write where %s;",
-			obj_struct->sql,obj_struct->sql);
+			"SELECT share,domain FROM data WHERE "
+			"vfs_id = '%i' AND %s "
+			"UNION SELECT share,domain FROM data "
+			"WHERE vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql,
+			vfs_id_write, obj_struct->sql);
 		qdat = sql_query(ctx, config, query1);
 		interpreter_xml_begin_function(config,"list");
 		interpreter_xml_description(config,xmldata);
@@ -1459,9 +1430,12 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 		xmldata=talloc_asprintf(ctx,"List of files %s",
 			obj_struct->output_term);
 		query1 = talloc_asprintf(ctx,
-			"select filename,share from read where %s union"
-			" select filename,share from write where %s;",
-			obj_struct->sql,obj_struct->sql);
+			"SELECT string1,share FROM data WHERE "
+			"vfs_id = '%i' AND %s "
+			"UNION SELECT string1,share FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql,
+			vfs_id_write, obj_struct->sql);
 
 		qdat = sql_query(ctx,config,query1);
 		interpreter_xml_begin_function(config,"list");
@@ -1476,14 +1450,509 @@ void interpreter_fn_list( TALLOC_CTX *ctx,
 	}
 }
 
-void interpreter_fn_total( TALLOC_CTX *ctx,
+static void interpreter_fn_usage(TALLOC_CTX *ctx,
+	struct interpreter_command *command_data,
+	struct interpreter_object *obj_struct,
+	struct configuration_data *config)
+{
+	/**
+	 * usage [imgwidth] [imgheight] [r][rw][w] from $TIME to $TIME
+	 */
+	unsigned long int *yaxis_r;
+	unsigned long int *yaxis_w;
+	time_t diff = obj_struct->to_t - obj_struct->from_t;
+	time_t go = obj_struct->from_t;
+	time_t end;
+	unsigned long int maximum = 0;
+	int steps; 
+	int z;
+	char *query,*query2;
+	char timestr1[200];
+	char timestr2[200];
+	struct tm *tmp;
+	dbi_result res;
+	dbi_result res2;
+	int imgwidth;
+	int imgheight;
+	int type;
+	/**
+	 * get the arguments
+	 */
+	imgwidth = atoi(command_data->arguments[0]);
+	imgheight = atoi(command_data->arguments[1]);
+	if (imgwidth == 0 || imgheight == 0) {
+		printf("ERROR: usage: incorrect height or width for"
+			" the diagram.\n");
+		exit(1);
+	}
+
+	steps = diff / imgwidth;
+	/** create the arrays
+	 */
+	yaxis_r = talloc_array( ctx, unsigned long int, imgwidth);
+	yaxis_w = talloc_array( ctx, unsigned long int, imgwidth);
+	for (z = 0; z < imgwidth; z++) {
+		yaxis_r[z]=0;
+		yaxis_w[z]=0;
+	}
+
+	for (z = 0; z < imgwidth; z++) {
+		end = go + steps;
+		tmp = localtime( &go );
+		strftime(timestr1,199,"%Y-%m-%d %T",tmp);
+		tmp = localtime( &end );
+		strftime(timestr2,199,"%Y-%m-%d %T",tmp);
+		if (strcmp( command_data->arguments[2], "r") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i AND "
+				"timestamp >= '%s' AND timestamp < '%s';",
+				vfs_id_read,
+				timestr1,
+				timestr2);
+			res = dbi_conn_query(config->DBIconn, query);
+			dbi_result_first_row(res);
+			yaxis_r[z] = dbi_result_get_int_idx(res,1);
+			if (maximum < yaxis_r[z]) maximum = yaxis_r[z];
+			talloc_free(query);
+			dbi_result_free(res);
+			type = SMBTA_GFX_R;
+
+		} else if (strcmp(command_data->arguments[2],"w") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i AND "
+				"timestamp >= '%s' AND timestamp < '%s';",
+				vfs_id_write,
+				timestr1,
+				timestr2);
+			printf("\n%s\n",query);
+			res = dbi_conn_query(config->DBIconn, query);
+			dbi_result_first_row(res);
+			yaxis_w[z] = dbi_result_get_int_idx(res,1);
+			if (maximum < yaxis_w[z]) maximum = yaxis_w[z];
+			talloc_free(query);
+			dbi_result_free(res);
+			type = SMBTA_GFX_W;
+		} else if (strcmp(command_data->arguments[2],"rw") == 0) {
+			query = talloc_asprintf(ctx,
+				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i "
+				"AND timestamp >= '%s' AND timestamp < '%s';",
+				vfs_id_read,
+				timestr1,
+				timestr2);
+			query2 = talloc_asprintf(ctx,
+				"SELECT CAST(AVG(length) AS integer) FROM data WHERE vfs_id = %i "
+				"AND timestamp >= '%s' AND timestamp < '%s';",
+				vfs_id_write,
+				timestr1,
+				timestr2);
+			res = dbi_conn_query(config->DBIconn, query);
+			res2 = dbi_conn_query(config->DBIconn, query2);
+			dbi_result_first_row(res);
+			dbi_result_first_row(res2);
+
+			yaxis_r[z] = dbi_result_get_int_idx(res,1);
+			yaxis_w[z] = dbi_result_get_int_idx(res2,1);
+			if (maximum < yaxis_r[z] + yaxis_w[z])
+				maximum = yaxis_r[z] + yaxis_w[z];
+			talloc_free(query);
+			talloc_free(query2);
+			dbi_result_free(res);
+			dbi_result_free(res2);
+
+			type = SMBTA_GFX_RW;
+
+		} else {
+			printf("ERROR: usage: please use either r, rw, or w.\n");
+			exit(1);
+		}
+	go = go + steps;
+	}
+	smbta_gfx_simple_diagram( imgwidth,
+			imgheight,
+			yaxis_r,
+			yaxis_w,
+			type,
+			maximum);
+}
+
+
+
+static void interpreter_versions_compare( unsigned int *first,
+		unsigned int *second,
+		char *firstsmaller,
+		char *equal,
+		char *firstlarger,
+		char *offline,
+		struct configuration_data *config)
+{
+	if (first[0] + first[1] + first[2]  == 0) {
+		// no results in the upstream version
+		// numbers, offline mode !!
+		interpreter_xml_print(config,offline);
+	}
+	int res[3];
+	res[0] = (first[0] > second[0]);
+	res[1] = (first[1] > second[1]);
+	res[2] = (first[2] > second[2]);
+	if (res[0] == 1 ||
+		(res[0] == 0 && res[1] == 1) ||
+		(res[0] == 0 && res[1] == 0 && res[2] ==1)) {
+			/**
+			 * First is a higher version number
+			 */
+			interpreter_xml_print(config,
+					firstlarger);
+			return;
+			
+	}
+	res[0] = (first[0] == second[0]);
+	res[1] = (first[1] == second[1]);
+	res[2] = (first[2] == second[2]);
+	if (res[0] == 1 && res[1] == 1 && res[2] == 1) {
+			/**
+			 * Versions are the same
+			 */
+			interpreter_xml_print(config,
+					equal);
+			return;
+	}
+	/**
+	 * anything else is a lower version number
+	 */
+	interpreter_xml_print(config,firstsmaller);
+}
+	
+
+static size_t curl_callback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+	  size_t realsize = size * nmemb;
+	    struct curl_memory *mem = (struct curl_memory *)data;
+	     
+	      mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+	        if (mem->memory == NULL) {
+			    /* out of memory! */ 
+			    printf("not enough memory (realloc returned NULL)\n");
+			        exit(EXIT_FAILURE);
+				  }
+		 
+		  memcpy(&(mem->memory[mem->size]), ptr, realsize);
+		    mem->size += realsize;
+		      mem->memory[mem->size] = 0;
+		       
+		        return realsize;
+}
+
+
+static void interpreter_fn_self_check( TALLOC_CTX *ctx,
 		struct interpreter_command *command_data,
 		struct interpreter_object *obj_struct,
 		struct configuration_data *config)
 {
-	char *query1, *query2, *xmldata = NULL;
+	CURL *handle;
+	char *query;
+	unsigned int smbtad_version[3];
+	unsigned int smbtatools_version[3];
+	unsigned int database_version[3];
+	unsigned int smbtad_upstream_version[3];
+	unsigned int smbtatools_upstream_version[3];
+	struct curl_memory upstream_data;
 	dbi_result qdat;
-	unsigned long long sum;
+	upstream_data.memory = malloc(1);
+	upstream_data.size = 0;
+	interpreter_xml_begin_function(config,"self-check");
+	qdat = sql_query(ctx,config,"SELECT smbtad_version FROM status;");
+	dbi_result_first_row(qdat);
+	smbtad_version[0] = atoi( dbi_result_get_string_idx(qdat,1));
+	smbtad_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2);
+	smbtad_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4);
+	dbi_result_free(qdat);
+	qdat = sql_query(ctx,config,
+			"SELECT smbtad_database_version FROM status;");
+	dbi_result_first_row(qdat);
+	database_version[0] = atoi( dbi_result_get_string_idx(qdat,1));
+	database_version[1] = atoi( dbi_result_get_string_idx(qdat,1)+2);
+	database_version[2] = atoi( dbi_result_get_string_idx(qdat,1)+4);
+	qdat = sql_query(ctx,config, "SELECT smbtatools_version FROM status;");
+	smbtatools_version[0] = atoi( SMBTAQUERY_VERSION );
+	smbtatools_version[1] = atoi( SMBTAQUERY_VERSION + 2);
+	smbtatools_version[2] = atoi( SMBTAQUERY_VERSION + 4);
+	/**
+	 * if we are allowed to go online, fetch the current
+	 * release numbers from there.
+	 */
+	if (strcmp(command_data->arguments[0],"online") == 0) {
+		/**
+		 * We have the files
+		 * CURRENT_SMBTATOOLS_RELEASE and
+		 * CURRENT_SMBTAD_RELEASE hosted on
+		 * morelias, ascii files that just contain
+		 * the current released version of SMBTA,
+		 * download that by CURL.
+		 */
+		/**
+		 * get a curl easy handle
+		 */
+		handle = curl_easy_init();
+		curl_easy_setopt(handle, CURLOPT_URL,
+				"http://www.morelias.org/smbta/CURRENT_SMBTA_VERSION");
+		curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curl_callback);
+		curl_easy_setopt(handle,
+				CURLOPT_WRITEDATA,
+				(void *) &upstream_data);
+		curl_easy_setopt(handle,
+				CURLOPT_USERAGENT, "libcurl-agent/1.0");
+		curl_easy_perform(handle);
+
+		smbtad_upstream_version[0]=atoi(upstream_data.memory);
+		smbtad_upstream_version[1]=atoi(upstream_data.memory+2);
+		smbtad_upstream_version[2]=atoi(upstream_data.memory+4);
+		smbtatools_upstream_version[0]=atoi(upstream_data.memory+ 6);
+		smbtatools_upstream_version[1]=atoi(upstream_data.memory +8);
+		smbtatools_upstream_version[2]=atoi(upstream_data.memory +10);
+		free(upstream_data.memory);
+		curl_global_cleanup();
+	} else {
+		// offline mode, set the upstream version numbers to 0
+		int i;
+		for (i = 0; i < 3 ; i++) {
+			smbtad_upstream_version[i] = 0;
+			smbtatools_upstream_version[i] = 0;
+		}
+		free(upstream_data.memory);
+	}
+	query = talloc_asprintf(ctx,
+			"<smbtad_version>%i.%i.%i</smbtad_version>",
+			smbtad_version[0],
+			smbtad_version[1],
+			smbtad_version[2]);
+	interpreter_xml_print(config,query);
+	query = talloc_asprintf(ctx,
+			"<smbtatools_version>%i.%i.%i</smbtatools_version>",
+			smbtatools_version[0],
+			smbtatools_version[1],
+			smbtatools_version[2]);
+	interpreter_xml_print(config,query);
+	query = talloc_asprintf(ctx,
+			"<database_version>%i.%i.%i</database_version>",
+			database_version[0],
+			database_version[1],
+			database_version[2]);
+	interpreter_xml_print(config,query);
+	interpreter_versions_compare( smbtad_upstream_version,
+			smbtad_version,
+			"<smbtad_comment>ERROR.</smbtad_comment>",
+			"<smbtad_comment>"
+			"Versions are ok. You have the latest "
+			"released smbtad version installed."
+			"</smbtad_comment>",
+			"<smbtad_comment>"
+			"Attention: there is a newer version of "
+			"smbtad available at "
+			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/"
+			"</smbtad_comment>",
+			"<smbtad_comment>No version update checking "
+			"is performed, as the function has been run"
+		        " in offline mode.</smbtad_comment>",
+			config);
+	interpreter_versions_compare( smbtatools_upstream_version,
+			smbtatools_version,
+			"<smbtatools_comment>ERROR.</smbtatools_comment>",
+			"<smbtatools_comment>Versions are ok. You have"
+		        " the latest released smbtatools version installed."
+			"</smbtatools_comment>",
+			"<smbtatools_comment>Attention: there is a"
+		        " newer version of smbtatools available at "
+			"http://holger123.wordpress.com/smb-traffic-analyzer/smb-traffic-analyzer-download/</smbtatools_comment>",
+			"<smbtatools_comment>No version update checking "
+			"is performed, as the function has been run in "
+			"offline mode.</smbtatools_comment>",
+			config);
+	interpreter_versions_compare( smbtad_version, database_version,
+			"<database_comment>ERROR.</database_comment>",
+			"<database_comment>Database status is ok. The "
+			"database is up to date, and"
+			" matches the installed smbtad version."
+			"</database_comment>",
+			"<database_comment>Attention: Your database "
+			"is outdated and needs to be"
+			" converted by running 'smbtaquery -C'. "
+			"Please check the documentation"
+			" for details.</database_comment>",
+			"<database_comment>Error: unable to check the "
+			"database version, please check "
+			"your installation.</database_comment>",
+			config);
+	qdat = dbi_conn_query(config->DBIconn, "select * from modules;");
+	if (dbi_result_first_row(qdat) == 0) {
+		interpreter_xml_print(config,"<error>"
+				"No servers running VFS modules have been seen"
+				" by smbtad. Either you have not yet configured"
+				" any Samba servers to run SMBTA against smbtad,"
+				" or you did not yet produce any traffic on the"
+				" mentioned services. Please check your configuration."
+				"</error>");
+	} else {
+		/**
+	 	* go through the list of heard modules (servers)
+	 	* and post comments accordingly
+	 	*/
+		int check = 1;
+		while (check == 1) {
+			const char *ip = dbi_result_get_string_idx(qdat,3);
+			int sub = dbi_result_get_int_idx(qdat,1);
+			int overflow = dbi_result_get_int_idx(qdat,2);
+			char *cmt = talloc_asprintf(ctx,
+					"<module><ip>%s</ip><overflow>%i</overflow>"
+					"<subrelease>%i</subrelease>",
+					ip,overflow,sub);
+			interpreter_xml_print(config,cmt);
+			interpreter_xml_print(config,"<comment>");
+			if (sub > 0) interpreter_xml_print(config,
+					"ERROR: The subrelease number of the protocol this "
+					"Samba server uses is higher than that what smbtad "
+					"does support. This means that the SMBTA software suite"
+					" needs to be updated, otherwise smbtad will ignore"
+					" the packets from this server.");
+			if (overflow == 0 ) interpreter_xml_print(config,
+					"OK - This server does transfer exactly the same amount"
+					"of data that the receiver smbtad requires. It is "
+					"a perfect fit for your installation. ");
+			else if (overflow > 0 ) interpreter_xml_print(config,
+					"OK - This server does transfer more data than is required"
+					" by your SMBTA installation. This is fine, as the overflow"
+					" data will be ignored by smbtad, so it does not harm your "
+					"installation. The additional data might be a feature that"
+					" is currently in development and the SMBTA software suite"
+					" will be updated accordingly at a later point in time.");
+			interpreter_xml_print(config,"</comment>");
+			interpreter_xml_print(config,"</module>");
+			check = dbi_result_next_row(qdat);
+		}
+	}
+	interpreter_xml_close_function(config,"self-check");
+
+}
+static void interpreter_fn_smbtad_report( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query;
+	dbi_result qdat;
+	if (command_data->argument_count != 1) {
+		printf("ERROR: 	smbtad-report requires one argument\n");
+		exit(1);
+	}
+
+	if ( strcmp(command_data->arguments[0],"full")==0) {
+		interpreter_xml_begin_function(config,"smbtad-report-full");
+	} else if ( strcmp(command_data->arguments[0],"short")==0) {
+		interpreter_xml_begin_function(config,"smbtad-report-short");
+	} else {
+		printf("ERROR: smbtad-report accepts either 'full' or\n");
+		printf("	'short' as arguments.\n");
+		exit(1);
+	}
+	query = talloc_asprintf(ctx,
+			"SELECT * FROM status;");
+	qdat = dbi_conn_query( config->DBIconn,
+			query);
+	dbi_result_first_row(qdat);
+
+	query = talloc_asprintf(ctx,
+			"	<smbtad_version>%s</smbtad_version>\n",
+			dbi_result_get_string_idx(qdat,2));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<database_version>%s</database_version>\n",
+			dbi_result_get_string_idx(qdat,3));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<client_port>%i</client_port>\n",
+			dbi_result_get_int_idx(qdat,4));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<unix_socket_clients>%i</unix_socket_clients>\n",
+			dbi_result_get_int_idx(qdat,5));
+	interpreter_xml_print(config, query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbname>%s</dbname>\n",
+			dbi_result_get_string_idx(qdat,6));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbhost>%s</dbhost>\n",
+			dbi_result_get_string_idx(qdat,7));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbuser>%s</dbuser>\n",
+			dbi_result_get_string_idx(qdat,8));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<dbdriver>%s</dbdriver>\n",
+			dbi_result_get_string_idx(qdat,9));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<maintenance_timer_str>%s</maintenance_timer_str>\n",
+			dbi_result_get_string_idx(qdat,10));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<maintenance_run_time>%s</maintenance_run_time>\n",
+			dbi_result_get_string_idx(qdat,11));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<debug_level>%i</debug_level>\n",
+			dbi_result_get_int_idx(qdat,12));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<precision>%i</precision>\n",
+			dbi_result_get_int_idx(qdat,13));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<daemon>%i</daemon>\n",
+			dbi_result_get_int_idx(qdat,14));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<use_db>%i</use_db>\n",
+			dbi_result_get_int_idx(qdat,15));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<config_file>%s</config_file>\n",
+			dbi_result_get_string_idx(qdat,16));
+	interpreter_xml_print(config,query);
+
+	query = talloc_asprintf(ctx,
+			"	<smbtad_ip>%s</smbtad_ip>\n",
+			dbi_result_get_string_idx(qdat,17));
+	if ( strcmp(command_data->arguments[0],"full")==0) {
+		interpreter_xml_close_function(config,"smbtad-report-full");
+	} else if ( strcmp(command_data->arguments[0],"short")==0) {
+		interpreter_xml_close_function(config,"smbtad-report-short");
+	} 
+}
+
+
+static void interpreter_fn_total( TALLOC_CTX *ctx,
+		struct interpreter_command *command_data,
+		struct interpreter_object *obj_struct,
+		struct configuration_data *config)
+{
+	char *query, *xmldata = NULL;
+	dbi_result qdat;
+	long long sum;
 	if (command_data->argument_count != 1) {
 		printf("ERROR: function total expects one argument.\n");
 		exit(1);
@@ -1492,21 +1961,16 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 	interpreter_xml_begin_function(config,"total");
 
 	if (strcmp(command_data->arguments[0],"rw") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from read where %s;",
-			obj_struct->sql);
-		query2 = talloc_asprintf(ctx,
-			"select SUM(length) from write where %s;",
-			obj_struct->sql);
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"(vfs_id = '%i' OR vfs_id = '%i') AND %s;",
+			vfs_id_read, vfs_id_write, obj_struct->sql);
 
-		qdat = sql_query(ctx, config,query1);
-		sum = strtoull( result_get_element(ctx,0,qdat),
+		qdat = sql_query(ctx, config,query);
+		sum = strtoll( result_get_element(ctx,0,qdat),
 				NULL, 0);
 		const char *errf;
 		dbi_conn_error(config->DBIconn, &errf);
-		qdat = sql_query(ctx, config, query2);
-		sum = sum + strtoull(result_get_element(ctx,0,qdat),
-				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes transfered %s.",
 			obj_struct->output_term);
@@ -1515,12 +1979,13 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			common_make_human_readable(ctx,sum));
 		
 	} else if (strcmp(command_data->arguments[0],"r") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from read where %s;",
-			obj_struct->sql);
-		qdat = sql_query(ctx, config,query1);
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_read, obj_struct->sql);
+		qdat = sql_query(ctx, config,query);
 		
-		sum = strtoull(result_get_element(ctx,0,qdat),
+		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes read %s.",
@@ -1530,11 +1995,12 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 			common_make_human_readable(ctx,sum));
 
 	} else if (strcmp(command_data->arguments[0],"w") == 0) {
-		query1 = talloc_asprintf(ctx,
-			"select SUM(length) from write where %s;",
-			obj_struct->sql);
-		qdat = sql_query(ctx, config,query1);
-		sum = strtoull(result_get_element(ctx,0,qdat),
+		query = talloc_asprintf(ctx,
+			"SELECT SUM(length) FROM data WHERE "
+			"vfs_id = '%i' AND %s;",
+			vfs_id_write, obj_struct->sql);
+		qdat = sql_query(ctx, config,query);
+		sum = strtoll(result_get_element(ctx,0,qdat),
 				NULL,0);
 		xmldata = talloc_asprintf(ctx,
 			"Total number of bytes written %s.",
@@ -1552,11 +2018,14 @@ void interpreter_fn_total( TALLOC_CTX *ctx,
 	interpreter_xml_close_function(config,"total");
 }
 
+
+
 char *interpreter_return_timestamp_now(TALLOC_CTX *ctx)
 {
 	struct tm *tmp;
 	time_t now;
 	char *outstr = talloc_array(ctx,char,200);
+	if (outstr == NULL) printf("ERROR!");
 	now = time(NULL);
 	tmp = localtime(&now);
 	strftime(outstr,199,"%Y-%m-%d %T",tmp);
@@ -1575,7 +2044,7 @@ char *interpreter_return_timestamp_now_minus_sec(TALLOC_CTX *ctx,
         return outstr;
 }
 
-char *interpreter_return_timestamp(TALLOC_CTX *ctx,
+static char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	char *timestr)
 {
 	char *ret;
@@ -1627,16 +2096,20 @@ char *interpreter_return_timestamp(TALLOC_CTX *ctx,
 	exit(1);
 }	
 
-void interpreter_make_times( TALLOC_CTX *ctx,
+static void interpreter_make_times( TALLOC_CTX *ctx,
 	struct interpreter_object *obj_struct,
 	struct interpreter_command *command_data)
 {
+	struct tm tt;
+	char *tmpstr;
 	int arg_flag=0;
+
 	if (command_data->argument_count < 2) {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
 		obj_struct->to = talloc_asprintf(ctx,"1=1");
 		return;
 	}
+
 	switch(obj_struct->object) {
 	case INT_OBJ_FILE:
 	case INT_OBJ_SHARE:
@@ -1651,22 +2124,37 @@ void interpreter_make_times( TALLOC_CTX *ctx,
 
 
 	if (strcmp(command_data->arguments[0+arg_flag],"from")==0) {
+		tmpstr = interpreter_return_timestamp(
+				ctx,
+				command_data->arguments[1+arg_flag]);
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[1+arg_flag]));
+				tmpstr);
+		strptime( tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->from_t = mktime(&tt);
+
+		tmpstr = interpreter_return_timestamp(
+				ctx,
+				command_data->arguments[3+arg_flag]);
+
 		obj_struct->to = talloc_asprintf(ctx, "timestamp < '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[3+arg_flag]));
+				tmpstr);
+		strptime( tmpstr, "%Y-%m-%d %T",&tt);
+		obj_struct->to_t = mktime(&tt);
 	} else
 	if (strcmp(command_data->arguments[0+arg_flag],"since")==0) {
+		tmpstr = interpreter_return_timestamp(ctx,
+				command_data->arguments[1+arg_flag]);
 		obj_struct->from = talloc_asprintf(ctx, "timestamp > '%s'",
-			interpreter_return_timestamp(
-			ctx,
-			command_data->arguments[1+arg_flag]));
+				tmpstr);
+		strptime(tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->from_t = mktime(&tt);
+
+		tmpstr = interpreter_return_timestamp_now(ctx);
+
 		obj_struct->to = talloc_asprintf(ctx,"timestamp < '%s'",
-			interpreter_return_timestamp_now(ctx));
+				tmpstr);
+		strptime(tmpstr,"%Y-%m-%d %T",&tt);
+		obj_struct->to_t = mktime(&tt);
 	} else {
 		obj_struct->from = talloc_asprintf(ctx,"1=1");
 		obj_struct->to = talloc_asprintf(ctx,"1=1");
@@ -1674,7 +2162,7 @@ void interpreter_make_times( TALLOC_CTX *ctx,
 }
 
 
-void interpreter_run_command( TALLOC_CTX *ctx,
+static void interpreter_run_command( TALLOC_CTX *ctx,
 	struct interpreter_command *command_data,
 	struct interpreter_object *obj_struct,
 	struct configuration_data *config)
@@ -1687,7 +2175,7 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->object = INT_OBJ_FILE;
 		obj_struct->name = talloc_strdup(ctx,command_data->arguments[0]);
 		interpreter_make_times(ctx,obj_struct, command_data);
-		obj_struct->sql = talloc_asprintf(ctx,"%s and filename='%s' and "
+		obj_struct->sql = talloc_asprintf(ctx,"%s and string1='%s' and "
 			"%s and %s %s",
 					obj_struct->sql,
 					command_data->arguments[0],
@@ -1750,6 +2238,12 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 		obj_struct->output_term = talloc_asprintf(ctx, "globally");
 		interpreter_make_times(ctx,obj_struct, command_data);
 		break;
+	case INT_OBJ_SYSTEM:
+		obj_struct->object = INT_OBJ_SYSTEM;
+		obj_struct->name = talloc_strdup(ctx,"system");
+		obj_struct->sql = talloc_asprintf(ctx," 1= 1 ");
+		obj_struct->output_term = talloc_asprintf(ctx, "system");
+		break;
 	case INT_OBJ_TOTAL:
 		interpreter_fn_total(ctx, command_data, obj_struct,config);
 		break;
@@ -1762,6 +2256,9 @@ void interpreter_run_command( TALLOC_CTX *ctx,
         case INT_OBJ_LAST:
                 interpreter_fn_last_activity(ctx, command_data, obj_struct,config);
                 break;
+	case INT_OBJ_24H_USAGE:
+		interpreter_fn_24h_usage(ctx, command_data, obj_struct,config);
+		break;
 	case INT_OBJ_USAGE:
 		interpreter_fn_usage(ctx, command_data, obj_struct,config);
 		break;
@@ -1771,30 +2268,41 @@ void interpreter_run_command( TALLOC_CTX *ctx,
 	case INT_OBJ_THROUGHPUT:
 		interpreter_fn_throughput(ctx, command_data, obj_struct,config);
 		break;
+	case INT_OBJ_SMBTAD_REPORT:
+		interpreter_fn_smbtad_report(ctx, command_data, obj_struct, config);
+		break;
+	case INT_OBJ_SELF_CHECK:
+		interpreter_fn_self_check(ctx, command_data, obj_struct, config);
+		break;
+
 	}
 }
 
-int interpreter_translate_command(const char *cmd)
+static int interpreter_translate_command(const char *cmd)
 {
 	/* commands */
 	if (strcmp(cmd, "total") == 0) return INT_OBJ_TOTAL;
 	if (strcmp(cmd, "list") == 0) return INT_OBJ_LIST;
 	if (strcmp(cmd, "top") == 0) return INT_OBJ_TOP;
         if (strcmp(cmd, "last_activity")==0) return INT_OBJ_LAST;
-	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
+	if (strcmp(cmd, "24h_usage") == 0) return INT_OBJ_24H_USAGE;
 	if (strcmp(cmd, "search") == 0) return INT_OBJ_SEARCH;
 	if (strcmp(cmd, "throughput") == 0) return INT_OBJ_THROUGHPUT;
+	if (strcmp(cmd, "smbtad-report") == 0) return INT_OBJ_SMBTAD_REPORT;
+	if (strcmp(cmd, "self-check") == 0) return INT_OBJ_SELF_CHECK;
+	if (strcmp(cmd, "usage") == 0) return INT_OBJ_USAGE;
 	/* objects */
 	if (strcmp(cmd, "share") == 0) return INT_OBJ_SHARE;
 	if (strcmp(cmd, "user") == 0) return INT_OBJ_USER;
 	if (strcmp(cmd, "file") == 0) return INT_OBJ_FILE;
 	if (strcmp(cmd, "domain") == 0) return INT_OBJ_DOMAIN;
 	if (strncmp(cmd, "global",6) == 0) return INT_OBJ_GLOBAL;
+	if (strncmp(cmd, "system",6) == 0) return INT_OBJ_SYSTEM;
 	return -1;
 }
 
 
-char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
+static char *interpreter_step( TALLOC_CTX *ctx, char *go_through,
 		struct interpreter_command *command_data,
 		struct configuration_data *config)
 {
@@ -1956,6 +2464,7 @@ void interpreter_command_help()
 		"				file FILE.\n");
 	printf("domain	DOMAIN			Run a query over the\n"
 		"				domain DOMAIN\n");
+	printf("system				Run a system command.\n");
 	printf("-----------------------------------------------------\n");
 	printf("COMMAND can be:\n");
 	printf("total 	[r][w][rw]		Get the total read(r),\n"
@@ -1974,8 +2483,9 @@ void interpreter_command_help()
         printf("            			List the last NUM \n"
 		"				activities from the \n");
         printf("                                specified object.\n");
-	printf("usage	[r][w][rw]		Show usage statistics\n"
+	printf("24h_usage	[r][w][rw]	Show usage statistics\n"
 		"				on an object\n");
+	printf("				by creating a virtual day.\n");
 	printf("search 	[string]		Does a search for STRING\n");
 	printf("				over the whole database.\n");
 	printf("throughput 	[num]\n");
@@ -1983,5 +2493,17 @@ void interpreter_command_help()
 	printf("	[r][w][rw]\n		Calculates the data throughput\n");
 	printf("				of the given object of the last\n");
 	printf("				[num] seconds, minutes, or days.\n");
+	printf("----------------------------------------------------------\n");
+	printf("Commands to be run with 'system' as object:\n");
+	printf("smbtad-report [full|short]	print a report of smbtads\n");
+	printf("				configuration, either a 'full'\n");
+	printf("				report or a 'short' report to\n");
+	printf("				be used for developers in bugs.\n");
+	printf("self-check [online|offline]	run a self-check function, \n");
+	printf("				when online, use online resources\n");
+	printf("				to check wether a new version of\n");
+	printf("				SMBTA is available.\n");
+
+
 
 };

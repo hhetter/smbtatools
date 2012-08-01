@@ -40,4 +40,4 @@
 #include <talloc.h>
 #include "../../../iniparser3.0b/src/iniparser.h"
 
-void smbta_convert();
+void smbta_convert(struct configuration_data *c);

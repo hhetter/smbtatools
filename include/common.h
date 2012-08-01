@@ -67,11 +67,20 @@ enum IntCommands {
         INT_OBJ_LIST,
         INT_OBJ_TOP,
         INT_OBJ_GLOBAL,
+	INT_OBJ_SYSTEM,
+	INT_OBJ_SMBTAD_REPORT,
+	INT_OBJ_SELF_CHECK,
 	INT_OBJ_DOMAIN,
         INT_OBJ_LAST,
-        INT_OBJ_USAGE,
+        INT_OBJ_24H_USAGE,
+	INT_OBJ_USAGE,
 	INT_OBJ_SEARCH,
 	INT_OBJ_THROUGHPUT};
+
+enum GFXcommands {
+	SMBTA_GFX_R,
+	SMBTA_GFX_W,
+	SMBTA_GFX_RW};
 
 
 /*
@@ -80,7 +89,7 @@ enum IntCommands {
  */
 long long int common_myatoi( char *num);
 int common_load_key_from_file( struct configuration_data *c);
-char *common_make_human_readable( TALLOC_CTX *ctx, unsigned long long z );
+char *common_make_human_readable( TALLOC_CTX *ctx, long long z );
 int common_connect_socket( const char *hostname,int iport );
 char *common_create_header( TALLOC_CTX *ctx, const char *state_flags, size_t data_len);
 void common_write_data( char *header, char *data, int dlength, int _socket);

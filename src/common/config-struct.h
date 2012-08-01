@@ -11,6 +11,7 @@ enum smbta_monitor_object {
         SMBTA_USER,
         SMBTA_FILE,
 	SMBTA_DOMAIN,
+	SMBTA_GLOBAL,
 	SMBTA_NONE
 };
 
@@ -57,6 +58,10 @@ struct configuration_data {
 	char *dbdriver;
 	/* password of the user */
 	char *dbpassword;
+
+	/* for SQLITE support by DBI */
+	char *dbpath;
+
 	/* DBI connection */
 	dbi_conn DBIconn;
 
@@ -77,6 +82,12 @@ struct configuration_data {
 	int timer;
 	char *rrdtool_setup;
 
+	// for monitor-gen
+
+	char *path;
+	int monitor_gen_socket;
+	int monitor_gen_socket_cli;
+	int dryrun;
 };
 
 

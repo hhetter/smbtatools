@@ -1,8 +1,22 @@
-<div id="<%=@divname%>" class ="defined_function">
-  <%=link_to image_tag('function-printview.png', :id=> "printview_function_" + @divname, :class => "printview_function", :onmouseover => "highlightPrintview('#{@divname}')", :onmouseout => "resetPrintview('#{@divname}')"), {:controller => "functions", :action => "printview", :cmd => @cmd}, :target => "_blank" %>
-  <%=image_tag('function-refresh.png', :id=> "refresh_function_" + @divname, :class => "refresh_function",:onmouseover => "highlightRefresh('#{@divname}')", :onmouseout => "resetRefresh('#{@divname}')",  :onclick => "refreshFunction('#{@divname}')")%>
-  <%=image_tag('function-close.png', :id=> "close_function_" + @divname, :class => "close_function",:onmouseover => "highlightClose('#{@divname}')", :onmouseout => "resetClose('#{@divname}')",  :onclick => "closeFunction('#{@divname}')")%>
-  <div id="spinner_function_<%=@divname%>" class="spinner"><%=image_tag('spinner.gif')%>  </div>
-  <%= @output %>
-  <%=hidden_field_tag "function_"+@divname, @cmd%>
+<div id="<%=  @divname %>" class ="defined_function">
+  <%= select_tag "file_format_" + @divname, options_for_select(["HTML", "Text"], @file_format), :class => "file_format",
+    :onchange => "formatOnClickChange('#{@divname}')" %>
+  <%= link_to image_tag('function-printview.png', :id=> "printview_function_" + @divname, :class => "printview_function",
+    :onmouseover => "highlightPrintview('#{@divname}')", :onmouseout => "resetPrintview('#{@divname}')"),
+    {:controller => "functions", :action => "printview", :cmd => @cmd}, :target => "_blank" %>
+  <%= link_to image_tag("function-save.png", :id => "save_function_" + @divname, :class => "save_function",
+    :onmouseover => "highlightSave('#{@divname}')", :onmouseout => "resetSave('#{@divname}')"),
+    {:controller => "functions", :action => "save_function", :cmd => @cmd} %>
+  <%= image_tag('function-refresh.png', :id=> "refresh_function_" + @divname, :class => "refresh_function",
+    :onmouseover => "highlightRefresh('#{@divname}')", :onmouseout => "resetRefresh('#{@divname}')",
+    :onclick => "refreshFunction('#{@divname}')") %>
+  <%= image_tag('function-close.png', :id=> "close_function_" + @divname, :class => "close_function",
+    :onmouseover => "highlightClose('#{@divname}')", :onmouseout => "resetClose('#{@divname}')",
+    :onclick => "closeFunction('#{@divname}')") %>
+  <div id="spinner_function_<%= @divname %>" class="spinner_function">
+    <%= image_tag('spinner.gif') %>
+  </div>
+  <br/>
+  <%= @output.html_safe %>
+  <%= hidden_field_tag "function_" + @divname, @cmd %>
 </div>

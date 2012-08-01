@@ -1,0 +1,23 @@
+Change Settings for: <br/>
+<%= @user.username %>
+<%= form_for @user do |f| %>
+  <p>
+    <%= f.label :username %><br />
+    <%= f.text_field :username %>
+  </p>
+  <p>
+    <%= f.label :password %><br />
+    <%= f.password_field :password %>
+  </p>
+  <p>
+    <%= f.label :password_confirmation %><br />
+    <%= f.password_field :password_confirmation %>
+  </p>
+  <%if @user.admin == true%>
+    <p>
+      <%= f.label :admin %><br/>
+      <%= f.check_box :admin %>
+    </p>
+  <% end %>
+  <p class="button"><%= f.submit %></p>
+<% end %>

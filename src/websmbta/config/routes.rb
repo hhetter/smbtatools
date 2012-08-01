@@ -1,8 +1,14 @@
 Smbtaquery::Application.routes.draw do
+  get "sessions/new"
+
+  get "users/new"
+
   get "functions/start_function"
   get "functions/refresh_function"
   get "functions/printview_function"
   get "functions/printview"
+  get "functions/save_function"
+  get "functions/delete_function"
   get "overview/index"
   get "overview/get_domains"
   get "overview/refresh_domains"
@@ -10,9 +16,23 @@ Smbtaquery::Application.routes.draw do
   get "overview/get_shares_and_users"
   get "overview/get_files"
   get "overview/refresh_files"
-  get "config/general"
+  get "overview/temp_functions"
+  get "config" => "config#general", :as => "config"
+  get "users/show"
+  get "users/edit_user"
+  get "users/edit_settings"
+  get "users/delete"
+  get "functions/global_search"
+  get "functions/global_search_refresh"
+  #get "users/new"
   post "config/save"
 
+  get "log_out" => "sessions#destroy", :as => "log_out"
+	get "log_in" => "sessions#new", :as => "log_in"
+	post "sign_up" => "users#new", :as => "sign_up"
+  root :to => "sessions#new"
+	resources :users
+	resources :sessions
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -62,7 +82,7 @@ Smbtaquery::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "config#general"
+  #root :to => "config#general"
 
   # See how all your routes lay out with "rake routes"
 

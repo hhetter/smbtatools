@@ -1,9 +1,9 @@
 /*
- * smbtamonitor
- * real-time monitor for samba traffic analyzer
+ * rrddriver
+ * builds a rrdtool database from smbta data
  *
  * Copyright (C) Michael Haefner, 2010
- * Copyright (C) Holger Hetterich, 2011
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -23,22 +23,46 @@
 #include <stdio.h>
 pthread_t thread;
 
+struct signalstruct {
+	        int pid;
+		        int socket;
+};
+
+struct signalstruct signal_data;
+
 
 int configuration_check_configuration( struct configuration_data *c );
+void configuration_create_db(struct configuration_data *c);
 
 
-void configuration_show_help()
+void catch_signal(int z)
 {
-        printf("smbtamonitor version %s\n", SMBTAMONITOR_VERSION);
+        printf("Closing socket and cleanup...\n\n");
+        close(signal_data.socket);
+        char *delstr = talloc_asprintf(NULL,"/var/tmp/smbtamonitor-gen-socket-%i",
+		signal_data.pid);
+        remove(delstr);
+        talloc_free(delstr);
+        exit(0);
+}
+
+
+
+
+static void configuration_show_help()
+{
+        printf("smbtamonitor-gen version %s\n", SMBTAMONITOR_VERSION);
         printf("(C)opyright 2010 by Michael Haefner\n");
 	printf("(C)opyright 2010 by Benjamin Brunner\n");
         printf("(C)opyright 2010 by Holger Hetterich\n");
+	printf("(C)opyright 2011 by Nanuk Krinner\n");
         printf("%s\n", SMBTA_LICENSE);
         printf("\n");
         printf("-i      --inet-port <num>       Set the port-number to  \n");
         printf("                                use to <num>.\n");
-        printf("-h      --host <string>         Define the host name to \n");
-        printf("                                connect to.\n");
+	printf("-h      --host <string>		Set the host name to connect to.\n");
+	printf("-n	--unix-domain-socket	Use a unix domain socket to \n");
+	printf("				communicate with smbtad.\n");
         printf("-d      --debug-level <num>     Set the debug level to work\n");
         printf("                                with to <num>. Default: 0\n");
         printf("-c      --config-file <file>    Load the configuration from\n");
@@ -47,34 +71,43 @@ void configuration_show_help()
 	printf("-u	--user <string>		Specify a user to monitor.\n");
 	printf("-f	--file <string>		Specify a file to monitor.\n");
 	printf("-g	--global		Global mode, run over the full\n");
-	printf("-D	--domain <string>	Specify a domain to monitor.\n");
 	printf("				data set.\n");
-	printf("-n	--unix-domain-socket	Use a unix domain socket to\n");
-	printf("				connect to smbtad.\n");
-	printf("-k	--keyfile		Read a encryption key from given\n");
-	printf("				file.\n");
-	printf("-I 	--identify		0 or 1. If 0, no identification\n");
-	printf("				is done. Default is 1.\n");
+	printf("-D	--domain		Specify a domain to monitor.\n");
+	printf("-k	--keyfile		Read encryption key from given file.\n");
+	printf("-I	--identify		0 or 1. if 0, no identification is done.\n");
+	printf("				Default is 0.\n");
+	printf("-p	--path			Define the path for the\n");
+	printf("				unix-domain socket to be used\n");
+	printf("				for client communication.\n");
+	printf("				Default: /var/tmp/\n");
+	printf("-x	--dryrun		Don't connect to smbta, instead\n");
+	printf("				deliver random values to the client.\n");
+	printf("				Used for offline testing.\n");
         printf("\n");
 }
 
 /**
  * Initialize default values of the configuration.
  */
-void configuration_define_defaults( struct configuration_data *c )
+static void configuration_define_defaults( struct configuration_data *c )
 {
         c->port = 3390;
         c->host = NULL;
         c->config_file = NULL;
         c->debug_level = 0;
         c->keyfile =NULL;
+	c->timer = 10;
+	c->database = strdup( "database_rrd" );
 	c->unix_socket = 0;
-	c->identify = 1;
-	c->object_type = SMBTA_NONE;
+	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
+	c->object_name = NULL;
+	c->identify = 0;
+	c->path = strdup ("/var/tmp/");
+	c->dryrun = 0;
 }
 
 /* load $HOME/.smbtatools/monitor.config */
-void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
+static void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
 {
         char *a=getenv("HOME");
         char *f = talloc_asprintf(ctx,"%s/.smbtatools/smbtatools.config",a);
@@ -86,7 +119,7 @@ void configuration_default_config(TALLOC_CTX *ctx,struct configuration_data *c)
         }
 }
 
-int configuration_load_config_file( struct configuration_data *c)
+static int configuration_load_config_file( struct configuration_data *c)
 {
         dictionary *Mydict;
         Mydict=iniparser_load( c->config_file);
@@ -94,11 +127,10 @@ int configuration_load_config_file( struct configuration_data *c)
 
         if ( Mydict == NULL ) return -1;
 
-        cc = iniparser_getstring( Mydict, "network:smbtad_port_number",NULL);
+        cc = iniparser_getstring( Mydict, "network:smbta_port_number",NULL);
         if (cc != NULL) c->port = (int) common_myatoi(cc);
-	cc = iniparser_getstring( Mydict, "network:unix_domain_socket",NULL);
-	if (cc != NULL) c->unix_socket = 1;
-        cc = iniparser_getstring( Mydict, "network:smbtad_host_name",NULL);
+
+        cc = iniparser_getstring( Mydict, "network:smbta_host_name",NULL);
         if (cc != NULL) c->host = strdup(cc);
         cc = iniparser_getstring(Mydict,"general:debug_level",NULL);
         if (cc != NULL) {
@@ -109,11 +141,15 @@ int configuration_load_config_file( struct configuration_data *c)
                 common_load_key_from_file( c);
         }
 	cc = iniparser_getstring(Mydict,"general:identify",NULL);
-	if (cc != NULL) c->identify = (int) common_myatoi(cc);
+	if (cc != NULL) {
+		c->identify = (int) common_myatoi(cc);
+	}
+	cc = iniparser_getstring(Mydict,"network:socket_path",NULL);
+	if (cc != NULL) c->path = strdup(cc);
         return 0;
 }
 
-char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
+static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c);
 
 
 int configuration_parse_cmdline( struct configuration_data *c,
@@ -145,23 +181,45 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			{ "user",1,NULL,'u'},
 			{ "domain",1,NULL,'D'},
 			{ "file",1,NULL,'f'},
-			{ "unix-domain-socket",0,NULL,'n'},
+			{ "global",0,NULL,'g'},
+			{ "unix-socket",0,NULL,'n'},
 			{ "identify",1,NULL,'I'},
+			{ "path",1,NULL,'p'},
+			{ "dryrun",0,NULL,'x'},
                         { 0,0,0,0 }
                 };
 
                 i = getopt_long( argc, argv,
-                        "s:u:f:d:i:c:k:h:?nI:D:", long_options, &option_index );
+                        "ns:u:f:d:i:c:k:h:?I:D:gp:x", long_options, &option_index );
 
                 if ( i == -1 ) break;
 
                 switch (i) {
+			case 'x':
+				c->dryrun = 1;
+				break;
+			case 'g':
+				c->object_type = 6;
+				c->object_name = strdup( "global");
+				break;
+			case 'D':
+				c->object_type = SMBTA_DOMAIN;
+				c->object_name = strdup( optarg );
+				break;
+				
 			case 'I':
 				c->identify = (int) common_myatoi( optarg );
 				break;
                         case 'i':
                                 c->port = (int) common_myatoi( optarg );
                                 break;
+			case 'r':
+				free(c->rrdtool_setup);
+				c->rrdtool_setup = strdup(optarg);
+				break;
+			case 'n':
+				c->unix_socket = 1;
+				break;
                         case 'h':
                                 c->host = strdup(optarg);
                                 break;
@@ -171,6 +229,9 @@ int configuration_parse_cmdline( struct configuration_data *c,
                         case 'c':
                                 c->config_file = strdup( optarg );
                                 break;
+			case 'b':
+				c->database = strdup(optarg);
+				break;
                         case 'k':
                                 c->keyfile = strdup( optarg);
                                 common_load_key_from_file(c);
@@ -178,10 +239,6 @@ int configuration_parse_cmdline( struct configuration_data *c,
 			case '?':
 				configuration_show_help();
 				exit(0);
-			case 'D':
-				c->object_type = SMBTA_DOMAIN;
-				c->object_name = strdup( optarg );
-				break;
 			case 's':
 				c->object_type = SMBTA_SHARE;
 				c->object_name = strdup( optarg );
@@ -190,12 +247,15 @@ int configuration_parse_cmdline( struct configuration_data *c,
 				c->object_type = SMBTA_USER;
 				c->object_name = strdup( optarg );
 				break;
-			case 'n':
-				c->unix_socket = 1;
-				break;
 			case 'f':
 				c->object_type = SMBTA_FILE;
 				c->object_name = strdup( optarg );
+				break;
+			case 't':
+				c->timer= (int) common_myatoi(optarg);
+				break;
+			case 'p':
+				c->path = strdup( optarg );
 				break;
                         default :
                                 printf("ERROR: unkown option.\n\n");
@@ -207,54 +267,63 @@ int configuration_parse_cmdline( struct configuration_data *c,
         configuration_default_config( runtime_mem, c);
         if (c->config_file != NULL)
                 configuration_load_config_file(c);
-        if (configuration_check_configuration(c)==-1) exit(1);
-	if (c->unix_socket != 1)
-        	c->socket = common_connect_socket( c->host, c->port );
-	else
+        if (c->dryrun==0 && configuration_check_configuration(c)==-1) exit(1);
+	if (c->dryrun==0 && c->unix_socket == 0)
+		c->socket = common_connect_socket( c->host, c->port );
+	else if (c->dryrun==0) {
 		c->socket = common_connect_unix_socket(
 			"/var/tmp/stadsocket_client");
+	}
+
+	char *fname = talloc_asprintf(NULL, "%ssmbtamonitor-gen-socket-%i",c->path,getpid());
+	c->monitor_gen_socket = network_create_unix_socket( fname );
+	talloc_free(fname);
+
+        /**
+	 *          * add a termination handler
+	 *                   */
+        signal_data.pid=getpid();
+        signal_data.socket=c->monitor_gen_socket;
+        signal( SIGINT, &catch_signal);
+	signal( SIGTERM, &catch_signal);
+	signal( SIGKILL, &catch_signal);
+
+
+
+	// At this point we'll block the process until our client
+	// connects
+	//
+	struct sockaddr_un *remote_unix;
+	socklen_t t=sizeof(*remote_unix);
+	c->monitor_gen_socket_cli = accept(c->monitor_gen_socket,
+			(struct sockaddr *) &remote_unix,
+			&t);
+	if ( c->monitor_gen_socket_cli == -1 ) {
+		printf("Connection to the client failed.\n");
+		exit(1);
+	}
+
+
 
 	monitor_list_init();
-        /* through all options, now run the query command */
-	pattern = configuration_generate_pattern(runtime_mem, c);
-        // network_register_monitor(MONITOR_TOTAL,"RW",pattern,"Total (Read/Write)",1,1,c);
-	int rmon = 0;
-	int wmon = 0;
-	rmon = network_register_monitor(MONITOR_READ,"R",pattern,"Total (Reading)",27,1,c);
-	wmon = network_register_monitor(MONITOR_WRITE,"W",pattern,"Total (Writing)",26 + 27,1,c);
-	network_register_monitor(MONITOR_LOG,"none",pattern,"Activity log",1,7,c);
-
-	/**
-	 * setup the read monitor to partner with the write monitor to
-	 * produce a total sum
-	 */
-	monitor_item_set_total( monitor_list_get_by_id(rmon),
-			1,1,
-			"Total (Read/Write)",
-			monitor_list_get_by_id(wmon));
-
+	if (c->dryrun==0) {
+		/* through all options, now run the query command */
+		pattern = configuration_generate_pattern(runtime_mem, c);
+        	network_register_monitor(MONITOR_READ,"NULL",pattern,c);
+		network_register_monitor(MONITOR_WRITE,"NULL",pattern,c);
+	}
 	/* run the networking thread */
 	pthread_create(&thread,NULL,(void *)&network_handle_data,(void *) c);
-	char *title;
-	title = talloc_asprintf(runtime_mem,
-		"SMBTAmonitor %s - object '%s' - hit any key to stop monitoring.",
-		SMBTAMONITOR_VERSION,
-		c->object_name);
-	visual_init(title);
-	monitor_list_initial_draw();
 	/* main loop 
+	 * FIXME: Add Keyboard handling here !!
 	 */
-	int key;
 	while (1 == 1) {
-		key = getch();
-		sleep(1);
-		if (key != ERR) break;
+		sleep( 100 );
 	}
 
 
 
         close(c->socket);
-	endwin();
         TALLOC_FREE(runtime_mem);
         return 0;
 }
@@ -263,30 +332,63 @@ int configuration_parse_cmdline( struct configuration_data *c,
 
 int configuration_check_configuration( struct configuration_data *c )
 {
+    
         if ( c->debug_level <0 || c->debug_level>10 ) {
                 printf("ERROR: debug level has to be between 0 and 10.\n");
                 return -1;
         }
-        if (c->host == NULL && c->unix_socket != 1) {
+        if (c->host == NULL && c->unix_socket == 0) {
                 printf("ERROR: please specify a hostname to connect to.\n");
                 return -1;
         }
-	if (c->identify <0 || c->identify > 1) {
-		printf("ERROR: please specify either 1 or 0 for identify.\n");
+	if (c->timer <= 0 ) {
+		printf("ERROR: timer for the update intervall is too short!\n");
 		return -1;
 	}
-	if (c->object_type == SMBTA_NONE) {
-		printf("ERROR: please specify an object to monitor.\n");
+
+
+	if (c->object_name == NULL) {
+		printf("ERROR: please specify at least one object. ( -f -s -g )\n");
 		return -1;
 	}
+
+	if (c->identify <0 || c->identify >1) {
+		printf("\nERROR: please specify either 1 or 0 for identify.\n");
+		return -1;
+	}
+
         return 0;
+}
+
+void configuration_create_db(struct configuration_data *c)
+{
+	FILE *db;
+	db = fopen(c->database,"r");
+	if (db != NULL) { fclose(db); return; }
+	char rrdbin[255] = "/usr/bin/rrdtool";
+	char fullstr[500];
+	int res = 0;
+	time_t starttime = time(NULL);
+	char timestr[255];
+	sprintf(timestr,"%ju",(uintmax_t) starttime);
+	sprintf(fullstr,"%s create %s -b %s -s %i %s",
+		rrdbin,
+		c->database,
+		timestr,
+		c->timer,
+		c->rrdtool_setup);
+
+	res = system( fullstr );
+	if (res == -1) {
+		printf("ERROR: error creating the database.\n");
+	}
 }
 
 /* 
  * This fills the filter pattern for the monitor by running identify,
  * and eventually filling more required patterns
  */
-char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
+static char *configuration_generate_pattern( TALLOC_CTX *ctx, struct configuration_data *c)
 {
 	/*
 	 * How the pattern is build:

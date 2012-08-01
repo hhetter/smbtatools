@@ -1,19 +1,41 @@
-<div id="shares_and_users" style="position:relative; float:left">
-  <div id="shares" style="position:relative;">
+<div id="shares_and_users">
+  <div id="shares">
     <table>
-      <tr><th>Shares</th></tr>
-      <tr><td><%=select_tag "sharelist", options_for_select(@shares, @share), :size => 7, :onclick => "shareOnClickChange()" %></td>
-        <td><%=image_tag('arrow.png', :alt => "List files", :title => "List files")%></td></tr>
+      <tr>
+        <th>Shares</th>
+      </tr>
+      <tr>
+        <td>
+          <%= select_tag "sharelist", options_for_select(@shares, @share), :size => 7,
+            :onclick => "shareOnClickChange()" %>
+        </td>
+        <td><%= image_tag('arrow.png', :alt => "List files", :title => "List files") %></td>
+      </tr>
     </table>
-    <div id="spinner_shares" class="spinner" style="display: none; float:right"><%=image_tag('spinner.gif')%></div>
-    <div id="share_diff" class="diff"><%=image_tag('diff.png')%></div>
-    <div id="spinner_getfiles" class="spinner" style="display: none; float:left"><%=image_tag('spinner.gif')%>  </div>
+    <div id="spinner_shares" class="spinner">
+      <%= image_tag('spinner.gif') %>
+    </div>
+    <div id="share_diff" class="diff">
+      <%=image_tag('diff.png')%>
+    </div>
+    <div id="spinner_getfiles" class="spinner">
+      <%=image_tag('spinner.gif')%>
+    </div>
   </div>
-  <div id="users" style="position:relative;">
+  <div id="users">
     <table>
-      <tr><th>Users</th></tr>
-      <tr><td><%= select_tag "userlist", options_for_select(@users, @user), :size => 6, :onclick => "shareOnClickChange()" %></td></tr>
+      <tr>
+        <th>Users</th>
+      </tr>
+      <tr>
+        <td>
+          <%= select_tag "userlist", options_for_select(@users, @user), :size => 6,
+            :onclick => "shareOnClickChange()" %>
+        </td>
+      </tr>
     </table>
-    <div id="user_diff" class="diff"><%=image_tag('diff.png')%></div>
+    <div id="user_diff" class="diff">
+      <%=image_tag('diff.png')%>
+    </div>
   </div>
 </div>
