@@ -46,8 +46,8 @@ public:
 
         unsigned long l_read_max, l_write_max, l_max, l_c_max; // Holds the max values to do the scaling for the graph
         unsigned long l_read_diff, l_write_diff; // Needed to calculate the interpolation steps
-	unsigned long thrputr;
-	unsigned long thrputw;
+        unsigned long thrputr;
+        unsigned long thrputw;
 
         //    QLinkedList<unsigned long> readlist, writelist; // Holds traffic values from dpoints
         QList<unsigned long> *readlist, *writelist; // Holds traffic values from dpoints

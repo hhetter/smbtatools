@@ -10,7 +10,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 
         i_max_index = 86400;
         i_s_count = 0;
-        i_stepsize=5;
+        i_stepsize=ldata->i_stepsize;
         i_x_os = 50; // Offset for x Graph
         i_y_os = 0; // Offset for y Graph
         //        i_x_d_size = 600;
@@ -320,12 +320,13 @@ void Graph::g_create_path(QList<unsigned long> readlist_in,
 
         ////
         // (Re)scale axes
-        xstring5 = QString(mhr((long long) (1.1*(l_max))));
-        xstring4 = QString(mhr((long long) (0.75*1.1*(l_max))));
-        xstring3 = QString(mhr((long long) (0.5*1.1*(l_max))));
-        xstring2 = QString(mhr((long long) (0.25*1.1*(l_max))));
-        xstring1 = QString(mhr((long long) (0*1.1*(l_max))));
-
+        if(l_max > 1024){
+                xstring5 = QString(mhr((long long) (1.1*(l_max))));
+                xstring4 = QString(mhr((long long) (0.75*1.1*(l_max))));
+                xstring3 = QString(mhr((long long) (0.5*1.1*(l_max))));
+                xstring2 = QString(mhr((long long) (0.25*1.1*(l_max))));
+                xstring1 = QString(mhr((long long) (0*1.1*(l_max))));
+        }
         /*
          * Call the paintEvent
          */
@@ -406,28 +407,21 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append(totalval);
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
-	QString what;
-        //what.append( "Host: "+(*hostString));
+        QString what;
+
         what.append( "Host: "+(ldata->hostString));
         //if (ldata->userString != "") {
         if (ldata->userString != "") {
-                //what.append(", monitoring User "+ *userString+".");
                 what.append(", monitoring User "+ ldata->userString+".");
-        //} else if (*shareString != "") {
-                } else if (ldata->shareString != "") {
-                //what.append(", monitoring Share "+ *shareString+ ".");
+        } else if (ldata->shareString != "") {
                 what.append(", monitoring Share "+ ldata->shareString+ ".");
-        //} else if (*domainString != "") {
-                } else if (ldata->domainString != "") {
-                //what.append(", monitoring Domain "+ *domainString+ ".");
+        } else if (ldata->domainString != "") {
                 what.append(", monitoring Domain "+ ldata->domainString+ ".");
-        //} else if (*fileString != "") {
-                } else if (ldata->fileString != "") {
-                //what.append(", monitoring File "+ *fileString+ ".");
+        } else if (ldata->fileString != "") {
                 what.append(", monitoring File "+ ldata->fileString+ ".");
-	} else what = "Dryrun mode, simulating traffic.";
+        } else what = "Dryrun mode, simulating traffic.";
 
-	painter.drawText(5,35, what);
+        painter.drawText(5,35, what);
         free(thrval1);
         free(thrval2);
         free(totalval);
