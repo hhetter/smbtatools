@@ -99,7 +99,6 @@ static void configuration_define_defaults( struct configuration_data *c )
 	c->timer = 10;
 	c->database = strdup( "database_rrd" );
 	c->unix_socket = 0;
-	c->rrdtool_setup = strdup( "DS:readwrite:GAUGE:1000:0:U DS:read:GAUGE:1000:0:U DS:write:GAUGE:1000:0:U RRA:AVERAGE:0:10:8640");
 	c->object_name = NULL;
 	c->identify = 0;
 	c->path = strdup ("/var/tmp/");
