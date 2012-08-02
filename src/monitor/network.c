@@ -1,7 +1,8 @@
 /*
  * smbtamonitor
- * real-time monitor for samba traffic analyzer
+ * real-time monitor for smb traffic analyzer
  *
+ * Copyright (C) Holger Hetterich, 2012
  * Copyright (C) Michael Haefner, 2010
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,16 +59,14 @@ int network_register_monitor( enum monitor_fn func,
         char *tosend, *data;
         tosend = talloc_asprintf(NULL,"~~0001%i%04i%s%s",
 			                func,(int) strlen(param),param,pattern);
-        char *body = connect_monitor(NULL,c,tosend);
-        data = result_get_monitor_element(NULL,0,body);
+        char *body = connect_monitor(tosend,c,tosend);
+        data = result_get_monitor_element(tosend,0,body);
         int retval = (int) common_myatoi(data);
 
 
 
 	monitor_list_add( (int) retval, func);	
 	talloc_free(tosend);
-	talloc_free(data);
-	talloc_free(body);
         return 1;
 }
 

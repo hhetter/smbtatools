@@ -7,7 +7,9 @@ smbtaquery and smbtamonitor
 Documentation
 -------------
 
-Documentation is available in the ./doc directory.
+Documentation is available in the smbta-guide, which is
+located at:
+https://wiki.samba.org/index.php/SMBTA
 
 How to build from Source
 ------------------------
