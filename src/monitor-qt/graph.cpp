@@ -92,8 +92,11 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
 
 }
 
-QList<long long> g_prepare_data(QList<unsigned long> getlist)
+QList<long long> Graph::g_prepare_data(QList<unsigned long> getlist)
 {
+
+
+
         for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)
         {
                 worklist.append((long long)getlist[i]);

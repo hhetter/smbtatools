@@ -6,6 +6,7 @@
 #include <QLinkedList>
 #include <QPoint>
 #include <QDebug>
+#include "../../include/version.h"
 
 class InstanceData : public QObject
 {
@@ -27,6 +28,8 @@ public:
         int i_stepsize;
     
         QList<unsigned long> readlist, writelist;
+
+        QString licenseString;
 
 signals:
 
