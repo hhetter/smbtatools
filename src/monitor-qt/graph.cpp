@@ -92,6 +92,20 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
 
 }
 
+QList<long long> g_prepare_data(QList<unsigned long> getlist)
+{
+        for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)
+        {
+                worklist.append((long long)getlist[i]);
+        }
+
+        return worklist;
+
+
+
+}
+
+
 
 /*
  * Get the size of the widget that contains the graph
@@ -121,17 +135,20 @@ int Graph::g_get_dp_offset()
 void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for the graph
 {
         int offset;
+        int i_scalefactor = 4;
         if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
-                offset=2*1;
+                offset=i_scalefactor*1;
         } else if (i_dp_number < 60) { /* a minute */
-                offset=2*2;
+                offset=i_scalefactor*2;
         } else if (i_dp_number < 300) { /* 5 minutes */
-                offset=2*5;
+                offset=i_scalefactor*5;
         } else if (i_dp_number < 600) { /* 10 minutes */
-                offset=2*10;
-        } else if (i_dp_number < 1800) { /* 10 minutes */
-                offset=2*50;
-        } else offset=2*200; /* anything else */
+                offset=i_scalefactor*10;
+        } else if (i_dp_number < 1800) { /* 30 minutes */
+                offset=i_scalefactor*50;
+        } else if (i_dp_number < 5400) { /* 90 minutes */
+                offset=i_scalefactor*200;
+        } else offset=2*1200; /* anything else */
 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
