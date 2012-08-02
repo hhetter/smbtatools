@@ -113,7 +113,7 @@ void MonitorForm::startmonitor()
 
 
                 //qDebug() << "startmonitor";
-                running=true;
+
 
                 timeClassW->timer->start();
 
@@ -164,7 +164,7 @@ void MonitorForm::startmonitor()
                 Progress->hide();
 
                 delete Progress;
-                running = false;
+
 
         }
 
@@ -178,7 +178,7 @@ void MonitorForm::connectSocket()
         if(isConnected){
 
 
-
+                running=true;
                 monitorSocket->connectToServer(ldata->socketString,
                                                QIODevice::ReadOnly);
                 //connect(timeClassW->timer, SIGNAL(timeout()),

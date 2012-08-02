@@ -21,6 +21,8 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
         ui->queryTypeButton->addItem("Global");
         ui->queryTypeButton->setCurrentIndex(0);
 
+        ui->licenseLabel->setText(ldata->licenseString);
+
         configString = new QString;
         hostString   = new QString;
         fileString   = new QString;

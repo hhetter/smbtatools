@@ -10,7 +10,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 
         i_max_index = 86400;
         i_s_count = 0;
-        i_stepsize=5;
+        i_stepsize=ldata->i_stepsize;
         i_x_os = 50; // Offset for x Graph
         i_y_os = 0; // Offset for y Graph
         //        i_x_d_size = 600;
@@ -92,6 +92,23 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
 
 }
 
+QList<long long> Graph::g_prepare_data(QList<unsigned long> getlist)
+{
+
+
+
+        for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)
+        {
+                worklist.append((long long)getlist[i]);
+        }
+
+        return worklist;
+
+
+
+}
+
+
 
 /*
  * Get the size of the widget that contains the graph
@@ -121,17 +138,20 @@ int Graph::g_get_dp_offset()
 void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for the graph
 {
         int offset;
+        int i_scalefactor = 4;
         if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
-                offset=2*1;
+                offset=i_scalefactor*1;
         } else if (i_dp_number < 60) { /* a minute */
-                offset=2*2;
+                offset=i_scalefactor*2;
         } else if (i_dp_number < 300) { /* 5 minutes */
-                offset=2*5;
+                offset=i_scalefactor*5;
         } else if (i_dp_number < 600) { /* 10 minutes */
-                offset=2*10;
-        } else if (i_dp_number < 1800) { /* 10 minutes */
-                offset=2*50;
-        } else offset=2*200; /* anything else */
+                offset=i_scalefactor*10;
+        } else if (i_dp_number < 1800) { /* 30 minutes */
+                offset=i_scalefactor*50;
+        } else if (i_dp_number < 5400) { /* 90 minutes */
+                offset=i_scalefactor*200;
+        } else offset=2*1200; /* anything else */
 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
@@ -320,12 +340,13 @@ void Graph::g_create_path(QList<unsigned long> readlist_in,
 
         ////
         // (Re)scale axes
-        xstring5 = QString(mhr((long long) (1.1*(l_max))));
-        xstring4 = QString(mhr((long long) (0.75*1.1*(l_max))));
-        xstring3 = QString(mhr((long long) (0.5*1.1*(l_max))));
-        xstring2 = QString(mhr((long long) (0.25*1.1*(l_max))));
-        xstring1 = QString(mhr((long long) (0*1.1*(l_max))));
-
+        if(l_max > 1024){
+                xstring5 = QString(mhr((long long) (1.1*(l_max))));
+                xstring4 = QString(mhr((long long) (0.75*1.1*(l_max))));
+                xstring3 = QString(mhr((long long) (0.5*1.1*(l_max))));
+                xstring2 = QString(mhr((long long) (0.25*1.1*(l_max))));
+                xstring1 = QString(mhr((long long) (0*1.1*(l_max))));
+        }
         /*
          * Call the paintEvent
          */
@@ -406,28 +427,21 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append(totalval);
         thrstr.append("/min");
         painter.drawText(5,15, thrstr);
-	QString what;
-        //what.append( "Host: "+(*hostString));
+        QString what;
+
         what.append( "Host: "+(ldata->hostString));
         //if (ldata->userString != "") {
         if (ldata->userString != "") {
-                //what.append(", monitoring User "+ *userString+".");
                 what.append(", monitoring User "+ ldata->userString+".");
-        //} else if (*shareString != "") {
-                } else if (ldata->shareString != "") {
-                //what.append(", monitoring Share "+ *shareString+ ".");
+        } else if (ldata->shareString != "") {
                 what.append(", monitoring Share "+ ldata->shareString+ ".");
-        //} else if (*domainString != "") {
-                } else if (ldata->domainString != "") {
-                //what.append(", monitoring Domain "+ *domainString+ ".");
+        } else if (ldata->domainString != "") {
                 what.append(", monitoring Domain "+ ldata->domainString+ ".");
-        //} else if (*fileString != "") {
-                } else if (ldata->fileString != "") {
-                //what.append(", monitoring File "+ *fileString+ ".");
+        } else if (ldata->fileString != "") {
                 what.append(", monitoring File "+ ldata->fileString+ ".");
-	} else what = "Dryrun mode, simulating traffic.";
+        } else what = "Dryrun mode, simulating traffic.";
 
-	painter.drawText(5,35, what);
+        painter.drawText(5,35, what);
         free(thrval1);
         free(thrval2);
         free(totalval);

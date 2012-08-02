@@ -46,11 +46,12 @@ public:
 
         unsigned long l_read_max, l_write_max, l_max, l_c_max; // Holds the max values to do the scaling for the graph
         unsigned long l_read_diff, l_write_diff; // Needed to calculate the interpolation steps
-	unsigned long thrputr;
-	unsigned long thrputw;
+        unsigned long thrputr;
+        unsigned long thrputw;
 
         //    QLinkedList<unsigned long> readlist, writelist; // Holds traffic values from dpoints
         QList<unsigned long> *readlist, *writelist; // Holds traffic values from dpoints
+        QList<long long> readlist_w, writelist_w, worklist;
         QPointF readp, writep;
         QPolygonF readpg, writepg; //Stores the QPointFs for the pQPinterpaths
         QString xstring1, xstring2, xstring3, xstring4, xstring5; // Graph axis labels
@@ -69,6 +70,7 @@ signals:
 public slots:
 
         void g_receivelist(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in);
+        QList<long long> g_prepare_data(QList<unsigned long> getlist);
         void g_get_w_size(); // Get the size of the widget that contains the graph
         int  g_get_dp_offset(); // Get the datapoint offset to t=0
         void g_change_dp_num(int i_delta); // Change the number of datapoints for the graph

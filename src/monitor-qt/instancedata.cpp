@@ -24,6 +24,8 @@ InstanceData::InstanceData(QObject *parent) :
     pidString ="";
     socketString="";
     socketConnected = false;
+
+    licenseString = SMBTA_LICENSE;
         
 
 }
