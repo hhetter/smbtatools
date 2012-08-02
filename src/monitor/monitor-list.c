@@ -1,7 +1,6 @@
 #include "include/includes.h"
 
 pthread_mutex_t monitor_list_lock;
-unsigned long int global_rw,global_read, global_write;
 
 /*
  * For monitor_list, we don't use talloc. We
@@ -15,9 +14,6 @@ unsigned long int global_rw,global_read, global_write;
  * init the monitor system */
 void monitor_list_init( ) {
         pthread_mutex_init(&monitor_list_lock, NULL);
-	global_rw = 0;
-	global_read = 0;
-	global_write = 0;
 }
 
 
@@ -104,14 +100,10 @@ void monitor_list_change_results( char *data,
         entry->changed = 1;
 	switch(entry->type) {
 	case MONITOR_READ: ;
-		global_read = global_read + atol(tmp);
-		global_rw = global_rw + atol(tmp);
 		str = talloc_asprintf(ctx,"R:%li#",atol(tmp));
 		send( c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
 	case MONITOR_WRITE: ;
-		global_write = global_write + atol(tmp);
-		global_rw = global_rw + atol(tmp);
 		str = talloc_asprintf(ctx,"W:%li#",atol(tmp));
 		send (c->monitor_gen_socket_cli,str,strlen(str),0);
 		break;
@@ -121,25 +113,6 @@ void monitor_list_change_results( char *data,
 	talloc_free(ctx);
 }
 
-void monitor_list_push_values(struct configuration_data *c)
-{
-	pthread_mutex_lock(&monitor_list_lock);
-	char rrdbin[255] = "/usr/bin/rrdtool";
-	char dbstring[255];
-	int res;
-	sprintf(dbstring,"%s update %s %ju:%lu:%lu:%lu",rrdbin,c->database,(uintmax_t) time(NULL),
-		global_rw,global_read,global_write);
-	
-        res = system(dbstring);
-	if (res == -1) {
-		printf("ERROR: Updating the database!");
-		exit(-1);
-	}
-	global_rw = 0;
-	global_read = 0;
-	global_write = 0;
-	pthread_mutex_unlock(&monitor_list_lock);
-}
 
 void monitor_list_print_changed() {
 	pthread_mutex_lock(&monitor_list_lock);
