@@ -17,7 +17,7 @@ InstanceData::InstanceData(QObject *parent) :
     portString = "";
     hostString = "";
 
-    idCheck = false;
+    idCheck     = false;
     dryrunCheck = false;
 
     // Process information

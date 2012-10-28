@@ -12,12 +12,13 @@ SET( smbtamonitor-qt_SRC  main.cpp
                           processrunner.cpp
 			  dpoint.cpp
 			  graph.cpp
-                          instancedata.cpp)
+                          instancedata.cpp
+                          wmanager.cpp)
 
 
 
 
-qt4_wrap_ui( smbtamonitor-qt_ui configform.ui frontend.ui monitorform.ui )
+qt4_wrap_ui( smbtamonitor-qt_ui configform.ui frontend.ui monitorform.ui wmanager.ui)
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 ADD_EXECUTABLE( smbtamonitor-qt ${smbtamonitor-qt_SRC} ${smbtamonitor-qt_ui})
 TARGET_LINK_LIBRARIES( smbtamonitor-qt ${LIBDBI_LIBRARIES} ${TALLOC_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} )

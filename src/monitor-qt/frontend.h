@@ -8,6 +8,7 @@
 
 #include "configform.h"
 #include "monitorform.h"
+#include "wmanager.h"
 #include "instancedata.h"
 
 namespace Ui {
@@ -25,6 +26,8 @@ public:
     InstanceData *idata;
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
+    WManager  *wManager;
+
 
 public slots:
     void fr_setTestLabel();

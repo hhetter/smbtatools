@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     timeclass.cpp \
     dpoint.cpp \
     graph.cpp \
-    instancedata.cpp
+    instancedata.cpp \
+    wmanager.cpp
 
 HEADERS  += frontend.h \
     configform.h \
@@ -31,11 +32,13 @@ HEADERS  += frontend.h \
     visual.h \
     dpoint.h \
     graph.h \
-    instancedata.h
+    instancedata.h \
+    wmanager.h
 
 FORMS    += frontend.ui \
     configform.ui \
-    monitorform.ui
+    monitorform.ui \
+    wmanager.ui
 
 
 

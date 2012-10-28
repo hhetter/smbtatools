@@ -12,7 +12,8 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
 
         ui->loadButton->hide();
         ui->saveButton->hide();
-        //ui->dryrunCheckbox->hide(); we want it visible
+        //ui->dryrunCheckbox->hide(); //we want it visible
+        ui->dryrunCheckbox->setChecked(true);
 
         ui->queryTypeButton->addItem("User");
         ui->queryTypeButton->addItem("File");
@@ -98,7 +99,7 @@ void ConfigForm::cf_readconfig(){
 
         *configString = "";
         *hostString   = "";
-        *fileString = "";
+        *fileString   = "";
         *portString   = "";
         *shareString  = "";
         *userString   = "";

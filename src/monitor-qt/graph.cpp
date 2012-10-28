@@ -367,8 +367,8 @@ void Graph::paintEvent(QPaintEvent *){
         painter.scale(1.0,1.0);
         painter.translate(i_x_os,i_y_os);
         QRect graphbr(0,0,i_x_d_size,i_y_d_size);
-        QRect writerect(50,i_y_d_size+10,10,10);
-        QRect readrect(135, i_y_d_size+10, 10, 10);
+        QRect writerect(50+50,i_y_d_size+10,10,10);
+        QRect readrect(135+50, i_y_d_size+10, 10, 10);
         QPen writepen(Qt::blue, 1);
         QPen readpen(Qt::red, 1);
 
@@ -396,22 +396,22 @@ void Graph::paintEvent(QPaintEvent *){
         paintertext.drawText(0,10, xstring5);
 
         //Draw horizontal lines on the graph
-        painter.drawLine(0, 0,
-                         i_x_d_size, 0);
-        painter.drawLine(0, (i_y_d_size*0.25),
-                         i_x_d_size, (i_y_d_size*0.25));
-        painter.drawLine(0, (i_y_d_size*0.50),
-                         i_x_d_size, (i_y_d_size*0.50));
-        painter.drawLine(0, (i_y_d_size*0.75),
-                         i_x_d_size, (i_y_d_size*0.75));
-        painter.drawLine(0, (i_y_d_size),
-                         i_x_d_size, i_y_d_size);
-        painter.drawLine(0, 0,
-                         0,   i_y_d_size); // draws left border of the rect black
+        painter.drawLine(50, 0,
+                         i_x_d_size+50, 0);
+        painter.drawLine(50, (i_y_d_size*0.25),
+                         i_x_d_size+50, (i_y_d_size*0.25));
+        painter.drawLine(50, (i_y_d_size*0.50),
+                         i_x_d_size+50, (i_y_d_size*0.50));
+        painter.drawLine(50, (i_y_d_size*0.75),
+                         i_x_d_size+50, (i_y_d_size*0.75));
+        painter.drawLine(50, (i_y_d_size),
+                         i_x_d_size+50, i_y_d_size);
+        painter.drawLine(50, 0,
+                         50,   i_y_d_size); // draws left border of the rect black
 
 
-        painter.drawText(65,i_y_d_size+20, "Write traffic");
-        painter.drawText(150,i_y_d_size+20, "Read traffic");
+        painter.drawText(65+50,i_y_d_size+20, "Write traffic");
+        painter.drawText(150+50,i_y_d_size+20, "Read traffic");
         painter.drawText(i_x_d_size-40,20+(i_y_d_size), t_string);
         painter.drawText(i_x_d_size/2,20+(i_y_d_size), t_i_string);
         painter.drawText(i_x_d_size-180,15, title);
@@ -426,7 +426,7 @@ void Graph::paintEvent(QPaintEvent *){
         thrstr.append("/min Total:");
         thrstr.append(totalval);
         thrstr.append("/min");
-        painter.drawText(5,15, thrstr);
+        painter.drawText(5+50,15, thrstr);
         QString what;
 
         what.append( "Host: "+(ldata->hostString));
@@ -441,7 +441,7 @@ void Graph::paintEvent(QPaintEvent *){
                 what.append(", monitoring File "+ ldata->fileString+ ".");
         } else what = "Dryrun mode, simulating traffic.";
 
-        painter.drawText(5,35, what);
+        painter.drawText(5+50,35, what);
         free(thrval1);
         free(thrval2);
         free(totalval);
@@ -459,24 +459,28 @@ void Graph::paintEvent(QPaintEvent *){
 
         // Paint graphs
         //graphpainter.scale(1.0,1.0);
-        QPainter graph_r_painter(this);
-        graph_r_painter.setRenderHint(QPainter::Antialiasing);
         QPainter graph_w_painter(this);
         graph_w_painter.setRenderHint(QPainter::Antialiasing);
-        QPen graph_w_pen(Qt::blue, 0.01);
-        QPen graph_r_pen(Qt::red, 0.01);
-        graph_r_painter.translate(i_x_os-(f_zoomfactor*(i_x_d_size - i_dp_number)), i_y_os);
-        graph_w_painter.translate(i_x_os-(f_zoomfactor*(i_x_d_size - i_dp_number)), i_y_os);
-        //graphpainter.scale(((float)(i_x_d_size))/((float)(i_dp_number)),1.0);
-        graph_r_painter.scale(f_zoomfactor,1.0);
+        QPen graph_w_pen(Qt::blue, 0.01);//blue
+        graph_w_painter.translate(i_x_os-(f_zoomfactor*
+                                          (i_x_d_size - i_dp_number)), i_y_os);
         graph_w_painter.scale(f_zoomfactor,1.0);
-
-        graph_r_painter.setPen(graph_r_pen);
-        graph_r_painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-        graph_r_painter.drawPolygon(readpg);
         graph_w_painter.setPen(graph_w_pen);
-        graph_w_painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+        graph_w_painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));//blue
         graph_w_painter.drawPolygon(writepg);
+
+
+
+        QPainter graph_r_painter(this);
+        graph_r_painter.setRenderHint(QPainter::Antialiasing);
+        QPen graph_r_pen(Qt::red, 0.01);//red
+        graph_r_painter.translate(i_x_os-(f_zoomfactor*
+                                          (i_x_d_size - i_dp_number)), i_y_os);
+        graph_r_painter.scale(f_zoomfactor,1.0);
+        graph_r_painter.setPen(graph_r_pen);
+        graph_r_painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));//red
+        graph_r_painter.drawPolygon(readpg);
+
 
         graph_r_painter.scale(1.0,1.0);
         graph_w_painter.scale(1.0,1.0);
