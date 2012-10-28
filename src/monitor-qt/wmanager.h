@@ -6,6 +6,7 @@
 
 #include "configform.h"
 #include "monitorform.h"
+#include "frontend.h"
 #include "instancedata.h"
 
 
@@ -24,10 +25,12 @@ public:
     InstanceData *idata;
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
+    frontend *newFrontend;
 
 
 public slots:
     void wm_newMonitorWidget();
+    void wm_firstInit();
 
     
 private:

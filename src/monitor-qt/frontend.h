@@ -8,7 +8,7 @@
 
 #include "configform.h"
 #include "monitorform.h"
-#include "wmanager.h"
+//#include "wmanager.h"
 #include "instancedata.h"
 
 namespace Ui {
@@ -26,7 +26,7 @@ public:
     InstanceData *idata;
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
-    WManager  *wManager;
+//    WManager  *wManager;
 
 
 public slots:

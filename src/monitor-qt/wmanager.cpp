@@ -12,6 +12,8 @@ WManager::WManager(QWidget *parent) :
     connect(ui->quitButton, SIGNAL(clicked()),qApp,
             SLOT(quit()));
 
+    wm_firstInit();
+
 
 
 
@@ -27,10 +29,43 @@ void WManager::wm_newMonitorWidget()
 
 
     qDebug()<<"wm_newMonitorWidget()";
+    newFrontend = new frontend(this);
+    newFrontend->show();
+
     //    ui->testlabel->setText("setTestLabel()");
 
 
 }
+
+
+
+void WManager::wm_firstInit(){
+        /*
+        *  Test if ~/.smbtatools exists - if not create it
+        *  ~/.smbtatools will store configuration files and stuff
+        */
+        QString s_path = QDir::homePath().append("/.smbtatools");
+
+        if(!QDir(s_path).exists())
+        {
+                QDir().mkdir(s_path);
+                qDebug()<<"Initial setup: .smbtatools home directory created.";
+        }
+        if(QDir(s_path).exists() &&
+                      !(QFile(s_path.append("/smbtamonitor-qt.conf")).exists()))
+        {
+                qDebug()<<"Creating Smbtamonitor-qt config file";
+                QFile qf_conf_file(s_path);
+                qDebug()<< s_path;
+                qf_conf_file.open(QIODevice::WriteOnly | QIODevice::Text);
+                QTextStream init(&qf_conf_file);
+                init << "Smbtamonitor-qt configuration file\n";
+                qf_conf_file.close();
+        }
+}
+
+
+
 
 
 #include "wmanager.moc"
