@@ -4,6 +4,7 @@
 
 frontend::frontend(QWidget *parent) :
         QMainWindow(parent),
+        //QGraphicsWidget(parent),
         ui(new Ui::frontend)
 {
         ui->setupUi(this);

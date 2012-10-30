@@ -29,10 +29,39 @@ void WManager::wm_newMonitorWidget()
 
 
     qDebug()<<"wm_newMonitorWidget()";
+
+
     newFrontend = new frontend(this);
     newFrontend->show();
 
     //    ui->testlabel->setText("setTestLabel()");
+        /*
+    scene = new QGraphicsScene();
+    QGraphicsRectItem *rect = scene->addRect(QRectF(0,0,100,100));
+    QGraphicsItem *item = scene->itemAt(50,50);
+    QGraphicsView view(scene);
+    view.show();
+ //   scene->addItem(newFrontend);
+        */
+    QGraphicsScene scene;
+    scene.addWidget(newFrontend);
+    scene.setSceneRect( -100.0, -100.0, 200.0, 200.0 );
+
+    QGraphicsEllipseItem *item = new QGraphicsEllipseItem( 0, &scene );
+    item->setRect( -50.0, -50.0, 100.0, 100.0 );
+
+    QGraphicsView view( &scene );
+    view.setRenderHints( QPainter::Antialiasing );
+
+    ui->wmLayout->addWidget(&view);
+    view.show();
+
+    QLabel aLabel("Text");
+    ui->wmLayout->addWidget(&aLabel);
+    ui->wmLayout->setLayout();
+    aLabel.show();
+
+
 
 
 }

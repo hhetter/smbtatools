@@ -3,6 +3,11 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <QGraphicsScene>
+#include <QGraphicsRectItem>
+#include <QGraphicsView>
+#include <QLabel>
+#include <QMdiArea>
 
 #include "configform.h"
 #include "monitorform.h"
@@ -26,6 +31,9 @@ public:
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
     frontend *newFrontend;
+
+    QGraphicsScene *scene;
+
 
 
 public slots:

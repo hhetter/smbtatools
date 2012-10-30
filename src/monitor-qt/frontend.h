@@ -2,6 +2,7 @@
 #define FRONTEND_H
 
 #include <QMainWindow>
+#include <QGraphicsWidget>
 
 #include <QDir>
 #include <QDebug>
@@ -16,6 +17,7 @@ namespace Ui {
 }
 
 class frontend : public QMainWindow
+//class frontend : public QGraphicsWidget
 {
     Q_OBJECT
 

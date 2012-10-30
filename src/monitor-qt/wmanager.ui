@@ -19,24 +19,6 @@
   <property name="windowTitle">
    <string>WManager</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>60</y>
-     <width>181</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>16</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>wmanager.ui</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="queryButton">
    <property name="geometry">
     <rect>
@@ -61,6 +43,16 @@
    </property>
    <property name="text">
     <string>Quit</string>
+   </property>
+  </widget>
+  <widget class="QMdiArea" name="mdiArea">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>60</y>
+     <width>200</width>
+     <height>160</height>
+    </rect>
    </property>
   </widget>
  </widget>
