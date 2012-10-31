@@ -3,7 +3,7 @@
 
 
 frontend::frontend(QWidget *parent) :
-        QMainWindow(parent),
+        QWidget(parent),
         //QGraphicsWidget(parent),
         ui(new Ui::frontend)
 {
@@ -31,8 +31,8 @@ frontend::frontend(QWidget *parent) :
                 SLOT(fr_setConfigWidget()));
         connect(ui->monitorbutton, SIGNAL(clicked()),this,
                 SLOT(fr_setMonitorWidget()));
-        connect(ui->quitbutton, SIGNAL(clicked()),qApp,
-                SLOT(quit()));
+        /*connect(ui->quitbutton, SIGNAL(clicked()),qApp,
+                SLOT(quit()));*/
 
         fr_firstInit();
 

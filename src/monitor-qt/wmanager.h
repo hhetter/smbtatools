@@ -7,7 +7,11 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsView>
 #include <QLabel>
+#include <QTextEdit>
 #include <QMdiArea>
+
+#include <QMainWindow>
+#include <QMdiSubWindow>
 
 #include "configform.h"
 #include "monitorform.h"

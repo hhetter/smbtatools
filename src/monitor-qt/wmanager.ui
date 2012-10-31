@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>412</width>
-    <height>276</height>
+    <width>670</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,11 +48,20 @@
   <widget class="QMdiArea" name="mdiArea">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>60</y>
-     <width>200</width>
-     <height>160</height>
+     <x>10</x>
+     <y>30</y>
+     <width>1920</width>
+     <height>1280</height>
     </rect>
+   </property>
+   <property name="background">
+    <brush brushstyle="SolidPattern">
+     <color alpha="255">
+      <red>243</red>
+      <green>246</green>
+      <blue>248</blue>
+     </color>
+    </brush>
    </property>
   </widget>
  </widget>

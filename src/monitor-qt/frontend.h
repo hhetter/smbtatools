@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsWidget>
+#include <QWidget>
 
 #include <QDir>
 #include <QDebug>
@@ -16,7 +17,7 @@ namespace Ui {
     class frontend;
 }
 
-class frontend : public QMainWindow
+class frontend : public QWidget
 //class frontend : public QGraphicsWidget
 {
     Q_OBJECT
