@@ -34,6 +34,7 @@ public:
     InstanceData *idata;
     ConfigForm *configWidget;
     MonitorForm *monitorFormW;
+    frontend *newFrontendArray[128];
     frontend *newFrontend;
 
     QGraphicsScene *scene;

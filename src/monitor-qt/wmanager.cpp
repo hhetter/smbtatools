@@ -12,6 +12,11 @@ WManager::WManager(QWidget *parent) :
         connect(ui->quitButton, SIGNAL(clicked()),qApp,
                 SLOT(quit()));
 
+        for(int i=0; i < 128; i++){
+            newFrontendArray[i] = 0;
+        }
+
+
         wm_firstInit();
 
 
@@ -27,10 +32,21 @@ WManager::~WManager()
 void WManager::wm_newMonitorWidget()
 {
 
+    for(int i =0; i < 128; i++){
+        if(newFrontendArray[i] == 0){
+            newFrontendArray[i] = new frontend();
+            ui->mdiArea->addSubWindow(newFrontendArray[i]);
+            newFrontendArray[i]->activateWindow();
+            newFrontendArray[i]->show();
+            i=128;
+        }
+
+    }
+
 
         qDebug()<<"wm_newMonitorWidget()";
 
-
+    /*
         newFrontend = new frontend();
         newFrontend->show();
 
@@ -38,7 +54,7 @@ void WManager::wm_newMonitorWidget()
         ui->mdiArea->addSubWindow(newFrontend);
         newFrontend->activateWindow();
         newFrontend->show();
-
+*/
 
 
 
