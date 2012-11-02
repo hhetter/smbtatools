@@ -45,6 +45,8 @@ public slots:
     void wm_newMonitorWidget();
     void wm_firstInit();
 
+    void resizeEvent(QResizeEvent *event);
+
     
 private:
     Ui::WManager *ui;

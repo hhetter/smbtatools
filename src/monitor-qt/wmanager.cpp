@@ -38,6 +38,8 @@ void WManager::wm_newMonitorWidget()
             ui->mdiArea->addSubWindow(newFrontendArray[i]);
             newFrontendArray[i]->activateWindow();
             newFrontendArray[i]->show();
+            ui->mdiArea->currentSubWindow()->resize( 670, 540 );
+            //newFrontendArray[i]->resize(670,540);
             i=128;
         }
 
@@ -88,6 +90,11 @@ void WManager::wm_firstInit(){
         }
 }
 
+void WManager::resizeEvent(QResizeEvent *event)
+{
+         // qDebug()<<"WManager Resized";
+
+}
 
 
 

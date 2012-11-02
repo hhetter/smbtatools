@@ -8,7 +8,7 @@ frontend::frontend(QWidget *parent) :
         ui(new Ui::frontend)
 {
         ui->setupUi(this);
-	this->setWindowTitle("smbtamonitor-qt");
+        this->setWindowTitle("smbtamonitor-qt");
         ////
         // Create the Widgets for configuration and the monitoring
 
@@ -102,7 +102,11 @@ void frontend::fr_setMonitorWidget()
 
 void frontend::resizeEvent(QResizeEvent *event)
 {
-        //    qDebug()<<"Frontend Resized";
+            qDebug()<<"Frontend Resized";
+            qDebug()<<"Width" << this->width();
+            qDebug()<<"Height" << this->height();
+            monitorFormW->p_graph->g_get_size(this->width(),this->height());
+
 
 }
 

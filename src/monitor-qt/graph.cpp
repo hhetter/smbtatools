@@ -8,6 +8,15 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 {
         ldata = idata;
 
+        this->resize(692,492);
+
+
+        i_get_width = this->width();
+        i_get_height = this->height();
+
+        qDebug()<< "first Own height: " << this->height();
+
+
         i_max_index = 86400;
         i_s_count = 0;
         i_stepsize=ldata->i_stepsize;
@@ -548,6 +557,30 @@ char *Graph::mhr( long long int kb )
         asprintf( &output,"%lli %s",result,kbstring);
         return output;
 }
+
+
+/*
+ * Get the available size for the Graph widget after a resize event
+ */
+void Graph::g_get_size(int i_width, int i_height){
+        i_get_width = i_width;
+        i_get_height = i_height;
+
+        //i_x_d_size = i_width ;
+        //i_y_d_size = i_height - 92;
+
+        qDebug()<< "gWidth: "<< i_get_width;
+        qDebug()<< "gHeight: "<< i_get_height;
+        qDebug()<< "Own Width: "<< this->width();
+        qDebug()<< "Own Height: "<< this->height();
+
+
+}
+
+
+
+
+
 
 
 /*

@@ -41,6 +41,10 @@ public:
         int i_dp_min; // Minimum number of datapoints to be displayed in the graph
         int i_dp_max; // Maximum number of datapoints to be displayed in the graph
         int i_intpol_count; // Counter for the interpolation steps
+
+        int i_get_width; // Get available width after a resizing event
+        int i_get_height; // Get available height after a resizing event
+
         float f_scalefactor;
         float f_zoomfactor; // Keeps the zoomfactor (i_x_d_size/i_dp_num)
 
@@ -79,11 +83,13 @@ public slots:
         void g_squeeze_dp(); // map data points to pixel width (dp > pw)
         void g_interpolate(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in); // Inteerpolation and create points to make the graph
         void g_create_path(QList<unsigned long> readlist_in, QList<unsigned long> writelist_in);
+        void g_get_size(int i_width, int i_height);
         char *mhr( long long int kb );
 
         void paintEvent(QPaintEvent *event);
         void paintGraph(QPaintEvent *event);
         void wheelEvent(QWheelEvent *event); // Will catch wheel events to zoom the graph
+
 
 
 
