@@ -338,7 +338,7 @@ void MonitorForm::sendtopoints(){
 
 void MonitorForm::resizeEvent(QResizeEvent *event)
 {
-        //  qDebug()<<"Monitorform Resized";
+          qDebug()<<"Monitorform Resized";
 
 }
 
