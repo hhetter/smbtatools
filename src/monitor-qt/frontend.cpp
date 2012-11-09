@@ -8,7 +8,7 @@ frontend::frontend(QWidget *parent) :
         ui(new Ui::frontend)
 {
         ui->setupUi(this);
-        this->setWindowTitle("smbtamonitor-qt");
+        //this->setWindowTitle("smbtamonitor-qt");
         ////
         // Create the Widgets for configuration and the monitoring
 

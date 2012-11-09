@@ -226,7 +226,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
 
 
-        // Find max value of read+write traffic to definy y-axis scale factor
+        // Find max value of read+write traffic to define y-axis scale factor
         for(int i = i_dp_start; i < i_dp_end; i++){
                 l_c_max = readlist_in[i] + writelist_in[i];
                 if(l_c_max > l_max){
@@ -566,13 +566,12 @@ void Graph::g_get_size(int i_width, int i_height){
         i_get_width = i_width;
         i_get_height = i_height;
 
-        //i_x_d_size = i_width ;
-        //i_y_d_size = i_height - 92;
+        //i_x_d_size = i_width  ;
+        i_y_d_size = i_height - 92;
 
         qDebug()<< "gWidth: "<< i_get_width;
         qDebug()<< "gHeight: "<< i_get_height;
-        qDebug()<< "Own Width: "<< this->width();
-        qDebug()<< "Own Height: "<< this->height();
+
 
 
 }
