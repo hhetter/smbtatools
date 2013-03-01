@@ -308,7 +308,6 @@ void MonitorForm::sendtopoints(){
 
         mutex.lock();
 
-
         //    qDebug() << "sendtovisualizer()";
         //    unsigned long int uli1 = 1000;
         //    unsigned long int uli2 = 1500;

@@ -225,7 +225,8 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         };
 
 
-
+	qDebug() << i_dp_end;
+	qDebug() << i_dp_start;
         // Find max value of read+write traffic to define y-axis scale factor
         for(int i = i_dp_start; i < i_dp_end; i++){
                 l_c_max = readlist_in[i] + writelist_in[i];

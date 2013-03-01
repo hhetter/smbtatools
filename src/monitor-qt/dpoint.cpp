@@ -26,7 +26,8 @@ void DPoint::dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
         qDebug() << "*l_fwrite: ->points " << *l_fwrite;
         qDebug() << "-----------------------";
         */
-        if(i_s_count < i_stepsize )
+	i_stepsize = 1;
+	if(i_s_count < i_stepsize )
         {
                 l_read_end += *l_fread;
                 l_write_end += *l_fwrite;
