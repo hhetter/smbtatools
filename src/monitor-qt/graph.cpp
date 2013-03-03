@@ -27,12 +27,12 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         i_y_d_size = 400; // Height of graph area
         i_dp_min = 10;
         i_dp_max = 86400;
-        i_intpol_count = 0; // Counter for the interpolation steps
+        i_intpol_count = 3; // Counter for the interpolation steps
 
 
         i_dp_number = 300;
         f_scalefactor = 1; // Scales traffic values / y axis to displayed size
-        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number); //?
+        f_zoomfactor = ((float)i_x_d_size)/((float)(i_dp_number*i_stepsize)); //?
         thrputw = 0;
         thrputr = 0;
 
@@ -272,13 +272,16 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
          l_read_diff:    value of the traffic change value per interpolation step
          l_write_diff:   value of the traffic change value per interpolation step
 
-
          */
+        //debug information
+        int k = 0;
 
         // Reset i_intpol_count
         if(i_intpol_count == i_stepsize){
             i_intpol_count = 0;
+            qDebug()<<"i_intpol_count = 0";
         }
+        qDebug()<<"i_intpol_count: "<<i_intpol_count;
 
         // Define traffic value for preceding data point
         if(i_dp_start == 0){
@@ -291,11 +294,16 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         }
 
         // First data point
+        qDebug()<<"l_read_prec: " <<l_read_prec;
+        qDebug()<<"readlist_in[i_dp_start]: " <<readlist_in[i_dp_start];
         l_read_diff = (readlist_in[i_dp_start] - l_read_prec)/i_stepsize;
+        qDebug()<<"l_read_diff: " <<l_read_diff;
         l_write_diff = (writelist_in[i_dp_start] - l_write_prec)/i_stepsize;
         for(int i = 0; i < i_intpol_count; i++){
             readlist_int.append( l_read_prec + (l_read_diff*i) );
             writelist_int.append( l_write_prec + (l_write_diff*i) );
+            qDebug()<< "k: " << k << readlist_int[k]; k++;
+            qDebug()<<"tick";
         }
 
         // Middle data points
@@ -307,6 +315,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             for(int j = 0; j < i_stepsize; j++){
                 readlist_int.append( l_read_prec + (l_read_diff*j) );
                 writelist_int.append( l_write_prec + (l_write_diff*j) );
+                qDebug()<< "k: " << k << readlist_int[k]; k++;
             }
         }
 
@@ -318,6 +327,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         for(int i = i_intpol_count; i < i_stepsize; i++){
             readlist_int.append(  l_read_prec + (l_read_diff*i) );
             writelist_int.append( l_write_prec + (l_write_diff*i) );
+            qDebug()<< "k: " << k << readlist_int[k]; k++;
         }
 
 
@@ -325,7 +335,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         i_intpol_count++;
 
         // Debug information about QList size
-        qDebug()<<"Number of elements: readkist_int.size() = " << readlist_int.size();
+        qDebug()<<"Number of elements: readlist_int.size() = " << readlist_int.size();
 
         // Send QLists with the interpolated values to the graph creation method
         // Interpolated liust is omitted so far
@@ -352,14 +362,14 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         // Uper side of the QPolygonF
         for(int i = i_dp_start; i < /*i_dp_end*/  (i_dp_end*i_stepsize) ; i++)
         {
-                readpg<<QPointF( ( (i_x_d_size) - i),
+                readpg<<QPointF( ( (i_dp_end*i_stepsize) - i),
                                  ( i_y_d_size) -
                                  (((float)(readlist_int[i]))/f_scalefactor)
                                  );
-                qDebug()<<"readlist_int[i]: "<<(float)(readlist_int[i]);
-                qDebug()<<"readpg[i].x(): "<<readpg[i].x();
+                //qDebug()<<"readlist_int[i]: "<<(float)(readlist_int[i]);
+                //qDebug()<<"readpg[i].x(): "<<readpg[i].x();
 
-                writepg<<QPointF( ( (i_x_d_size) - i),
+                writepg<<QPointF( ( (i_dp_end*i_stepsize) - i),
                                   ( i_y_d_size) -
                                   ((((float)(writelist_int[i]))/f_scalefactor) +
                                    (((float)(readlist_int[i]))/f_scalefactor))
@@ -367,12 +377,12 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         }
 
         qDebug() << "Ping";
-        readpg<<QPointF( ( (i_x_d_size) -(i_dp_end)),
+        readpg<<QPointF( ( (i_dp_end*i_stepsize) -(i_dp_end*i_stepsize)),
                          ( i_y_d_size ) -
                          ((float)(readlist_int[i_dp_end]))/f_scalefactor
                          );
         //(((float)(readlist_in[i_dp_start]))/f_scalefactor));
-        writepg<<QPointF( ( (i_x_d_size) - (i_dp_end)  ),
+        writepg<<QPointF( ( (i_dp_end*i_stepsize) - (i_dp_end*i_stepsize)  ),
                           ( i_y_d_size) -
                           ((((float)(writelist_int[i_dp_end]))/f_scalefactor) +
                            (((float)(readlist_int[i_dp_end]))/f_scalefactor))
@@ -385,12 +395,12 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         for(int i = (i_dp_end*i_stepsize)-1; i > i_dp_start /* (i_dp_end*i_stepsize) */; i--)
         {
 
-                readpg<<QPointF( ( (i_x_d_size) - i),
+                readpg<<QPointF( ( (i_dp_end*i_stepsize) - i),
                                  (i_y_d_size) -
                                  0
                                  );
 
-                writepg<<QPointF( ( (i_x_d_size) - i),
+                writepg<<QPointF( ( (i_dp_end*i_stepsize) - i),
                                   ( i_y_d_size) -
                                   (((float)(readlist_int[i]))/f_scalefactor)
                                   );
@@ -398,11 +408,11 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
 
         qDebug() << "Ping3";
         // Create end points of the QPolygonF's (at the right side)
-        readpg<<QPointF( ( i_x_d_size ),
+        readpg<<QPointF( ( i_dp_end*i_stepsize ),
                          ( i_y_d_size) -
                          0);
 
-        writepg<<QPointF( ( i_x_d_size ),
+        writepg<<QPointF( ( i_dp_end*i_stepsize ),
                           ( i_y_d_size) -
                           (((float)(readlist_int[i_dp_start]))/f_scalefactor)
 
@@ -532,9 +542,10 @@ void Graph::paintEvent(QPaintEvent *){
         QPainter graph_w_painter(this);
         graph_w_painter.setRenderHint(QPainter::Antialiasing);
         QPen graph_w_pen(Qt::blue, 0.01);//blue
-        graph_w_painter.translate(i_x_os-(f_zoomfactor*
-                                          (i_x_d_size - i_dp_number)), i_y_os);
-        graph_w_painter.scale(f_zoomfactor,1.0);
+        //graph_w_painter.translate(i_x_os-(f_zoomfactor*
+        //                                  (i_x_d_size - i_dp_number)), i_y_os);
+        graph_w_painter.translate(i_x_os, i_y_os);
+        //graph_w_painter.scale(f_zoomfactor,1.0);
         graph_w_painter.setPen(graph_w_pen);
         graph_w_painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));//blue
         graph_w_painter.drawPolygon(writepg);
@@ -544,9 +555,10 @@ void Graph::paintEvent(QPaintEvent *){
         QPainter graph_r_painter(this);
         graph_r_painter.setRenderHint(QPainter::Antialiasing);
         QPen graph_r_pen(Qt::red, 0.01);//red
-        graph_r_painter.translate(i_x_os-(f_zoomfactor*
-                                          (i_x_d_size - i_dp_number)), i_y_os);
-        graph_r_painter.scale(f_zoomfactor,1.0);
+        //graph_r_painter.translate(i_x_os-(f_zoomfactor*
+        //                                  (i_x_d_size - i_dp_number)), i_y_os);
+        graph_r_painter.translate(i_x_os, i_y_os);
+        //graph_r_painter.scale(f_zoomfactor,1.0);
         graph_r_painter.setPen(graph_r_pen);
         graph_r_painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));//red
         graph_r_painter.drawPolygon(readpg);
@@ -627,7 +639,7 @@ void Graph::g_get_size(int i_width, int i_height){
         i_get_width = i_width;
         i_get_height = i_height;
 
-        //i_x_d_size = i_width  ;
+        i_x_d_size = i_width - i_x_os ;
         i_y_d_size = i_height - 92;
 
         qDebug()<< "gWidth: "<< i_get_width;
