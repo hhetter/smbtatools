@@ -57,7 +57,7 @@ public:
         //    QLinkedList<unsigned long> readlist, writelist; // Holds traffic values from dpoints
         QList<unsigned long> *readlist, *writelist; // Holds traffic values from dpoints
         QList<long long> readlist_w, writelist_w, worklist;
-        QList<unsigned long> readlist_int, writelist_int;
+        //QList<unsigned long> readlist_int, writelist_int;
         QPointF readp, writep;
         QPolygonF readpg, writepg; //Stores the QPointFs for the pQPinterpaths
         QString xstring1, xstring2, xstring3, xstring4, xstring5; // Graph axis labels
