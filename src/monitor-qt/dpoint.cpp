@@ -4,8 +4,9 @@ DPoint::DPoint(InstanceData *idata, QObject *parent) :
         QObject(parent)
 {
         i_s_count = 0;
-        i_stepsize=5;
-        i_max_index = 86400;
+        //i_stepsize=5;
+        i_stepsize = idata->i_stepsize;
+        i_max_index = idata->i_max_index; // Max Numbers of entries in the data point list
         l_read_end = 0;
         l_write_end = 0;
 
@@ -26,7 +27,7 @@ void DPoint::dp_receivenumbers(unsigned long *l_fread, unsigned long *l_fwrite){
         qDebug() << "*l_fwrite: ->points " << *l_fwrite;
         qDebug() << "-----------------------";
         */
-	i_stepsize = 1;
+    //i_stepsize = 1;
 	if(i_s_count < i_stepsize )
         {
                 l_read_end += *l_fread;

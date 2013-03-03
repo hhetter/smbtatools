@@ -17,25 +17,27 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         qDebug()<< "first Own height: " << this->height();
 
 
-        i_max_index = 86400;
+        i_max_index = idata->i_max_index;
         i_s_count = 0;
         i_stepsize=ldata->i_stepsize;
         i_x_os = 50; // Offset for x Graph
         i_y_os = 0; // Offset for y Graph
-        //        i_x_d_size = 600;
-        i_x_d_size = 600;
-        i_y_d_size = 400;
+
+        i_x_d_size = 600; // Width of graph area
+        i_y_d_size = 400; // Height of graph area
         i_dp_min = 10;
         i_dp_max = 86400;
-        //i_dp_number = i_x_d_size;
+        i_intpol_count = 0; // Counter for the interpolation steps
+
+
         i_dp_number = 300;
-        f_scalefactor = 1;
-        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
+        f_scalefactor = 1; //?
+        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number); //?
         thrputw = 0;
         thrputr = 0;
 
-        i_dp_start = 0; // index of the data point from where the display is started
-        i_dp_end = i_dp_number + i_dp_start; // index of the data point from where the display  ends
+        i_dp_start = 0; // index of the first data point that is displayed in the graph
+        i_dp_end = i_dp_number + i_dp_start; // index of the last data point that is displayed in the graph
 
         readlist = new QList<unsigned long>;
         writelist = new QList<unsigned long>;
@@ -54,7 +56,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         title.append( SMBTAMONITOR_VERSION );
 
 
-        // hold configoration data
+        // hold configuration data
         /*
         hostString   = new QString;
         fileString   = new QString;
@@ -64,7 +66,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         domainString = new QString;
 
         *hostString   = "";
-        *fileString = "";
+        *fileString   = "";
         *portString   = "";
         *shareString  = "";
         *userString   = "";
@@ -147,7 +149,7 @@ int Graph::g_get_dp_offset()
 void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for the graph
 {
         int offset;
-        int i_scalefactor = 4;
+        int i_scalefactor = 4; // Base value defines the the amount of change of i_dp_number
         if (i_dp_number < 20) { /* less than 20 datapoints we really zoom slowly */
                 offset=i_scalefactor*1;
         } else if (i_dp_number < 60) { /* a minute */
@@ -241,49 +243,83 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         }
 
 
+        /*
+         Interpolate graph into i_stepsize subpoints
+         The first interpolated graph woll be handled seperately as it depends
+         matters if there is a preceding data point or not.
+         For the time being, as scrolling through time is not implemented yet,
+         this wont be the case. If there is no preceding data point, the method
+         will act as if it were zero.
 
-        // Interpolate graph into i_stepsize subpoints
-        // Probably not needed at all
+         Interpolation method: Every data point will be split into up to five
+         single data points. For the first and the last displayed data point the
+         number of steps depends on the i_intpol_count counter. Every data point
+         in between will be created with five steps
 
-        // Idea: For every dp there will be 5 graph-dps that will be used to build the graph
-        //
+         i_int_pol_count starts at nill and will be increased by one with every
+         interpolation run. At the beginning of an interpolation run it will
+         be set to nill again if it has reached 5.
 
-        for(int i = i_dp_start; i < (i_dp_end*i_stepsize); i++)
-        {
-                // Do interpolation later
-                /*
-                if(i_intpol_count < i_stepsize )
-                {
-                        *l_in_read += *l_fread;
-                        *l_in_write += *l_fwrite;
-                        i_c_count++;
-                }
-                if (i_intpol_count == i_stepsize)
-                {
 
-                        *l_in_read_end = *l_in_read; *l_in_read = 0;
-                        *l_in_write_end = *l_in_write; *l_in_write = 0;
-                        *l_read_diff = (*l_in_read_end)/i_stepsize;
-                        *l_write_diff = (*l_in_write_end)/i_stepsize;
-                        vs_processnumbers(
-                                                ((*l_read_diff)*
-                                                 ((unsigned long)(i_intpol_count%i_stepsize)+1)),
-                                                ((*l_write_diff)*
-                                                 ((unsigned long)(i_intpol_count%i_stepsize)+1))
-                                                );
-                        i_intpol_count++;
-                }
-                */
+         i_dp_start:     first data point to be displayed
+         i_dp_end:       last data point tp be displayed
+         i_step_size:    number of interpolation steps
+         i_intpol_count: current interpolation step
+
+         l_read_prec:    value of preceding read traffic data point
+         l_write_prec:   value of preceding write traffic data point
+         l_read_diff:    value of the traffic change value per interpolation step
+         l_write_diff:   value of the traffic change value per interpolation step
+
+
+         */
+
+        // Reset i_intpol_count
+        if(i_intpol_count == i_stepsize){
+            i_intpol_count = 0;
         }
 
+        // Define traffic value for preceding data point
+        if(i_dp_start == 0){
+            l_read_prec = 0;
+            l_write_prec = 0;
+        }
+        if(i_dp_start > 0){
+            l_read_prec =  readlist_in[i_dp_start-1];
+            l_write_prec = writelist_in[i_dp_start-1];
+        }
 
+        // First data point
+        l_read_diff = (readlist_in[i_dp_start] - l_read_prec)/i_stepsize;
+        l_write_diff = (writelist_in[i_dp_start] - l_write_prec)/i_stepsize;
+        for(int i = 0; i < i_intpol_count; i++){
+            // Need to initialize _int lists before first usage
+            //readlist_int[i] = l_read_prec + (l_read_diff*i);
+            //writelist_int[i] = l_write_prec + (l_write_diff*i);
+        }
+
+        // Middle data points
+        for(int i = i_dp_start +1; i < i_dp_end; i++){
+            for(int j = 0; j < i_stepsize; j++){
+            }
+        }
+
+        // Last data points
+        for(int i = i_intpol_count; i < i_stepsize; i++){        }
+
+
+        // End interpolation run with the increment of the interpolation counter
+        i_intpol_count++;
+
+        // Send QLists with the interpolated values to the graph creation method
+        // Interpolated liust is omitted so far
         g_create_path(readlist_in, writelist_in);
 
 }
 
 
-void Graph::g_create_path(QList<unsigned long> readlist_in,
-                          QList<unsigned long> writelist_in)
+void Graph::g_create_path(QList<unsigned long> readlist_int,
+                          QList<unsigned long> writelist_int)
 {
 
         // Create Points
@@ -293,26 +329,26 @@ void Graph::g_create_path(QList<unsigned long> readlist_in,
         {
                 readpg<<QPointF( ( i_x_d_size - i),
                                  ( i_y_d_size) -
-                                 (((float)(readlist_in[i]))/f_scalefactor)
+                                 (((float)(readlist_int[i]))/f_scalefactor)
                                  );
 
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
-                                  ((((float)(writelist_in[i]))/f_scalefactor) +
-                                   (((float)(readlist_in[i]))/f_scalefactor))
+                                  ((((float)(writelist_int[i]))/f_scalefactor) +
+                                   (((float)(readlist_int[i]))/f_scalefactor))
                                   );
         }
 
 
         readpg<<QPointF( ( i_x_d_size -i_dp_end),
                          ( i_y_d_size ) -
-                         ((float)(readlist_in[i_dp_end]))/f_scalefactor
+                         ((float)(readlist_int[i_dp_end]))/f_scalefactor
                          );
         //(((float)(readlist_in[i_dp_start]))/f_scalefactor));
         writepg<<QPointF( ( i_x_d_size - i_dp_end  ),
                           ( i_y_d_size) -
-                          ((((float)(writelist_in[i_dp_end]))/f_scalefactor) +
-                           (((float)(readlist_in[i_dp_end]))/f_scalefactor))
+                          ((((float)(writelist_int[i_dp_end]))/f_scalefactor) +
+                           (((float)(readlist_int[i_dp_end]))/f_scalefactor))
                           );
 
 
@@ -333,7 +369,7 @@ void Graph::g_create_path(QList<unsigned long> readlist_in,
 
                 writepg<<QPointF( ( i_x_d_size - i),
                                   ( i_y_d_size) -
-                                  (((float)(readlist_in[i]))/f_scalefactor)
+                                  (((float)(readlist_int[i]))/f_scalefactor)
                                   );
         }
 
@@ -344,7 +380,7 @@ void Graph::g_create_path(QList<unsigned long> readlist_in,
 
         writepg<<QPointF( ( i_x_d_size ),
                           ( i_y_d_size) -
-                          (((float)(readlist_in[i_dp_start]))/f_scalefactor)
+                          (((float)(readlist_int[i_dp_start]))/f_scalefactor)
 
                           );
 

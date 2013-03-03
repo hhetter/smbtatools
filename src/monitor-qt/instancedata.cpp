@@ -4,6 +4,7 @@ InstanceData::InstanceData(QObject *parent) :
         QObject(parent)
 {
     i_stepsize = 5;
+    i_max_index = 86400;
 
 
     // Configuration data

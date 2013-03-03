@@ -26,6 +26,7 @@ public:
         bool idCheck, dryrunCheck;
         
         int i_stepsize;
+        int i_max_index;
     
         QList<unsigned long> readlist, writelist;
 

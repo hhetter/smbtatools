@@ -18,8 +18,8 @@ public:
 //        unsigned long *l_fread, *l_fwrite;
         unsigned long l_read_end, l_write_end;
         int i_s_count;
-        int i_stepsize;
-        int i_max_index;
+        int i_stepsize;  // Number of interpolation steps
+        int i_max_index; // Max Numbers of entries in the data point list
 
         QList<unsigned long> readlist, writelist;
 
