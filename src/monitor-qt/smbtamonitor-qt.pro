@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     graph.cpp \
     instancedata.cpp \
     wmanager.cpp \
-    form.cpp
+    form.cpp \
+    object_selector.cpp
 
 HEADERS  += frontend.h \
     configform.h \
@@ -35,13 +36,15 @@ HEADERS  += frontend.h \
     graph.h \
     instancedata.h \
     wmanager.h \
-    form.h
+    form.h \
+    object_selector.h
 
 FORMS    += frontend.ui \
     configform.ui \
     monitorform.ui \
     wmanager.ui \
-    form.ui
+    form.ui \
+    object_selector.ui
 
 
 
