@@ -241,7 +241,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
         if(l_max > 1)
         {
-                f_scalefactor = 1.1*((float)l_max)/i_y_d_size;
+                f_scalefactor = 1.1*((float)l_max)/((float)i_y_d_size);
         }
 
 
@@ -297,14 +297,15 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         // First data point
         qDebug()<<"l_read_prec: " <<l_read_prec;
         qDebug()<<"readlist_in[i_dp_start]: " <<readlist_in[i_dp_start];
+        qDebug()<<"f_scalefactor "<< f_scalefactor;
         l_read_diff = (readlist_in[i_dp_start] - l_read_prec)/i_stepsize;
         qDebug()<<"l_read_diff: " <<l_read_diff;
         l_write_diff = (writelist_in[i_dp_start] - l_write_prec)/i_stepsize;
         for(int i = 0; i < i_intpol_count; i++){
             readlist_int.append( l_read_prec + (l_read_diff*i) );
             writelist_int.append( l_write_prec + (l_write_diff*i) );
-            qDebug()<< "k: " << k << readlist_int[k]; k++;
-            qDebug()<<"tick";
+            qDebug()<< "k: " << k << readlist_int[k]/(1024*1024); k++;
+           // qDebug()<<"tick";
         }
 
         // Middle data points
@@ -316,7 +317,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             for(int j = 0; j < i_stepsize; j++){
                 readlist_int.append( l_read_prec + (l_read_diff*j) );
                 writelist_int.append( l_write_prec + (l_write_diff*j) );
-                qDebug()<< "k: " << k << readlist_int[k]; k++;
+                qDebug()<< "k: " << k << readlist_int[k]/(1024*1024); k++;
             }
         }
 
@@ -351,12 +352,12 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
                           QList<unsigned long> writelist_int)
 {
         // Debug information about number of graph points
-        qDebug()<<"Number of graph points: i_dp_end - i_dp_start = " << i_dp_end - i_dp_start;
-        qDebug()<<"Number of graph points: i_dp_end*i_stepsize - i_dp_start = " << (i_dp_end*i_stepsize) - i_dp_start;
-        qDebug()<< "i_dp_start: " << i_dp_start;
-        qDebug()<< "i_dp_end: " << i_dp_end;
-        qDebug()<< "i_dp_end*i_stepsize: " << i_dp_end*i_stepsize;
-        qDebug() << "------------------------------------------";
+        //qDebug()<<"Number of graph points: i_dp_end - i_dp_start = " << i_dp_end - i_dp_start;
+        //qDebug()<<"Number of graph points: i_dp_end*i_stepsize - i_dp_start = " << (i_dp_end*i_stepsize) - i_dp_start;
+        //qDebug()<< "i_dp_start: " << i_dp_start;
+        //qDebug()<< "i_dp_end: " << i_dp_end;
+        //qDebug()<< "i_dp_end*i_stepsize: " << i_dp_end*i_stepsize;
+        //qDebug() << "------------------------------------------";
 
         // Create Points
         // Create QPolygonF from right to left
