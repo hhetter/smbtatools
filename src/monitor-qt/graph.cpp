@@ -545,7 +545,10 @@ void Graph::paintEvent(QPaintEvent *){
         //graph_w_painter.translate(i_x_os-(f_zoomfactor*
         //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_w_painter.translate(i_x_os, i_y_os);
+        qDebug()<<"i_xos, i_y_os " << i_x_os << " " << i_y_os;
         //graph_w_painter.scale(f_zoomfactor,1.0);
+        float scaler = ((float)(i_x_d_size))/((float)((i_dp_end-i_dp_start)*i_stepsize));
+        graph_w_painter.scale(scaler,1.0);
         graph_w_painter.setPen(graph_w_pen);
         graph_w_painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));//blue
         graph_w_painter.drawPolygon(writepg);
@@ -559,6 +562,7 @@ void Graph::paintEvent(QPaintEvent *){
         //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_r_painter.translate(i_x_os, i_y_os);
         //graph_r_painter.scale(f_zoomfactor,1.0);
+        graph_r_painter.scale(scaler,1.0);
         graph_r_painter.setPen(graph_r_pen);
         graph_r_painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));//red
         graph_r_painter.drawPolygon(readpg);
