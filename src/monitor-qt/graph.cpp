@@ -27,7 +27,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         i_y_d_size = 400; // Height of graph area
         i_dp_min = 10;
         i_dp_max = 86400;
-        i_intpol_count = 3; // Counter for the interpolation steps
+        i_intpol_count = 1; // Counter for the interpolation steps
 
 
         i_dp_number = 300;
@@ -179,7 +179,8 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
         }
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
-        f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
+        //f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
+
         t_i_string = QString::number(i_dp_number)+" Seconds";
         //        qDebug() << "i_dp_start: " << i_dp_start;
         //        qDebug() << "i_dp_end: " << i_dp_end;
@@ -246,13 +247,13 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
         /*
          Interpolate graph into i_stepsize subpoints
-         The first interpolated graph woll be handled seperately as it depends
+         The first interpolated graph will be handled seperately as it
          matters if there is a preceding data point or not.
          For the time being, as scrolling through time is not implemented yet,
          this wont be the case. If there is no preceding data point, the method
          will act as if it were zero.
 
-         Interpolation method: Every data point will be split into up to five
+         Interpolation method: Every data point will be split up into five
          single data points. For the first and the last displayed data point the
          number of steps depends on the i_intpol_count counter. Every data point
          in between will be created with five steps
@@ -427,6 +428,8 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
                 xstring2 = QString(mhr((long long) (0.25*1.1*(l_max))));
                 xstring1 = QString(mhr((long long) (0*1.1*(l_max))));
         }
+
+         f_zoomfactor = ((float)(i_x_d_size))/((float)((i_dp_end-i_dp_start)*i_stepsize));
         /*
          * Call the paintEvent
          */
@@ -546,9 +549,7 @@ void Graph::paintEvent(QPaintEvent *){
         //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_w_painter.translate(i_x_os, i_y_os);
         qDebug()<<"i_xos, i_y_os " << i_x_os << " " << i_y_os;
-        //graph_w_painter.scale(f_zoomfactor,1.0);
-        float scaler = ((float)(i_x_d_size))/((float)((i_dp_end-i_dp_start)*i_stepsize));
-        graph_w_painter.scale(scaler,1.0);
+        graph_w_painter.scale(f_zoomfactor,1.0);
         graph_w_painter.setPen(graph_w_pen);
         graph_w_painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));//blue
         graph_w_painter.drawPolygon(writepg);
@@ -561,8 +562,7 @@ void Graph::paintEvent(QPaintEvent *){
         //graph_r_painter.translate(i_x_os-(f_zoomfactor*
         //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_r_painter.translate(i_x_os, i_y_os);
-        //graph_r_painter.scale(f_zoomfactor,1.0);
-        graph_r_painter.scale(scaler,1.0);
+        graph_r_painter.scale(f_zoomfactor,1.0);
         graph_r_painter.setPen(graph_r_pen);
         graph_r_painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));//red
         graph_r_painter.drawPolygon(readpg);
