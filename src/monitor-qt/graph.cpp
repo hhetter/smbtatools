@@ -395,12 +395,12 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         }
 
         qDebug() << "Ping";
-        readpg<<QPointF( ( (i_dp_end*i_stepsize) -(i_dp_end*i_stepsize)),
+        readpg<<QPointF( 0,
                          ( i_y_d_size ) -
                          ((float)(readlist_int[i_dp_end]))/f_scalefactor
                          );
         //(((float)(readlist_in[i_dp_start]))/f_scalefactor));
-        writepg<<QPointF( ( (i_dp_end*i_stepsize) - (i_dp_end*i_stepsize)  ),
+        writepg<<QPointF(  0,
                           ( i_y_d_size) -
                           ((((float)(writelist_int[i_dp_end]))/f_scalefactor) +
                            (((float)(readlist_int[i_dp_end]))/f_scalefactor))
