@@ -13,7 +13,7 @@ Timeclass::Timeclass(InstanceData *idata, QWidget *parent) :
  //   timer->setInterval(60000/i_stepsize); // minute
    timer->setInterval(1000/i_stepsize);   // second, standard value
    // timer->setInterval(10000/i_stepsize);   // debug value
-    //timer->setInterval(1400);   //debug times
+    //timer->setInterval(1500);   //debug times
     //timer->setInterval(300/i_stepsize);   // second
 //    timer->setInterval(60/i_stepsize);	// milisecond
  //   timer->start();

@@ -25,10 +25,11 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 
         i_x_d_size = 600; // Width of graph area
         i_y_d_size = 400; // Height of graph area
-        i_dp_min = 10;
+        i_dp_min = 5;
+        //i_dp_min = 10;
         i_dp_max = 86400;
-        i_intpol_count = 1; // Counter for the interpolation steps
-
+        //i_intpol_count = 1; // Counter for the interpolation steps
+        i_intpol_count = 1;
 
         i_dp_number = 300;
         f_scalefactor = 1; // Scales traffic values / y axis to displayed size
@@ -214,7 +215,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         writep = QPointF();
         readpg = QPolygonF();
         writepg = QPolygonF();
-        l_read_diff = 0;
+        l_read_diff  = 0;
         l_write_diff = 0;
         t_string = g_clock.currentTime().toString();
 
@@ -234,6 +235,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         // Find max value of read+write traffic to define y-axis scale factor
         for(int i = i_dp_start; i < i_dp_end; i++){
                 l_c_max = readlist_in[i] + writelist_in[i];
+                qDebug()<< "i: " << i <<" readlist_in[i] " << readlist_in[i];
                 if(l_c_max > l_max){
                         l_max = l_c_max;
                 }
@@ -282,7 +284,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             i_intpol_count = 0;
             qDebug()<<"i_intpol_count = 0";
         }
-        qDebug()<<"i_intpol_count: "<<i_intpol_count;
+        //qDebug()<<"i_intpol_count: "<<i_intpol_count;
 
         // Define traffic value for preceding data point
         if(i_dp_start == 0){
@@ -295,19 +297,24 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         }
 
         // First data point
-        qDebug()<<"l_read_prec: " <<l_read_prec;
-        qDebug()<<"readlist_in[i_dp_start]: " <<readlist_in[i_dp_start];
-        qDebug()<<"f_scalefactor "<< f_scalefactor;
+        //qDebug()<<"l_read_prec: " <<l_read_prec;
+        //qDebug()<<"readlist_in[i_dp_start]: " <<readlist_in[i_dp_start];
+        //qDebug()<<"f_scalefactor "<< f_scalefactor;
+
         l_read_diff = (readlist_in[i_dp_start] - l_read_prec)/i_stepsize;
         qDebug()<<"l_read_diff: " <<l_read_diff;
+
         l_write_diff = (writelist_in[i_dp_start] - l_write_prec)/i_stepsize;
         for(int i = 0; i < i_intpol_count; i++){
-            readlist_int.append( l_read_prec + (l_read_diff*i) );
-            writelist_int.append( l_write_prec + (l_write_diff*i) );
-            qDebug()<< "k: " << k << readlist_int[k]/(1024*1024); k++;
+            readlist_int.append(  readlist_in[i_dp_start] );
+            writelist_int.append( writelist_in[i_dp_start] );
+            //readlist_int.append( l_read_prec + (l_read_diff*i) );
+            //writelist_int.append( l_write_prec + (l_write_diff*i) );
+
+            qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
            // qDebug()<<"tick";
         }
-
+         qDebug()<<"tick";
         // Middle data points
         for(int i = i_dp_start +1; i < i_dp_end; i++){
             l_read_prec =  readlist_in[i-1];
@@ -315,21 +322,27 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             l_read_diff = (readlist_in[i] - l_read_prec)/i_stepsize;
             l_write_diff = (writelist_in[i] - l_write_prec)/i_stepsize;
             for(int j = 0; j < i_stepsize; j++){
-                readlist_int.append( l_read_prec + (l_read_diff*j) );
-                writelist_int.append( l_write_prec + (l_write_diff*j) );
-                qDebug()<< "k: " << k << readlist_int[k]/(1024*1024); k++;
+                    readlist_int.append( readlist_in[i] );
+                    writelist_int.append( writelist_in[i] );
+
+                //readlist_int.append( l_read_prec + (l_read_diff*j) );
+                //writelist_int.append( l_write_prec + (l_write_diff*j) );
+                qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
             }
         }
-
+        qDebug()<<"tick";
         // Last data points
         l_read_prec  = readlist_in[i_dp_end-1];
         l_write_prec = writelist_in[i_dp_end-1];
         l_read_diff  = (readlist_in[i_dp_end] - l_read_prec)/i_stepsize;
         l_write_diff = (writelist_in[i_dp_end] - l_write_prec)/i_stepsize;
         for(int i = i_intpol_count; i < i_stepsize; i++){
-            readlist_int.append(  l_read_prec + (l_read_diff*i) );
-            writelist_int.append( l_write_prec + (l_write_diff*i) );
-            qDebug()<< "k: " << k << readlist_int[k]; k++;
+            readlist_int.append(  readlist_in[i_dp_end] );
+            writelist_int.append( writelist_in[i_dp_end] );
+
+            //readlist_int.append(  l_read_prec + (l_read_diff*i) );
+            //writelist_int.append( l_write_prec + (l_write_diff*i) );
+            qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
         }
 
 
@@ -368,7 +381,10 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
                                  ( i_y_d_size) -
                                  (((float)(readlist_int[i]))/f_scalefactor)
                                  );
-                //qDebug()<<"readlist_int[i]: "<<(float)(readlist_int[i]);
+                //qDebug()<<"i: " << i;
+                //qDebug()<<"f_scalefactor " << i <<f_scalefactor;
+                //qDebug()<<"readlist_int[i]: " << i <<(float)(readlist_int[i]);
+                //qDebug()<<"readlist_int[i]/(...): " << i <<(((float)(readlist_int[i]))/f_scalefactor);
                 //qDebug()<<"readpg[i].x(): "<<readpg[i].x();
 
                 writepg<<QPointF( ( (i_dp_end*i_stepsize) - i),
