@@ -278,13 +278,13 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
          */
         //debug information
         int k = 0;
-
+        qDebug() << "i_intpol_count:"<< i_intpol_count;
         // Reset i_intpol_count
         if(i_intpol_count == i_stepsize){
             i_intpol_count = 0;
             qDebug()<<"i_intpol_count = 0";
         }
-        //qDebug()<<"i_intpol_count: "<<i_intpol_count;
+
 
         // Define traffic value for preceding data point
         if(i_dp_start == 0){
@@ -375,6 +375,9 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         // Create Points
         // Create QPolygonF from right to left
         // Uper side of the QPolygonF
+        qDebug()<<"i_dp_end*i_stepsize"<< i_dp_end*i_stepsize ;
+        qDebug() << "i_dp_start" << i_dp_start;
+        qDebug() << "i_dp_start" << i_dp_end;
         for(int i = i_dp_start; i < /*i_dp_end*/  (i_dp_end*i_stepsize) ; i++)
         {
                 readpg<<QPointF( ( (i_dp_end*i_stepsize) - i),
@@ -397,14 +400,25 @@ void Graph::g_create_path(QList<unsigned long> readlist_int,
         qDebug() << "Ping";
         readpg<<QPointF( 0,
                          ( i_y_d_size ) -
-                         ((float)(readlist_int[i_dp_end]))/f_scalefactor
+                         ((float)(readlist_int[(i_dp_end*i_stepsize)-1]))/f_scalefactor
                          );
         //(((float)(readlist_in[i_dp_start]))/f_scalefactor));
         writepg<<QPointF(  0,
                           ( i_y_d_size) -
-                          ((((float)(writelist_int[i_dp_end]))/f_scalefactor) +
-                           (((float)(readlist_int[i_dp_end]))/f_scalefactor))
+                          ((((float)(writelist_int[(i_dp_end*i_stepsize)-1]))/f_scalefactor) +
+                           (((float)(readlist_int[(i_dp_end*i_stepsize)-1]))/f_scalefactor))
                           );
+        readpg<<QPointF( 0,
+                         ( i_y_d_size ) -
+                         (0)/f_scalefactor
+                         );
+        writepg<<QPointF(  0,
+                          ( i_y_d_size) -
+                          ((((float)(readlist_int[(i_dp_end*i_stepsize)-1]))/f_scalefactor))
+                          );
+
+
+
 
 
 
