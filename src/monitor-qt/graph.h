@@ -48,9 +48,9 @@ public:
         float f_scalefactor;
         float f_zoomfactor; // Keeps the zoomfactor (i_x_d_size/i_dp_num)
 
-        unsigned long l_read_max, l_write_max, l_max, l_c_max; // Holds the max values to do the scaling for the graph
-        unsigned long l_read_diff, l_write_diff; // Needed to calculate the interpolation steps
-        unsigned long l_read_prec, l_write_prec; // Needed to calculate the interpolation steps
+        long l_read_max, l_write_max, l_max, l_c_max; // Holds the max values to do the scaling for the graph
+        long l_read_diff, l_write_diff; // Needed to calculate the interpolation steps
+        long l_read_prec, l_write_prec; // Needed to calculate the interpolation steps
         unsigned long thrputr;
         unsigned long thrputw;
 
