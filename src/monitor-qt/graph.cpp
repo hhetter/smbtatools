@@ -303,10 +303,14 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         l_read_diff = (l_read_prec - (long)readlist_in[i_dp_start] )/i_stepsize;
         l_write_diff = (l_write_prec - (long)writelist_in[i_dp_start])/i_stepsize;
         for(int i = 0; i < i_intpol_count; i++){
-            //readlist_int.append(  readlist_in[i_dp_start] );
-            //writelist_int.append( writelist_in[i_dp_start] );
-            readlist_int.append(  (long)readlist_in[i_dp_start] + (l_read_diff*i) );
-            writelist_int.append( (long)writelist_in[i_dp_start] + (l_write_diff*i) );
+
+            //Without interpolation:
+            readlist_int.append(  readlist_in[i_dp_start] );
+            writelist_int.append( writelist_in[i_dp_start] );
+
+            // With interpolation:
+            //readlist_int.append(  (long)readlist_in[i_dp_start] + (l_read_diff*i) );
+            //writelist_int.append( (long)writelist_in[i_dp_start] + (l_write_diff*i) );
 
             //qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
            // qDebug()<<"tick";
@@ -323,17 +327,22 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             l_read_diff  = (l_read_prec  - (long)readlist_in[i] )/i_stepsize;
             l_write_diff = (l_write_prec - (long)writelist_in[i])/i_stepsize;
             for(int j = 0; j < i_stepsize; j++){
-                    //readlist_int.append( readlist_in[i] );
-                    //writelist_int.append( writelist_in[i] );
-                    qDebug()<< "i: " << i << "j:"  << j;
+
+                // Without interpolation:
+                readlist_int.append( readlist_in[i] );
+                writelist_int.append( writelist_in[i] );
+
+                //With interpolation:
+                /*
                 readlist_int.append(  (long)readlist_in[i]  + (l_read_diff*j)  );
                 writelist_int.append( (long)writelist_in[i] + (l_write_diff*j) );
-
+                qDebug()<< "i: " << i << "j:"  << j;
                 qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i])/i_stepsize);
                 qDebug()<< "l_write_prec "<<(long)l_write_prec;
                 qDebug()<< "writelist_in[i] "<<(long)writelist_in[i];
                 qDebug()<< "l_write_diff" << (long)l_write_diff;
                 qDebug()<< "writelist_int.last(): " <<  (long)writelist_int.last(); k++;
+                */
 
             }
             qDebug()<< "i: " << i;
@@ -347,9 +356,14 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         l_read_diff  = (l_read_prec -  (long)(readlist_in[i_dp_end] )/i_stepsize);
         l_write_diff = (l_write_prec - (long)(writelist_in[i_dp_end])/i_stepsize);
         for(int i = i_intpol_count; i < i_stepsize; i++){
-            //readlist_int.append(  readlist_in[i_dp_end] );
-            //writelist_int.append( writelist_in[i_dp_end] );
 
+            // Without interpolation
+            readlist_int.append(  readlist_in[i_dp_end] );
+            writelist_int.append( writelist_in[i_dp_end] );
+
+
+            // With interpolation:
+            /*
             readlist_int.append(  l_read_prec + (l_read_diff*i) );
             writelist_int.append( l_write_prec + (l_write_diff*i) );
             qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i_dp_end])/i_stepsize);
@@ -357,6 +371,7 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             qDebug()<< "writelist_in[i] "<<(long)writelist_in[i_dp_end];
             qDebug()<< "l_write_diff" << (long)l_write_diff;
             qDebug()<< "writelist_int.last(): " <<  (long)writelist_int.last(); k++;
+            */
 
         }
 
