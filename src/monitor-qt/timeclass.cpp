@@ -11,7 +11,6 @@ Timeclass::Timeclass(InstanceData *idata, QWidget *parent) :
     
     timer = new QTimer;
  //   timer->setInterval(60000/i_stepsize); // minute
-   //timer->setInterval(1000/i_stepsize);   // second, standard value
    // timer->setInterval(10000/i_stepsize);   // debug value
     timer->setInterval(5000/i_stepsize);   //debug times
     //timer->setInterval(300/i_stepsize);   // second

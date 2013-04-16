@@ -83,6 +83,8 @@ void network_handle_data( struct configuration_data *c)
         fd_set fd_set_r,active_fd_set;
         int z=0;
 	int u=0;
+	int d=0;
+	int ticktimer=0;
 	char *str = NULL;
         char *header=NULL;
         int header_position=0;
@@ -96,8 +98,8 @@ void network_handle_data( struct configuration_data *c)
 	// and will loop forever
 	if (c->dryrun==1) {
 		while( 1==1 ) {
-			z = rand();
-			u = rand() % 2;
+			if (ticktimer==0) z = rand();
+			if (ticktimer==0) u = rand() % 2;
 			if (u == 0) {
 				str = talloc_asprintf(NULL,"R:%i#",z);
 			} else {
@@ -105,8 +107,24 @@ void network_handle_data( struct configuration_data *c)
 			}
 			send(c->monitor_gen_socket_cli,str,strlen(str),0);
 			talloc_free(str);
-			z = ( rand() % 10000 );
-			usleep(1000*z);
+
+			// Simple Random Timing
+			//
+
+			d = rand() % 20;
+			if ( d==5 ) { // In one out of 10 times, we will have times of constant traffic
+				ticktimer = rand();
+	
+				
+			}
+			if (ticktimer > 0) {
+				usleep(1000);
+				ticktimer=ticktimer-1;}
+		       		else
+				{
+				z = ( rand() % 10000 );
+				usleep(1000*z);
+				}
 		}
 	}
 
