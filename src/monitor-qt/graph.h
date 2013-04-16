@@ -55,7 +55,7 @@ public:
         unsigned long thrputw;
 
         //    QLinkedList<unsigned long> readlist, writelist; // Holds traffic values from dpoints
-        QList<unsigned long> *readlist, *writelist; // Holds traffic values from dpoints
+        QList<long> *readlist, *writelist; // Holds traffic values from dpoints
         QList<long long> readlist_w, writelist_w, worklist;
         //QList<unsigned long> readlist_int, writelist_int;
         QPointF readp, writep;
@@ -86,8 +86,8 @@ public slots:
         void g_squeeze_dp(); // map data points to pixel width (dp > pw)
         void g_interpolate(QList<unsigned long> readlist_in,
                            QList<unsigned long> writelist_in); // Inteerpolation and create points to make the graph
-        void g_create_path(QList<unsigned long> readlist_int,
-                           QList<unsigned long> writelist_int);
+        void g_create_path(QList<long> readlist_int,
+                           QList<long> writelist_int);
         void g_get_size(int i_width, int i_height);
         char *mhr( long long int kb );
 

@@ -25,7 +25,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 
         i_x_d_size = 600; // Width of graph area
         i_y_d_size = 400; // Height of graph area
-        i_dp_min = 10;
+        i_dp_min = 5;
         i_dp_max = 86400;
         //i_intpol_count = 1; // Counter for the interpolation steps
         i_intpol_count = 1;
@@ -39,8 +39,8 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         i_dp_start = 0; // index of the first data point that is displayed in the graph
         i_dp_end = i_dp_number + i_dp_start; // index of the last data point that is displayed in the graph
 
-        readlist = new QList<unsigned long>;
-        writelist = new QList<unsigned long>;
+        readlist =  new QList<long>;
+        writelist = new QList<long>;
 
         /*
          * Initialize xstrings for first use, will be overwritten after first
@@ -207,7 +207,7 @@ void Graph::g_def_dp_num() // Define how to map datapoints to pixels
 void Graph::g_interpolate(QList<unsigned long> readlist_in,
                           QList<unsigned long> writelist_in)
 {
-        QList< unsigned long> readlist_int, writelist_int;
+        QList<long> readlist_int, writelist_int;
         // Initialize Values
         l_max  = 0;
         readp  = QPointF();
@@ -291,8 +291,8 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             l_write_prec = 0;
         }
         if(i_dp_start > 0){
-            l_read_prec =  readlist_in[i_dp_start-1];
-            l_write_prec = writelist_in[i_dp_start-1];
+            l_read_prec =  (long)readlist_in[i_dp_start-1];
+            l_write_prec = (long)writelist_in[i_dp_start-1];
         }
 
         // First data point
@@ -300,66 +300,64 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         //qDebug()<<"readlist_in[i_dp_start]: " <<readlist_in[i_dp_start];
         //qDebug()<<"f_scalefactor "<< f_scalefactor;
 
-        l_read_diff = (l_read_prec - readlist_in[i_dp_start] )/i_stepsize;
-        l_write_diff = (l_write_prec - writelist_in[i_dp_start])/i_stepsize;
+        l_read_diff = (l_read_prec - (long)readlist_in[i_dp_start] )/i_stepsize;
+        l_write_diff = (l_write_prec - (long)writelist_in[i_dp_start])/i_stepsize;
         for(int i = 0; i < i_intpol_count; i++){
             //readlist_int.append(  readlist_in[i_dp_start] );
             //writelist_int.append( writelist_in[i_dp_start] );
-            readlist_int.append(  readlist_in[i_dp_start] + (l_read_diff*i) );
-            writelist_int.append( writelist_in[i_dp_start] + (l_write_diff*i) );
+            readlist_int.append(  (long)readlist_in[i_dp_start] + (l_read_diff*i) );
+            writelist_int.append( (long)writelist_in[i_dp_start] + (l_write_diff*i) );
 
             //qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
            // qDebug()<<"tick";
         }
 
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 121f1fbcd61b39c699053ebc1c9ab8aa565b1978
+        qDebug()<<"Middle points";
         // Middle data points
          qDebug() << "i_intpol_count:"<< i_intpol_count;
         for(int i = i_dp_start +1; i < i_dp_end; i++){
-            l_read_prec =  readlist_in[i-1];
-            l_write_prec = writelist_in[i-1];
-<<<<<<< HEAD
-            l_read_diff  = (l_read_prec  - readlist_in[i] )/i_stepsize;
-            l_write_diff = (l_write_prec - writelist_in[i])/i_stepsize;
+            l_read_prec =  (long)readlist_in[i-1];
+            l_write_prec = (long)writelist_in[i-1];
+
+            l_read_diff  = (l_read_prec  - (long)readlist_in[i] )/i_stepsize;
+            l_write_diff = (l_write_prec - (long)writelist_in[i])/i_stepsize;
             for(int j = 0; j < i_stepsize; j++){
                     //readlist_int.append( readlist_in[i] );
                     //writelist_int.append( writelist_in[i] );
                     qDebug()<< "i: " << i << "j:"  << j;
-                readlist_int.append(  readlist_in[i]  + (l_read_diff*j)  );
-                writelist_int.append( writelist_in[i] + (l_write_diff*j) );
+                readlist_int.append(  (long)readlist_in[i]  + (l_read_diff*j)  );
+                writelist_int.append( (long)writelist_in[i] + (l_write_diff*j) );
 
-                qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (l_write_prec - writelist_in[i])/i_stepsize;
-                qDebug()<< "l_write_prec "<<l_write_prec;
-                qDebug()<< "writelist_in[i] "<<writelist_in[i];
-                qDebug()<< "l_write_diff" << l_write_diff;
-                qDebug()<< "writelist_int.last(): " <<  writelist_int.last(); k++;
-=======
-            l_read_diff  = (l_read_prec  - readlist_in[i])/i_stepsize;
-            l_write_diff = (l_write_prec - writelist_in[i] )/i_stepsize;
-            for(int j = 0; j < i_stepsize; j++){
-                readlist_int.append( readlist_in[i] + (l_read_diff*j) );
-                writelist_int.append(writelist_in[i] + (l_write_diff*j) );
-                qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
->>>>>>> 121f1fbcd61b39c699053ebc1c9ab8aa565b1978
+                qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i])/i_stepsize);
+                qDebug()<< "l_write_prec "<<(long)l_write_prec;
+                qDebug()<< "writelist_in[i] "<<(long)writelist_in[i];
+                qDebug()<< "l_write_diff" << (long)l_write_diff;
+                qDebug()<< "writelist_int.last(): " <<  (long)writelist_int.last(); k++;
+
             }
+            qDebug()<< "i: " << i;
+            qDebug()<< "=======================";
         }
 
+        qDebug()<<"Last point";
         // Last data points
-        l_read_prec  = readlist_in[i_dp_end-1];
-        l_write_prec = writelist_in[i_dp_end-1];
-        l_read_diff  = (l_read_prec -  readlist_in[i_dp_end] )/i_stepsize;
-        l_write_diff = (l_write_prec - writelist_in[i_dp_end])/i_stepsize;
+        l_read_prec  =(long)readlist_in[i_dp_end-1];
+        l_write_prec = (long)writelist_in[i_dp_end-1];
+        l_read_diff  = (l_read_prec -  (long)(readlist_in[i_dp_end] )/i_stepsize);
+        l_write_diff = (l_write_prec - (long)(writelist_in[i_dp_end])/i_stepsize);
         for(int i = i_intpol_count; i < i_stepsize; i++){
             //readlist_int.append(  readlist_in[i_dp_end] );
             //writelist_int.append( writelist_in[i_dp_end] );
 
             readlist_int.append(  l_read_prec + (l_read_diff*i) );
             writelist_int.append( l_write_prec + (l_write_diff*i) );
-            qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
+            qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i_dp_end])/i_stepsize);
+            qDebug()<< "l_write_prec "<<(long)l_write_prec;
+            qDebug()<< "writelist_in[i] "<<(long)writelist_in[i_dp_end];
+            qDebug()<< "l_write_diff" << (long)l_write_diff;
+            qDebug()<< "writelist_int.last(): " <<  (long)writelist_int.last(); k++;
+
         }
 
 
@@ -378,8 +376,8 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 }
 
 
-void Graph::g_create_path(QList<unsigned long> readlist_int,
-                          QList<unsigned long> writelist_int)
+void Graph::g_create_path(QList<long> readlist_int,
+                          QList<long> writelist_int)
 {
         // Debug information about number of graph points
         //qDebug()<<"Number of graph points: i_dp_end - i_dp_start = " << i_dp_end - i_dp_start;
@@ -694,8 +692,6 @@ void Graph::g_get_size(int i_width, int i_height){
         i_x_d_size = i_width - i_x_os ;
         i_y_d_size = i_height - 92;
 
-        qDebug()<< "gWidth: "<< i_get_width;
-        qDebug()<< "gHeight: "<< i_get_height;
 
 
 
