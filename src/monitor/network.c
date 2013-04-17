@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 #include "include/includes.h"
-
+#include <time.h>
 
 
 /**
@@ -97,8 +97,10 @@ void network_handle_data( struct configuration_data *c)
 	// dryrun just sends out values
 	// and will loop forever
 	if (c->dryrun==1) {
+		
 		while( 1==1 ) {
-			if (ticktimer==0) z = rand();
+			srand(time(NULL));
+			if (ticktimer==0) { z = rand() % 1024*1024*5; }
 			if (ticktimer==0) u = rand() % 2;
 			if (u == 0) {
 				str = talloc_asprintf(NULL,"R:%i#",z);
@@ -111,19 +113,18 @@ void network_handle_data( struct configuration_data *c)
 			// Simple Random Timing
 			//
 
-			d = rand() % 20;
-			if ( d==5 ) { // In one out of 10 times, we will have times of constant traffic
-				ticktimer = rand();
+			d = rand() % 5;
+			if ( d==0 && ticktimer==0 )  { // In one out of 10 times, we will have times of constant traffic
+				ticktimer = rand() % 20;
 	
 				
 			}
 			if (ticktimer > 0) {
-				usleep(1000);
+				sleep(1);
 				ticktimer=ticktimer-1;}
 		       		else
 				{
-				z = ( rand() % 10000 );
-				usleep(1000*z);
+				sleep(1);
 				}
 		}
 	}
