@@ -180,7 +180,7 @@ void ConfigForm::cf_readconfig(){
                 ldata->dryrunCheck = true;
                 ldata->configString = " -x";
         }
-        //qDebug()<< "Configstring: " << *configString;
+        qDebug()<< "Configstring: " << *configString;
 
 
 
