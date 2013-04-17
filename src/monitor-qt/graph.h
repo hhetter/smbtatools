@@ -53,6 +53,8 @@ public:
         long l_read_prec, l_write_prec; // Needed to calculate the interpolation steps
         unsigned long thrputr;
         unsigned long thrputw;
+	unsigned long thrputr_old;
+	unsigned long thrputw_old;
 
         //    QLinkedList<unsigned long> readlist, writelist; // Holds traffic values from dpoints
         QList<long> *readlist, *writelist; // Holds traffic values from dpoints

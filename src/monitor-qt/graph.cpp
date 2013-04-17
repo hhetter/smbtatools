@@ -565,11 +565,22 @@ void Graph::paintEvent(QPaintEvent *){
         char *totalval = mhr(thrputw + thrputr);
         thrstr.append("Throughput Read:");
         thrstr.append(thrval1);
-        thrstr.append("/min Write:");
+	thrstr.append("/min [");
+	if (thrputr > thrputr_old) thrstr.append("+] Write:");
+	if (thrputr == thrputr_old) thrstr.append("=] Write:");
+	if (thrputr < thrputr_old) thrstr.append("-] Write:");
         thrstr.append(thrval2);
-        thrstr.append("/min Total:");
+        thrstr.append("/min [");
+	if (thrputw > thrputw_old) thrstr.append("+] Total:");
+	if (thrputw == thrputw_old) thrstr.append("=] Total:");
+	if (thrputw < thrputw_old) thrstr.append("-] Total:");
         thrstr.append(totalval);
-        thrstr.append("/min");
+        thrstr.append("/min [");
+	if ( (thrputr+thrputw) > (thrputr_old+thrputw_old) ) thrstr.append("+]");
+	if ( (thrputr+thrputw) == (thrputr_old+thrputw_old) ) thrstr.append("=]");
+	if ( (thrputr+thrputw) < (thrputr_old+thrputw_old) ) thrstr.append("-]");
+	thrputr_old=thrputr;
+	thrputw_old=thrputw;
         painter.drawText(5+50,15, thrstr);
         QString what;
 
