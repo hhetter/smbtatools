@@ -242,7 +242,7 @@ void MonitorForm::readfromsocket(){
         //    qDebug() << "readfromsocket()";
 
         *readstring = monitorSocket->readAll();
-        //            qDebug()<<"*readstring: " << *readstring;
+        //           qDebug()<<"*readstring: " << *readstring;
         *readlist = readstring->split("#");
         //    qDebug()<< "Last index: " << readlist->count();
 

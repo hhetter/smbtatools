@@ -426,7 +426,7 @@ void Graph::g_create_path(QList<long> readlist_int,
                                   );
         }
 
-        qDebug() << "Ping";
+        // qDebug() << "Ping";
         readpg<<QPointF( 0,
                          ( i_y_d_size ) -
                          ((float)(readlist_int[(i_dp_end*i_stepsize)-1]))/f_scalefactor
@@ -451,7 +451,7 @@ void Graph::g_create_path(QList<long> readlist_int,
 
 
 
-         qDebug() << "Ping2";
+        // qDebug() << "Ping2";
         // Create QPolygonF back from left to right
         for(int i = (i_dp_end*i_stepsize)-1; i > i_dp_start /* (i_dp_end*i_stepsize) */; i--)
         {
@@ -467,7 +467,7 @@ void Graph::g_create_path(QList<long> readlist_int,
                                   );
         }
 
-        qDebug() << "Ping3";
+        // qDebug() << "Ping3";
         // Create end points of the QPolygonF's (at the right side)
         readpg<<QPointF( ( i_dp_end*i_stepsize ),
                          ( i_y_d_size) -
@@ -478,7 +478,7 @@ void Graph::g_create_path(QList<long> readlist_int,
                           (((float)(readlist_int[i_dp_start]))/f_scalefactor)
 
                           );
-        qDebug() << "Ping4";
+        // qDebug() << "Ping4";
         ////
         // (Re)scale axes
         if(l_max > 1024){
