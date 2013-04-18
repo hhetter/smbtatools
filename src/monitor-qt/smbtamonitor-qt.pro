@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     instancedata.cpp \
     wmanager.cpp \
     form.cpp \
-    object_selector.cpp
+    object_selector.cpp \
+    smbtaquerydoc.cpp
 
 HEADERS  += frontend.h \
     configform.h \
@@ -37,7 +38,8 @@ HEADERS  += frontend.h \
     instancedata.h \
     wmanager.h \
     form.h \
-    object_selector.h
+    object_selector.h \
+    smbtaquerydoc.h
 
 FORMS    += frontend.ui \
     configform.ui \
