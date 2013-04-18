@@ -102,9 +102,7 @@ void frontend::fr_setMonitorWidget()
 
 void frontend::resizeEvent(QResizeEvent *event)
 {
-            qDebug()<<"Frontend Resized";
-            qDebug()<<"Width" << this->width();
-            qDebug()<<"Height" << this->height();
+
             monitorFormW->p_graph->g_get_size(this->width(),this->height());
 
 
@@ -115,10 +113,6 @@ void frontend::resizeEvent(QResizeEvent *event)
 
 void frontend::fr_setTestLabel()
 {
-
-
-        //qDebug()<<"setTestLabel()";
-        //    ui->testlabel->setText("setTestLabel()");
 
 
 }

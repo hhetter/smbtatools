@@ -268,12 +268,6 @@ void MonitorForm::readfromsocket(){
                 }
 
 
-
-
-                //                qDebug()<<i;
-                //                qDebug()<<readlist->at(i);
-                //                qDebug()<<"--------------";
-
         }
         mutex.unlock();
 
@@ -337,7 +331,7 @@ void MonitorForm::sendtopoints(){
 
 void MonitorForm::resizeEvent(QResizeEvent *event)
 {
-          qDebug()<<"Monitorform Resized";
+
 
 }
 

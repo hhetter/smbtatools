@@ -46,7 +46,6 @@ void WManager::wm_newMonitorWidget()
     }
 
 
-        qDebug()<<"wm_newMonitorWidget()";
 
     /*
         newFrontend = new frontend();
@@ -92,7 +91,7 @@ void WManager::wm_firstInit(){
 
 void WManager::resizeEvent(QResizeEvent *event)
 {
-         // qDebug()<<"WManager Resized";
+
 
 }
 
