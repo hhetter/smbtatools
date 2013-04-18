@@ -305,12 +305,12 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         for(int i = 0; i < i_intpol_count; i++){
 
             //Without interpolation:
-            readlist_int.append(  readlist_in[i_dp_start] );
-            writelist_int.append( writelist_in[i_dp_start] );
+            //readlist_int.append(  readlist_in[i_dp_start] );
+            //writelist_int.append( writelist_in[i_dp_start] );
 
             // With interpolation:
-            //readlist_int.append(  (long)readlist_in[i_dp_start] + (l_read_diff*i) );
-            //writelist_int.append( (long)writelist_in[i_dp_start] + (l_write_diff*i) );
+            readlist_int.append(  (long)readlist_in[i_dp_start] + (l_read_diff*i) );
+            writelist_int.append( (long)writelist_in[i_dp_start] + (l_write_diff*i) );
 
             //qDebug()<< "writelist_int.last(): " <<  readlist_int.last(); k++;
            // qDebug()<<"tick";
@@ -329,13 +329,14 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
             for(int j = 0; j < i_stepsize; j++){
 
                 // Without interpolation:
-                readlist_int.append( readlist_in[i] );
-                writelist_int.append( writelist_in[i] );
+                //readlist_int.append( readlist_in[i] );
+                //writelist_int.append( writelist_in[i] );
 
                 //With interpolation:
-                /*
+
                 readlist_int.append(  (long)readlist_in[i]  + (l_read_diff*j)  );
                 writelist_int.append( (long)writelist_in[i] + (l_write_diff*j) );
+                /*
                 qDebug()<< "i: " << i << "j:"  << j;
                 qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i])/i_stepsize);
                 qDebug()<< "l_write_prec "<<(long)l_write_prec;
@@ -362,9 +363,10 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
 
 
             // With interpolation:
+
+            //readlist_int.append(  l_read_prec + (l_read_diff*i) );
+            //writelist_int.append( l_write_prec + (l_write_diff*i) );
             /*
-            readlist_int.append(  l_read_prec + (l_read_diff*i) );
-            writelist_int.append( l_write_prec + (l_write_diff*i) );
             qDebug()<<"(l_write_prec - writelist_in[i])/i_stepsize =" << (long)((l_write_prec - (long)writelist_in[i_dp_end])/i_stepsize);
             qDebug()<< "l_write_prec "<<(long)l_write_prec;
             qDebug()<< "writelist_in[i] "<<(long)writelist_in[i_dp_end];
