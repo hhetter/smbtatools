@@ -113,7 +113,7 @@ void network_handle_data( struct configuration_data *c)
 			// Simple Random Timing
 			//
 
-			d = rand() % 5;
+			d = rand() % 500;
 			if ( d==0 && ticktimer==0 )  { // In one out of 10 times, we will have times of constant traffic
 				ticktimer = rand() % 20;
 	
