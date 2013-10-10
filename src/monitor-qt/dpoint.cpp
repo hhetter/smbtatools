@@ -4,7 +4,7 @@ DPoint::DPoint(InstanceData *idata, QObject *parent) :
         QObject(parent)
 {
         i_s_count = 0;
-        //i_stepsize=5;
+
         i_stepsize = idata->i_stepsize;
         i_max_index = idata->i_max_index; // Max Numbers of entries in the data point list
         l_read_end = 0;

@@ -242,7 +242,7 @@ void MonitorForm::readfromsocket(){
         //    qDebug() << "readfromsocket()";
 
         *readstring = monitorSocket->readAll();
-        //            qDebug()<<"*readstring: " << *readstring;
+        //           qDebug()<<"*readstring: " << *readstring;
         *readlist = readstring->split("#");
         //    qDebug()<< "Last index: " << readlist->count();
 
@@ -267,12 +267,6 @@ void MonitorForm::readfromsocket(){
                         *l_readstack += output.toULong();
                 }
 
-
-
-
-                //                qDebug()<<i;
-                //                qDebug()<<readlist->at(i);
-                //                qDebug()<<"--------------";
 
         }
         mutex.unlock();
@@ -337,7 +331,7 @@ void MonitorForm::sendtopoints(){
 
 void MonitorForm::resizeEvent(QResizeEvent *event)
 {
-          qDebug()<<"Monitorform Resized";
+
 
 }
 

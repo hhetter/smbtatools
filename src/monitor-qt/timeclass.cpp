@@ -24,7 +24,6 @@ Timeclass::Timeclass(InstanceData *idata, QWidget *parent) :
 
 void Timeclass::tc_timersignal(){
 
-  qDebug()<<"timer";
 
 }
 
