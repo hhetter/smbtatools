@@ -114,14 +114,8 @@ void MonitorForm::startmonitor()
         if(running == false){
 
 
-                //qDebug() << "startmonitor";
-
 
                 timeClassW->timer->start();
-
-
-
-                //         visualW->vs_processnumbers(l_writestack, l_readstack);
 
 
                 /** indicate some processing for the user */
@@ -183,18 +177,7 @@ void MonitorForm::connectSocket()
                 running=true;
                 monitorSocket->connectToServer(ldata->socketString,
                                                QIODevice::ReadOnly);
-                //connect(timeClassW->timer, SIGNAL(timeout()),
-                //        this, SLOT(sendtovisualizer()));
-                /*
-                connect(timeClassW->timer, SIGNAL(timeout()),
-                        this, SLOT(sendtopoints()));
-                connect(monitorSocket, SIGNAL(readyRead()),
-                        this, SLOT(readfromsocket()));
-                //qDebug() << monitorSocket->state();
-*/
 
-                //               qDebug()<<"processrunner->monitorprocess->state() 2:"<< processRunnerW->monitorprocess->state();
-                //       connect(processRunnerW->monitorprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(sendmessage()), Qt::UniqueConnection);
         }
         else(qDebug()<< "Error while connecting to the smbtad");
 
@@ -304,19 +287,9 @@ void MonitorForm::sendtopoints(){
 
         mutex.lock();
 
-        //    qDebug() << "sendtovisualizer()";
-        //    unsigned long int uli1 = 1000;
-        //    unsigned long int uli2 = 1500;
-        //   qDebug()<<"*l_readstack ->visualizer   " << *l_readstack;
-        //   qDebug()<<"*l_writestack -> visualizer " << *l_writestack;
         d_points->dp_receivenumbers( l_readstack, l_writestack);
         p_graph->g_receivelist(d_points->dp_returnreadlist(),
                                d_points->dp_returnwritelist());
-
-
-        //        QList<unsigned long> readlist; readlist = d_points->dp_returnreadlist();
-
-
 
         *l_readstack = 0;
         *l_writestack = 0;

@@ -42,10 +42,6 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
                 SLOT(cf_hideall()));
 
 
-
-
-        //qDebug()<<"Class constructor ConfigForm";
-        //    cf_readconfig();
 }
 
 ConfigForm::~ConfigForm()
@@ -104,10 +100,6 @@ void ConfigForm::cf_readconfig(){
         *shareString  = "";
         *userString   = "";
         *domainString = "";
-
-
-        //qDebug()<<"Current index: " <<ui->queryTypeButton->currentIndex();
-        //qDebug()<<"i_switch: " <<i_switch;
 
 
         switch(ui->queryTypeButton->currentIndex())
@@ -180,7 +172,7 @@ void ConfigForm::cf_readconfig(){
                 ldata->dryrunCheck = true;
                 ldata->configString = " -x";
         }
-        qDebug()<< "Configstring: " << *configString;
+        //qDebug()<< "Configstring: " << *configString;
 
 
 

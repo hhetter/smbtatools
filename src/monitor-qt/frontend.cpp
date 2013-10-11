@@ -15,8 +15,7 @@ frontend::frontend(QWidget *parent) :
         idata = new InstanceData();
         configWidget = new ConfigForm(idata);
         monitorFormW = new MonitorForm(idata);
- //       wManager = new WManager(this);
-  //      wManager->show();
+
 
         ////
         // Add widgets to the stackedWidget
