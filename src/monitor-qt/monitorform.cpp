@@ -80,6 +80,8 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         //p_graph = new Graph(idata, ui->visual_widget);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
         vlayout->addWidget(p_graph);
+        ui->visual_widget->setGeometry(0,30,1000,1000);
+
 
 
 }

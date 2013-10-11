@@ -8,8 +8,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 {
         ldata = idata;
 
-        this->resize(692,492);
-
+        //this->resize(692,492);
 
         i_get_width = this->width();
         i_get_height = this->height();

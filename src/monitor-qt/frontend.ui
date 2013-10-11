@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1920</width>
-    <height>1080</height>
+    <width>4000</width>
+    <height>2160</height>
    </size>
   </property>
   <property name="baseSize">
@@ -42,17 +42,23 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>721</width>
-     <height>581</height>
+     <width>4000</width>
+     <height>2160</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <widget class="QStackedWidget" name="stackedView">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>721</width>
-      <height>551</height>
+      <width>4000</width>
+      <height>2160</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -110,14 +116,14 @@
      <widget class="QLabel" name="monitorwidgetlabel">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>110</y>
-        <width>131</width>
-        <height>16</height>
+        <x>30</x>
+        <y>150</y>
+        <width>211</width>
+        <height>81</height>
        </rect>
       </property>
       <property name="text">
-       <string>Monitorwidget</string>
+       <string>Monitor</string>
       </property>
      </widget>
     </widget>
