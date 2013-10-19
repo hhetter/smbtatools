@@ -9,6 +9,8 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QMdiArea>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 
 #include <QMainWindow>
 #include <QMdiSubWindow>
@@ -39,11 +41,16 @@ public:
 
     QGraphicsScene *scene;
 
+    QSqlDatabase db;
+    QSqlQuery query;
+    QString s_path, cf_path, df_path;
+
 
 
 public slots:
     void wm_newMonitorWidget();
     void wm_firstInit();
+    void wm_init();
 
     void resizeEvent(QResizeEvent *event);
 
