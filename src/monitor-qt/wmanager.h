@@ -11,6 +11,7 @@
 #include <QMdiArea>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
 
 #include <QMainWindow>
 #include <QMdiSubWindow>

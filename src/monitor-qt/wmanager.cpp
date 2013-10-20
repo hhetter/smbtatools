@@ -111,12 +111,14 @@ void WManager::wm_firstInit(){
         if(QDir(s_path).exists() &&
                         !(QFile(df_path).exists()))
         {
-            db = QSqlDatabase::addDatabase("QSQLITE");
+            db = QSqlDatabase::addDatabase("QSQLITE", "db_connection_init");
             db.setDatabaseName(df_path);
             db.open();
+
             // Setup database
             qDebug()<<"Setup database";
-            db.exec("create table query_info "
+            query = QSqlQuery(db);
+            query.exec("create table query_info "
                     "(id integer primary key, "
                     "nameString varchar(256), "
                     "fileString varchar(256), "
@@ -125,13 +127,20 @@ void WManager::wm_firstInit(){
                     "userString varchar(256), "
                     "queryParameterString varchar(256), "
                     "portString varchar(256), "
-                    "hostString varchar(256), "
+                    "hostString varchar(256)); "
                     );
+            qDebug()<< query.lastError();
 
 
             qDebug()<<"Smbtamonitor-qt database created:";
             qDebug()<< df_path;
+            qDebug()<<"Before close";
+
+            query.clear();
+            db.removeDatabase("QSQLITE");
             db.close();
+
+            qDebug()<<"After close";
         }
 }
 
@@ -163,9 +172,8 @@ void WManager::wm_init(){
         db.open();
 
     // Populate smbtamonitor-qt
-
-
-    db.close();
+        // Do things
+        db.close();
 
 
 }
