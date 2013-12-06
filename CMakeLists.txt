@@ -112,12 +112,12 @@ ENDIF()
 #
 # check for libsmbclient
 #
-include(FindLibsmbclient.cmake)
-FIND_PACKAGE(Libsmbclient)
-if (NOT LIBSMBCLIENT_INCLUDE_DIRS)
-        MESSAGE( FATAL_ERROR "ERROR: you will need libsmbclient
-                 development files installed.")
-ENDIF()
+#include(FindLibsmbclient.cmake)
+#FIND_PACKAGE(Libsmbclient)
+#if (NOT LIBSMBCLIENT_INCLUDE_DIRS)
+#        MESSAGE( FATAL_ERROR "ERROR: you will need libsmbclient
+#                 development files installed.")
+#ENDIF()
 
 #
 # check for talloc
@@ -193,17 +193,17 @@ ADD_EXECUTABLE(${CurrentExe}
 	)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBDBI_LIBRARIES} ${CURSES_LIBRARIES} ${INIPARSER_LIBRARIES} ${TALLOC_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} iniparser)
 
-SET(CurrentExe "smbtatorture")
-ADD_EXECUTABLE(${CurrentExe}
-	src/torture/smbtatorture.c
-	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
-
-SET(CurrentExe "smbtatorturesrv")
-ADD_EXECUTABLE(${CurrentExe}
-	src/torture/srv/smbtatorturesrv.c
-	)
-TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+#SET(CurrentExe "smbtatorture")
+#ADD_EXECUTABLE(${CurrentExe}
+#	src/torture/smbtatorture.c
+#	)
+#TARGET_LINK_LIBRARIES(${CurrentExe} ${LIBSMBCLIENT_LIBRARIES})
+#
+#SET(CurrentExe "smbtatorturesrv")
+#ADD_EXECUTABLE(${CurrentExe}
+#	src/torture/srv/smbtatorturesrv.c
+#	)
+#TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
 SET(CurrentExe "rrddriver")
 ADD_EXECUTABLE(${CurrentExe}
@@ -256,5 +256,5 @@ INSTALL(FILES src/torture/srv/directories.txt
 	DESTINATION "share/smbtatools"
 	PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME directories.txt)
 
-INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtamonitor-cli smbtatorture rrddriver smbtatorturesrv DESTINATION bin)
+INSTALL(TARGETS smbtaquery smbtamonitor-gen smbtamonitor-cli rrddriver DESTINATION bin)
 
