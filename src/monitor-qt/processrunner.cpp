@@ -3,7 +3,6 @@
 Processrunner::Processrunner(InstanceData *idata, QWidget *parent) :
     QObject(parent)
 {
-   //qDebug() << "Constructor Class Processrunner";
 
    monitorprocess = new QProcess;
 
@@ -13,7 +12,6 @@ Processrunner::Processrunner(InstanceData *idata, QWidget *parent) :
 
 void Processrunner::Processrunner::pr_readsignal(){
 
-  //qDebug()<<"pr_readsignal  ";
 
 }
 

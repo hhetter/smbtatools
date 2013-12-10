@@ -15,7 +15,6 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
          * updates) and processRunnerW (handles the smbtamonitor-gen) in
          * own threads
         */
-        //idata = new InstanceData();
         timeClassW = new Timeclass(idata);
         processRunnerW = new Processrunner(idata);
         QThread processThread, timerThread;
@@ -77,7 +76,6 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         /*
          * Setup graph box
         */
-        //p_graph = new Graph(idata, ui->visual_widget);
         QHBoxLayout *vlayout = new QHBoxLayout(ui->visual_widget);
         vlayout->addWidget(p_graph);
         ui->visual_widget->setGeometry(0,30,1000,1000);
@@ -124,15 +122,7 @@ void MonitorForm::startmonitor()
                 Progress->move(this->width()/2, this->height()/2);
                 Progress->show();
 
-
-
-
-                //processRunnerW->monitorprocess->start("smbtamonitor-gen "+(*configString));
-
                 processRunnerW->monitorprocess->start("smbtamonitor-gen "+(ldata->configString));
-
-                //*pid_string = QString::number(processRunnerW->monitorprocess->pid());
-                //QString socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(*pid_string);
 
                 ldata->pidString = QString::number(processRunnerW->monitorprocess->pid());
                 ldata->socketString = QString("/var/tmp/smbtamonitor-gen-socket-").append(ldata->pidString);
@@ -189,11 +179,8 @@ void MonitorForm::stopmonitor()
         ////
         // Stop the graph and the monitor process
         if(running==true){
-                //qDebug() << "stopmonitor";
                 running = false;
-                //        processRunnerW->monitorprocess->kill();
                 processRunnerW->monitorprocess->terminate();
-                //                qDebug()<<"processrunner->monitorprocess->state() 3:"<< processRunnerW->monitorprocess->state();
                 timeClassW->timer->stop();
 
 
@@ -207,10 +194,6 @@ void MonitorForm::stopmonitor()
 
 void MonitorForm::sendmessage()
 {
-        ////
-        // used mainly to create debug messages for certain signals
-        //qDebug() << "monitorform:sendmessage()";
-        //qDebug()<< "Heute: readyRead()";
 
 }
 
@@ -224,21 +207,12 @@ void MonitorForm::readfromsocket(){
 
 
         mutex.lock();
-        //    qDebug() << "readfromsocket()";
 
         *readstring = monitorSocket->readAll();
-        //           qDebug()<<"*readstring: " << *readstring;
         *readlist = readstring->split("#");
-        //    qDebug()<< "Last index: " << readlist->count();
-
-        //    int kk = readlist->count();
-
         for(int i=0; i < readlist->count()-1; i++){
 
                 QString output = readlist->at(i);
-
-                //        qDebug()<<"Output " << i <<": " << output;
-
                 if(output.startsWith("W")){
                         output.replace("W:","");
                         output.chop(1);
