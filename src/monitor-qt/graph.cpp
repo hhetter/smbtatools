@@ -8,7 +8,6 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
 {
         ldata = idata;
 
-        //this->resize(692,492);
 
         i_get_width = this->width();
         i_get_height = this->height();
@@ -24,7 +23,7 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         i_y_d_size = 400; // Height of graph area
         i_dp_min = 5;
         i_dp_max = 86400;
-        //i_intpol_count = 1; // Counter for the interpolation steps
+        // Counter for the interpolation steps
         i_intpol_count = 1;
 
         i_dp_number = 300;
@@ -52,28 +51,6 @@ Graph::Graph(InstanceData *idata, QWidget *parent) :
         title = "smbtamonitor-qt version ";
         title.append( SMBTAMONITOR_VERSION );
 
-
-        // hold configuration data
-        /*
-        hostString   = new QString;
-        fileString   = new QString;
-        portString   = new QString;
-        shareString  = new QString;
-        userString   = new QString;
-        domainString = new QString;
-
-        *hostString   = "";
-        *fileString   = "";
-        *portString   = "";
-        *shareString  = "";
-        *userString   = "";
-        *domainString = "";
-        */
-
-
-
-
-
         t_string = g_clock.currentTime().toString();
         t_i_string = QString::number(i_dp_number)+" Seconds";
 
@@ -87,14 +64,7 @@ void Graph::g_receivelist(QList<unsigned long> readlist_in,
                           QList<unsigned long> writelist_in)
 {
 
-
-        //    readlist = &readlist_in;
-        //   writelist = &writelist_in;
-        //g_get_w_size();
-
         g_interpolate(readlist_in, writelist_in);
-        //g_create_path();
-
 
 }
 
@@ -124,11 +94,6 @@ QList<long long> Graph::g_prepare_data(QList<unsigned long> getlist)
  */
 void Graph::g_get_w_size()
 {
-        //QSize w_size = this->frameSize();
-        /*    qDebug()<<"QSize: y " << w_size.height();
-    qDebug()<<"QSize calc: y " << (int)(w_size.height()*0.8);
-    qDebug()<<"QSize: x " << w_size.width();
-*/
 }
 
 
@@ -162,23 +127,18 @@ void Graph::g_change_dp_num(int i_delta) // Change the number of datapoints for 
 
         if(i_delta > 0 && i_dp_number > i_dp_min)
         {
-                // i_dp_number = (int)(i_dp_number*0.8);
                 i_dp_number = i_dp_number-  offset;
         }
 
         if(i_delta < 0 && i_dp_number < i_dp_max)
         {
 
-                //i_dp_number = (int)(i_dp_number*1.2);
                 i_dp_number = i_dp_number+offset;
         }
         i_dp_start = i_dp_start + g_get_dp_offset();
         i_dp_end = i_dp_start + i_dp_number;
-        //f_zoomfactor = ((float)i_x_d_size)/((float)i_dp_number);
 
         t_i_string = QString::number(i_dp_number)+" Seconds";
-        //        qDebug() << "i_dp_start: " << i_dp_start;
-        //        qDebug() << "i_dp_end: " << i_dp_end;
 }
 
 
@@ -224,8 +184,6 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         };
 
 
-    //qDebug() << i_dp_end;
-    //qDebug() << i_dp_start;
         // Find max value of read+write traffic to define y-axis scale factor
         for(int i = i_dp_start; i < i_dp_end; i++){
                 l_c_max = readlist_in[i] + writelist_in[i];
@@ -273,7 +231,6 @@ void Graph::g_interpolate(QList<unsigned long> readlist_in,
         // Reset i_intpol_count
         if(i_intpol_count == i_stepsize){
             i_intpol_count = 0;
-            //qDebug()<<"i_intpol_count = 0";
         }
 
 
@@ -541,7 +498,6 @@ void Graph::paintEvent(QPaintEvent *){
         QString what;
 
         what.append( "Host: "+(ldata->hostString));
-        //if (ldata->userString != "") {
         if (ldata->userString != "") {
                 what.append(", monitoring User "+ ldata->userString+".");
         } else if (ldata->shareString != "") {
@@ -569,12 +525,9 @@ void Graph::paintEvent(QPaintEvent *){
 
 
         // Paint graphs
-        //graphpainter.scale(1.0,1.0);
         QPainter graph_w_painter(this);
         graph_w_painter.setRenderHint(QPainter::Antialiasing);
         QPen graph_w_pen(Qt::blue, 0.01);//blue
-        //graph_w_painter.translate(i_x_os-(f_zoomfactor*
-        //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_w_painter.translate(i_x_os, i_y_os);
         graph_w_painter.scale(f_zoomfactor,1.0);
         graph_w_painter.setPen(graph_w_pen);
@@ -586,8 +539,6 @@ void Graph::paintEvent(QPaintEvent *){
         QPainter graph_r_painter(this);
         graph_r_painter.setRenderHint(QPainter::Antialiasing);
         QPen graph_r_pen(Qt::red, 0.01);//red
-        //graph_r_painter.translate(i_x_os-(f_zoomfactor*
-        //                                  (i_x_d_size - i_dp_number)), i_y_os);
         graph_r_painter.translate(i_x_os, i_y_os);
         graph_r_painter.scale(f_zoomfactor,1.0);
         graph_r_painter.setPen(graph_r_pen);
@@ -618,7 +569,6 @@ void Graph::paintGraph(QPaintEvent *){
 
 void Graph::wheelEvent(QWheelEvent *event)
 {
-        // qDebug() << "Wheel event detected";
         int y =  event->delta();
         g_change_dp_num(y);
 }
@@ -657,7 +607,6 @@ char *Graph::mhr( long long int kb )
                                         result = diff.quot;
                                         //                    rest = diff.rem;
                                 }
-        //     asprintf( &output,"%lli.%lli %s",result,rest,kbstring);
         asprintf( &output,"%lli %s",result,kbstring);
         return output;
 }
