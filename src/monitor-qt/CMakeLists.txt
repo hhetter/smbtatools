@@ -14,12 +14,19 @@ SET( smbtamonitor-qt_SRC  main.cpp
 			  graph.cpp
                           instancedata.cpp
                           wmanager.cpp
-			  smbtaquerydoc.cpp)
+			  smbtaquerydoc.cpp
+                          pgformular.cpp
+                          pgdiagram.cpp
+                          dbcustomformular.cpp
+                          plotterbase.cpp
+                          barchartplotter.cpp
+                          axisbase.cpp
+                          mainwidget.cpp
+                          showformat.cpp)
 
 
 
-
-qt4_wrap_ui( smbtamonitor-qt_ui configform.ui frontend.ui monitorform.ui wmanager.ui)
+qt4_wrap_ui( smbtamonitor-qt_ui configform.ui frontend.ui monitorform.ui wmanager.ui pgformular.ui pgdiagram.ui dbcustomformular.ui mainwidget.ui showformat.ui)
 qt4_automoc( ${smbtamonitor-qt_SRC} )
 ADD_EXECUTABLE( smbtamonitor-qt ${smbtamonitor-qt_SRC} ${smbtamonitor-qt_ui})
 	TARGET_LINK_LIBRARIES( smbtamonitor-qt ${LIBDBI_LIBRARIES} ${TALLOC_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSQL_LIBRARY} )

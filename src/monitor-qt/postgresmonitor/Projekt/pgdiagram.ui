@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>pgdiagram</class>
+ <widget class="QMainWindow" name="pgdiagram">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DBdiagram</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="CloseButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>99</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Close</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionMost_Users"/>
+    <addaction name="actionLowest_Users"/>
+    <addaction name="actionMost_Files"/>
+    <addaction name="actionLowest_Files"/>
+    <addaction name="actionCustom"/>
+   </widget>
+   <addaction name="menuDatabase"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_Connection">
+   <property name="text">
+    <string>new Connection</string>
+   </property>
+  </action>
+  <action name="actionEdit_Connection">
+   <property name="text">
+    <string>edit Connection</string>
+   </property>
+  </action>
+  <action name="actionClose_Connection">
+   <property name="text">
+    <string>close Connection</string>
+   </property>
+  </action>
+  <action name="actionMost_Users">
+   <property name="text">
+    <string>Most 10 Users</string>
+   </property>
+  </action>
+  <action name="actionLowest_Users">
+   <property name="text">
+    <string>Lowest 10 Users</string>
+   </property>
+  </action>
+  <action name="actionMost_Files">
+   <property name="text">
+    <string>Most 10 Files</string>
+   </property>
+  </action>
+  <action name="actionLowest_Files">
+   <property name="text">
+    <string>Lowest 10 Files</string>
+   </property>
+  </action>
+  <action name="actionCustom">
+   <property name="text">
+    <string>Custom</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

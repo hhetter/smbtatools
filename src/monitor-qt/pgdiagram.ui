@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>pgdiagram</class>
+ <widget class="QWidget" name="pgdiagram">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>920</width>
+    <height>541</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>DBdiagram</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" rowminimumheight="0,0">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout2">
+     <item row="1" column="0" colspan="2">
+      <widget class="QMdiArea" name="mdiADia">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="background">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>15</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>800</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>800</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>800</width>
+     <height>20</height>
+    </size>
+   </property>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <widget class="QMenu" name="menuMost_10_Users">
+     <property name="title">
+      <string>Most 10 Users</string>
+     </property>
+     <addaction name="Dia_m_10_U"/>
+     <addaction name="Tex_m_10_U"/>
+    </widget>
+    <widget class="QMenu" name="menuLowest_10_Users">
+     <property name="title">
+      <string>Lowest 10 Users</string>
+     </property>
+     <addaction name="Dia_l_10_U"/>
+     <addaction name="Tex_l_10_U"/>
+    </widget>
+    <widget class="QMenu" name="menuMost_10_Files">
+     <property name="title">
+      <string>Most 10 Files</string>
+     </property>
+     <addaction name="Dia_m_10_F"/>
+     <addaction name="Tex_m_10_F"/>
+    </widget>
+    <widget class="QMenu" name="menuLowest_10_Files">
+     <property name="title">
+      <string>Lowest 10 Files</string>
+     </property>
+     <addaction name="Dia_l_10_F"/>
+     <addaction name="Tex_l_10_F"/>
+    </widget>
+    <widget class="QMenu" name="menuCustom">
+     <property name="title">
+      <string>Custom</string>
+     </property>
+     <addaction name="Dia_Custom"/>
+     <addaction name="Tex_Custom"/>
+    </widget>
+    <addaction name="menuMost_10_Users"/>
+    <addaction name="menuLowest_10_Users"/>
+    <addaction name="menuMost_10_Files"/>
+    <addaction name="menuLowest_10_Files"/>
+    <addaction name="menuCustom"/>
+    <addaction name="Quit"/>
+   </widget>
+   <addaction name="menuDatabase"/>
+  </widget>
+  <action name="actionNew_Connection">
+   <property name="text">
+    <string>new Connection</string>
+   </property>
+  </action>
+  <action name="actionEdit_Connection">
+   <property name="text">
+    <string>edit Connection</string>
+   </property>
+  </action>
+  <action name="actionClose_Connection">
+   <property name="text">
+    <string>close Connection</string>
+   </property>
+  </action>
+  <action name="Dia_m_10_U">
+   <property name="text">
+    <string>Diagram</string>
+   </property>
+  </action>
+  <action name="Tex_m_10_U">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="Dia_l_10_U">
+   <property name="text">
+    <string>Diagram</string>
+   </property>
+  </action>
+  <action name="Tex_l_10_U">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="Dia_m_10_F">
+   <property name="text">
+    <string>Diagram</string>
+   </property>
+  </action>
+  <action name="Tex_m_10_F">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="Dia_l_10_F">
+   <property name="text">
+    <string>Diagram</string>
+   </property>
+  </action>
+  <action name="Tex_l_10_F">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="Dia_Custom">
+   <property name="text">
+    <string>Diagram</string>
+   </property>
+  </action>
+  <action name="Tex_Custom">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="Quit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
