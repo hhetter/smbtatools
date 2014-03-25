@@ -34,22 +34,22 @@ void pgformular::on_ResetButton_clicked()
 
 void pgformular::on_QuitButton_clicked()
 {
-    qApp->quit();
+    this->~pgformular();
 }
 
 void pgformular::pgf_dbconnection()
 {
     this->qsdb = QSqlDatabase::addDatabase("QPSQL"); //Set Database Type to Postgres
     //Set the Login datas
-    this->qs_Hostname = ui->ServerLine->text();
-    this->qs_Databasename = ui->DatabaseLine->text();
-    this->qs_Username = ui->UsernameLine->text();
-    this->qs_Passwd = ui->PassLine->text();
+//    this->qs_Hostname = ui->ServerLine->text();
+//    this->qs_Databasename = ui->DatabaseLine->text();
+//    this->qs_Username = ui->UsernameLine->text();
+//    this->qs_Passwd = ui->PassLine->text();
 
-    this->qsdb.setHostName(qs_Hostname);
-    this->qsdb.setDatabaseName(qs_Databasename);
-    this->qsdb.setUserName(qs_Username);
-    this->qsdb.setPassword(qs_Passwd);
+    this->qsdb.setHostName(ui->ServerLine->text());
+    this->qsdb.setDatabaseName(ui->DatabaseLine->text());
+    this->qsdb.setUserName(ui->UsernameLine->text());
+    this->qsdb.setPassword(ui->PassLine->text());
 }
 
 void pgformular::pgf_opensubwindow()
