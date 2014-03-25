@@ -20,7 +20,7 @@
 #include "monitorform.h"
 #include "frontend.h"
 #include "instancedata.h"
-
+#include "pgformular.h"
 
 namespace Ui {
 class WManager;
@@ -45,6 +45,7 @@ public:
     QSqlDatabase db;
     QSqlQuery query;
     QString s_path, cf_path, df_path;
+    pgformular *newPgformularArray[128];
 
 
 
@@ -52,6 +53,7 @@ public slots:
     void wm_newMonitorWidget();
     void wm_firstInit();
     void wm_init();
+    void wm_pastMonitoWidget();
 
     void resizeEvent(QResizeEvent *event);
 

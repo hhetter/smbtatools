@@ -17,7 +17,8 @@ WManager::WManager(QWidget *parent) :
                 SLOT(wm_newMonitorWidget()));
         connect(ui->quitButton, SIGNAL(clicked()),qApp,
                 SLOT(quit()));
-
+	connect(ui->pastqueryButton, SIGNAL(clicked()),this,
+		SLOT(wm_pastMonitoWidget()));
         for(int i=0; i < 128; i++){
             newFrontendArray[i] = 0;
         }
@@ -51,9 +52,6 @@ void WManager::wm_newMonitorWidget()
         }
 
     }
-
-
-
     /*
         newFrontend = new frontend();
         newFrontend->show();
@@ -63,13 +61,23 @@ void WManager::wm_newMonitorWidget()
         newFrontend->activateWindow();
         newFrontend->show();
 */
-
-
-
-
 }
 
-
+void WManager::wm_pastMonitoWidget()
+{
+	for(int i = 0; i < 128; i++)
+	{
+		if(newPgformularArray[i] == 0)
+		{
+			newPgformularArray[i] = new pgformular();
+			ui->mdiArea->addSubWindow(newPgformularArray[i]);
+			newPgformularArray[i]->activateWindow();
+			newPgformularArray[i]->show();
+			ui->mdiArea->currentSubWindow()->resize( 670, 540 );
+			i = 128;
+		}
+	}
+}
 
 void WManager::wm_firstInit(){
         /*
