@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>920</width>
-    <height>541</height>
+    <width>5000</width>
+    <height>5000</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,9 +19,22 @@
   <property name="windowTitle">
    <string>DBdiagram</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" rowminimumheight="0,0">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0" rowminimumheight="0">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout2">
+     <item row="1" column="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>5000</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item row="1" column="0" colspan="2">
       <widget class="QMdiArea" name="mdiADia">
        <property name="sizePolicy">
@@ -69,7 +82,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>4000</width>
          <height>15</height>
         </size>
        </property>

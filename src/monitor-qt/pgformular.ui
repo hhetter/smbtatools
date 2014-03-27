@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>5000</width>
+    <height>5000</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,28 +22,6 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout2">
-     <item row="1" column="2">
-      <widget class="QPushButton" name="ResetButton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string>Reset</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2">
       <widget class="QLabel" name="DatabaseLabel">
        <property name="minimumSize">
@@ -54,7 +32,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>25</height>
         </size>
        </property>
@@ -73,7 +51,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>25</height>
         </size>
        </property>
@@ -89,7 +67,7 @@
       <widget class="QLineEdit" name="ServerLine">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>70</width>
          <height>25</height>
         </size>
        </property>
@@ -105,7 +83,7 @@
       <widget class="QLineEdit" name="UsernameLine">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>70</width>
          <height>25</height>
         </size>
        </property>
@@ -127,7 +105,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>25</height>
         </size>
        </property>
@@ -146,7 +124,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>25</height>
         </size>
        </property>
@@ -165,7 +143,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>25</height>
         </size>
        </property>
@@ -178,7 +156,7 @@
       <widget class="QLineEdit" name="DatabaseLine">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>70</width>
          <height>25</height>
         </size>
        </property>
@@ -190,24 +168,18 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="7">
-      <widget class="QPushButton" name="QuitButton">
-       <property name="minimumSize">
+     <item row="2" column="9">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
         <size>
          <width>0</width>
-         <height>25</height>
+         <height>5000</height>
         </size>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Quit</string>
-       </property>
-      </widget>
+      </spacer>
      </item>
      <item row="2" column="0" colspan="9">
       <widget class="QMdiArea" name="mdiArea">
@@ -241,7 +213,7 @@
       <widget class="QLineEdit" name="PassLine">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>70</width>
          <height>25</height>
         </size>
        </property>
@@ -263,11 +235,52 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>4000</width>
          <height>20</height>
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="ResetButton">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Reset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="QuitButton">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Quit</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -280,7 +293,6 @@
   <tabstop>UsernameLine</tabstop>
   <tabstop>PassLine</tabstop>
   <tabstop>ConnectButton</tabstop>
-  <tabstop>ResetButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
