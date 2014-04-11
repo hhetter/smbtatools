@@ -8,7 +8,6 @@
 #include <QDir>
 #include <QDebug>
 
-#include "configform.h"
 #include "monitorform.h"
 //#include "wmanager.h"
 #include "instancedata.h"
@@ -23,18 +22,16 @@ class frontend : public QWidget
     Q_OBJECT
 
 public:
-    explicit frontend(QWidget *parent = 0);
+    explicit frontend(InstanceData *idata, QWidget *parent = 0);
     ~frontend();
 
-    InstanceData *idata;
-    ConfigForm *configWidget;
+    InstanceData *ldata;
     MonitorForm *monitorFormW;
 //    WManager  *wManager;
 
 
 public slots:
     void fr_setTestLabel();
-    void fr_setConfigWidget();
     void fr_setMonitorWidget();
     void fr_firstInit();
 

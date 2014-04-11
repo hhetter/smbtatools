@@ -49,13 +49,13 @@ MonitorForm::MonitorForm(InstanceData *idata, QWidget *parent) :
         readlist = new QStringList;
 
         // Fetch ALL the configuration data
-        configString = new QString;
-        hostString   = new QString;
-        fileString   = new QString;
-        portString   = new QString;
-        shareString  = new QString;
-        userString   = new QString;
-        domainString = new QString;
+        configString = ldata->configString;
+        hostString   = ldata->hostString;
+        fileString   = ldata->fileString;
+        portString   = ldata->portString;
+        shareString  = ldata->shareString;
+        userString   = ldata->userString;
+        domainString = ldata->domainString;
 
 
 

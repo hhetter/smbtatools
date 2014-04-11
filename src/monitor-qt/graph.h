@@ -68,8 +68,8 @@ public:
         QTime g_clock;
 
         // Hold configuration data
-        QString  *hostString, *portString, *shareString, *userString,
-        *domainString, *fileString;
+        QString  hostString, portString, shareString, userString,
+        domainString, fileString;
 
 
 

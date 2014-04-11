@@ -17,10 +17,13 @@ InstanceData::InstanceData(QObject *parent) :
     queryParameterString ="";
     portString = "";
     hostString = "";
-
+    qs_Hostname = "";
+    qs_Databasename = "";
+    qs_Username = "";
+    qs_Passwd = "";
     idCheck     = false;
     dryrunCheck = false;
-
+    config_open = false;
     // Process information
     pidString ="";
     socketString="";

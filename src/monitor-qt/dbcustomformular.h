@@ -14,7 +14,7 @@ class dbcustomformular : public QWidget
     Q_OBJECT
 
 public:
-    explicit dbcustomformular(QWidget *parent = 0);
+    explicit dbcustomformular(showformat** format,MainWidget** graphic, QWidget *parent = 0);
     ~dbcustomformular();
     void set_format(bool);
 

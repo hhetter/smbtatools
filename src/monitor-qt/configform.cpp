@@ -1,17 +1,17 @@
 #include "configform.h"
 #include "ui_configform.h"
+#include <QDebug>
 
 ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
         QWidget(parent),
         ui(new Ui::ConfigForm)
 {
-
         ldata = idata;
 
         ui->setupUi(this);
 
         ui->loadButton->hide();
-        ui->saveButton->hide();
+     //   ui->saveButton->hide();
         //ui->dryrunCheckbox->hide(); //we want it visible
         ui->dryrunCheckbox->setChecked(true);
 
@@ -24,14 +24,17 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
 
         ui->licenseLabel->setText(ldata->licenseString);
 
-        configString = new QString;
-        hostString   = new QString;
-        fileString   = new QString;
-        portString   = new QString;
-        shareString  = new QString;
-        userString   = new QString;
-        domainString = new QString;
-
+        configString = "";
+        hostString   = "";
+        fileString   = "";
+        portString   = "";
+        shareString  = "";
+        userString   = "";
+        domainString = "";
+        ui->DatabaseLine->insert(ldata->qs_Databasename);
+        ui->ServerLine->insert(ldata->qs_Hostname);
+        ui->PassLine->insert(ldata->qs_Passwd);
+        ui->UsernameLine->insert(ldata->qs_Username);
 
         i_monitortime = 600;
         i_intervaltime = 600;
@@ -40,13 +43,32 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
                 SLOT(cf_hidefield()));
         connect(ui->dryrunCheckbox, SIGNAL(stateChanged(int)),this,
                 SLOT(cf_hideall()));
-
+        connect(ui->saveButton, SIGNAL(clicked()), this,
+                SLOT(cf_saveconfig()));
 
 }
 
 ConfigForm::~ConfigForm()
 {
+    ldata->config_open = false;
         delete ui;
+}
+
+void ConfigForm::cf_saveconfig()
+{
+    ldata->qs_Databasename = ui->DatabaseLine->text();
+    ldata->qs_Hostname = ui->ServerLine->text();
+    ldata->qs_Passwd = ui->PassLine->text();
+    ldata->qs_Username = ui->UsernameLine->text();
+    ldata->configString = configString;
+    ldata->hostString = hostString;
+    ldata->portString = portString;
+    ldata->shareString = shareString;
+    ldata->userString = userString;
+    ldata->domainString = domainString;
+    ldata->fileString = fileString;
+    ldata->i_monitortime = i_monitortime;
+    ldata->i_intervaltime = i_intervaltime;
 }
 
 void ConfigForm::cf_hideall()
@@ -93,47 +115,47 @@ void ConfigForm::cf_hidefield()
  */
 void ConfigForm::cf_readconfig(){
 
-        *configString = "";
-        *hostString   = "";
-        *fileString   = "";
-        *portString   = "";
-        *shareString  = "";
-        *userString   = "";
-        *domainString = "";
+        configString = "";
+        hostString   = "";
+        fileString   = "";
+        portString   = "";
+        shareString  = "";
+        userString   = "";
+        domainString = "";
 
 
         switch(ui->queryTypeButton->currentIndex())
         {
         case 0:
-                configString->append(" -u "+ui->queryParameterLine->text());
-                userString->append(ui->queryParameterLine->text());
+                configString.append(" -u "+ui->queryParameterLine->text());
+                userString.append(ui->queryParameterLine->text());
                 //
                 ldata->userString = ui->queryParameterLine->text();
                 ldata->configString.append(" -u "+ui->queryParameterLine->text());
                 break;
         case 1:
-                configString->append(" -f "+ui->queryParameterLine->text());
-                fileString->append(ui->queryParameterLine->text());
+                configString.append(" -f "+ui->queryParameterLine->text());
+                fileString.append(ui->queryParameterLine->text());
                 //
                 ldata->fileString = ui->queryParameterLine->text();
                 ldata->configString.append(" -f "+ui->queryParameterLine->text());
                 break;
         case 2:
-                configString->append(" -s "+ui->queryParameterLine->text());
-                shareString->append(ui->queryParameterLine->text());
+                configString.append(" -s "+ui->queryParameterLine->text());
+                shareString.append(ui->queryParameterLine->text());
                 //
                 ldata->shareString = ui->queryParameterLine->text();
                 ldata->configString.append(" -s "+ui->queryParameterLine->text());
                 break;
         case 3:
-                configString->append(" -d "+ui->queryParameterLine->text());
-                domainString->append(ui->queryParameterLine->text());
+                configString.append(" -d "+ui->queryParameterLine->text());
+                domainString.append(ui->queryParameterLine->text());
                 //
                 ldata->domainString = ui->queryParameterLine->text();
                 ldata->configString.append(" -d "+ui->queryParameterLine->text());
                 break;
         case 4:
-                configString->append(" -g ");
+                configString.append(" -g ");
                 //
                 ldata->configString = ui->queryParameterLine->text();
                 ldata->configString.append(" -g ");
@@ -143,16 +165,16 @@ void ConfigForm::cf_readconfig(){
         }
 
         if(ui->hostLine->text() != ""){
-                configString->append(" -h "+ui->hostLine->text());
-                hostString->append(ui->hostLine->text());
+                configString.append(" -h "+ui->hostLine->text());
+                hostString.append(ui->hostLine->text());
                 //
                 ldata->hostString = ui->hostLine->text();
                 ldata->configString.append(" -h "+ui->hostLine->text());
         }
 
         if(ui->portLine->text() != ""){
-                configString->append(" -i "+ui->portLine->text());
-                portString->append(ui->portLine->text());
+                configString.append(" -i "+ui->portLine->text());
+                portString.append(ui->portLine->text());
                 //
                 ldata->portString = ui->portLine->text();
                 ldata->configString.append(" -i "+ui->portLine->text());
@@ -160,14 +182,14 @@ void ConfigForm::cf_readconfig(){
 
 
         if(ui->idCheckbox->isChecked()){
-                configString->append(" -I 1");
+                configString.append(" -I 1");
                 //
                 ldata->idCheck = true;
                 ldata->configString.append(" -I 1");
-        }else(configString->append(" -I 0"));
+        }else(configString.append(" -I 0"));
 
         if(ui->dryrunCheckbox->isChecked()){
-                *configString = " -x";
+                configString = " -x";
                 //
                 ldata->dryrunCheck = true;
                 ldata->configString = " -x";

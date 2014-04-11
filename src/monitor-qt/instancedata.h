@@ -14,15 +14,19 @@ class InstanceData : public QObject
 public:
     explicit InstanceData(QObject *parent = 0);
 
-        QString configString;
-        QString nameString, fileString, domainString, shareString, userString;
+        QString configString, hostString, portString, shareString, userString,
+            domainString, fileString;
+        QString nameString;
         QString queryParameterString;
-        QString portString, hostString;
-
+        QString qs_Hostname;
+        QString qs_Databasename;
+        QString qs_Username;
+        QString qs_Passwd;
         QString pidString;
         QString socketString;
         bool socketConnected;
-
+        int i_monitortime, i_intervaltime;
+        bool config_open;
         bool idCheck, dryrunCheck;
         
         int i_stepsize;

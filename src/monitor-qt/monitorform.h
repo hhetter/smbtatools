@@ -53,9 +53,9 @@ public:
         bool isConnected;
 
 
-        QString  *pid_string, *readstring, *leftoverstring, *configString;
-        QString  *hostString, *portString, *shareString, *userString,
-        *domainString, *fileString;
+        QString  *pid_string, *readstring, *leftoverstring, configString;
+        QString  hostString, portString, shareString, userString,
+        domainString, fileString;
         QStringList *readlist;
         QLocalSocket *monitorSocket;
 

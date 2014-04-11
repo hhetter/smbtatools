@@ -30,9 +30,9 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QPushButton" name="pastqueryButton">
+      <widget class="QPushButton" name="Configuration">
        <property name="text">
-        <string>Past Query</string>
+        <string>Configuration</string>
        </property>
       </widget>
      </item>

@@ -168,6 +168,7 @@
     <addaction name="menuMost_10_Files"/>
     <addaction name="menuLowest_10_Files"/>
     <addaction name="menuCustom"/>
+    <addaction name="actionLiveanalyzer"/>
     <addaction name="Quit"/>
    </widget>
    <addaction name="menuDatabase"/>
@@ -240,6 +241,11 @@
   <action name="Quit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionLiveanalyzer">
+   <property name="text">
+    <string>Liveanalyzer</string>
    </property>
   </action>
  </widget>

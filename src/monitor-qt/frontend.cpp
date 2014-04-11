@@ -2,7 +2,7 @@
 #include "ui_frontend.h"
 
 
-frontend::frontend(QWidget *parent) :
+frontend::frontend(InstanceData *idata, QWidget *parent) :
         QWidget(parent),
         //QGraphicsWidget(parent),
         ui(new Ui::frontend)
@@ -12,24 +12,19 @@ frontend::frontend(QWidget *parent) :
         ////
         // Create the Widgets for configuration and the monitoring
 
-        idata = new InstanceData();
-        configWidget = new ConfigForm(idata);
         monitorFormW = new MonitorForm(idata);
-
+        ldata = idata;
 
         ////
         // Add widgets to the stackedWidget
 
-        ui->stackedView->addWidget(configWidget);
         ui->stackedView->addWidget(monitorFormW);
         ui->stackedView->show();
         ui->stackedView->setCurrentIndex(3);
 
 
-        connect(ui->configbutton, SIGNAL(clicked()),this,
-                SLOT(fr_setConfigWidget()));
-        connect(ui->monitorbutton, SIGNAL(clicked()),this,
-                SLOT(fr_setMonitorWidget()));
+
+        fr_setMonitorWidget();
         /*connect(ui->quitbutton, SIGNAL(clicked()),qApp,
                 SLOT(quit()));*/
 
@@ -75,25 +70,19 @@ void frontend::fr_firstInit(){
 }
 
 
-void frontend::fr_setConfigWidget()
-{
-        ui->stackedView->setCurrentIndex(3);
-}
-
-
 void frontend::fr_setMonitorWidget()
 {       
-        configWidget->cf_readconfig();
+        //configWidget->cf_readconfig();
 
-        monitorFormW->configString->append(*configWidget->configString);
-        monitorFormW->i_monitortime = configWidget->i_monitortime;
-        monitorFormW->i_intervaltime = configWidget->i_intervaltime;
-        monitorFormW->hostString = configWidget->hostString;
-        monitorFormW->fileString = configWidget->fileString;
-        monitorFormW->portString = configWidget->portString;
-        monitorFormW->shareString = configWidget->shareString;
-        monitorFormW->userString = configWidget->userString;
-        monitorFormW->domainString = configWidget->domainString;
+        monitorFormW->configString.append(ldata->configString);
+        monitorFormW->i_monitortime = ldata->i_monitortime;
+        monitorFormW->i_intervaltime = ldata->i_intervaltime;
+        monitorFormW->hostString = ldata->hostString;
+        monitorFormW->fileString = ldata->fileString;
+        monitorFormW->portString = ldata->portString;
+        monitorFormW->shareString = ldata->shareString;
+        monitorFormW->userString = ldata->userString;
+        monitorFormW->domainString = ldata->domainString;
 
         ui->stackedView->setCurrentIndex(4);
         //    ui->testlabel->setText("fr_setMonitorWidget()");

@@ -1,31 +1,50 @@
 #include "pgdiagram.h"
 #include "ui_pgdiagram.h"
 
-pgdiagram::pgdiagram(QWidget *parent) :
+pgdiagram::pgdiagram(InstanceData *idata, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::pgdiagram)
 {
-    newshowformat = new showformat*[128];
-    for(int x = 0; x < 128; x++)
-    {
-        this->newshowformat[x] = NULL;
-    }
-    dbcustom = new dbcustomformular*[128];
-    for(int x = 0; x < 128; x++)
-    {
-        this->dbcustom[x] = NULL;
-    }
-    graph = new MainWidget*[128];
-    for(int i = 0; i < 128; i++)
-    {
+    ldata = idata;
+    qsdb = QSqlDatabase::addDatabase("QPSQL"); //Set Database Type to Postgres
+
+    qsdb.setHostName(ldata->qs_Hostname);
+    qsdb.setDatabaseName(ldata->qs_Databasename);
+    qsdb.setUserName(ldata->qs_Username);
+    qsdb.setPassword(ldata->qs_Passwd);
+    for(int i=0; i < 128; i++){
+        newFrontendArray[i] = 0;
+        newshowformat[i] = NULL;
         graph[i] = NULL;
+        dbcustom[i] = NULL;
     }
     ui->setupUi(this);
+    if(this->qsdb.open())
+    {
+        set_dbconnection(true);
+    }
+    else
+    {
+        set_dbconnection(false);
+    }
 }
 
 pgdiagram::~pgdiagram()
 {
     delete ui;
+}
+
+void pgdiagram::set_dbconnection(bool connection)
+{
+    dbconnection = connection;
+    if(dbconnection == false)
+    {
+        ui->menuCustom->setDisabled(1);
+        ui->menuLowest_10_Files->setDisabled(1);
+        ui->menuLowest_10_Users->setDisabled(1);
+        ui->menuMost_10_Files->setDisabled(1);
+        ui->menuMost_10_Users->setDisabled(1);
+    }
 }
 
 void pgdiagram::pgd_SQLQuery(QString value)
@@ -209,14 +228,13 @@ void pgdiagram::on_Tex_l_10_F_triggered()
     }
 }
 
-
 void pgdiagram::on_Dia_Custom_triggered()
 {
     for(int i =0; i < 128; i++)
     {
         if(dbcustom[i] == NULL)
         {
-            dbcustom[i] = new dbcustomformular();
+            dbcustom[i] = new dbcustomformular(newshowformat, graph);
             ui->mdiADia->addSubWindow(dbcustom[i]);
             dbcustom[i]->activateWindow();
             dbcustom[i]->show();
@@ -233,7 +251,7 @@ void pgdiagram::on_Tex_Custom_triggered()
     {
         if(dbcustom[i] == NULL)
         {
-            dbcustom[i] = new dbcustomformular();
+            dbcustom[i] = new dbcustomformular(newshowformat, graph);
             ui->mdiADia->addSubWindow(dbcustom[i]);
             dbcustom[i]->activateWindow();
             dbcustom[i]->show();
@@ -243,5 +261,22 @@ void pgdiagram::on_Tex_Custom_triggered()
         }
     }
 }
+
+void pgdiagram::on_actionLiveanalyzer_triggered()
+{
+    for(int i =0; i < 128; i++){
+            if(newFrontendArray[i] == 0){
+                newFrontendArray[i] = new frontend(ldata);
+                ui->mdiADia->addSubWindow(newFrontendArray[i]);
+                newFrontendArray[i]->activateWindow();
+                newFrontendArray[i]->show();
+                ui->mdiADia->currentSubWindow()->resize( 670, 540 );
+                //newFrontendArray[i]->resize(670,540);
+                i=128;
+            }
+
+        }
+}
+
 
 #include "pgdiagram.moc"

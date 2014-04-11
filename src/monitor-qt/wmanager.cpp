@@ -6,7 +6,9 @@ WManager::WManager(QWidget *parent) :
         ui(new Ui::WManager)
 {
 
+        config = NULL;
         ui->setupUi(this);
+        idata = new InstanceData();
 
         s_path = QDir::homePath().append("/.smbtatools");
         cf_path = s_path+"/smbtamonitor-qt.conf";
@@ -15,14 +17,18 @@ WManager::WManager(QWidget *parent) :
 
         connect(ui->queryButton, SIGNAL(clicked()),this,
                 SLOT(wm_newMonitorWidget()));
+        connect(ui->Configuration, SIGNAL(clicked()), this,
+                SLOT(wm_config()));
         connect(ui->quitButton, SIGNAL(clicked()),qApp,
                 SLOT(quit()));
-	connect(ui->pastqueryButton, SIGNAL(clicked()),this,
-		SLOT(wm_pastMonitoWidget()));
         for(int i=0; i < 128; i++){
             newFrontendArray[i] = 0;
+            newdiagram[i] = 0;
         }
-
+        config = new ConfigForm(idata);
+        idata->config_open = true;
+        config->cf_saveconfig();
+        config->cf_readconfig();
 
         wm_firstInit();
         wm_init();
@@ -32,6 +38,29 @@ WManager::WManager(QWidget *parent) :
 
 }
 
+void WManager::wm_config()
+{
+    if (idata->config_open == false)
+    {
+        config = new ConfigForm(idata);
+        idata->config_open = true;
+        ui->mdiArea->addSubWindow((config));
+        config->activateWindow();
+        config->show();;
+        ui->mdiArea->currentSubWindow()->resize( 670, 540);
+    }
+    else
+    {
+        if (!config->isActiveWindow())
+        {
+            ui->mdiArea->addSubWindow((config));
+            config->activateWindow();
+            config->show();;
+            ui->mdiArea->currentSubWindow()->resize( 670, 540);
+        }
+    }
+}
+
 WManager::~WManager()
 {
         delete ui;
@@ -39,8 +68,20 @@ WManager::~WManager()
 
 void WManager::wm_newMonitorWidget()
 {
+    for(int i = 0; i < 128; i++)
+    {
+        if(newdiagram[i] == 0)
+        {
+            newdiagram[i] = new pgdiagram(idata);
+            ui->mdiArea->addSubWindow(newdiagram[i]);
+            newdiagram[i]->activateWindow();
+            newdiagram[i]->show();
+            ui->mdiArea->currentSubWindow()->resize( 670, 540 );
+            i = 128;
+        }
+    }
 
-    for(int i =0; i < 128; i++){
+ /*   for(int i =0; i < 128; i++){
         if(newFrontendArray[i] == 0){
             newFrontendArray[i] = new frontend();
             ui->mdiArea->addSubWindow(newFrontendArray[i]);
@@ -51,7 +92,7 @@ void WManager::wm_newMonitorWidget()
             i=128;
         }
 
-    }
+    }*/
     /*
         newFrontend = new frontend();
         newFrontend->show();
@@ -61,22 +102,6 @@ void WManager::wm_newMonitorWidget()
         newFrontend->activateWindow();
         newFrontend->show();
 */
-}
-
-void WManager::wm_pastMonitoWidget()
-{
-	for(int i = 0; i < 128; i++)
-	{
-		if(newPgformularArray[i] == 0)
-		{
-			newPgformularArray[i] = new pgformular();
-			ui->mdiArea->addSubWindow(newPgformularArray[i]);
-			newPgformularArray[i]->activateWindow();
-			newPgformularArray[i]->show();
-			ui->mdiArea->currentSubWindow()->resize( 670, 540 );
-			i = 128;
-		}
-	}
 }
 
 void WManager::wm_firstInit(){
@@ -193,6 +218,11 @@ void WManager::resizeEvent(QResizeEvent *event)
 
 }
 
+
+void WManager::on_Configuration_clicked()
+{
+
+}
 
 
 

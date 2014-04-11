@@ -1,20 +1,12 @@
 #include "dbcustomformular.h"
 #include "ui_dbcustomformular.h"
 
-dbcustomformular::dbcustomformular(QWidget *parent) :
+dbcustomformular::dbcustomformular(showformat** format,MainWidget** graphic, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::dbcustomformular)
 {
-    newshowformat = new showformat*[128];
-    for(int i = 0; i < 128; i++)
-    {
-        newshowformat[i] = NULL;
-    }
-    graph = new MainWidget*[128];
-    for(int i = 0; i < 128; i++)
-    {
-        graph[i] = NULL;
-    }
+    newshowformat = format;
+    graph = graphic;
     text_format = false;
     ui->setupUi(this);
     SELECT = "";

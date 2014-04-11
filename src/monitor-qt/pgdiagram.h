@@ -4,6 +4,8 @@
 
 #include "dbcustomformular.h"
 #include "mainwidget.h"
+#include "frontend.h"
+#include "instancedata.h"
 
 namespace Ui {
 class pgdiagram;
@@ -14,7 +16,8 @@ class pgdiagram : public QWidget
     Q_OBJECT
 
 public:
-    explicit pgdiagram(QWidget *parent = 0);
+    explicit pgdiagram(InstanceData *idata, QWidget *parent = 0);
+    void set_dbconnection(bool connection);
     ~pgdiagram();
 
 private slots:
@@ -41,15 +44,26 @@ private slots:
 
     void on_Tex_Custom_triggered();
 
+    void on_actionLiveanalyzer_triggered();
+
+
 private:
+    InstanceData *ldata;
+    frontend *newFrontendArray[128];
+    //frontend *newFrontend;
     QString qst_query;
     QSqlRecord rec;
-    dbcustomformular** dbcustom;
     Ui::pgdiagram *ui;
-    showformat** newshowformat;
-    MainWidget** graph;
     QSqlQuery q;
     QString value;
+    QSqlDatabase qsdb;
+    bool dbconnection;
+    MainWidget *graph[128];
+    showformat *newshowformat[128];
+    dbcustomformular *dbcustom[128];
+
+
+
     void pgd_SQLQuery(QString value);
 };
 

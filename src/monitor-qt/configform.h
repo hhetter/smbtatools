@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QDebug>
 #include <QComboBox>
+#include <QtSql/QPSQLDriver>
+#include <QtSql/QSqlDatabase>
+
 
 #include "instancedata.h"
 
@@ -21,8 +24,8 @@ public:
 
         InstanceData *ldata;
 
-        QString *configString, *hostString, *portString, *shareString, *userString,
-        *domainString, *fileString;
+        QString configString, hostString, portString, shareString, userString,
+        domainString, fileString;
         int i_monitortime, i_intervaltime;
 
 
@@ -31,7 +34,7 @@ public:
 
 
 public slots:
-
+        void cf_saveconfig();
         void cf_readconfig();
         void cf_hidefield();
         void cf_hideall();
@@ -39,6 +42,11 @@ public slots:
 
 private:
         Ui::ConfigForm *ui;
+        QString qs_Hostname;
+        QString qs_Databasename;
+        QString qs_Username;
+        QString qs_Passwd;
+        bool dbconnection;
 };
 
 #endif // CONFIGFORM_H
