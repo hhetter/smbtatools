@@ -34,31 +34,31 @@ void MainWidget::changeEvent(QEvent *e)
 void MainWidget::paint()
 {
 
-    ui->BarPlot->axisY()->setRanges(max);//!Höhe
-    ui->BarPlot->axisY()->setTicks(50, max/20);//!Stichelung und Nummerierung
-    ui->BarPlot->axisY()->setPen(QPen(Qt::darkGray));//!Farbe
-    ui->BarPlot->axisY()->setMinorTicksPen(QPen(Qt::gray));//!Farbe der Strichelung
-    ui->BarPlot->axisY()->setMajorTicksPen(QPen(Qt::darkGray));//!Farbe der Nummerierungsmarkierung
+    ui->BarPlot->axisY()->setRanges(max);
+    ui->BarPlot->axisY()->setTicks(50, max/20);
+    ui->BarPlot->axisY()->setPen(QPen(Qt::darkGray));
+    ui->BarPlot->axisY()->setMinorTicksPen(QPen(Qt::gray));
+    ui->BarPlot->axisY()->setMajorTicksPen(QPen(Qt::darkGray));
     //ui->BarPlot->axisY()->setMinorGridPen(QPen(Qt::gray));
-    ui->BarPlot->axisY()->setMajorGridPen(QPen(Qt::lightGray));//!Farbe des waagrechten Gitters
-    ui->BarPlot->axisY()->setTextColor(Qt::black);//!Farbe der Nummern
+    ui->BarPlot->axisY()->setMajorGridPen(QPen(Qt::lightGray));
+    ui->BarPlot->axisY()->setTextColor(Qt::black);
 
-    ui->BarPlot->axisX()->setPen(QPen(Qt::darkGray));//!Farbe
-    ui->BarPlot->axisX()->setMinorTicksPen(QPen(Qt::gray));//!Farbe der Strichelung
-    ui->BarPlot->axisX()->setMajorTicksPen(QPen(Qt::darkGray));//!Farbe der Nummermakierung
-    ui->BarPlot->axisX()->setMajorGridPen(QPen(Qt::lightGray));//!Farbe des senkrechten gitters
-    ui->BarPlot->axisX()->setTextColor(Qt::black);//!Farbe der Nummern
+    ui->BarPlot->axisX()->setPen(QPen(Qt::darkGray));
+    ui->BarPlot->axisX()->setMinorTicksPen(QPen(Qt::gray));
+    ui->BarPlot->axisX()->setMajorTicksPen(QPen(Qt::darkGray));
+    ui->BarPlot->axisX()->setMajorGridPen(QPen(Qt::white));
+    ui->BarPlot->axisX()->setTextColor(Qt::black);
 
-    ui->BarPlot->setBarSize(50, 200);//!Skalierung der Breite
-    ui->BarPlot->setBarOpacity(1.0);//!Sichtbarkeit
-    //!Hintergrund
-    QLinearGradient bg(0,0,0,0);//!Farbschema nutzen
+    ui->BarPlot->setBarSize(50, 200);
+    ui->BarPlot->setBarOpacity(1.0);
+
+    QLinearGradient bg(0,0,0,0);
     bg.setCoordinateMode(QGradient::ObjectBoundingMode);
-    bg.setColorAt(0, Qt::white);//!Farbschema einstellen
-    ui->BarPlot->setBackground(QBrush(bg));//!Farbe ausfüllen
+    bg.setColorAt(0, Qt::white);
+    ui->BarPlot->setBackground(QBrush(bg));
     itemModel = new QStandardItemModel(1,q.size(),this);
-    itemModel->setHorizontalHeaderLabels(data); //!Daten aus Liste auf X Achse
-    itemModel->setVerticalHeaderLabels(data);//!Daten der einzelnen objekte
+    itemModel->setHorizontalHeaderLabels(data);
+    itemModel->setVerticalHeaderLabels(data);
 
     for (int i = 0, x = 1; i < q.size(); i++, x++)
     {
