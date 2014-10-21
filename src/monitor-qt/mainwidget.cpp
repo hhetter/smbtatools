@@ -31,9 +31,15 @@ void MainWidget::changeEvent(QEvent *e)
     }
 }
 
-void MainWidget::paint()
+void MainWidget::paint(int color_id)
 {
-
+    int range = 1000000;
+    for(; max < range; range/=10)
+    {
+    }
+    max /= range;
+    max += 1;
+    max *= range;
     ui->BarPlot->axisY()->setRanges(max);
     ui->BarPlot->axisY()->setTicks(50, max/20);
     ui->BarPlot->axisY()->setPen(QPen(Qt::darkGray));
@@ -112,7 +118,7 @@ void MainWidget::paint()
     ui->BarPlot->setModel(itemModel);
 
     ui->BarPlot->setBarType(QSint::BarChartPlotter::Columns);
-    ui->BarPlot->repaint();
+    ui->BarPlot->repaint(color_id++);
 }
 
 void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
