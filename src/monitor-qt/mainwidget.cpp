@@ -31,7 +31,7 @@ void MainWidget::changeEvent(QEvent *e)
     }
 }
 
-void MainWidget::paint(int color_id)
+void MainWidget::paint()
 {
     int range = 1000000;
     for(; max < range; range/=10)
@@ -65,7 +65,6 @@ void MainWidget::paint(int color_id)
     itemModel = new QStandardItemModel(1,q.size(),this);
     itemModel->setHorizontalHeaderLabels(data);
     itemModel->setVerticalHeaderLabels(data);
-
     for (int i = 0, x = 1; i < q.size(); i++, x++)
     {
         if (x % 10 == 0)
@@ -118,7 +117,7 @@ void MainWidget::paint(int color_id)
     ui->BarPlot->setModel(itemModel);
 
     ui->BarPlot->setBarType(QSint::BarChartPlotter::Columns);
-    ui->BarPlot->repaint(color_id++);
+    ui->BarPlot->repaint();
 }
 
 void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
