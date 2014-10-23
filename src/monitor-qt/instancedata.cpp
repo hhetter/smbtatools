@@ -14,6 +14,7 @@ InstanceData::InstanceData(QObject *parent) :
     domainString = "";
     shareString = "";
     userString = "";
+    qs_Type = "";
     queryParameterString ="";
     portString = "";
     hostString = "";

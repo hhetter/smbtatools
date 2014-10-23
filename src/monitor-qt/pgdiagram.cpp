@@ -6,7 +6,8 @@ pgdiagram::pgdiagram(InstanceData *idata, QWidget *parent) :
     ui(new Ui::pgdiagram)
 {
     ldata = idata;
-    qsdb = QSqlDatabase::addDatabase("QPSQL"); //Set Database Type to Postgres
+    QString db_type = ldata->qs_Type;
+    qsdb = QSqlDatabase::addDatabase(db_type); //Set Database Type to Postgres
 
     qsdb.setHostName(ldata->qs_Hostname);
     qsdb.setDatabaseName(ldata->qs_Databasename);

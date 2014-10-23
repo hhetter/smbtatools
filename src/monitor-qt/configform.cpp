@@ -13,7 +13,6 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
         ui->loadButton->hide();
      //   ui->saveButton->hide();
         //ui->dryrunCheckbox->hide(); //we want it visible
-        ui->dryrunCheckbox->setChecked(true);
 
         ui->queryTypeButton->addItem("User");
         ui->queryTypeButton->addItem("File");
@@ -21,6 +20,11 @@ ConfigForm::ConfigForm(InstanceData *idata, QWidget *parent) :
         ui->queryTypeButton->addItem("Domain");
         ui->queryTypeButton->addItem("Global");
         ui->queryTypeButton->setCurrentIndex(0);
+
+	ui->dbtype->addItem("Postgres");
+	ui->dbtype->addItem("Mysql");
+	ui->dbtype->addItem("SQLite3");
+	ui->dbtype->setCurrentIndex(0);
 
         ui->licenseLabel->setText(ldata->licenseString);
 
@@ -60,6 +64,20 @@ void ConfigForm::cf_saveconfig()
     ldata->qs_Hostname = ui->ServerLine->text();
     ldata->qs_Passwd = ui->PassLine->text();
     ldata->qs_Username = ui->UsernameLine->text();
+    if (ui->dbtype->currentText() == "Mysql")
+    {
+        ldata->qs_Type = "QMYSQL";
+    }
+    else if (ui->dbtype->currentText() == "SQLite3")
+    {
+        ldata->qs_Type = "QSQLITE";
+    }
+    else
+    {
+        ldata->qs_Type = "QPSQL";
+    }
+
+
     ldata->configString = configString;
     ldata->hostString = hostString;
     ldata->portString = portString;
