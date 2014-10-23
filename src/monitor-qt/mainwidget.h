@@ -30,8 +30,8 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-    int *graphdata;
-    int max;
+    float *graphdata;
+    float max;
     void paint();
 
     QSqlQuery q;

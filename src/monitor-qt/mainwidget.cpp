@@ -33,10 +33,9 @@ void MainWidget::changeEvent(QEvent *e)
 
 void MainWidget::paint()
 {
-    int range = 1000000;
+    float range = 1000000;
     for(; max < range; range/=10)
-    {
-    }
+    {}
     max /= range;
     max += 1;
     max *= range;
@@ -123,8 +122,8 @@ void MainWidget::paint()
 
 void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
 {
-   int maxq = 0;
-   this->graphdata = new int[q.size()];
+   float maxq = 0;
+   this->graphdata = new float[q.size()];
    for(int i = 0; i < q.size() && q.next(); i++)
    {
         this->graphdata[i] = q.value(value2).toInt();
@@ -134,22 +133,23 @@ void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
             maxq = this->graphdata[i];
         }
    }
-   max = maxq+10;
+   max = maxq;
    this->q = q;
    paint();
 }
 
 void MainWidget::new_Element(int value1, int value2, int value3, QSqlQuery q)
 {
-    int maxq = 0;
+    float maxq = 0;
     QString showdata;
-    this->graphdata = new int[q.size()];
+    this->graphdata = new float[q.size()];
     for(int i = 0; i < q.size() && q.next(); i++)
     {
-       this->graphdata[i] = q.value(value2).toInt();
+       this->graphdata[i] = q.value(value2).toFloat();
         if (value3 == -1)
         {
             this->graphdata[i] /= (1024*1024);
+            this->graphdata[i] /= 1024;
             showdata = q.value(value1).toString();
         }
         else
@@ -162,7 +162,7 @@ void MainWidget::new_Element(int value1, int value2, int value3, QSqlQuery q)
              maxq = this->graphdata[i];
          }
     }
-    max = maxq+10;
+    max = maxq;
     this->q = q;
     paint();
 }
