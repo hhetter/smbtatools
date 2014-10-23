@@ -65,6 +65,7 @@ void MainWidget::paint()
     itemModel = new QStandardItemModel(1,q.size(),this);
     itemModel->setHorizontalHeaderLabels(data);
     itemModel->setVerticalHeaderLabels(data);
+
     for (int i = 0, x = 1; i < q.size(); i++, x++)
     {
         if (x % 10 == 0)
@@ -128,7 +129,7 @@ void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
    {
         this->graphdata[i] = q.value(value2).toInt();
         this->data.append(q.value(value1).toString());
-       if(maxq < this->graphdata[i])
+        if(maxq < this->graphdata[i])
         {
             maxq = this->graphdata[i];
         }
@@ -145,7 +146,7 @@ void MainWidget::new_Element(int value1, int value2, int value3, QSqlQuery q)
     this->graphdata = new int[q.size()];
     for(int i = 0; i < q.size() && q.next(); i++)
     {
-         this->graphdata[i] = q.value(value2).toInt();
+       this->graphdata[i] = q.value(value2).toInt();
         if (value3 == -1)
         {
             this->graphdata[i] /= (1024*1024);
