@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Configuration Form</string>
   </property>
   <widget class="QLabel" name="headlineLabel">
    <property name="geometry">

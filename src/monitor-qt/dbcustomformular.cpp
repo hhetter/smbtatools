@@ -64,42 +64,29 @@ QString dbcustomformular::dbc_build_query()
     if (ui->cBUsers->isChecked())
     {
         SELECT = "username";
-        Query = "SELECT username,share, COUNT(" + SELECT + ") from data " + WHERE + " GROUP BY username,share";
-    }
-    else if (ui->cBFiles->isChecked())
-    {
-        SELECT = "string1";
-        Query = "SELECT string1,share, COUNT(" + SELECT + ") from data " + WHERE + " GROUP BY string1,share";
-    }
-    else if (ui->cBFilelength->isChecked())
-    {
-        SELECT = "length";
-        Query = "SELECT string1,SUM(" + SELECT + ") from data " + WHERE + " GROUP BY string1";
+        Query = "SELECT username, SUM(length) from data " + WHERE + " GROUP BY username";
     }
     else if(ui->cBShares->isChecked())
     {
         SELECT = "share";
-        Query = "SELECT " + SELECT + ", COUNT(" + SELECT + ") from data " + WHERE + " GROUP BY " + SELECT;
+        Query = "SELECT " + SELECT + ", SUM(length) from data " + WHERE + " GROUP BY " + SELECT;
     }
+    else if(ui->cBFiles->isChecked())
+	{
+	SELECT = "string1";
+        Query = "SELECT " + SELECT + ", SUM(length) from data " + WHERE + " GROUP BY " + SELECT;
+	}
     if(!ui->rBall->isChecked() && ui->sBShowLimit->isEnabled())
     {
         LIMIT = " LIMIT " + ui->sBShowLimit->text();
     }
-    if (ui->cBFilelength->isChecked() && ui->rBlowest->isChecked())
+    else if(ui->rBlowest->isChecked())
     {
         ORDER = " ORDER BY SUM(length) ASC ";
     }
-    else if(ui->cBFilelength->isChecked() && ui->rBmost->isChecked())
-    {
-        ORDER = " ORDER BY SUM(length) DESC ";
-    }
-    else if(ui->rBlowest->isChecked())
-    {
-        ORDER = " ORDER BY COUNT(" + SELECT + ") ASC ";
-    }
     else if(ui->rBmost->isChecked())
     {
-        ORDER = " ORDER BY COUNT(" + SELECT + ") DESC ";
+        ORDER = " ORDER BY SUM(length) DESC ";
     }
     Query = Query + ORDER + LIMIT + ";";
     return Query;
@@ -118,24 +105,16 @@ void dbcustomformular::dbc_create_subwindow(QSqlQuery q)
                 newshowformat[i]->show();
                 ui->mdiArea->currentSubWindow()->resize( 360, 260 );
                 int value1 = rec.indexOf(this->SELECT);
-                int value2 = rec.indexOf("count");
-                if (ui->cBFilelength->isChecked())
+                int value2 = rec.indexOf("sum");
+                if (ui->cBFiles->isChecked())
                 {
                     value1 = rec.indexOf("string1");
-                    int value2 = rec.indexOf("sum");
                     newshowformat[i]->new_Element(value1, value2, q);
-                }
-                else if (ui->cBFiles->isChecked())
-                {
-                    value1 = rec.indexOf("string1");
-                    int value3 = rec.indexOf("share");
-                    newshowformat[i]->new_Element(value1, value2, value3, q);
                 }
                 else if(ui->cBUsers->isChecked())
                 {
                     value1 = rec.indexOf("username");
-                    int value3 = rec.indexOf("share");
-                    newshowformat[i]->new_Element(value1, value2, value3, q);
+                    newshowformat[i]->new_Element(value1, value2, q);
                 }
                 else
                 {
@@ -154,30 +133,22 @@ void dbcustomformular::dbc_create_subwindow(QSqlQuery q)
                 graph[i]->show();
                 ui->mdiArea->currentSubWindow()->resize( 360, 260 );
                 int value1;
-                int value2 = rec.indexOf("count");
+                int value2 = rec.indexOf("sum");
                 int value3 = -1;
-                if (ui->cBFilelength->isChecked())
+                if (ui->cBFiles->isChecked())
                 {
                     value1 = rec.indexOf("string1");
-                    value2 = rec.indexOf("sum");
-                    graph[i]->new_Element(value1, value2, value3, q);
-                }
-                else if (ui->cBFiles->isChecked())
-                {
-                    value1 = rec.indexOf("string1");
-                    int value3 = rec.indexOf("share");
                     graph[i]->new_Element(value1, value2, value3, q);
                 }
                 else if(ui->cBUsers->isChecked())
                 {
                     value1 = rec.indexOf("username");
-                    int value3 = rec.indexOf("share");
                     graph[i]->new_Element(value1, value2, value3, q);
                 }
                 else
                 {
                     value1 = rec.indexOf("share");
-                    graph[i]->new_Element(value1, value2, q);
+                    graph[i]->new_Element(value1, value2, value3,  q);
                 }
                 i=128;
             }

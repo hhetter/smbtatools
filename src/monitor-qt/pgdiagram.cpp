@@ -63,7 +63,7 @@ void pgdiagram::on_Quit_triggered()
 
 void pgdiagram::on_Dia_m_10_U_triggered()
 {
-    this->qst_query = "SELECT username,count(username) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY COUNT(username) DESC LIMIT 10;";
+    this->qst_query = "SELECT username,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY SUM(length) DESC LIMIT 10;";
     this->pgd_SQLQuery("username");
     for(int i = 0; i < 128; i++)
     {
@@ -75,7 +75,7 @@ void pgdiagram::on_Dia_m_10_U_triggered()
             graph[i]->show();
             ui->mdiADia->currentSubWindow()->resize(380,430);
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             graph[i]->new_Element(value1, value2, q);
             i = 128;
         }
@@ -84,7 +84,7 @@ void pgdiagram::on_Dia_m_10_U_triggered()
 
 void pgdiagram::on_Tex_m_10_U_triggered()
 {
-    this->qst_query = "SELECT username,count(username) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY COUNT(username) DESC LIMIT 10;";
+    this->qst_query = "SELECT username,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY SUM(length) DESC LIMIT 10;";
     this->pgd_SQLQuery("username");
     for(int i =0; i < 128; i++)
     {
@@ -96,7 +96,7 @@ void pgdiagram::on_Tex_m_10_U_triggered()
             newshowformat[i]->show();
             ui->mdiADia->currentSubWindow()->resize( 380, 430 );
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             newshowformat[i]->new_Element(value1, value2, q);
             i=128;
         }
@@ -105,7 +105,7 @@ void pgdiagram::on_Tex_m_10_U_triggered()
 
 void pgdiagram::on_Dia_l_10_U_triggered()
 {
-    this->qst_query = "SELECT username,count(username) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY COUNT(username) ASC LIMIT 10;";
+    this->qst_query = "SELECT username,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY SUM(length) ASC LIMIT 10;";
     this->pgd_SQLQuery("username");
     for(int i = 0; i < 128; i++)
     {
@@ -117,7 +117,7 @@ void pgdiagram::on_Dia_l_10_U_triggered()
             graph[i]->show();
             ui->mdiADia->currentSubWindow()->resize(380,430);
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             graph[i]->new_Element(value1, value2, q);
             i = 128;
         }
@@ -126,7 +126,7 @@ void pgdiagram::on_Dia_l_10_U_triggered()
 
 void pgdiagram::on_Tex_l_10_U_triggered()
 {
-    this->qst_query = "SELECT username,count(username) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY COUNT(username) ASC LIMIT 10;";
+    this->qst_query = "SELECT username,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY username, usersid ORDER BY SUM(length) ASC LIMIT 10;";
     this->pgd_SQLQuery("username");
     for(int i =0; i < 128; i++)
     {
@@ -138,7 +138,7 @@ void pgdiagram::on_Tex_l_10_U_triggered()
             newshowformat[i]->show();
             ui->mdiADia->currentSubWindow()->resize( 380, 430 );
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             newshowformat[i]->new_Element(value1, value2, q);
             i=128;
         }
@@ -147,7 +147,7 @@ void pgdiagram::on_Tex_l_10_U_triggered()
 
 void pgdiagram::on_Dia_m_10_F_triggered()
 {
-    this->qst_query = "SELECT string1,count(string1) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY COUNT(string1) DESC LIMIT 10;";
+    this->qst_query = "SELECT string1,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY SUM(length) DESC LIMIT 10;";
     this->pgd_SQLQuery("string1");
     for(int i = 0; i < 128; i++)
     {
@@ -159,7 +159,7 @@ void pgdiagram::on_Dia_m_10_F_triggered()
             graph[i]->show();
             ui->mdiADia->currentSubWindow()->resize(380,430);
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             graph[i]->new_Element(value1, value2, q);
             i = 128;
         }
@@ -168,7 +168,7 @@ void pgdiagram::on_Dia_m_10_F_triggered()
 
 void pgdiagram::on_Tex_m_10_F_triggered()
 {
-    this->qst_query = "SELECT string1,count(string1) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY COUNT(string1) DESC LIMIT 10;";
+    this->qst_query = "SELECT string1,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY SUM(length) DESC LIMIT 10;";
     this->pgd_SQLQuery("string1");
     for(int i =0; i < 128; i++)
     {
@@ -180,7 +180,7 @@ void pgdiagram::on_Tex_m_10_F_triggered()
             newshowformat[i]->show();
             ui->mdiADia->currentSubWindow()->resize( 380, 430 );
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             newshowformat[i]->new_Element(value1, value2, q);
             i=128;
         }
@@ -189,7 +189,7 @@ void pgdiagram::on_Tex_m_10_F_triggered()
 
 void pgdiagram::on_Dia_l_10_F_triggered()
 {
-    this->qst_query = "SELECT string1,count(string1) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY COUNT(string1) ASC LIMIT 10;";
+    this->qst_query = "SELECT string1,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY SUM(length) ASC LIMIT 10;";
     this->pgd_SQLQuery("string1");
     for(int i = 0; i < 128; i++)
     {
@@ -201,7 +201,7 @@ void pgdiagram::on_Dia_l_10_F_triggered()
             graph[i]->show();
             ui->mdiADia->currentSubWindow()->resize(380,430);
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             graph[i]->new_Element(value1, value2, q);
             i = 128;
         }
@@ -210,7 +210,7 @@ void pgdiagram::on_Dia_l_10_F_triggered()
 
 void pgdiagram::on_Tex_l_10_F_triggered()
 {
-    this->qst_query = "SELECT string1,count(string1) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY COUNT(string1) ASC LIMIT 10;";
+    this->qst_query = "SELECT string1,sum(length) FROM data WHERE vfs_id = '0' OR vfs_id = '2' GROUP BY string1, share ORDER BY SUM(length) ASC LIMIT 10;";
     this->pgd_SQLQuery("string1");
     for(int i =0; i < 128; i++)
     {
@@ -222,7 +222,7 @@ void pgdiagram::on_Tex_l_10_F_triggered()
             newshowformat[i]->show();
             ui->mdiADia->currentSubWindow()->resize( 380, 430 );
             int value1 = this->rec.indexOf(value);
-            int value2 = this->rec.indexOf("count");
+            int value2 = this->rec.indexOf("sum");
             newshowformat[i]->new_Element(value1, value2, q);
             i=128;
         }

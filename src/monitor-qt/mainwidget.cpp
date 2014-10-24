@@ -3,7 +3,7 @@
 
 #include "barchartplotter.h"
 #include "axisbase.h"
-
+#include <QString>
 
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
@@ -126,7 +126,22 @@ void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
    this->graphdata = new float[q.size()];
    for(int i = 0; i < q.size() && q.next(); i++)
    {
-        this->graphdata[i] = q.value(value2).toInt();
+        this->graphdata[i] = q.value(value2).toFloat();
+        QString bytes = "";
+        int size;
+        for (size = 0; graphdata[i] > 1024; size++)
+        {
+                graphdata[i] /= 1024;
+        }
+
+        switch (size)
+        {
+        case 1:bytes = " KBytes";break;
+        case 2:bytes = " MBytes";break;
+        case 3:bytes = " GBytes";break;
+        case 4:bytes = " TBytes";break;
+        default: bytes = " Bytes";break;
+        }
         this->data.append(q.value(value1).toString());
         if(maxq < this->graphdata[i])
         {
@@ -146,19 +161,33 @@ void MainWidget::new_Element(int value1, int value2, int value3, QSqlQuery q)
     for(int i = 0; i < q.size() && q.next(); i++)
     {
        this->graphdata[i] = q.value(value2).toFloat();
+	QString bytes = "";
+	int size;
+        for (size = 0; graphdata[i] > 1024; size++)
+        {
+                graphdata[i] /= 1024;
+        }
+
+        switch (size)
+        {
+        case 1:bytes = " KBytes";break;
+        case 2:bytes = " MBytes";break;
+        case 3:bytes = " GBytes";break;
+        case 4:bytes = " TBytes";break;
+        default: bytes = " Bytes";break;
+        }
+
         if (value3 == -1)
         {
-            this->graphdata[i] /= (1024*1024);
-            this->graphdata[i] /= 1024;
-            showdata = q.value(value1).toString();
+            showdata = q.value(value1).toString() + size;
         }
         else
         {
-            showdata = q.value(value1).toString() + " - " + q.value(value3).toString();
+            showdata = q.value(value1).toString() + " - " + q.value(value3).toString() + size;
         }
          this->data.append(showdata);
-         if(maxq < this->graphdata[i])
-         {
+         if(maxq < this->graphdata[i]) 
+	{
              maxq = this->graphdata[i];
          }
     }

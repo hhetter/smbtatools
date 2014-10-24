@@ -22,6 +22,7 @@ public:
         QString qs_Databasename;
         QString qs_Username;
         QString qs_Passwd;
+        QString qs_Type;
         QString pidString;
         QString socketString;
         bool socketConnected;

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>BarChartPlotter</string>
+   <string>Bar Chart</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="margin">
