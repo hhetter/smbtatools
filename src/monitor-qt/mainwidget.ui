@@ -18,6 +18,13 @@
     <number>10</number>
    </property>
    <item>
+    <widget class="QLabel" name="Byteformat">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QSint::BarChartPlotter" name="BarPlot" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -34,7 +41,7 @@
   <customwidget>
    <class>QSint::BarChartPlotter</class>
    <extends>QWidget</extends>
-   <header location="local">../../../smbtatools/src/monitor-qt/barchartplotter.h</header>
+   <header>../../../smbtatools/src/monitor-qt/barchartplotter.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

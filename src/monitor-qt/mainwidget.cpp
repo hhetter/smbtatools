@@ -37,10 +37,10 @@ void MainWidget::paint()
     for(; max < range; range/=10)
     {}
     max /= range;
-    max += 1;
+    max += 10;
     max *= range;
     ui->BarPlot->axisY()->setRanges(max);
-    ui->BarPlot->axisY()->setTicks(50, max/20);
+    ui->BarPlot->axisY()->setTicks(((int)max)/10, max/20);
     ui->BarPlot->axisY()->setPen(QPen(Qt::darkGray));
     ui->BarPlot->axisY()->setMinorTicksPen(QPen(Qt::gray));
     ui->BarPlot->axisY()->setMajorTicksPen(QPen(Qt::darkGray));
@@ -142,6 +142,7 @@ void MainWidget::new_Element(int value1, int value2, QSqlQuery q)
         case 4:bytes = " TBytes";break;
         default: bytes = " Bytes";break;
         }
+        ui->Byteformat->setText(bytes);
         this->data.append(q.value(value1).toString());
         if(maxq < this->graphdata[i])
         {
@@ -176,15 +177,16 @@ void MainWidget::new_Element(int value1, int value2, int value3, QSqlQuery q)
         case 4:bytes = " TBytes";break;
         default: bytes = " Bytes";break;
         }
-
         if (value3 == -1)
         {
-            showdata = q.value(value1).toString() + size;
+            showdata = q.value(value1).toString();
         }
         else
         {
-            showdata = q.value(value1).toString() + " - " + q.value(value3).toString() + size;
+            showdata = q.value(value1).toString() + " - " + q.value(value3).toString();
         }
+        ui->Byteformat->setText(bytes);
+
          this->data.append(showdata);
          if(maxq < this->graphdata[i]) 
 	{
